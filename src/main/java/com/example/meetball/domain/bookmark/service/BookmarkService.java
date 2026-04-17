@@ -1,52 +1,71 @@
 package com.example.meetball.domain.bookmark.service;
 
+import com.example.meetball.domain.bookmark.dto.BookmarkedProjectResponse;
 import com.example.meetball.domain.bookmark.dto.BookmarkResponseDto;
 import com.example.meetball.domain.bookmark.entity.Bookmark;
 import com.example.meetball.domain.bookmark.repository.BookmarkRepository;
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.repository.ProjectRepository;
+import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public BookmarkResponseDto toggleBookmark(Long projectId, String userNickname) {
-        // 회원/비회원 권한 체크 (예외 처리)
-        if ("GUEST".equals(userNickname) || userNickname == null || userNickname.trim().isEmpty()) {
-            throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
-        }
+    public BookmarkResponseDto toggleBookmark(Long projectId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
 
-        Optional<Bookmark> existingBookmark = bookmarkRepository.findByProjectIdAndUserNickname(projectId, userNickname);
+        Optional<Bookmark> existingBookmark = bookmarkRepository.findByProjectAndUser(project, user);
         boolean isBookmarked;
 
         if (existingBookmark.isPresent()) {
-            // 이미 찜한 상태면 취소(삭제)
             bookmarkRepository.delete(existingBookmark.get());
             isBookmarked = false;
         } else {
-            // 안 찜한 상태면 추가
             Bookmark bookmark = Bookmark.builder()
-                    .projectId(projectId)
-                    .userNickname(userNickname)
+                    .project(project)
+                    .user(user)
                     .build();
             bookmarkRepository.save(bookmark);
             isBookmarked = true;
         }
 
-        int totalBookmarks = bookmarkRepository.countByProjectId(projectId);
+        int totalBookmarks = bookmarkRepository.countByProject(project);
         return new BookmarkResponseDto(isBookmarked, totalBookmarks);
     }
-    
+
     @Transactional(readOnly = true)
-    public BookmarkResponseDto getBookmarkStatus(Long projectId, String userNickname) {
-        boolean isBookmarked = bookmarkRepository.findByProjectIdAndUserNickname(projectId, userNickname).isPresent();
-        int totalBookmarks = bookmarkRepository.countByProjectId(projectId);
+    public List<BookmarkedProjectResponse> getBookmarkedProjects(User user) {
+        return bookmarkRepository.findByUser(user).stream()
+                .map(BookmarkedProjectResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public BookmarkResponseDto getBookmarkStatus(Long projectId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+
+        boolean isBookmarked = bookmarkRepository.findByProjectAndUser(project, user).isPresent();
+        int totalBookmarks = bookmarkRepository.countByProject(project);
         return new BookmarkResponseDto(isBookmarked, totalBookmarks);
     }
 }

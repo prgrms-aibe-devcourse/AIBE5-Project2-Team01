@@ -1,6 +1,9 @@
 package com.example.meetball.domain.bookmark.entity;
 
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +14,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "bookmarks", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"project_id", "user_nickname"})
+        @UniqueConstraint(columnNames = {"project_id", "user_id"})
 })
 public class Bookmark {
 
@@ -22,21 +25,21 @@ public class Bookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: 원래는 Project 엔티티와 연관관계를 맺어야 하나 MVP(임시 DB)이므로 ID값만 저장
-    @Column(name = "project_id", nullable = false)
-    private Long projectId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
-    // TODO: User 엔티티와 연관관계 매핑 (MVP 단계에서는 닉네임 문자열로 임시 관리)
-    @Column(name = "user_nickname", nullable = false)
-    private String userNickname;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Bookmark(Long projectId, String userNickname) {
-        this.projectId = projectId;
-        this.userNickname = userNickname;
+    public Bookmark(Project project, User user) {
+        this.project = project;
+        this.user = user;
     }
 }

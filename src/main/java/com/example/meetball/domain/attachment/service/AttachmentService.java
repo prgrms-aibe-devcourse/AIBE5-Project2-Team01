@@ -50,7 +50,8 @@ public class AttachmentService {
             Attachment attachment = Attachment.builder()
                     .projectId(projectId)
                     .originalFileName(originalFilename)
-                    .storedFilePath(storedFileName) // 실제로는 경로까지 저장하지만 MVP에선 파일명만 기록해서 uploadDir과 결합
+                    .storedFilePath(storedFileName) 
+                    .type("FILE")
                     .fileSize(file.getSize())
                     .build();
 
@@ -93,5 +94,18 @@ public class AttachmentService {
         return attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new IllegalArgumentException("File not found"))
                 .getOriginalFileName();
+    }
+
+    @Transactional
+    public AttachmentResponseDto uploadLink(Long projectId, String title, String url) {
+        Attachment attachment = Attachment.builder()
+                .projectId(projectId)
+                .originalFileName(title)
+                .linkUrl(url)
+                .type("LINK")
+                .build();
+        
+        Attachment saved = attachmentRepository.save(attachment);
+        return new AttachmentResponseDto(saved);
     }
 }

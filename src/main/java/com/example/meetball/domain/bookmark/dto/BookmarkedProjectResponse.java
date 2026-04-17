@@ -1,0 +1,21 @@
+package com.example.meetball.domain.bookmark.dto;
+
+import com.example.meetball.domain.bookmark.entity.Bookmark;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class BookmarkedProjectResponse {
+    private Long projectId;
+    private String title;
+    private String techStack;
+
+    public static BookmarkedProjectResponse from(Bookmark bookmark) {
+        return BookmarkedProjectResponse.builder()
+                .projectId(bookmark.getProject().getId())
+                .title(bookmark.getProject().getTitle())
+                .techStack(bookmark.getProject().getTechStack())
+                .build();
+    }
+}

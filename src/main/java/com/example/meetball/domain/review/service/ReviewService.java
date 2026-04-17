@@ -1,9 +1,16 @@
 package com.example.meetball.domain.review.service;
 
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
+import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.review.dto.ReviewRequestDto;
 import com.example.meetball.domain.review.dto.ReviewSummaryDto;
+import com.example.meetball.domain.review.dto.ReviewTargetResponse;
+import com.example.meetball.domain.review.dto.UserReviewResponse;
 import com.example.meetball.domain.review.entity.Review;
 import com.example.meetball.domain.review.repository.ReviewRepository;
+import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,17 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Transactional(readOnly = true)
     public ReviewSummaryDto getProjectReviewSummary(Long projectId) {
-        List<Review> reviews = reviewRepository.findByProjectId(projectId);
-        
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+        List<Review> reviews = reviewRepository.findByProjectAndRevieweeIsNull(project);
+
         if (reviews.isEmpty()) {
             return new ReviewSummaryDto(0.0, 0, new HashMap<>());
         }
@@ -32,14 +45,13 @@ public class ReviewService {
 
         for (Review r : reviews) {
             totalScore += r.getScore();
-            // 통계 막대그래프용 분포는 정수(반올림)로 그룹화
             int roundedScore = (int) Math.round(r.getScore());
             if (roundedScore < 1) roundedScore = 1;
             counts.put(roundedScore, counts.get(roundedScore) + 1);
         }
 
         double average = Math.round((totalScore / reviews.size()) * 10.0) / 10.0;
-        
+
         Map<Integer, Integer> percentages = new HashMap<>();
         for (int i = 1; i <= 5; i++) {
             int count = counts.get(i);
@@ -50,20 +62,124 @@ public class ReviewService {
         return new ReviewSummaryDto(average, reviews.size(), percentages);
     }
 
-    // 신규 리뷰(별점) 등록 로직
+    @Transactional(readOnly = true)
+    public List<UserReviewResponse> getUserReviews(User reviewee) {
+        return reviewRepository.findByRevieweeOrderByCreatedAtDesc(reviewee).stream()
+                .map(UserReviewResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 유저의 밋볼 지수(매너 온도)를 계산합니다.
+     * 기본 점수 36.5점에서 시작하며, 받은 피어 리뷰의 별점에 따라 가감됩니다.
+     * 공식: 36.5 + (각 리뷰 별점 - 3.0) * 0.1
+     */
+    @Transactional(readOnly = true)
+    public double calculateMeetBallIndex(User user) {
+        List<Review> reviews = reviewRepository.findByRevieweeOrderByCreatedAtDesc(user);
+        double baseIndex = 36.5;
+
+        if (reviews.isEmpty()) {
+            return baseIndex;
+        }
+
+        double totalAdjustment = reviews.stream()
+                .mapToDouble(review -> (review.getScore() - 3.0) * 0.1)
+                .sum();
+
+        double finalIndex = baseIndex + totalAdjustment;
+        
+        // 소수점 첫째 자리까지 반올림
+        return Math.round(finalIndex * 10.0) / 10.0;
+    }
+
     @Transactional
     public void addReview(Long projectId, ReviewRequestDto requestDto) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+
+        User reviewer = userRepository.findByNickname(requestDto.getReviewerNickname())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다: " + requestDto.getReviewerNickname()));
+
+        // 권한 체크: 작성자가 해당 프로젝트의 멤버인지 확인
+        if (!projectMemberRepository.existsByProjectAndUser(project, reviewer)) {
+            throw new IllegalArgumentException("이 프로젝트의 멤버만 리뷰를 작성할 수 있습니다.");
+        }
+
+        User reviewee = null;
+        if (requestDto.getTargetUserNickname() != null && !requestDto.getTargetUserNickname().isBlank()) {
+            reviewee = userRepository.findByNickname(requestDto.getTargetUserNickname())
+                    .orElseThrow(() -> new IllegalArgumentException("리뷰 대상자를 찾을 수 없습니다: " + requestDto.getTargetUserNickname()));
+            
+            // 본인 리뷰 방지
+            if (reviewer.getId().equals(reviewee.getId())) {
+                throw new IllegalArgumentException("자신에 대한 리뷰는 작성할 수 없습니다.");
+            }
+            
+            // 대상자가 프로젝트 멤버인지 확인
+            if (!projectMemberRepository.existsByProjectAndUser(project, reviewee)) {
+                throw new IllegalArgumentException("리뷰 대상자가 프로젝트 멤버가 아닙니다.");
+            }
+        }
+
         if (requestDto.getScore() < 0.5 || requestDto.getScore() > 5.0) {
             throw new IllegalArgumentException("별점은 0.5점에서 5.0점 사이여야 합니다.");
         }
 
+        if (reviewRepository.existsByProjectAndReviewerAndReviewee(project, reviewer, reviewee)) {
+            throw new IllegalArgumentException("이미 해당 대상에 대해 리뷰를 제출하셨습니다.");
+        }
+
         Review review = Review.builder()
-                .projectId(projectId)
-                .reviewerNickname(requestDto.getReviewerNickname())
-                .targetUserNickname(requestDto.getTargetUserNickname() != null ? requestDto.getTargetUserNickname() : "팀전체")
+                .project(project)
+                .reviewer(reviewer)
+                .reviewee(reviewee)
+                .content(requestDto.getContent()) 
                 .score(requestDto.getScore())
                 .build();
+
+        reviewRepository.save(review);
+    }
+
+    /**
+     * 프로젝트 참여 팀원 중 본인을 제외한 목록을 반환합니다.
+     */
+    @Transactional(readOnly = true)
+    public List<ReviewTargetResponse> getTeammatesForReview(Long projectId, String currentNickname) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
         
+        return projectMemberRepository.findByProject(project).stream()
+                .map(pm -> pm.getUser())
+                .filter(u -> !u.getNickname().equals(currentNickname))
+                .map(u -> ReviewTargetResponse.builder()
+                        .userId(u.getId())
+                        .nickname(u.getNickname())
+                        .jobTitle(u.getJobTitle())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void addReview(Long projectId, Long reviewerId, Long revieweeId, String content, double score) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+        User reviewer = userRepository.findById(reviewerId)
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
+        User reviewee = revieweeId != null ? userRepository.findById(revieweeId).orElse(null) : null;
+
+        if (score < 0.5 || score > 5.0) {
+            throw new IllegalArgumentException("별점은 0.5점에서 5.0점 사이여야 합니다.");
+        }
+
+        Review review = Review.builder()
+                .project(project)
+                .reviewer(reviewer)
+                .reviewee(reviewee)
+                .content(content)
+                .score(score)
+                .build();
+
         reviewRepository.save(review);
     }
 }

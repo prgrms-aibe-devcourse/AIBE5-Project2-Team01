@@ -34,7 +34,8 @@ class AttachmentControllerTest {
 
         // when & then
         mockMvc.perform(multipart("/api/projects/1/attachments")
-                .file(file))
+                .file(file)
+                .param("userRole", "MEMBER"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.originalFileName").value("test-report.pdf"))
                 .andExpect(jsonPath("$.fileSize").value("Test Content Data".getBytes().length));

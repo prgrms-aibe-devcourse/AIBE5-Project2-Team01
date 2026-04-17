@@ -1,6 +1,9 @@
 package com.example.meetball.domain.review.entity;
 
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "reviews")
 public class Review {
@@ -20,16 +23,23 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "project_id", nullable = false)
-    private Long projectId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
-    // 평가자 닉네임
-    @Column(name = "reviewer_nickname", nullable = false)
-    private String reviewerNickname;
+    // 리뷰 작성자
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewer_id", nullable = false)
+    private User reviewer;
 
-    // 피평가자(평가를 받는 사람) 닉네임 - 프로젝트 전체일 경우 식별자 생략 가능
-    @Column(name = "target_user_nickname")
-    private String targetUserNickname;
+    // 리뷰 대상자 (피평가자)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewee_id")
+    private User reviewee;
+
+    // 리뷰 내용
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     // 별점 (0.5 ~ 5.0)
     @Column(nullable = false)
@@ -40,10 +50,11 @@ public class Review {
     private LocalDateTime createdAt;
 
     @Builder
-    public Review(Long projectId, String reviewerNickname, String targetUserNickname, double score) {
-        this.projectId = projectId;
-        this.reviewerNickname = reviewerNickname;
-        this.targetUserNickname = targetUserNickname;
+    public Review(Project project, User reviewer, User reviewee, String content, double score) {
+        this.project = project;
+        this.reviewer = reviewer;
+        this.reviewee = reviewee;
+        this.content = content;
         this.score = score;
     }
 }

@@ -227,7 +227,11 @@
                                     <input type="file" id="file-upload-input" class="hidden" onchange="uploadFileData(this)">
                                     <button id="file-upload-btn" onclick="document.getElementById('file-upload-input').click()"
                                         class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-black hover:bg-gray-200 transition-colors">
-                                        <i class="fa-solid fa-upload"></i> 업로드
+                                        <i class="fa-solid fa-upload"></i> 파일 업로드
+                                    </button>
+                                    <button id="link-upload-btn" onclick="openLinkPrompt()"
+                                        class="px-4 py-2 bg-orange-50 text-orange-600 border border-orange-100 rounded-lg text-xs font-black hover:bg-orange-100 transition-colors">
+                                        <i class="fa-solid fa-link"></i> 링크 추가
                                     </button>
                                 </div>
                             </div>
@@ -256,19 +260,30 @@
                             </div>
                         </div>
 
-                        <!-- Add Review / 평점 남기기 -->
-                        <div class="section-card mt-6 p-8 border border-gray-100 rounded-[2rem] shadow-sm bg-white text-center">
-                            <h4 class="text-lg font-black text-gray-900 mb-2">팀에 대한 별점을 남겨주세요</h4>
+                        <!-- Add Review / 평점 및 후기 남기기 -->
+                        <div id="review-input-box" class="section-card mt-6 p-8 border border-gray-100 rounded-[2rem] shadow-sm bg-white text-center">
+                            <h4 class="text-lg font-black text-gray-900 mb-2">팀에 대한 별점과 후기를 남겨주세요</h4>
                             <p id="star-preview-text" class="text-xs text-gray-400 mb-6 font-medium">별을 클릭해서 1~5점 사이의 평점을 선택해 주세요.</p>
                             
-                            <div id="star-input-container" class="flex items-center justify-center gap-1 text-4xl text-gray-200 cursor-pointer mb-6" onmouseleave="resetStarHover()">
+                            <div id="star-input-container" class="flex items-center justify-center gap-1 text-4xl text-gray-200 cursor-pointer mb-8" onmouseleave="resetStarHover()">
                                 <i class="fa-solid fa-star transition-all duration-200" data-val="1" onmousemove="handleStarMove(event, 1)" onclick="handleStarClick(event, 1)"></i>
                                 <i class="fa-solid fa-star transition-all duration-200" data-val="2" onmousemove="handleStarMove(event, 2)" onclick="handleStarClick(event, 2)"></i>
                                 <i class="fa-solid fa-star transition-all duration-200" data-val="3" onmousemove="handleStarMove(event, 3)" onclick="handleStarClick(event, 3)"></i>
                                 <i class="fa-solid fa-star transition-all duration-200" data-val="4" onmousemove="handleStarMove(event, 4)" onclick="handleStarClick(event, 4)"></i>
                                 <i class="fa-solid fa-star transition-all duration-200" data-val="5" onmousemove="handleStarMove(event, 5)" onclick="handleStarClick(event, 5)"></i>
                             </div>
-                            <button onclick="submitReview()" class="px-8 py-3 bg-gray-900 text-white rounded-xl font-black text-sm hover:bg-black transition-all">등록하기</button>
+
+                            <div class="relative max-w-xl mx-auto mb-6">
+                                <textarea id="review-content" maxlength="100" oninput="updateCharCount(this)"
+                                    class="w-full p-6 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all resize-none no-scrollbar h-32"
+                                    placeholder="팀원들과의 협업 경험을 100자 이내로 솔직하게 남겨주세요..."></textarea>
+                                <div class="absolute bottom-4 right-6 flex items-center gap-1.5">
+                                    <span id="char-count" class="text-[10px] font-black text-gray-400">0</span>
+                                    <span class="text-[10px] font-black text-gray-300">/ 100</span>
+                                </div>
+                            </div>
+
+                            <button onclick="submitReview()" class="px-10 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm shadow-xl shadow-gray-200 hover:scale-105 active:scale-95 transition-all">리뷰 등록하기</button>
                         </div>
 
                         <!-- Review List Removed per MVP Specs -->
@@ -277,7 +292,7 @@
                     <!-- Tab: Communication (Comments) -->
                     <div id="tab-communication" class="hidden space-y-8 transition-all duration-300">
                         <!-- Comment Box -->
-                        <div class="section-card">
+                        <div id="comment-input-section" class="section-card">
                             <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
                                 <i class="fa-solid fa-comments text-orange-500"></i> 의견 나누기
                             </h3>
@@ -290,6 +305,10 @@
                                         class="px-8 py-3 bg-gray-900 text-white rounded-xl font-black text-sm hover:bg-black transition-all">등록하기</button>
                                 </div>
                             </div>
+                        </div>
+                        <div id="comment-login-notice" class="section-card hidden text-center py-10">
+                            <p class="text-gray-400 font-bold mb-4">로그인 후 의견을 남겨주세요!</p>
+                            <button class="px-6 py-2 bg-orange-500 text-white rounded-lg text-sm font-black hover:bg-orange-600 transition-all">로그인하기</button>
                         </div>
 
                         <!-- Comment List -->
@@ -305,18 +324,20 @@
                     </div>
 
                     <script>
-                        // 임시 프로젝트 ID 및 현재 사용자 목업 데이터
-                        const projectId = 1;
+                        // URL 파라미터에서 projectId 가져오기 (기본값 1)
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const projectId = urlParams.get('projectId') || 1;
                         // 현재 접속한 유저 정보 (테스트 패널에서 동적으로 바뀝니다)
                         let currentUserRole = 'LEADER';
-                        let currentUserNickname = '나(팀장)';
+                        let currentUserNickname = '팀장님';
 
                         // 권한 변경 함수 (테스트 패널용)
                         function changeRole(role) {
                             currentUserRole = role;
-                            if (role === 'LEADER') currentUserNickname = '나(팀장)';
-                            else if (role === 'MEMBER') currentUserNickname = '나(팀원)';
-                            else currentUserNickname = 'GUEST';
+                            if (role === 'LEADER') currentUserNickname = '팀장님';
+                            else if (role === 'MEMBER') currentUserNickname = '성실팀원';
+                            else if (role === 'GUEST') currentUserNickname = '익명게스트';
+                            else currentUserNickname = 'NONE';
                             
                             console.log(`Role changed to: ${role}`);
                             // UI 갱신
@@ -324,12 +345,33 @@
                             loadBookmarkStatus();
                             loadAttachments();
                             
-                            // 업로드 버튼 노출 제어 (팀장, 팀원만 노출)
+                            // UI 제어 로직 강화
                             const uploadBtn = document.getElementById('file-upload-btn');
-                            if (role === 'GUEST') {
+                            const commentInput = document.getElementById('comment-input-section');
+                            const loginNotice = document.getElementById('comment-login-notice');
+                            const reviewBox = document.getElementById('review-input-box');
+
+                            if (role === 'NONE') {
+                                // 비회원: 업로드 불가, 댓글 불가, 리뷰 불가
                                 uploadBtn.classList.add('hidden');
+                                document.getElementById('link-upload-btn').classList.add('hidden');
+                                commentInput.classList.add('hidden');
+                                loginNotice.classList.remove('hidden');
+                                if(reviewBox) reviewBox.classList.add('hidden');
+                            } else if (role === 'GUEST') {
+                                // 로그인 유저: 업로드 불가, 댓글 가능, 리뷰(별점) 불가로 변경
+                                uploadBtn.classList.add('hidden');
+                                document.getElementById('link-upload-btn').classList.add('hidden');
+                                commentInput.classList.remove('hidden');
+                                loginNotice.classList.add('hidden');
+                                if(reviewBox) reviewBox.classList.add('hidden'); // 게스트도 별점 차단
                             } else {
+                                // 팀장/팀원: 모두 가능
                                 uploadBtn.classList.remove('hidden');
+                                document.getElementById('link-upload-btn').classList.remove('hidden');
+                                commentInput.classList.remove('hidden');
+                                loginNotice.classList.add('hidden');
+                                if(reviewBox) reviewBox.classList.remove('hidden');
                             }
 
                             // 리뷰 미리보기 텍스트 초기화
@@ -339,14 +381,26 @@
 
                         // 페이지 로드 시 초기화
                         document.addEventListener('DOMContentLoaded', () => {
-                            // 초기 셀렉터 값 동기화
+                            // 초기 셀택터 값 동기화
                             document.getElementById('role-selector').value = currentUserRole;
                             
                             loadComments();
                             loadBookmarkStatus(); 
                             loadReviewSummary();  
                             loadAttachments();
+                            recordProjectView(); // 조회 기록 남기기 추가
                         });
+
+                        function recordProjectView() {
+                             // 비회원이 아닐 경우에만 기록 (MVP 기준: userId=1인 김밋볼로 가정)
+                             // 실제 서비스에서는 세션 유저 활용
+                             const userId = 1; 
+                             fetch(`/api/projects/${projectId}/read?userId=${userId}`, {
+                                 method: 'POST'
+                             }).then(res => {
+                                 if(res.ok) console.log("Project view recorded.");
+                             }).catch(err => console.error("Failed to record view:", err));
+                        }
 
                         // 댓글 목록을 백엔드 API에서 가져와서 화면에 그림
                         function loadComments() {
@@ -367,10 +421,13 @@
                                         const date = new Date(comment.createdAt);
                                         const timeLabel = getTimeLabel(date);
 
-                                        // 팀장 직책 뱃지 처리 (authorRole이 LEADER일 때만 표시)
-                                        const leaderBadge = comment.authorRole === 'LEADER'
-                                            ? '<span class="px-2 py-0.5 bg-orange-100 text-orange-600 rounded text-[10px] font-black">팀장</span>'
-                                            : '';
+                                        // 뱃지 처리 (팀장: 주황, 팀원: 파랑)
+                                        let roleBadge = '';
+                                        if (comment.authorRole === 'LEADER') {
+                                            roleBadge = '<span class="px-2 py-0.5 bg-orange-100 text-orange-600 rounded text-[10px] font-black">팀장</span>';
+                                        } else if (comment.authorRole === 'MEMBER') {
+                                            roleBadge = '<span class="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-[10px] font-black">팀원</span>';
+                                        }
 
                                         const commentHtml = `
                                             <div class="p-8 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
@@ -380,7 +437,7 @@
                                                         <div class="flex flex-col">
                                                             <div class="flex items-center gap-2">
                                                                 <p class="font-black text-gray-900 text-sm">${comment.authorNickname}</p>
-                                                                ${leaderBadge}
+                                                                ${roleBadge}
                                                             </div>
                                                             <p class="text-[10px] text-gray-400 font-bold mt-0.5">${timeLabel}</p>
                                                         </div>
@@ -409,6 +466,7 @@
                                                                 <div class="flex items-center gap-2 mb-2">
                                                                     <p class="font-black text-gray-800 text-[11px]">${child.authorNickname}</p>
                                                                     ${child.authorRole === 'LEADER' ? '<span class="px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded text-[9px] font-black">팀장</span>' : ''}
+                                                                    ${child.authorRole === 'MEMBER' ? '<span class="px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded text-[9px] font-black">팀원</span>' : ''}
                                                                     <p class="text-[9px] text-gray-400 ml-1">${getTimeLabel(new Date(child.createdAt))}</p>
                                                                 </div>
                                                                 <p class="text-xs text-gray-600">${child.content}</p>
@@ -519,7 +577,7 @@
                         }
 
                         function toggleBookmark() {
-                            if (currentUserRole === 'GUEST') {
+                            if (currentUserRole === 'NONE') {
                                 alert("로그인이 필요한 기능입니다.");
                                 return;
                             }
@@ -655,14 +713,25 @@
                             renderInputStars(selectedStarValue);
                         }
 
+                        // 글자수 카운팅 함수
+                        function updateCharCount(el) {
+                            document.getElementById('char-count').innerText = el.value.length;
+                        }
+
                         // 별점 실제 등록
                         function submitReview() {
+                            const content = document.getElementById('review-content').value.trim();
+                            
                             if (selectedStarValue < 0.5 || selectedStarValue > 5.0) {
                                 alert("별점을 선택해주세요.");
                                 return;
                             }
-                            // GUEST면 차단 (현재 Mock 상태라도 권한 흉내)
-                            if (currentUserRole === 'GUEST') {
+                            if (!content) {
+                                alert("리뷰 내용을 입력해주세요.");
+                                return;
+                            }
+                            // 비회원(NONE)만 차단
+                            if (currentUserRole === 'NONE') {
                                 alert("로그인이 필요한 기능입니다.");
                                 return;
                             }
@@ -670,7 +739,9 @@
                             const reqData = {
                                 score: selectedStarValue,
                                 reviewerNickname: currentUserNickname,
-                                targetUserNickname: "팀전체"
+                                reviewerRole: currentUserRole,
+                                targetUserNickname: "", // 팀 전체 평가
+                                content: content
                             };
 
                             fetch(`/api/projects/${projectId}/reviews`, {
@@ -680,15 +751,16 @@
                             })
                             .then(res => {
                                 if (res.ok) {
-                                    alert("별점이 성공적으로 등록되었습니다!");
+                                    alert("리뷰가 성공적으로 등록되었습니다!");
                                     // 초기화 및 화면 갱신
                                     selectedStarValue = 0;
                                     renderInputStars(0);
+                                    document.getElementById('review-content').value = '';
+                                    document.getElementById('char-count').innerText = '0';
                                     document.getElementById('star-preview-text').innerHTML = '별을 클릭해서 1~5점 사이의 평점을 선택해 주세요.';
-                                    document.getElementById('star-preview-text').className = 'text-xs text-gray-400 mb-6 font-medium';
                                     loadReviewSummary();
                                 } else {
-                                    alert("등록에 실패했습니다.");
+                                    res.text().then(msg => alert(msg || "등록에 실패했습니다."));
                                 }
                             })
                             .catch(err => console.error("Review submit fail", err));
@@ -708,21 +780,23 @@
                                     
                                     let html = '';
                                     data.forEach(file => {
-                                        const sizeMB = (file.fileSize / (1024 * 1024)).toFixed(2);
-                                        const downloadUrl = `/api/projects/${projectId}/attachments/${file.id}/download`;
+                                        const isLink = file.type === 'LINK';
+                                        const icon = isLink ? 'fa-link' : 'fa-file-pdf';
+                                        const sizeText = isLink ? '외부 링크' : `${(file.fileSize / (1024 * 1024)).toFixed(2)} MB`;
+                                        const actionBtn = isLink 
+                                            ? `<button onclick="window.open('${file.linkUrl}', '_blank')" class="px-4 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-black hover:bg-blue-100 transition-colors">열기</button>`
+                                            : `<button onclick="window.location.href='/api/projects/${projectId}/attachments/${file.id}/download'" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-black text-gray-600 hover:bg-gray-100 transition-colors">다운로드</button>`;
+
                                         html += `
-                                            <div class="flex items-center justify-between p-6 bg-gray-50 rounded-2xl">
+                                            <div class="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-transparent hover:border-gray-200 transition-all">
                                                 <div class="flex items-center gap-4">
-                                                    <i class="fa-solid fa-file-pdf text-gray-400 text-xl"></i>
+                                                    <i class="fa-solid ${icon} text-gray-400 text-xl"></i>
                                                     <div>
                                                         <p class="font-bold text-gray-900 text-sm">${file.originalFileName}</p>
-                                                        <p class="text-[11px] text-gray-400 font-bold">${sizeMB} MB</p>
+                                                        <p class="text-[11px] text-gray-400 font-bold">${sizeText}</p>
                                                     </div>
                                                 </div>
-                                                <button onclick="window.location.href='${downloadUrl}'"
-                                                    class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-black text-gray-600 hover:bg-gray-100 transition-colors">
-                                                    다운로드
-                                                </button>
+                                                ${actionBtn}
                                             </div>
                                         `;
                                     });
@@ -765,6 +839,25 @@
                             .catch(err => console.error("Upload error:", err))
                             .finally(() => {
                                 input.value = ''; // 다음 업로드를 위해 리셋
+                            });
+                        }
+
+                        function openLinkPrompt() {
+                            const title = prompt("링크 제목을 입력하세요 (예: 깃허브 저장소)");
+                            if (!title) return;
+                            const url = prompt("URL 주소를 입력하세요", "https://");
+                            if (!url) return;
+
+                            fetch(`/api/projects/${projectId}/attachments/links?title=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}&userRole=${currentUserRole}`, {
+                                method: 'POST'
+                            })
+                            .then(res => {
+                                if (res.ok) {
+                                    alert('링크가 성공적으로 등록되었습니다.');
+                                    loadAttachments();
+                                } else {
+                                    alert('링크 등록 권한이 없거나 오류가 발생했습니다.');
+                                }
                             });
                         }
                         // --- 첨부파일 연동 끝 ---
@@ -1107,7 +1200,8 @@
                     <select id="role-selector" onchange="changeRole(this.value)" class="w-full bg-gray-50 border-none rounded-xl text-xs font-black p-3 focus:ring-2 focus:ring-orange-500 cursor-pointer">
                         <option value="LEADER">팀장 (LEADER)</option>
                         <option value="MEMBER">팀원 (MEMBER)</option>
-                        <option value="GUEST">게스트 (GUEST)</option>
+                        <option value="GUEST">로그인 사용자 (GUEST)</option>
+                        <option value="NONE">비회원 (NONE)</option>
                     </select>
                 </div>
                 <div class="pt-2 border-t border-gray-100">

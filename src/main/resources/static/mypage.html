@@ -38,11 +38,17 @@
                 <a href="mypage.html" class="flex items-center gap-2 pl-2 border-l border-gray-100">
                     <img src="https://picsum.photos/seed/user1/200" alt="Profile"
                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
-                    <span class="text-sm font-black text-gray-700">김밋볼</span>
+                    <span id="nav-nickname" class="text-sm font-black text-gray-700">김밋볼</span>
                 </a>
             </div>
         </div>
     </nav>
+    <!-- API Status Badge -->
+    <div id="api-status"
+        class="fixed bottom-4 right-4 z-[100] px-4 py-2 bg-black/80 backdrop-blur text-white text-[10px] font-black rounded-full shadow-2xl flex items-center gap-2 opacity-0 transition-opacity">
+        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+        API CONNECTED: USER #1
+    </div>
 
     <!-- Header Section -->
     <div class="bg-orange-600 py-12">
@@ -59,19 +65,24 @@
                     </div>
                     <div class="text-white">
                         <div class="flex items-center gap-3 justify-center md:justify-start mb-2">
-                            <h2 class="text-3xl font-black">김밋볼</h2>
-                            <span class="px-3 py-1 bg-white/20 rounded-lg text-xs font-bold">@meetball_dev</span>
+                            <h2 id="header-nickname" class="text-3xl font-black">로딩중...</h2>
+                            <span id="header-role"
+                                class="px-3 py-1 bg-white/20 rounded-lg text-xs font-bold">@ROLE</span>
                         </div>
-                        <p class="font-bold mb-3">백엔드 개발자</p>
-                        <div class="flex items-center gap-2 justify-center md:justify-start mb-4">
-                            <i class="fa-solid fa-star text-yellow-400"></i>
-                            <span class="font-black text-lg">4.7</span>
-                            <span class="text-white/60 font-bold">(8개의 리뷰)</span>
+                        <p id="header-job" class="font-bold mb-3">직무 정보</p>
+                        <div class="flex items-center gap-4 justify-center md:justify-start mb-4">
+                            <div class="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full border border-white/10">
+                                <i class="fa-solid fa-temperature-half text-white"></i>
+                                <span id="meetball-index" class="font-black text-xl italic tracking-tighter">36.5°C</span>
+                            </div>
+                            <div class="flex-grow max-w-[120px] h-2 bg-white/20 rounded-full overflow-hidden hidden md:block">
+                                <div id="temp-bar" class="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000" style="width: 36.5%"></div>
+                            </div>
                         </div>
-                        <p class="text-white/80 font-medium">열정적인 풀스택 개발자입니다. 새로운 기술을 배우고 공유하는 것을 좋아합니다!</p>
+                        <p id="header-bio" class="text-white/80 font-medium italic">백엔드 API에서 데이터를 가져오는 중입니다...</p>
                     </div>
                 </div>
-                <button
+                <button id="edit-profile-btn" onclick="openEditModal()"
                     class="px-6 py-3 bg-white text-gray-900 rounded-xl font-black flex items-center gap-2 shadow-lg shadow-black/10 transition-all hover:scale-105">
                     <i class="fa-regular fa-pen-to-square"></i> 프로필 수정
                 </button>
@@ -87,17 +98,23 @@
                 <!-- Tabs -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2" id="mypage-tabs">
                     <button onclick="switchTab('profile')" id="tab-profile"
-                        class="tab-btn active px-6 py-2.5 bg-white border border-gray-100 rounded-full text-sm font-black text-gray-900 shadow-sm transition-all whitespace-nowrap">프로필 정보</button>
+                        class="tab-btn active px-6 py-2.5 bg-white border border-gray-100 rounded-full text-sm font-black text-gray-900 shadow-sm transition-all whitespace-nowrap">프로필
+                        정보</button>
                     <button onclick="switchTab('participating')" id="tab-participating"
-                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">참여 프로젝트</button>
+                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">참여
+                        프로젝트</button>
                     <button onclick="switchTab('applied')" id="tab-applied"
-                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">지원 프로젝트</button>
+                        class="tab-btn private-tab px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">지원
+                        프로젝트</button>
                     <button onclick="switchTab('read')" id="tab-read"
-                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">읽은 프로젝트</button>
+                        class="tab-btn private-tab px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">읽은
+                        프로젝트</button>
                     <button onclick="switchTab('wishlist')" id="tab-wishlist"
-                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">관심 프로젝트</button>
+                        class="tab-btn private-tab px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">관심
+                        프로젝트</button>
                     <button onclick="switchTab('reviews')" id="tab-reviews"
-                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">받은 리뷰</button>
+                        class="tab-btn px-6 py-2.5 text-sm font-black text-gray-400 hover:text-gray-600 transition-all whitespace-nowrap">받은
+                        리뷰</button>
                 </div>
 
                 <!-- Profile Info Section -->
@@ -109,27 +126,30 @@
                             <div>
                                 <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">이름</p>
                                 <p class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
-                                    김밋볼</p>
+                                    지원자 (Mock)</p>
                             </div>
                             <div>
                                 <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">닉네임</p>
-                                <p class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
-                                    meetball_dev</p>
+                                <p id="info-nickname"
+                                    class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
+                                    -</p>
                             </div>
                             <div>
                                 <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">이메일</p>
-                                <p class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
-                                    meetball@example.com</p>
+                                <p id="info-email"
+                                    class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
+                                    -</p>
                             </div>
                             <div>
                                 <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">연락처</p>
                                 <p class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
-                                    010-1234-5678</p>
+                                    010-XXXX-XXXX</p>
                             </div>
                             <div class="md:col-span-2">
-                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">자기소개</p>
-                                <p class="font-bold text-gray-900 bg-gray-50/50 p-4 rounded-xl border border-gray-50">
-                                    열정적인 풀스택 개발자입니다. 새로운 기술을 배우고 공유하는 것을 좋아합니다!</p>
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">보유 기술 스택</p>
+                                <p id="info-tech"
+                                    class="font-bold text-indigo-600 bg-indigo-50/30 p-4 rounded-xl border border-indigo-100/50">
+                                    -</p>
                             </div>
                         </div>
                     </div>
@@ -167,139 +187,76 @@
 
                 <!-- Participating Projects Section -->
                 <div id="content-participating" class="tab-content section-card hidden space-y-12">
-                    <!-- Managed Projects (Recruiting) -->
-                    <div>
-                        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
-                             <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-xs">L</span>
-                             내가 만든 프로젝트 (모집 중) <span class="ml-2 text-orange-600 text-sm">1</span>
-                        </h3>
-                        <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-orange-200 transition-all">
-                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div class="flex gap-4 items-center">
-                                    <div class="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                        <img src="https://picsum.photos/seed/manage1/200/100" class="w-full h-full object-cover">
-                                    </div>
-                                    <div>
-                                        <h4 class="font-black text-gray-900">블록체인 기반 투표 시스템</h4>
-                                        <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase">D-12 · 하이브리드</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-6">
-                                    <div class="text-center px-4 border-r border-gray-100">
-                                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">지원자</p>
-                                        <p class="text-lg font-black text-orange-600">5명</p>
-                                    </div>
-                                    <a href="manage.html" class="px-4 py-2 bg-gray-900 text-white text-xs font-black rounded-lg hover:bg-gray-800 transition-colors">관리하기</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ongoing Projects (As Member) -->
-                    <div class="pt-8 border-t border-gray-50">
-                        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
-                             <span class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-xs">M</span>
-                             참여 중인 프로젝트 (진행 중) <span class="ml-2 text-indigo-600 text-sm">1</span>
-                        </h3>
-                        <div class="flex flex-col md:flex-row gap-6 p-6 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-indigo-200 transition-all">
-                            <div class="w-full md:w-32 h-20 bg-gray-200 rounded-xl overflow-hidden shadow-sm">
-                                <img src="https://picsum.photos/seed/p1/400/200" class="w-full h-full object-cover">
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="font-black text-gray-900 text-lg">AI 헬스케어 모바일 앱</h4>
-                                <div class="flex items-center gap-3 mt-1">
-                                    <span class="text-xs text-gray-500 font-bold uppercase italic tracking-tighter">Backend Developer</span>
-                                    <span class="text-xs text-indigo-600 font-black">진행률 45%</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-gray-200 rounded-full mt-3">
-                                    <div class="w-[45%] h-full bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.3)]"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Completed Projects -->
-                    <div class="pt-8 border-t border-gray-50">
-                        <h3 class="text-xl font-black text-gray-300">완료한 프로젝트 <span class="ml-2 text-gray-200">0</span></h3>
-                        <p class="text-sm text-gray-400 font-bold mt-4 italic">아직 완료된 프로젝트가 없습니다.</p>
+                    <!-- Dynamic Projects Container: Changed to Grid -->
+                    <div id="project-list-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <p class="xl:col-span-2 text-gray-400 font-bold italic text-center py-10">참여 중인 프로젝트를 불러오고
+                            있습니다...</p>
                     </div>
                 </div>
 
                 <!-- Applied Projects Section -->
                 <div id="content-applied" class="tab-content section-card hidden space-y-8">
-                    <h3 class="text-2xl font-black text-gray-900 mb-8">지원한 프로젝트 <span class="ml-2 text-orange-600">1</span></h3>
-                    <div class="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-orange-200 transition-all">
-                        <div class="flex gap-4 items-center">
-                            <div class="w-16 h-12 bg-gray-200 rounded-lg overflow-hidden">
-                                <img src="https://picsum.photos/seed/p3/200/100" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <p class="font-black text-gray-900">스마트 홈 케어 서비스 개발</p>
-                                <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase italic">Frontend Position</p>
-                            </div>
-                        </div>
-                        <span class="px-4 py-1.5 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black border border-orange-100">검토중</span>
+                    <div id="application-list-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <p class="xl:col-span-2 text-gray-400 font-bold italic text-center py-10">지원 현황을 불러오고 있습니다...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Recent Read Projects Section (누락 복구) -->
+                <div id="content-read" class="tab-content section-card hidden space-y-8">
+                    <div id="recent-reads-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <p class="xl:col-span-2 text-gray-400 font-bold italic text-center py-10">최근 읽은 프로젝트를 불러오고 있습니다...</p>
                     </div>
                 </div>
 
                 <!-- Wishlist Section -->
                 <div id="content-wishlist" class="tab-content section-card hidden space-y-8">
-                    <h3 class="text-2xl font-black text-gray-900 mb-8">나의 관심 프로젝트 (찜)</h3>
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="p-6 bg-white border border-gray-100 rounded-[2rem] flex items-center gap-6 hover:shadow-lg transition-all group">
-                            <div class="w-24 h-20 bg-gray-100 rounded-2xl overflow-hidden flex-shrink-0">
-                                <img src="https://picsum.photos/seed/p7/300/200"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform">
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="font-black text-gray-900">블록체인 기반 투표 시스템</h4>
-                                <div class="flex items-center gap-3 mt-1.5">
-                                    <span
-                                        class="px-2 py-0.5 bg-red-50 text-red-500 rounded text-[10px] font-black border border-red-100">D-7</span>
-                                    <span class="text-[10px] text-gray-400 font-bold">온라인</span>
-                                </div>
-                            </div>
-                            <button
-                                class="w-10 h-10 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center border border-orange-100"><i
-                                    class="fa-solid fa-heart"></i></button>
-                        </div>
+                    <div id="wishlist-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <p class="xl:col-span-2 text-gray-400 font-bold italic text-center py-10">찜한 프로젝트를 불러오고 있습니다...
+                        </p>
                     </div>
                 </div>
 
                 <!-- Reviews Section -->
-                <div id="content-reviews" class="tab-content section-card hidden space-y-8">
-                    <h3 class="text-2xl font-black text-gray-900 mb-8">받은 피어 리뷰</h3>
-                    <div class="space-y-6">
-                        <div class="p-8 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all">
-                            <div class="flex items-center gap-4 mb-4">
-                                <img src="https://picsum.photos/seed/user3/80" class="w-10 h-10 rounded-full">
-                                <div>
-                                    <div class="flex gap-1 text-xs mb-0.5">
-                                        <i class="fa-solid fa-star text-yellow-400"></i><i
-                                            class="fa-solid fa-star text-yellow-400"></i><i
-                                            class="fa-solid fa-star text-yellow-400"></i><i
-                                            class="fa-solid fa-star text-yellow-400"></i><i
-                                            class="fa-solid fa-star text-yellow-400"></i>
-                                    </div>
-                                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">
-                                        팀원 A · 2024.03.15</p>
-                                </div>
+                <div id="content-reviews" class="tab-content section-card hidden space-y-12">
+                    <!-- Test Review Form (지수 변화 확인용) -->
+                    <div class="p-8 bg-orange-50 rounded-3xl border-2 border-dashed border-orange-200">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <i class="fa-solid fa-vial"></i>
                             </div>
-                            <p class="text-gray-700 font-medium leading-relaxed italic">"협업 능력이 정말 뛰어나십니다. 백엔드 설계 단계에서
-                                팀원들의 의견을 적극적으로 수렴하고 효율적인 구조를 만들어주셨어요. 다음에도 꼭 같이 일하고 싶습니다!"</p>
+                            <div>
+                                <h4 class="font-black text-gray-900 text-lg">지수 테스트 도구</h4>
+                                <p class="text-xs font-bold text-orange-600/70 uppercase tracking-widest">실시간 지수 변화를 확인해보세요!</p>
+                            </div>
                         </div>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+                            <div class="md:col-span-8">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">테스트 리뷰 메시지</label>
+                                <input type="text" id="test-review-content" placeholder="리뷰 내용을 입력하세요..." 
+                                    class="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">별점 (0.5~5)</label>
+                                <input type="number" id="test-review-score" value="5" min="0.5" max="5" step="0.5" 
+                                    class="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl font-black text-center focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all">
+                            </div>
+                            <div class="md:col-span-2">
+                                <button onclick="submitTestReview()" 
+                                    class="w-full py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg shadow-orange-200 hover:scale-105 active:scale-95 transition-all">
+                                    등록
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reviews-container" class="space-y-6">
+                        <p class="text-gray-400 font-bold italic text-center py-10">받은 리뷰를 불러오고 있습니다...</p>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
     </main>
-
-    <footer class="py-12 border-t border-gray-100">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm font-black text-gray-300 tracking-widest uppercase">Meetball Premium Experience</p>
-        </div>
-    </footer>
 
     <footer class="bg-indigo-900 text-white py-16 mt-20">
         <!-- Same Footer as index.html -->
@@ -307,26 +264,463 @@
             © 2026 Meetball Inc. All rights reserved.
         </div>
     </footer>
+
+    <!-- Meetball Dev Tools Panel -->
+    <div id="dev-panel-trigger" onclick="toggleDevPanel()" class="fixed bottom-6 right-6 z-[200] w-14 h-14 bg-indigo-600 text-white rounded-2xl shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all group">
+        <i class="fa-solid fa-bug text-xl group-hover:rotate-12 transition-transform"></i>
+        <span class="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black">!</span>
+    </div>
+
+    <div id="dev-panel" class="fixed bottom-24 right-6 z-[200] w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 hidden flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div class="p-6 bg-indigo-600 text-white flex justify-between items-center">
+            <div>
+                <h4 class="font-black text-sm">Meetball Dev Tools</h4>
+                <p class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest">환경: Local Development</p>
+            </div>
+            <button onclick="toggleDevPanel()" class="text-white/50 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 space-y-6 max-h-[400px] overflow-y-auto no-scrollbar">
+            <!-- User Switcher -->
+            <div class="space-y-3">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">나의 로그인 정보 (Viewer)</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="switchUser(1)" id="user-btn-1" class="py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black border border-indigo-100 transition-all">팀장님 (ID 1)</button>
+                    <button onclick="switchUser(2)" id="user-btn-2" class="py-2.5 bg-gray-50 text-gray-400 rounded-xl text-xs font-black border border-gray-100 transition-all hover:bg-gray-900 hover:text-white">성실팀원 (ID 2)</button>
+                </div>
+            </div>
+
+            <!-- Profile Visitor -->
+            <div class="space-y-3 pt-4 border-t border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">조회 대상 프로필 (Target)</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="visitOtherUser(1)" class="py-2.5 bg-orange-50 text-orange-600 rounded-xl text-[10px] font-black border border-orange-100 transition-all hover:bg-orange-600 hover:text-white">팀장님 조회</button>
+                    <button onclick="visitOtherUser(2)" class="py-2.5 bg-orange-50 text-orange-600 rounded-xl text-[10px] font-black border border-orange-100 transition-all hover:bg-orange-600 hover:text-white">성실팀원 조회</button>
+                    <button onclick="visitOtherUser(3)" class="py-2.5 bg-orange-50 text-orange-600 rounded-xl text-[10px] font-black border border-orange-100 transition-all hover:bg-orange-600 hover:text-white">익명게스트 조회</button>
+                </div>
+                <p class="text-[9px] text-gray-400 font-medium italic">* 본인 외 사람 조회 시 이메일 마스킹 및 수정 권한 제한을 확인할 수 있습니다.</p>
+            </div>
+
+            <!-- API Console Emulator -->
+            <div class="space-y-3 pt-6 border-t border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">최근 API 상태</p>
+                <div id="dev-console" class="p-4 bg-gray-900 rounded-2xl font-mono text-[10px] text-green-400 space-y-1 h-32 overflow-y-auto">
+                    <p class="text-white/30">Console initialized...</p>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button onclick="location.reload()" class="w-full py-3 bg-red-50 text-red-500 rounded-xl text-xs font-black hover:bg-red-500 hover:text-white transition-all">전체 페이지 새로고침</button>
+            </div>
+        </div>
+    </div>
     <script>
+        // --- 탭 전환 로직 ---
         function switchTab(tabName) {
-            // 모든 탭 콘텐츠 숨기기
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            // 모든 탭 버튼 비활성화 스타일
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active', 'bg-white', 'border', 'border-gray-100', 'text-gray-900', 'shadow-sm');
                 btn.classList.add('text-gray-400');
             });
 
-            // 선택된 탭 콘텐츠 보이기
             document.getElementById('content-' + tabName).classList.remove('hidden');
-            // 선택된 탭 버튼 활성화 스타일
             const activeBtn = document.getElementById('tab-' + tabName);
             activeBtn.classList.add('active', 'bg-white', 'border', 'border-gray-100', 'text-gray-900', 'shadow-sm');
             activeBtn.classList.remove('text-gray-400');
         }
+
+        // --- 개발자 도구 및 API 연동 로직 ---
+        let currentUserId = 1; // 로그인한 유저 (Viewer)
+        let visitedUserId = 1; // 조회 중인 대상 유저 (Target)
+        let currentProfileData = null; 
+
+        function logToConsole(message, type = 'info') {
+            const consoleEl = document.getElementById('dev-console');
+            if (!consoleEl) return;
+            const color = type === 'error' ? 'text-red-400' : (type === 'success' ? 'text-blue-400' : 'text-green-400');
+            const html = `<p class="${color}">[${new Date().toLocaleTimeString()}] ${message}</p>`;
+            consoleEl.insertAdjacentHTML('beforeend', html);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function toggleDevPanel() {
+            const panel = document.getElementById('dev-panel');
+            panel.classList.toggle('hidden');
+            panel.classList.toggle('flex');
+        }
+
+        function switchUser(id) {
+            currentUserId = id;
+            visitedUserId = id; // 기본적으로 본인 프로필 조회로 설정
+            logToConsole(`Logged in as User ID: ${id}`, 'success');
+            
+            [1,2,3,4].forEach(userId => {
+                const btn = document.getElementById(`user-btn-${userId}`);
+                if (btn) {
+                    if (userId === id) {
+                        btn.classList.add('bg-indigo-600', 'text-white');
+                        btn.classList.remove('bg-gray-50', 'text-gray-400');
+                    } else {
+                        btn.classList.remove('bg-indigo-600', 'text-white');
+                        btn.classList.add('bg-gray-50', 'text-gray-400');
+                    }
+                }
+            });
+            initAllData();
+        }
+
+        // 특정 대상의 프로필을 "조회" 하는 테스트 함수 (본인 외 사람 시뮬레이션)
+        function visitOtherUser(targetId) {
+            visitedUserId = targetId;
+            logToConsole(`Visiting Profil of User ID: ${targetId}`, 'info');
+            initAllData();
+        }
+
+        async function fetchMyProfile() {
+            const statusBadge = document.getElementById('api-status');
+            logToConsole(`GET /api/mypage/profile?userId=${visitedUserId}&viewerId=${currentUserId}`);
+
+            try {
+                const response = await fetch(`/api/mypage/profile?userId=${visitedUserId}&viewerId=${currentUserId}`);
+                if (!response.ok) throw new Error('API 호출 실패');
+
+                const data = await response.json();
+                currentProfileData = data;
+
+                // UI 연동
+                document.getElementById('nav-nickname').textContent = (visitedUserId === currentUserId) ? data.nickname : "조회중";
+                document.getElementById('header-nickname').textContent = data.nickname;
+                document.getElementById('header-role').textContent = `@${data.role}`;
+                document.getElementById('header-job').textContent = data.jobTitle;
+                const isOwner = data.isOwner || data.owner;
+                document.getElementById('header-bio').textContent = isOwner 
+                    ? `${data.nickname}님은 현재 활발히 활동 중인 ${data.role}입니다.`
+                    : `${data.nickname}님의 프로필을 열람 중입니다.`;
+
+                // 권한에 따른 UI 제어
+                const editBtn = document.getElementById('edit-profile-btn');
+                if (isOwner) {
+                    editBtn.classList.remove('hidden');
+                    document.querySelectorAll('.private-tab').forEach(el => el.classList.remove('hidden'));
+                } else {
+                    editBtn.classList.add('hidden');
+                    document.querySelectorAll('.private-tab').forEach(el => el.classList.add('hidden'));
+                    // 사적 탭이 활성화되어 있었다면 기본 프로필 탭으로 강제 이동
+                    if (document.querySelector('.tab-btn.active').classList.contains('private-tab')) {
+                        switchTab('profile');
+                    }
+                }
+
+                const indexElement = document.getElementById('meetball-index');
+                const barElement = document.getElementById('temp-bar');
+                if (indexElement && barElement) {
+                    indexElement.textContent = `${data.meetBallIndex.toFixed(1)}°C`;
+                    barElement.style.width = `${Math.min(data.meetBallIndex, 100)}%`;
+                    barElement.className = data.meetBallIndex > 36.5 
+                        ? "h-full bg-gradient-to-r from-orange-400 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-1000"
+                        : "h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000";
+                }
+
+                document.getElementById('info-nickname').textContent = data.nickname;
+                document.getElementById('info-email').textContent = data.email;
+                document.getElementById('info-tech').textContent = data.techStack || '등록된 기술 스택이 없습니다.';
+
+                statusBadge.classList.remove('opacity-0');
+                statusBadge.classList.add('opacity-100');
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                logToConsole('Profile Fetch ERROR', 'error');
+            }
+        }
+
+        async function fetchMyProjects() {
+            const container = document.getElementById('project-list-container');
+            logToConsole(`GET /api/mypage/projects?userId=${visitedUserId}`);
+            try {
+                const response = await fetch(`/api/mypage/projects?userId=${visitedUserId}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 font-bold italic text-center py-10">참여 중인 프로젝트가 없습니다.</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                data.forEach(pj => {
+                    const isLeader = pj.userRole === 'LEADER';
+                    const color = isLeader ? 'orange' : 'indigo';
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-${color}-200 transition-all">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div class="flex gap-4 items-center">
+                                    <div class="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                                        <img src="https://picsum.photos/seed/${pj.projectId}/200/100" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="w-5 h-5 bg-${color}-100 text-${color}-600 rounded flex items-center justify-center text-[10px] font-black">${isLeader ? 'L' : 'M'}</span>
+                                            <h4 class="font-black text-gray-900">${pj.title}</h4>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${pj.status} · ${isLeader ? '프로젝트 관리자' : '팀원 참여'}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="#" class="px-4 py-2 bg-gray-900 text-white text-[10px] font-black rounded-lg hover:bg-gray-800 transition-colors">상세보기</a>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function fetchMyApplications() {
+            const container = document.getElementById('application-list-container');
+            logToConsole(`GET /api/mypage/applications?userId=${visitedUserId}`);
+            try {
+                const response = await fetch(`/api/mypage/applications?userId=${visitedUserId}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 font-bold italic text-center py-10">지원한 프로젝트가 없습니다.</p>';
+                    return;
+                }
+                container.innerHTML = `<h3 class="text-2xl font-black text-gray-900 mb-4 fade-in xl:col-span-2">지원한 프로젝트 <span class="ml-2 text-orange-600">${data.length}</span></h3>`;
+                data.forEach(app => {
+                    const statusConfig = { 'ACCEPTED': ['green', '승인됨'], 'REJECTED': ['red', '거절됨'], 'PENDING': ['orange', '검토중'] };
+                    const [color, label] = statusConfig[app.status] || statusConfig['PENDING'];
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:border-${color}-200 transition-all fade-in h-full flex flex-col justify-between">
+                            <div class="flex gap-4 items-center">
+                                <div class="w-16 h-12 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
+                                    <img src="https://picsum.photos/seed/app${app.applicationId}/200/100" class="w-full h-full object-cover">
+                                </div>
+                                <div><h4 class="font-black text-gray-900 line-clamp-1">${app.projectTitle}</h4><p class="text-[10px] text-gray-400 font-black mt-1 uppercase tracking-widest">${app.position} 파트 지원</p></div>
+                            </div>
+                            <div class="flex items-center gap-4 w-full justify-between border-t border-gray-50 pt-4 mt-4">
+                                <span class="px-4 py-1.5 bg-${color}-50 text-${color}-600 rounded-full text-[10px] font-black border border-${color}-100">${label}</span>
+                                <span class="text-[10px] text-gray-300 font-bold">${new Date(app.appliedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function fetchRecentReads() {
+            const container = document.getElementById('recent-reads-container');
+            logToConsole(`GET /api/mypage/recent-reads?userId=${visitedUserId}`);
+            try {
+                const response = await fetch(`/api/mypage/recent-reads?userId=${visitedUserId}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 font-bold italic text-center py-10">최근 읽은 프로젝트가 없습니다.</p>';
+                    return;
+                }
+                container.innerHTML = `<h3 class="text-2xl font-black text-gray-900 mb-4 fade-in xl:col-span-2 flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left text-orange-600"></i> 최근 읽은 프로젝트 <span class="ml-2 px-3 py-1 bg-orange-100 text-orange-600 rounded-lg text-sm font-black">${data.length}</span></h3>`;
+                data.forEach(read => {
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="p-6 bg-white border border-gray-100 rounded-2xl flex items-center justify-between hover:border-orange-500 hover:shadow-xl hover:shadow-orange-500/5 transition-all group fade-in">
+                            <div class="flex items-center gap-5">
+                                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 shadow-inner group-hover:scale-110 transition-transform"><i class="fa-solid fa-eye text-xl"></i></div>
+                                <div class="overflow-hidden">
+                                    <p class="font-black text-gray-900 text-lg line-clamp-1 mb-1 group-hover:text-orange-600 transition-colors">${read.title}</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-0.5 rounded">VIEWED HISTORY</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">${new Date(read.readAt).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="detail.html?projectId=${read.projectId}" class="w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-orange-600 hover:scale-110 transition-all shadow-lg">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    `);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function fetchMyBookmarks() {
+            const container = document.getElementById('wishlist-container');
+            logToConsole(`GET /api/mypage/bookmarks?userId=${visitedUserId}`);
+            try {
+                const response = await fetch(`/api/mypage/bookmarks?userId=${visitedUserId}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 font-bold italic text-center py-10">찜한 프로젝트가 없습니다.</p>';
+                    return;
+                }
+                container.innerHTML = `<h3 class="text-2xl font-black text-gray-900 mb-4 fade-in xl:col-span-2 flex items-center gap-3"><i class="fa-solid fa-heart text-red-500"></i> 나의 관심 프로젝트 <span class="ml-2 px-3 py-1 bg-red-100 text-red-600 rounded-lg text-sm font-black">${data.length}</span></h3>`;
+                data.forEach(bm => {
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="p-6 bg-white border border-gray-100 rounded-2xl flex items-center gap-6 hover:shadow-2xl hover:border-red-100 transition-all group fade-in relative overflow-hidden">
+                            <div class="w-28 h-24 bg-gray-100 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner">
+                                <img src="https://picsum.photos/seed/bm${bm.projectId}/400/300" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                    <span class="text-[10px] font-black text-red-500 uppercase tracking-widest">Interested</span>
+                                </div>
+                                <h4 class="font-black text-gray-900 text-lg group-hover:text-red-500 transition-colors mb-2">${bm.title}</h4>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-gray-900 text-white rounded-lg text-[9px] font-black italic tracking-tighter">${bm.techStack || '기술스택 미지정'}</span>
+                                    <a href="detail.html?projectId=${bm.projectId}" class="text-[10px] font-black text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-1">상세보기 <i class="fa-solid fa-chevron-right text-[8px]"></i></a>
+                                </div>
+                            </div>
+                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="fa-solid fa-heart text-red-500 mt-2 ml-2"></i>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function fetchMyReviews() {
+            const container = document.getElementById('reviews-container');
+            logToConsole(`GET /api/mypage/reviews?userId=${visitedUserId}&viewerId=${currentUserId}`);
+            try {
+                const response = await fetch(`/api/mypage/reviews?userId=${visitedUserId}&viewerId=${currentUserId}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 font-bold italic text-center py-10">아직 받은 리뷰가 없습니다.</p>';
+                    return;
+                }
+                container.innerHTML = `<h3 class="text-2xl font-black text-gray-900 mb-8 fade-in">받은 피어 리뷰 <span class="ml-2 text-orange-600">${data.length}</span></h3>`;
+                data.forEach(review => {
+                    let stars = '';
+                    for (let i = 1; i <= 5; i++) stars += `<i class="fa-solid fa-star ${i <= review.score ? 'text-yellow-400' : 'text-gray-200'} text-xs"></i>`;
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="p-8 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all fade-in">
+                            <div class="flex items-center gap-4 mb-4">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${review.reviewerNickname}" class="w-10 h-10 rounded-full border border-gray-100">
+                                <div><div class="flex gap-0.5 mb-1">${stars}</div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">${review.reviewerNickname} · ${review.reviewerJobTitle} · ${new Date(review.createdAt).toLocaleDateString()}</p></div>
+                            </div>
+                            <p class="text-gray-600 leading-relaxed font-medium">"${review.content}"</p>
+                            <p class="mt-4 text-[10px] font-bold text-gray-300 italic">Project: ${review.projectTitle}</p>
+                        </div>
+                    `);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function submitTestReview() {
+            const content = document.getElementById('test-review-content').value || '테스트 리뷰입니다.';
+            const score = parseFloat(document.getElementById('test-review-score').value);
+            logToConsole(`POST /api/projects/1/reviews`);
+            try {
+                const response = await fetch(`/api/projects/1/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score, reviewerNickname: '테스터', targetUserNickname: currentProfileData.nickname, content })
+                });
+                if (response.ok) {
+                    logToConsole('Review Success', 'success');
+                    alert('리뷰가 등록되었습니다!');
+                    initAllData();
+                }
+            } catch (error) { logToConsole('Post Review Error', 'error'); }
+        }
+
+        function openEditModal() {
+            if (!currentProfileData) return alert('로딩중...');
+            document.getElementById('edit-nickname').value = currentProfileData.nickname;
+            document.getElementById('edit-job').value = currentProfileData.jobTitle;
+            document.getElementById('edit-tech').value = currentProfileData.techStack || '';
+            document.getElementById('edit-public').checked = currentProfileData.public;
+            document.getElementById('edit-modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.replace('flex', 'hidden');
+        }
+
+        async function saveProfile() {
+            logToConsole(`PUT /api/mypage/profile?userId=${currentUserId}`);
+            const updatedData = {
+                nickname: document.getElementById('edit-nickname').value,
+                jobTitle: document.getElementById('edit-job').value,
+                techStack: document.getElementById('edit-tech').value,
+                isPublic: document.getElementById('edit-public').checked
+            };
+            try {
+                const response = await fetch(`/api/mypage/profile?userId=${currentUserId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    logToConsole('Profile Update Success', 'success');
+                    alert('수정되었습니다.');
+                    closeEditModal();
+                    initAllData();
+                }
+            } catch (error) { logToConsole('Update Fail', 'error'); }
+        }
+
+        function initAllData() {
+            fetchMyProfile(); 
+            fetchMyProjects(); 
+            fetchMyApplications();
+            fetchRecentReads(); // 누락 복구
+            fetchMyBookmarks(); 
+            fetchMyReviews();
+        }
+
+        window.addEventListener('DOMContentLoaded', initAllData);
     </script>
+
+    <!-- Profile Edit Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-orange-50/50">
+                <div>
+                    <h3 class="text-2xl font-black text-gray-900">프로필 수정</h3>
+                    <p class="text-xs font-bold text-orange-600 uppercase tracking-widest mt-1">내 정보를 최신으로 유지하세요</p>
+                </div>
+                <button onclick="closeEditModal()" class="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center text-gray-400 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-8 space-y-6">
+                <!-- Nickname -->
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">닉네임</label>
+                    <input type="text" id="edit-nickname" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all">
+                </div>
+                
+                <!-- Job Title -->
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">현재 직무</label>
+                    <input type="text" id="edit-job" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all">
+                </div>
+                
+                <!-- Tech Stack -->
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">기술 스택 (쉼표로 구분)</label>
+                    <input type="text" id="edit-tech" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-orange-600/20 transition-all" placeholder="Java, Spring, React...">
+                </div>
+
+                <!-- Public Toggle -->
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div>
+                        <p class="font-black text-gray-900 text-sm">프로필 공개 여부</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">다른 팀원들이 내 프로필을 볼 수 있습니다</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="edit-public" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-50/50 flex gap-4">
+                <button onclick="closeEditModal()" class="flex-1 py-4 bg-white border border-gray-200 text-gray-600 rounded-2xl font-black hover:bg-gray-100 transition-all">취소</button>
+                <button onclick="saveProfile()" class="flex-1 py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg shadow-orange-200 hover:scale-105 active:scale-95 transition-all">저장하기</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

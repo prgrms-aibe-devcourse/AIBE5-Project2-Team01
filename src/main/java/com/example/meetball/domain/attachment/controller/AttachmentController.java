@@ -34,11 +34,27 @@ public class AttachmentController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(defaultValue = "GUEST") String userRole) {
         
-        if ("GUEST".equals(userRole)) {
+        if ("GUEST".equals(userRole) || "NONE".equals(userRole)) {
             return ResponseEntity.status(403).build(); // 권한 없음
         }
 
         AttachmentResponseDto responseDto = attachmentService.uploadFile(projectId, file);
+        return ResponseEntity.status(201).body(responseDto);
+    }
+
+    // 링크(URL) 등록 (팀장, 팀원만 가능)
+    @PostMapping("/links")
+    public ResponseEntity<AttachmentResponseDto> uploadLink(
+            @PathVariable Long projectId,
+            @RequestParam String title,
+            @RequestParam String url,
+            @RequestParam(defaultValue = "GUEST") String userRole) {
+        
+        if ("GUEST".equals(userRole) || "NONE".equals(userRole)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        AttachmentResponseDto responseDto = attachmentService.uploadLink(projectId, title, url);
         return ResponseEntity.status(201).body(responseDto);
     }
 
