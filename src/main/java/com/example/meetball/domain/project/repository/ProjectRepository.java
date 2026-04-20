@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p WHERE " +
@@ -17,4 +19,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                                           @Param("projectType") String projectType,
                                           @Param("progressMethod") String progressMethod,
                                           Pageable pageable);
+
+    List<Project> findAllByOrderByCreatedDateDescIdDesc();
 }
