@@ -5,19 +5,17 @@
 <body>
     <header th:fragment="mainHeader" class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-brand-100 transition-all shadow-sm">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none">
-                <img th:src="@{/img/logo.png}" alt="Meetball" class="w-10 h-10 rounded-xl object-cover shadow-md">
-                <span class="text-xl font-extrabold tracking-tight text-brand-900">Meetball</span>
+            <a th:href="@{/}" class="flex items-center gap-2 cursor-pointer select-none group">
+                <div class="w-12 h-12 overflow-hidden rounded-2xl shadow-md border-2 border-brand-100 group-hover:scale-110 transition-transform duration-300">
+                    <img th:src="@{/img/mascot_sheet.png}" alt="Meetball" class="w-[500%] max-w-none ml-[-5%] mt-[-5%]">
+                </div>
+                <span class="text-2xl font-black tracking-tighter text-brand-900 group-hover:text-brand-600 transition-colors">Meetball</span>
             </a>
 
             <div class="hidden md:flex items-center">
                 <a th:href="@{/register}"
                     class="font-bold text-brand-800 hover:text-brand-600 transition-colors px-4 py-2 rounded-lg hover:bg-brand-50">
                     프로젝트 등록
-                </a>
-                <a th:href="@{/manage}"
-                    class="font-bold text-gray-600 hover:text-brand-600 transition-colors px-4 py-2 rounded-lg hover:bg-brand-50">
-                    나의 프로젝트
                 </a>
             </div>
 
@@ -51,8 +49,9 @@
 
                 <div class="relative group cursor-pointer h-full flex items-center">
                     <div class="flex items-center gap-2 pl-4 border-l border-brand-100 py-2">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle" alt="Profile"
-                            class="w-9 h-9 rounded-full border-2 border-brand-100 bg-white">
+                        <div class="w-9 h-9 rounded-full border-2 border-brand-100 bg-white overflow-hidden">
+                            <img th:src="@{/img/mascot_sheet.png}" alt="Profile" class="w-[500%] max-w-none ml-[-405%] mt-[-5%]">
+                        </div>
                         <span class="text-sm font-bold text-gray-700 group-hover:text-brand-800 transition-colors">초코푸들</span>
                         <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform duration-300"></i>
                     </div>

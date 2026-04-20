@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <footer th:fragment="mainFooter" class="bg-white border-t border-brand-100 pt-16 pb-8 mt-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 overflow-hidden rounded-2xl shadow-md border-2 border-brand-100">
+                            <img th:src="@{/img/mascot_sheet.png}" alt="Meetball" class="w-[500%] max-w-none ml-[-205%] mt-[-5%]">
+                        </div>
+                        <span class="text-xl font-extrabold tracking-tight text-brand-900">Meetball</span>
+                    </div>
+                    <p class="text-gray-500 font-medium leading-relaxed max-w-sm mb-6">
+                        프로젝트 팀원을 찾는 가장 쉽고 즐거운 방법, 밋볼.<br>
+                        함께 성장할 최고의 팀원을 지금 바로 만나보세요.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-800 hover:bg-brand-800 hover:text-white transition-all">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-800 hover:bg-brand-800 hover:text-white transition-all">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-800 hover:bg-brand-800 hover:text-white transition-all">
+                            <i class="fa-brands fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-wider mb-6">서비스</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">프로젝트 탐색</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">프로젝트 등록</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">커뮤니티</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-sm font-black text-gray-900 uppercase tracking-wider mb-6">고객센터</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">자주 묻는 질문</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">공지사항</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-brand-800 font-bold transition-colors">1:1 문의</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-brand-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs font-bold text-gray-400">
+                    © 2026 Meetball. Spring Boot + Thymeleaf 기반 프로젝트 매칭 서비스
+                </p>
+                <div class="flex gap-6">
+                    <a href="#" class="text-xs font-bold text-gray-400 hover:text-gray-600">이용약관</a>
+                    <a href="#" class="text-xs font-bold text-gray-400 hover:text-gray-600">개인정보처리방침</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
