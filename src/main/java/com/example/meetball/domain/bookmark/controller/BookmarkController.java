@@ -17,20 +17,20 @@ public class BookmarkController {
     @GetMapping
     public ResponseEntity<BookmarkResponseDto> getBookmarkStatus(
             @PathVariable Long projectId,
-            @RequestParam(defaultValue = "GUEST") String userNickname) {
-        return ResponseEntity.ok(bookmarkService.getBookmarkStatus(projectId, userNickname));
+            @RequestParam(defaultValue = "1") Long userId) {
+        return ResponseEntity.ok(bookmarkService.getBookmarkStatus(projectId, userId));
     }
 
     // 찜 추가 / 취소 (토글)
     @PostMapping
     public ResponseEntity<?> toggleBookmark(
             @PathVariable Long projectId,
-            @RequestParam(defaultValue = "GUEST") String userNickname) {
+            @RequestParam(defaultValue = "1") Long userId) {
         try {
-            BookmarkResponseDto responseDto = bookmarkService.toggleBookmark(projectId, userNickname);
+            BookmarkResponseDto responseDto = bookmarkService.toggleBookmark(projectId, userId);
             return ResponseEntity.ok(responseDto);
         } catch (IllegalArgumentException e) {
-            // 비회원이 누른 경우 예외 메시지 반환
+            // 비회원 혹은 유저를 찾을 수 없는 경우 예외 메시지 반환
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }

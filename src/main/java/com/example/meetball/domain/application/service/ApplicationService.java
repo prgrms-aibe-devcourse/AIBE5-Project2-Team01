@@ -8,6 +8,9 @@ import com.example.meetball.domain.application.entity.ApplicationStatus;
 import com.example.meetball.domain.application.repository.ApplicationRepository;
 import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.repository.ProjectRepository;
+import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +23,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ProjectRepository projectRepository;
-
-    public ApplicationService(ApplicationRepository applicationRepository, ProjectRepository projectRepository) {
-        this.applicationRepository = applicationRepository;
-        this.projectRepository = projectRepository;
-    }
+    private final UserRepository userRepository;
 
     @Transactional
     public ApplicationResponseDto createApplication(Long projectId, ApplicationRequestDto request, String requesterName) {
@@ -38,7 +38,6 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required. Please provide X-User-Name header.");
         }
         
-        // 2. 존재하지 않는 프로젝트에 지원 시 적절한 예외 처리
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
 
@@ -49,25 +48,40 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot apply to a closed or past deadline project.");
         }
 
+        // yunseok1: user 조회
+        User user = null;
+        if (request.getUserId() != null) {
+            user = userRepository.findById(request.getUserId()).orElse(null);
+        }
+
         // 4. 동일 사용자의 동일 프로젝트 중복 지원 불가 처리
         if (applicationRepository.existsByProjectIdAndApplicantName(projectId, requesterName)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already applied to this project by applicant: " + requesterName);
         }
+        if (user != null && applicationRepository.existsByProjectAndUser(project, user)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already applied to this project by user: " + user.getId());
+        }
 
-        LocalDateTime now = LocalDateTime.now();
-        Application application = new Application(
-                projectId,
-                requesterName, // requesterName을 식별된 지원자로 사용
-                request.getPosition(),
-                request.getMessage(),
-                ApplicationStatus.PENDING,
-                now,
-                now
-        );
+        Application application = Application.builder()
+                .project(project)
+                .user(user)
+                .applicantName(requesterName)
+                .position(request.getPosition())
+                .message(request.getMessage())
+                .status(ApplicationStatus.PENDING)
+                .build();
 
         Application savedApplication = applicationRepository.save(application);
 
-        return convertToResponseDto(savedApplication);
+        return new ApplicationResponseDto(savedApplication);
+    }
+
+    public List<ApplicationResponseDto> getMyApplications(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId));
+        return applicationRepository.findByUser(user).stream()
+                .map(ApplicationResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     public List<ApplicationResponseDto> getApplicationsByProjectId(Long projectId, String requesterName) {
@@ -87,9 +101,9 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can view the applications.");
         }
 
-        List<Application> applications = applicationRepository.findByProjectId(projectId);
+        List<Application> applications = applicationRepository.findByProject(project);
         return applications.stream()
-                .map(this::convertToResponseDto)
+                .map(ApplicationResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -99,8 +113,10 @@ public class ApplicationService {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found with id: " + applicationId));
 
-        Project project = projectRepository.findById(application.getProjectId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found."));
+        Project project = application.getProject();
+        if (project == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found.");
+        }
 
         if (requesterName == null || requesterName.trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
@@ -124,19 +140,6 @@ public class ApplicationService {
         application.updateStatus(nextStatus, LocalDateTime.now());
         Application updatedApplication = applicationRepository.save(application);
 
-        return convertToResponseDto(updatedApplication);
-    }
-
-    private ApplicationResponseDto convertToResponseDto(Application application) {
-        return new ApplicationResponseDto(
-                application.getId(),
-                application.getProjectId(),
-                application.getApplicantName(),
-                application.getPosition(),
-                application.getMessage(),
-                application.getStatus().name(),
-                application.getCreatedAt(),
-                application.getUpdatedAt()
-        );
+        return new ApplicationResponseDto(updatedApplication);
     }
 }

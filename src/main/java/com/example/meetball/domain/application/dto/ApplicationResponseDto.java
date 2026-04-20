@@ -1,10 +1,18 @@
 package com.example.meetball.domain.application.dto;
 
+import com.example.meetball.domain.application.entity.Application;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor
 public class ApplicationResponseDto {
     private Long id;
     private Long projectId;
+    private Long userId;
+    private String userNickname; // 팀장 화면에서 지원자 식별용
     private String applicantName;
     private String position;
     private String message;
@@ -12,26 +20,16 @@ public class ApplicationResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ApplicationResponseDto() {}
-
-    public ApplicationResponseDto(Long id, Long projectId, String applicantName, String position,
-                                  String message, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.projectId = projectId;
-        this.applicantName = applicantName;
-        this.position = position;
-        this.message = message;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public ApplicationResponseDto(Application application) {
+        this.id = application.getId();
+        this.projectId = application.getProjectId() != null ? application.getProjectId() : (application.getProject() != null ? application.getProject().getId() : null);
+        this.userId = application.getUser() != null ? application.getUser().getId() : null;
+        this.userNickname = application.getUser() != null ? application.getUser().getNickname() : null;
+        this.applicantName = application.getApplicantName();
+        this.position = application.getPosition();
+        this.message = application.getMessage();
+        this.status = application.getStatus() != null ? application.getStatus().name() : null;
+        this.createdAt = application.getCreatedAt();
+        this.updatedAt = application.getUpdatedAt();
     }
-
-    public Long getId() { return id; }
-    public Long getProjectId() { return projectId; }
-    public String getApplicantName() { return applicantName; }
-    public String getPosition() { return position; }
-    public String getMessage() { return message; }
-    public String getStatus() { return status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

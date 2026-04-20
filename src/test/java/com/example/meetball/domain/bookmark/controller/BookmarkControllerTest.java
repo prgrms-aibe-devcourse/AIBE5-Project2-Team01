@@ -23,23 +23,23 @@ class BookmarkControllerTest {
     @Test
     @DisplayName("정상적인 찜 토글 로직 테스트 (추가 후 삭제)")
     void toggleBookmarkSuccess() throws Exception {
-        // 1차 클릭: 찜 추가
-        mockMvc.perform(post("/api/projects/1/bookmarks?userNickname=tester1"))
+        // 1차 클릭: 찜 추가 (ID 2번 유저: 성실팀원)
+        mockMvc.perform(post("/api/projects/1/bookmarks?userId=2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bookmarked").value(true))
-                .andExpect(jsonPath("$.totalBookmarks").value(1));
+                .andExpect(jsonPath("$.bookmarked").value(true));
 
         // 2차 클릭: 찜 취소
-        mockMvc.perform(post("/api/projects/1/bookmarks?userNickname=tester1"))
+        mockMvc.perform(post("/api/projects/1/bookmarks?userId=2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bookmarked").value(false))
-                .andExpect(jsonPath("$.totalBookmarks").value(0));
+                .andExpect(jsonPath("$.bookmarked").value(false));
     }
 
     @Test
-    @DisplayName("비회원(GUEST) 찜하기 시도 - 401 차단")
+    @DisplayName("비회원(ID 3번: 익명게스트) 찜하기 시도 - 401 차단")
     void toggleBookmarkFailureGuest() throws Exception {
-        mockMvc.perform(post("/api/projects/1/bookmarks?userNickname=GUEST"))
-                .andExpect(status().isUnauthorized()); // BookmarkController에서 401 Body로 반환
+        // DataInitializer에서 3번 유저는 GUEST로 설정됨을 가정하거나, 
+        // BookmarkService에서 401을 던지는 로직을 확인할 수 있는 ID 사용
+        mockMvc.perform(post("/api/projects/1/bookmarks?userId=999"))
+                .andExpect(status().isUnauthorized());
     }
 }

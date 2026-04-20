@@ -29,9 +29,11 @@ public class ProjectService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private final ProjectRepository projectRepository;
+    private final com.example.meetball.domain.project.repository.ProjectMemberRepository projectMemberRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, com.example.meetball.domain.project.repository.ProjectMemberRepository projectMemberRepository) {
         this.projectRepository = projectRepository;
+        this.projectMemberRepository = projectMemberRepository;
     }
 
     // --- MVC (front2) ---
@@ -248,5 +250,22 @@ public class ProjectService {
         }
 
         projectRepository.delete(project);
+    }
+
+    public List<com.example.meetball.domain.project.dto.ParticipatedProjectResponse> getParticipatedProjects(com.example.meetball.domain.user.entity.User user) {
+        return projectMemberRepository.findByUser(user).stream()
+                .map(pm -> {
+                    Project p = pm.getProject();
+                    long dDay = 0L;
+                    if (p.getRecruitmentDeadline() != null) {
+                        dDay = ChronoUnit.DAYS.between(LocalDate.now(), p.getRecruitmentDeadline());
+                        if (dDay < 0) dDay = 0;
+                    } else if (p.getRecruitmentEndAt() != null) {
+                        dDay = ChronoUnit.DAYS.between(LocalDate.now(), p.getRecruitmentEndAt());
+                        if (dDay < 0) dDay = 0;
+                    }
+                    return com.example.meetball.domain.project.dto.ParticipatedProjectResponse.of(p, pm.getRole(), false, dDay);
+                })
+                .toList();
     }
 }

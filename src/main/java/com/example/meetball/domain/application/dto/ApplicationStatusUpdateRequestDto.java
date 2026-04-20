@@ -1,13 +1,14 @@
 package com.example.meetball.domain.application.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApplicationStatusUpdateRequestDto {
     private String status;
-
-    public ApplicationStatusUpdateRequestDto() {}
-
-    public ApplicationStatusUpdateRequestDto(String status) {
-        this.status = status;
-    }
-
-    public String getStatus() { return status; }
 }

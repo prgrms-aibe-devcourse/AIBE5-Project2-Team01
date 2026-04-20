@@ -24,13 +24,20 @@ public class CommentService {
 
     @Transactional
     public CommentResponseDto saveComment(CommentRequestDto requestDto) {
-        Comment parentComment = null;
+        // 1. 비회원(NONE)은 모든 작성 불가
+        if ("NONE".equals(requestDto.getAuthorRole()) || requestDto.getAuthorRole() == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
 
+        // 2. 답글(대댓글) 권한 체크: 팀장(LEADER) 또는 팀원(MEMBER)만 가능
         if (requestDto.getParentId() != null) {
-            // 대댓글 작성 권한 체크 (팀장/팀원만 가능)
             if (!"LEADER".equals(requestDto.getAuthorRole()) && !"MEMBER".equals(requestDto.getAuthorRole())) {
-                throw new IllegalArgumentException("답글은 팀 인원만 작성할 수 있습니다.");
+                throw new IllegalArgumentException("답글은 팀 멤버만 작성할 수 있습니다.");
             }
+        }
+        
+        Comment parentComment = null;
+        if (requestDto.getParentId() != null) {
             parentComment = commentRepository.findById(requestDto.getParentId())
                     .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다."));
         }

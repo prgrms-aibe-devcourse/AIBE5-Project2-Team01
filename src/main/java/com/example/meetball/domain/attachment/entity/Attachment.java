@@ -26,8 +26,14 @@ public class Attachment {
     @Column(name = "original_file_name", nullable = false)
     private String originalFileName;
 
-    @Column(name = "stored_file_path", nullable = false)
+    @Column(name = "stored_file_path")
     private String storedFilePath;
+
+    @Column(name = "link_url") // 링크 구분을 위해 추가
+    private String linkUrl;
+
+    @Column(name = "type") // FILE 또는 LINK
+    private String type;
 
     @Column(name = "file_size")
     private Long fileSize;
@@ -37,10 +43,12 @@ public class Attachment {
     private LocalDateTime createdAt;
 
     @Builder
-    public Attachment(Long projectId, String originalFileName, String storedFilePath, Long fileSize) {
+    public Attachment(Long projectId, String originalFileName, String storedFilePath, String linkUrl, String type, Long fileSize) {
         this.projectId = projectId;
         this.originalFileName = originalFileName;
         this.storedFilePath = storedFilePath;
+        this.linkUrl = linkUrl;
+        this.type = type;
         this.fileSize = fileSize;
     }
 }
