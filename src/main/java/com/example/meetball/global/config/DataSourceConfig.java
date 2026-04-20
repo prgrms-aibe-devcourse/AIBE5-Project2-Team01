@@ -7,12 +7,15 @@ import java.nio.charset.StandardCharsets;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 @Configuration
+@Profile("!test")
 public class DataSourceConfig {
 
+    private static final String JDBC_POSTGRESQL_PREFIX = "jdbc:postgresql://";
     private static final String POSTGRESQL_PREFIX = "postgresql://";
     private static final String POSTGRES_PREFIX = "postgres://";
     private static final int POSTGRESQL_DEFAULT_PORT = 5432;
@@ -30,6 +33,11 @@ public class DataSourceConfig {
     }
 
     private DatabaseConnection resolveConnection(Environment environment) {
+        String databaseUrl = environment.getProperty("DATABASE_URL");
+        if (StringUtils.hasText(databaseUrl)) {
+            return fromUrl(databaseUrl, null, null);
+        }
+
         String springDatasourceUrl = environment.getProperty("SPRING_DATASOURCE_URL");
         if (StringUtils.hasText(springDatasourceUrl)) {
             return fromUrl(
@@ -37,11 +45,6 @@ public class DataSourceConfig {
                     environment.getProperty("SPRING_DATASOURCE_USERNAME"),
                     environment.getProperty("SPRING_DATASOURCE_PASSWORD")
             );
-        }
-
-        String databaseUrl = environment.getProperty("DATABASE_URL");
-        if (StringUtils.hasText(databaseUrl)) {
-            return fromUrl(databaseUrl, null, null);
         }
 
         String host = environment.getProperty("SPRING_DATASOURCE_HOST", "localhost");
@@ -58,12 +61,25 @@ public class DataSourceConfig {
     }
 
     private DatabaseConnection fromUrl(String rawUrl, String fallbackUsername, String fallbackPassword) {
-        if (rawUrl.startsWith("jdbc:postgresql://")) {
-            return new DatabaseConnection(rawUrl, valueOrDefault(fallbackUsername, "postgres"), valueOrDefault(fallbackPassword, ""));
+        if (rawUrl.startsWith(JDBC_POSTGRESQL_PREFIX)) {
+            return fromJdbcUrl(rawUrl, fallbackUsername, fallbackPassword);
         }
 
         String normalizedUrl = normalizePostgresUrl(rawUrl);
         URI uri = URI.create(normalizedUrl);
+        return fromPostgresUri(uri, fallbackUsername, fallbackPassword);
+    }
+
+    private DatabaseConnection fromJdbcUrl(String rawUrl, String fallbackUsername, String fallbackPassword) {
+        URI uri = URI.create(rawUrl.substring("jdbc:".length()));
+        if (!StringUtils.hasText(uri.getUserInfo())) {
+            return new DatabaseConnection(rawUrl, valueOrDefault(fallbackUsername, "postgres"), valueOrDefault(fallbackPassword, ""));
+        }
+
+        return fromPostgresUri(uri, fallbackUsername, fallbackPassword);
+    }
+
+    private DatabaseConnection fromPostgresUri(URI uri, String fallbackUsername, String fallbackPassword) {
         String[] userInfo = parseUserInfo(uri.getUserInfo());
         String username = valueOrDefault(fallbackUsername, userInfo[0]);
         String password = valueOrDefault(fallbackPassword, userInfo[1]);
