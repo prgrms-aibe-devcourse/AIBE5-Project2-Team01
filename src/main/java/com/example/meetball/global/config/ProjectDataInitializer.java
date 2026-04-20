@@ -5,10 +5,12 @@ import com.example.meetball.domain.project.repository.ProjectRepository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class ProjectDataInitializer {
 
     @Bean
@@ -49,7 +51,7 @@ public class ProjectDataInitializer {
                             4,
                             LocalDate.now().plusDays(7),
                             LocalDate.now().minusDays(5),
-                            "Java, Spring Boot, Tailwind, H2"
+                            "Java, Spring Boot, Tailwind, PostgreSQL"
                     ),
                     new Project(
                             "공모전 협업 관리 대시보드",
@@ -65,7 +67,7 @@ public class ProjectDataInitializer {
                             3,
                             LocalDate.now().plusDays(21),
                             LocalDate.now().minusDays(1),
-                            "Thymeleaf, JavaScript, H2, Figma"
+                            "Thymeleaf, JavaScript, PostgreSQL, Figma"
                     )
             ));
         };

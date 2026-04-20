@@ -1,0 +1,12 @@
+.git
+.idea
+.vscode
+target
+build
+out
+frontend-source
+.DS_Store
+**/.DS_Store
+*.log
+.env
+.env.*
