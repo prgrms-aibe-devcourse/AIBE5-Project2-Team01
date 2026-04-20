@@ -5,6 +5,7 @@ target
 build
 out
 frontend-source
+uploads
 .DS_Store
 **/.DS_Store
 *.log

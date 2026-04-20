@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Project {
@@ -14,49 +15,101 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 120)
+    @Column(length = 120)
     private String title;
 
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String summary;
 
-    @Column(nullable = false, length = 4000)
+    @Column(length = 4000)
     private String description;
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "project_type", length = 40)
     private String projectType;
 
-    @Column(nullable = false, length = 40)
+    @Column(length = 40)
     private String position;
 
-    @Column(nullable = false, length = 60)
+    @Column(name = "progress_method")
+    private String progressMethod;
+
+    @Column(length = 60)
     private String leaderName;
 
-    @Column(nullable = false, length = 60)
+    @Column(length = 60)
     private String leaderRole;
 
-    @Column(nullable = false)
     private String leaderAvatarUrl;
 
-    @Column(nullable = false)
     private String thumbnailUrl;
 
-    @Column(nullable = false)
     private Integer currentRecruitment;
 
-    @Column(nullable = false)
     private Integer totalRecruitment;
 
-    @Column(nullable = false)
+    @Column(name = "recruitment_count")
+    private Integer recruitmentCount;
+
+    @Column(name = "recruitment_start_at")
+    private LocalDate recruitmentStartAt;
+
     private LocalDate recruitmentDeadline;
 
-    @Column(nullable = false)
+    @Column(name = "recruitment_end_at")
+    private LocalDate recruitmentEndAt;
+
+    @Column(name = "project_start_at")
+    private LocalDate projectStartAt;
+
+    @Column(name = "project_end_at")
+    private LocalDate projectEndAt;
+
+    private Boolean closed;
+
     private LocalDate createdDate;
 
-    @Column(nullable = false, length = 500)
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(length = 500)
     private String techStackCsv;
 
     protected Project() {
+    }
+
+    public Project(String title, String description, String projectType, String progressMethod,
+                   Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
+                   LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed,
+                   LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.title = title;
+        this.description = description;
+        this.projectType = projectType;
+        this.progressMethod = progressMethod;
+        this.recruitmentCount = recruitmentCount;
+        this.recruitmentStartAt = recruitmentStartAt;
+        this.recruitmentEndAt = recruitmentEndAt;
+        this.projectStartAt = projectStartAt;
+        this.projectEndAt = projectEndAt;
+        this.closed = closed;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+
+        this.createdDate = createdAt != null ? createdAt.toLocalDate() : null;
+        this.recruitmentDeadline = recruitmentEndAt;
+        this.totalRecruitment = recruitmentCount;
+        this.currentRecruitment = 0;
+        this.position = "";
+        this.leaderName = "Unknown";
+        this.leaderRole = "Member";
+        this.thumbnailUrl = "";
+        this.leaderAvatarUrl = "";
+        this.techStackCsv = "";
+        this.summary = description != null && description.length() > 50
+                ? description.substring(0, 50)
+                : description;
     }
 
     public Project(
@@ -89,6 +142,35 @@ public class Project {
         this.recruitmentDeadline = recruitmentDeadline;
         this.createdDate = createdDate;
         this.techStackCsv = techStackCsv;
+
+        this.recruitmentCount = totalRecruitment;
+        this.recruitmentEndAt = recruitmentDeadline;
+        this.createdAt = createdDate != null ? createdDate.atStartOfDay() : LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+        this.closed = false;
+        this.progressMethod = "ONLINE";
+    }
+
+    public void update(String title, String description, String projectType, String progressMethod,
+                       Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
+                       LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, LocalDateTime updatedAt) {
+        this.title = title;
+        this.description = description;
+        this.projectType = projectType;
+        this.progressMethod = progressMethod;
+        this.recruitmentCount = recruitmentCount;
+        this.recruitmentStartAt = recruitmentStartAt;
+        this.recruitmentEndAt = recruitmentEndAt;
+        this.projectStartAt = projectStartAt;
+        this.projectEndAt = projectEndAt;
+        this.closed = closed;
+        this.updatedAt = updatedAt;
+
+        this.recruitmentDeadline = recruitmentEndAt;
+        this.totalRecruitment = recruitmentCount;
+        this.summary = description != null && description.length() > 50
+                ? description.substring(0, 50)
+                : description;
     }
 
     public Long getId() {
@@ -115,6 +197,10 @@ public class Project {
         return position;
     }
 
+    public String getProgressMethod() {
+        return progressMethod;
+    }
+
     public String getLeaderName() {
         return leaderName;
     }
@@ -139,12 +225,44 @@ public class Project {
         return totalRecruitment;
     }
 
+    public Integer getRecruitmentCount() {
+        return recruitmentCount;
+    }
+
+    public LocalDate getRecruitmentStartAt() {
+        return recruitmentStartAt;
+    }
+
     public LocalDate getRecruitmentDeadline() {
         return recruitmentDeadline;
     }
 
+    public LocalDate getRecruitmentEndAt() {
+        return recruitmentEndAt;
+    }
+
+    public LocalDate getProjectStartAt() {
+        return projectStartAt;
+    }
+
+    public LocalDate getProjectEndAt() {
+        return projectEndAt;
+    }
+
+    public Boolean getClosed() {
+        return closed;
+    }
+
     public LocalDate getCreatedDate() {
         return createdDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public String getTechStackCsv() {

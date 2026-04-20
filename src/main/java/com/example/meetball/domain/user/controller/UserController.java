@@ -8,6 +8,6 @@ public class UserController {
 
     @GetMapping("/mypage")
     public String mypage() {
-        return "user/mypage";
+        return "redirect:/user/mypage";
     }
 }
