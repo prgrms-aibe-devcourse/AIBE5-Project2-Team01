@@ -33,11 +33,6 @@ public class DataSourceConfig {
     }
 
     private DatabaseConnection resolveConnection(Environment environment) {
-        String databaseUrl = environment.getProperty("DATABASE_URL");
-        if (StringUtils.hasText(databaseUrl)) {
-            return fromUrl(databaseUrl, null, null);
-        }
-
         String springDatasourceUrl = environment.getProperty("SPRING_DATASOURCE_URL");
         if (StringUtils.hasText(springDatasourceUrl)) {
             return fromUrl(
@@ -47,6 +42,26 @@ public class DataSourceConfig {
             );
         }
 
+        if (hasSplitDatasourceProperties(environment)) {
+            return fromSplitProperties(environment);
+        }
+
+        String databaseUrl = environment.getProperty("DATABASE_URL");
+        if (StringUtils.hasText(databaseUrl)) {
+            return fromUrl(databaseUrl, null, null);
+        }
+
+        return fromSplitProperties(environment);
+    }
+
+    private boolean hasSplitDatasourceProperties(Environment environment) {
+        return StringUtils.hasText(environment.getProperty("SPRING_DATASOURCE_HOST"))
+                || StringUtils.hasText(environment.getProperty("SPRING_DATASOURCE_DB"))
+                || StringUtils.hasText(environment.getProperty("SPRING_DATASOURCE_USERNAME"))
+                || StringUtils.hasText(environment.getProperty("SPRING_DATASOURCE_PASSWORD"));
+    }
+
+    private DatabaseConnection fromSplitProperties(Environment environment) {
         String host = environment.getProperty("SPRING_DATASOURCE_HOST", "localhost");
         String port = environment.getProperty("SPRING_DATASOURCE_PORT", "5432");
         String database = environment.getProperty("SPRING_DATASOURCE_DB", "meetball");

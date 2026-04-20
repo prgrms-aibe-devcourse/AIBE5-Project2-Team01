@@ -5,10 +5,12 @@ import com.example.meetball.domain.project.repository.ProjectRepository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class ProjectDataInitializer {
 
     @Bean

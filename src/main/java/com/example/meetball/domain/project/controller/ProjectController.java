@@ -1,6 +1,8 @@
 package com.example.meetball.domain.project.controller;
 
+import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.service.ProjectService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +21,9 @@ public class ProjectController {
 
     @GetMapping("/projects")
     public String projects(Model model) {
-        model.addAttribute("projects", projectService.getProjectSummaries());
+        List<ProjectSummaryView> projects = projectService.getProjectSummaries();
+        model.addAttribute("projects", projects);
+        model.addAttribute("projectCount", projects.size());
         return "home/index";
     }
 
