@@ -18,9 +18,9 @@
                 <h1 class="text-3xl font-black text-gray-900 tracking-tight mb-2">프로젝트 관리</h1>
                 <p class="text-gray-500 font-medium italic">리더로서 팀원들을 고르고 프로젝트를 성공적으로 이끄세요.</p>
             </div>
-            <button onclick="location.href='/register'" class="px-8 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-indigo-600 shadow-sm hover:bg-gray-50 transition-all flex items-center gap-2">
+            <a th:href="@{/register}" class="px-8 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-indigo-600 shadow-sm hover:bg-gray-50 transition-all flex items-center gap-2">
                 <i class="fa-solid fa-plus text-xs"></i> 새 프로젝트 등록
-            </button>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 gap-12">

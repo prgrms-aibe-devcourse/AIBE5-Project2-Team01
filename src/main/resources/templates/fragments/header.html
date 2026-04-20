@@ -5,16 +5,20 @@
 <body>
     <header th:fragment="mainHeader" class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-brand-100 transition-all shadow-sm">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="location.href='/'">
+            <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none">
                 <img th:src="@{/img/logo.png}" alt="Meetball" class="w-10 h-10 rounded-xl object-cover shadow-md">
                 <span class="text-xl font-extrabold tracking-tight text-brand-900">Meetball</span>
-            </div>
+            </a>
 
             <div class="hidden md:flex items-center">
-                <button onclick="navigate('write')"
+                <a th:href="@{/register}"
                     class="font-bold text-brand-800 hover:text-brand-600 transition-colors px-4 py-2 rounded-lg hover:bg-brand-50">
                     프로젝트 등록
-                </button>
+                </a>
+                <a th:href="@{/manage}"
+                    class="font-bold text-gray-600 hover:text-brand-600 transition-colors px-4 py-2 rounded-lg hover:bg-brand-50">
+                    나의 프로젝트
+                </a>
             </div>
 
             <div class="flex items-center gap-4">
@@ -55,7 +59,7 @@
 
                     <div class="absolute right-0 top-[3.5rem] mt-1 w-48 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-brand-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right group-hover:translate-y-0 translate-y-2 z-50">
                         <div class="p-2 flex flex-col gap-1">
-                            <a href="#" onclick="location.href='/mypage'"
+                            <a th:href="@{/mypage}"
                                 class="px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-brand-50 hover:text-brand-800 rounded-xl transition-colors flex items-center gap-2">
                                 <i class="fa-solid fa-user-astronaut w-4 opacity-50"></i> 마이페이지
                             </a>
