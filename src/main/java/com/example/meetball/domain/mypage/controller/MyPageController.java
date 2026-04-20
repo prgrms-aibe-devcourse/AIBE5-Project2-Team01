@@ -39,23 +39,38 @@ public class MyPageController {
     }
 
     @GetMapping("/bookmarks")
-    public ResponseEntity<List<BookmarkedProjectResponse>> getMyBookmarks(@RequestParam Long userId) {
-        return ResponseEntity.ok(myPageService.getMyBookmarks(userId));
+    public ResponseEntity<List<BookmarkedProjectResponse>> getMyBookmarks(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long viewerId) {
+        return ResponseEntity.ok(myPageService.getMyBookmarks(userId, viewerId));
     }
 
     @GetMapping("/applications")
-    public ResponseEntity<List<AppliedProjectResponse>> getMyApplications(@RequestParam Long userId) {
-        return ResponseEntity.ok(myPageService.getMyApplications(userId));
+    public ResponseEntity<List<AppliedProjectResponse>> getMyApplications(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long viewerId) {
+        return ResponseEntity.ok(myPageService.getMyApplications(userId, viewerId));
     }
 
     @GetMapping("/projects")
-    public ResponseEntity<List<ParticipatedProjectResponse>> getMyProjects(@RequestParam Long userId) {
-        return ResponseEntity.ok(myPageService.getMyProjects(userId));
+    public ResponseEntity<List<ParticipatedProjectResponse>> getMyProjects(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long viewerId) {
+        return ResponseEntity.ok(myPageService.getMyProjects(userId, viewerId));
+    }
+
+    @GetMapping("/projects/completed")
+    public ResponseEntity<List<ParticipatedProjectResponse>> getCompletedProjects(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long viewerId) {
+        return ResponseEntity.ok(myPageService.getCompletedProjects(userId, viewerId));
     }
 
     @GetMapping("/recent-reads")
-    public ResponseEntity<List<ReadProjectResponse>> getRecentReads(@RequestParam Long userId) {
-        return ResponseEntity.ok(myPageService.getRecentReads(userId));
+    public ResponseEntity<List<ReadProjectResponse>> getRecentReads(
+            @RequestParam Long userId,
+            @RequestParam(required = false) Long viewerId) {
+        return ResponseEntity.ok(myPageService.getRecentReads(userId, viewerId));
     }
 
     @GetMapping("/reviews")

@@ -1,40 +1,16 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>프로젝트 등록 - Meetball</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-900">
-    <!-- Nav -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <a href="index.html" class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">M</div>
-                    <span class="text-xl font-extrabold tracking-tight text-gray-900">Meetball</span>
-                </a>
-            </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="font-bold text-gray-600 hover:text-orange-600">탐색하기</a>
-                <a href="register.html" class="font-bold text-orange-600">프로젝트 등록</a>
-                <a href="manage.html" class="font-bold text-gray-600 hover:text-orange-600">나의 프로젝트</a>
-            </div>
-            <div class="flex items-center gap-4">
-                <button class="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
-                    <i class="fa-regular fa-bell text-xl"></i>
-                </button>
-                <a href="mypage.html" class="flex items-center gap-2 pl-2 border-l border-gray-100 italic font-bold text-orange-600">
-                    <img src="https://picsum.photos/seed/user1/200" alt="Profile" class="w-8 h-8 rounded-full border-2 border-orange-100 shadow-sm">
-                    <span class="text-sm font-black text-gray-700">김밋볼</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <header th:replace="~{fragments/header :: mainHeader}"></header>
 
     <main class="container mx-auto px-4 py-12 max-w-7xl">
         <!-- Premium Page Header -->

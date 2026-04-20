@@ -27,7 +27,8 @@ class MyPageControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/mypage/profile")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("팀장님"))
                 .andExpect(jsonPath("$.role").value("LEADER"))
@@ -41,7 +42,8 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/projects")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].title").exists())
@@ -55,7 +57,8 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/applications")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andDo(print());
@@ -67,7 +70,8 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/recent-reads")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andDo(print());
@@ -79,7 +83,8 @@ class MyPageControllerTest {
         Long userId = 1L; // 팀장님
 
         mockMvc.perform(get("/api/mypage/bookmarks")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].title").value("블록체인 기반 투표 시스템"))
@@ -92,7 +97,8 @@ class MyPageControllerTest {
         Long userId = 1L; // 팀장님
 
         mockMvc.perform(get("/api/mypage/reviews")
-                        .param("userId", String.valueOf(userId)))
+                        .param("userId", String.valueOf(userId))
+                        .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].reviewerNickname").value("열정개발자"))

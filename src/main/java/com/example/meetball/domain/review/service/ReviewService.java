@@ -166,10 +166,26 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
         User reviewer = userRepository.findById(reviewerId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
+        
+        // 추가된 권한 체크: 작성자가 프로젝트 멤버인지 확인
+        if (!projectMemberRepository.existsByProjectAndUser(project, reviewer)) {
+            throw new IllegalArgumentException("이 프로젝트의 참여 멤버만 리뷰를 작성할 수 있습니다.");
+        }
+
         User reviewee = revieweeId != null ? userRepository.findById(revieweeId).orElse(null) : null;
+
+        // 피어 리뷰인 경우 대상자도 멤버인지 확인
+        if (reviewee != null && !projectMemberRepository.existsByProjectAndUser(project, reviewee)) {
+            throw new IllegalArgumentException("리뷰 대상자가 프로젝트 참여 멤버가 아닙니다.");
+        }
 
         if (score < 0.5 || score > 5.0) {
             throw new IllegalArgumentException("별점은 0.5점에서 5.0점 사이여야 합니다.");
+        }
+        
+        // 중복 방지 추가
+        if (reviewRepository.existsByProjectAndReviewerAndReviewee(project, reviewer, reviewee)) {
+            throw new IllegalArgumentException("이미 해당 대상에 대해 리뷰를 제출하셨습니다.");
         }
 
         Review review = Review.builder()
