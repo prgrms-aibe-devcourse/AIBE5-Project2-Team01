@@ -51,7 +51,7 @@ public class ProjectDataInitializer {
                             4,
                             LocalDate.now().plusDays(7),
                             LocalDate.now().minusDays(5),
-                            "Java, Spring Boot, Tailwind, H2"
+                            "Java, Spring Boot, Tailwind, PostgreSQL"
                     ),
                     new Project(
                             "공모전 협업 관리 대시보드",
@@ -67,7 +67,7 @@ public class ProjectDataInitializer {
                             3,
                             LocalDate.now().plusDays(21),
                             LocalDate.now().minusDays(1),
-                            "Thymeleaf, JavaScript, H2, Figma"
+                            "Thymeleaf, JavaScript, PostgreSQL, Figma"
                     )
             ));
         };
