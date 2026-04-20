@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
+
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -76,6 +78,7 @@ public class DataInitializer implements CommandLineRunner {
                     .content("개인 건강 관리를 위한 AI 플랫폼")
                     .status(ProjectStatus.PROCEEDING)
                     .techStack("Java, Spring, Flutter")
+                    .recruitmentDeadline(LocalDate.now().minusDays(30)) // 30일 전 마감
                     .build());
 
             // 프로젝트 2: 블록체인 투표
@@ -84,6 +87,7 @@ public class DataInitializer implements CommandLineRunner {
                     .content("투명한 투표를 위한 블록체인 플랫폼")
                     .status(ProjectStatus.RECRUITING)
                     .techStack("React, Solidity, Go")
+                    .recruitmentDeadline(LocalDate.now().plusDays(7)) // 7일 후 마감 (D-7)
                     .build());
 
             // 참여 정보 연결 (1번 유저: 팀장님, 2번 유저: 성실팀원)

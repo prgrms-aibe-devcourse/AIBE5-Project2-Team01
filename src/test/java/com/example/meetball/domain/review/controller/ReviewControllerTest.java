@@ -57,6 +57,19 @@ class ReviewControllerTest {
     }
 
     @Test
+    @DisplayName("프로젝트 미참여자의 리뷰 등록 시도 실패 테스트")
+    void nonParticipantReviewTest() throws Exception {
+        // given: 프로젝트에 참여하지 않은 사용자 닉네임
+        ReviewRequestDto dto = new ReviewRequestDto(5.0, "불청객", "USER", "", "몰래 리뷰 남기기");
+
+        // when & then: 등록 시도 시 실패(400 에러) 기대
+        mockMvc.perform(post("/api/projects/1/reviews")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("요약 리포트 조회 (별점 평균 검증)")
     void getReviewSummary() throws Exception {
         // when & then

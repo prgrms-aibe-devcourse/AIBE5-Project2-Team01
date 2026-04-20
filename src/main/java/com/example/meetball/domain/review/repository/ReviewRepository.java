@@ -16,4 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 중복 리뷰 방지용: 특정 프로젝트에서 작성자가 특정 대상(또는 프로젝트 전체)에게 남긴 리뷰가 있는지 확인
     boolean existsByProjectAndReviewerAndReviewee(Project project, User reviewer, User reviewee);
+
+    // 추가된 메서드: 작성자가 해당 프로젝트에 대해 어떤 리뷰라도 남긴 적이 있는지 확인
+    boolean existsByProjectAndReviewer(Project project, User reviewer);
 }

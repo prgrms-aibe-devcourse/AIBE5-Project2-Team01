@@ -48,6 +48,8 @@ class MyPageControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].title").exists())
                 .andExpect(jsonPath("$[0].userRole").exists())
+                .andExpect(jsonPath("$[0].canReview").exists()) // 추가됨: 리뷰 가능 여부 필드 확인
+                .andExpect(jsonPath("$[0].dDay").exists())     // 추가됨: D-Day 필드 확인
                 .andDo(print());
     }
 

@@ -26,11 +26,14 @@ public class Project {
 
     private String techStack; // 예: "Java, Spring, React"
 
+    private java.time.LocalDate recruitmentDeadline; // 모집 마감일
+
     @Builder
-    public Project(String title, String content, ProjectStatus status, String techStack) {
+    public Project(String title, String content, ProjectStatus status, String techStack, java.time.LocalDate recruitmentDeadline) {
         this.title = title;
         this.content = content;
         this.status = status;
         this.techStack = techStack;
+        this.recruitmentDeadline = recruitmentDeadline;
     }
 }

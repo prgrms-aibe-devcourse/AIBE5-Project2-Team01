@@ -21,7 +21,7 @@ public class MyPageViewController {
 
     @GetMapping("/mypage")
     public String myPage(
-            @RequestParam Long userId,
+            @RequestParam(defaultValue = "1") Long userId,
             @RequestParam(required = false) Long viewerId,
             Model model) {
         
@@ -33,7 +33,7 @@ public class MyPageViewController {
 
         // 3. 모델(바구니)에 담기
         model.addAttribute("profile", profile);
-        model.addAttribute("projects", projects);
+        model.addAttribute("participatedProjects", projects);
         model.addAttribute("isOwner", profile.isOwner());
 
         // 4. templates/user/mypage.html 반환
