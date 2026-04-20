@@ -1,99 +1,45 @@
 package com.example.meetball.domain.project.service;
 
-import com.example.meetball.domain.project.dto.ProjectDetailView;
-import com.example.meetball.domain.project.dto.ProjectSummaryView;
+import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.project.entity.Project;
-import com.example.meetball.domain.project.repository.ProjectRepository;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
+import com.example.meetball.domain.project.entity.ProjectStatus;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
+import com.example.meetball.domain.review.repository.ReviewRepository;
+import com.example.meetball.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ProjectService {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    private final ProjectMemberRepository projectMemberRepository;
+    private final ReviewRepository reviewRepository;
 
-    private final ProjectRepository projectRepository;
-
-    public ProjectService(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
-    }
-
-    public List<ProjectSummaryView> getProjectSummaries() {
-        return projectRepository.findAllByOrderByCreatedDateDescIdDesc()
-                .stream()
-                .map(this::toSummaryView)
-                .toList();
-    }
-
-    public ProjectDetailView getProjectDetail(Long id) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + id));
-        return toDetailView(project);
-    }
-
-    private ProjectSummaryView toSummaryView(Project project) {
-        return new ProjectSummaryView(
-                project.getId(),
-                project.getTitle(),
-                project.getSummary(),
-                project.getProjectType(),
-                project.getPosition(),
-                project.getLeaderName(),
-                project.getLeaderAvatarUrl(),
-                project.getThumbnailUrl(),
-                project.getCurrentRecruitment(),
-                project.getTotalRecruitment(),
-                formatDeadline(project.getRecruitmentDeadline()),
-                splitTechStacks(project.getTechStackCsv())
-        );
-    }
-
-    private ProjectDetailView toDetailView(Project project) {
-        return new ProjectDetailView(
-                project.getId(),
-                project.getTitle(),
-                project.getSummary(),
-                project.getDescription(),
-                project.getProjectType(),
-                project.getPosition(),
-                project.getLeaderName(),
-                project.getLeaderRole(),
-                project.getLeaderAvatarUrl(),
-                project.getThumbnailUrl(),
-                project.getCurrentRecruitment(),
-                project.getTotalRecruitment(),
-                calculateProgressPercent(project.getCurrentRecruitment(), project.getTotalRecruitment()),
-                formatDeadline(project.getRecruitmentDeadline()),
-                project.getCreatedDate().format(DATE_FORMATTER),
-                splitTechStacks(project.getTechStackCsv())
-        );
-    }
-
-    private List<String> splitTechStacks(String techStackCsv) {
-        return Arrays.stream(techStackCsv.split(","))
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .toList();
-    }
-
-    private String formatDeadline(LocalDate deadline) {
-        long days = ChronoUnit.DAYS.between(LocalDate.now(), deadline);
-        if (days < 0) {
-            return "마감";
-        }
-        return "D-" + days;
-    }
-
-    private int calculateProgressPercent(int currentRecruitment, int totalRecruitment) {
-        if (totalRecruitment <= 0) {
-            return 0;
-        }
-        return Math.min(100, (currentRecruitment * 100) / totalRecruitment);
+    @Transactional(readOnly = true)
+    public List<ParticipatedProjectResponse> getParticipatedProjects(User user) {
+        return projectMemberRepository.findByUser(user).stream()
+                .map(pm -> {
+                    Project project = pm.getProject();
+                    
+                    // 1. dDay 계산
+                    Long dDay = null;
+                    if (project.getRecruitmentDeadline() != null) {
+                        dDay = ChronoUnit.DAYS.between(LocalDate.now(), project.getRecruitmentDeadline());
+                    }
+                    
+                    // 2. 리뷰 가능 여부 계산 (마감 상태 && 내가 작성한 리뷰가 없음)
+                    boolean alreadyReviewed = reviewRepository.existsByProjectAndReviewer(project, user);
+                    boolean canReview = (project.getStatus() == ProjectStatus.COMPLETED) && !alreadyReviewed;
+                    
+                    return ParticipatedProjectResponse.of(project, pm.getRole(), canReview, dDay);
+                })
+                .collect(Collectors.toList());
     }
 }
