@@ -15,7 +15,7 @@ public class BookmarkedProjectResponse {
         return BookmarkedProjectResponse.builder()
                 .projectId(bookmark.getProject().getId())
                 .title(bookmark.getProject().getTitle())
-                .techStack(bookmark.getProject().getTechStack())
+                .techStack(bookmark.getProject().getTechStackCsv())
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.meetball.domain.mypage.controller;
 
-import com.example.meetball.domain.application.dto.AppliedProjectResponse;
+import com.example.meetball.domain.application.dto.ApplicationResponseDto;
 import com.example.meetball.domain.bookmark.dto.BookmarkedProjectResponse;
 import com.example.meetball.domain.mypage.dto.MyPageProfileResponse;
 import com.example.meetball.domain.mypage.service.MyPageService;
@@ -46,7 +46,7 @@ public class MyPageController {
     }
 
     @GetMapping("/applications")
-    public ResponseEntity<List<AppliedProjectResponse>> getMyApplications(
+    public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(
             @RequestParam Long userId,
             @RequestParam(required = false) Long viewerId) {
         return ResponseEntity.ok(myPageService.getMyApplications(userId, viewerId));

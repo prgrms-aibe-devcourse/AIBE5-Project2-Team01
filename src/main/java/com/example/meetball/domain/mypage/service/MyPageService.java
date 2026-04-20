@@ -1,12 +1,11 @@
 package com.example.meetball.domain.mypage.service;
 
-import com.example.meetball.domain.application.dto.AppliedProjectResponse;
+import com.example.meetball.domain.application.dto.ApplicationResponseDto;
 import com.example.meetball.domain.application.service.ApplicationService;
 import com.example.meetball.domain.bookmark.dto.BookmarkedProjectResponse;
 import com.example.meetball.domain.bookmark.service.BookmarkService;
 import com.example.meetball.domain.mypage.dto.MyPageProfileResponse;
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
-import com.example.meetball.domain.project.entity.ProjectStatus;
 import com.example.meetball.domain.project.service.ProjectService;
 import com.example.meetball.domain.projectread.dto.ReadProjectResponse;
 import com.example.meetball.domain.projectread.service.ProjectReadService;
@@ -69,12 +68,11 @@ public class MyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppliedProjectResponse> getMyApplications(Long userId, Long viewerId) {
+    public List<ApplicationResponseDto> getMyApplications(Long userId, Long viewerId) {
         if (!isOwnerAccess(userId, viewerId)) {
             return Collections.emptyList();
         }
-        User user = userService.getUserById(userId);
-        return applicationService.getAppliedProjects(user);
+        return applicationService.getMyApplications(userId);
     }
 
     @Transactional(readOnly = true)
@@ -100,9 +98,9 @@ public class MyPageService {
             return Collections.emptyList();
         }
         
-        // 상태가 COMPLETED인 프로젝트만 필터링
+        // closed == true인 프로젝트만 필터링
         return projectService.getParticipatedProjects(user).stream()
-                .filter(p -> p.getStatus() == ProjectStatus.COMPLETED)
+                .filter(p -> Boolean.TRUE.equals(p.isClosed()))
                 .toList();
     }
 

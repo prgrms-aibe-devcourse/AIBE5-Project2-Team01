@@ -22,25 +22,30 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 마이페이지 연동: User 엔티티 직접 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    // 프로젝트 엔티티 직접 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    private String position; // 지원 포지션
+    private String position;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus status; // PENDING, ACCEPTED, REJECTED
+    private ApplicationStatus status;
 
     @Column(columnDefinition = "TEXT")
-    private String message; // 지원 메시지
+    private String message;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @Builder
     public Application(User user, Project project, String position, ApplicationStatus status, String message) {
@@ -49,5 +54,10 @@ public class Application {
         this.position = position;
         this.status = status;
         this.message = message;
+    }
+
+    public void updateStatus(ApplicationStatus status, LocalDateTime updatedAt) {
+        this.status = status;
+        this.updatedAt = updatedAt;
     }
 }

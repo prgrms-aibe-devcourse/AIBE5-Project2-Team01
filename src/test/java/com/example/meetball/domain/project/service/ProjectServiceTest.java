@@ -2,7 +2,6 @@ package com.example.meetball.domain.project.service;
 
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.project.entity.Project;
-import com.example.meetball.domain.project.entity.ProjectStatus;
 import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.review.repository.ReviewRepository;
 import com.example.meetball.domain.user.entity.User;
@@ -37,13 +36,11 @@ class ProjectServiceTest {
     void calculateDDayZeroTest() {
         // given
         User user = User.builder().nickname("테스트유저").build();
-        Project project = Project.builder()
-                .title("D-Day 0 테스트")
-                .recruitmentDeadline(LocalDate.now()) // 오늘 마감
-                .status(ProjectStatus.RECRUITING)
-                .build();
+        Project project = new Project(
+                "D-Day 0 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
+                0, 5, LocalDate.now(), LocalDate.now().minusDays(1), "Java"
+        );
         
-        // Mock 설정: 이 유저가 해당 프로젝트의 멤버라고 가정
         com.example.meetball.domain.project.entity.ProjectMember pm = 
             new com.example.meetball.domain.project.entity.ProjectMember(user, project, "MEMBER");
         
@@ -62,11 +59,10 @@ class ProjectServiceTest {
     void calculateDDayOneTest() {
         // given
         User user = User.builder().nickname("테스트유저").build();
-        Project project = Project.builder()
-                .title("D-Day 1 테스트")
-                .recruitmentDeadline(LocalDate.now().plusDays(1)) // 내일 마감
-                .status(ProjectStatus.RECRUITING)
-                .build();
+        Project project = new Project(
+                "D-Day 1 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
+                0, 5, LocalDate.now().plusDays(1), LocalDate.now().minusDays(1), "Java"
+        );
         
         com.example.meetball.domain.project.entity.ProjectMember pm = 
             new com.example.meetball.domain.project.entity.ProjectMember(user, project, "MEMBER");

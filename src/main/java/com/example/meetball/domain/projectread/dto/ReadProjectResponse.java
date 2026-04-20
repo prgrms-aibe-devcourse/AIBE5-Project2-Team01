@@ -18,7 +18,7 @@ public class ReadProjectResponse {
         return ReadProjectResponse.builder()
                 .projectId(history.getProject().getId())
                 .title(history.getProject().getTitle())
-                .techStack(history.getProject().getTechStack())
+                .techStack(history.getProject().getTechStackCsv())
                 .readAt(history.getReadAt())
                 .build();
     }

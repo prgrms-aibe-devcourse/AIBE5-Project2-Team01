@@ -11,7 +11,6 @@ import com.example.meetball.domain.bookmark.entity.Bookmark;
 import com.example.meetball.domain.bookmark.repository.BookmarkRepository;
 import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.entity.ProjectMember;
-import com.example.meetball.domain.project.entity.ProjectStatus;
 import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.projectread.entity.ProjectRead;
@@ -72,23 +71,41 @@ public class DataInitializer implements CommandLineRunner {
 
         // 0-1. 테스트용 프로젝트 및 참여 멤버 데이터 생성
         if (projectRepository.count() == 0) {
-            // 프로젝트 1: AI 헬스케어
-            Project project1 = projectRepository.save(Project.builder()
-                    .title("AI 헬스케어 모바일 앱")
-                    .content("개인 건강 관리를 위한 AI 플랫폼")
-                    .status(ProjectStatus.PROCEEDING)
-                    .techStack("Java, Spring, Flutter")
-                    .recruitmentDeadline(LocalDate.now().minusDays(30)) // 30일 전 마감
-                    .build());
+            // 프로젝트 1: AI 헬스케어 (마감된 프로젝트)
+            Project project1 = projectRepository.save(new Project(
+                    "AI 헬스케어 모바일 앱",
+                    "개인 건강 관리를 위한 AI 플랫폼",
+                    "사용자 건강 데이터를 AI로 분석하여 맞춤 운동과 식단을 추천하는 서비스",
+                    "사이드 프로젝트",
+                    "백엔드",
+                    "팀장님",
+                    "Frontend Developer",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=leader",
+                    "https://picsum.photos/seed/health/800/400",
+                    3,
+                    5,
+                    LocalDate.now().minusDays(30), // 30일 전 마감
+                    LocalDate.now().minusDays(60),
+                    "Java, Spring, Flutter"
+            ));
 
-            // 프로젝트 2: 블록체인 투표
-            Project project2 = projectRepository.save(Project.builder()
-                    .title("블록체인 기반 투표 시스템")
-                    .content("투명한 투표를 위한 블록체인 플랫폼")
-                    .status(ProjectStatus.RECRUITING)
-                    .techStack("React, Solidity, Go")
-                    .recruitmentDeadline(LocalDate.now().plusDays(7)) // 7일 후 마감 (D-7)
-                    .build());
+            // 프로젝트 2: 블록체인 투표 (모집 중)
+            Project project2 = projectRepository.save(new Project(
+                    "블록체인 기반 투표 시스템",
+                    "투명한 투표를 위한 블록체인 플랫폼",
+                    "블록체인 기술로 투명하고 안전한 온라인 투표 시스템을 만들어봅니다.",
+                    "스타트업",
+                    "프론트엔드",
+                    "성실팀원",
+                    "Backend Developer",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=member",
+                    "https://picsum.photos/seed/vote/800/400",
+                    2,
+                    4,
+                    LocalDate.now().plusDays(7), // D-7
+                    LocalDate.now().minusDays(5),
+                    "React, Solidity, Go"
+            ));
 
             // 참여 정보 연결 (1번 유저: 팀장님, 2번 유저: 성실팀원)
             User leader = userRepository.findByEmail("leader@test.com").get();

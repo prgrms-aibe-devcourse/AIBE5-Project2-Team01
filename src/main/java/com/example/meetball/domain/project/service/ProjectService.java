@@ -1,45 +1,242 @@
 package com.example.meetball.domain.project.service;
 
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
+import com.example.meetball.domain.project.dto.ProjectCreateRequestDto;
+import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
+import com.example.meetball.domain.project.dto.ProjectListResponseDto;
+import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
+import com.example.meetball.domain.project.dto.ProjectDetailView;
+import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.entity.Project;
-import com.example.meetball.domain.project.entity.ProjectStatus;
 import com.example.meetball.domain.project.repository.ProjectMemberRepository;
+import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.review.repository.ReviewRepository;
 import com.example.meetball.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProjectService {
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final ReviewRepository reviewRepository;
 
-    @Transactional(readOnly = true)
+    // --- MVC (front2) ---
+    public List<ProjectSummaryView> getProjectSummaries() {
+        return projectRepository.findAllByOrderByCreatedDateDescIdDesc()
+                .stream()
+                .map(this::toSummaryView)
+                .toList();
+    }
+
+    public ProjectDetailView getProjectDetail(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + id));
+        return toDetailView(project);
+    }
+
+    private ProjectSummaryView toSummaryView(Project project) {
+        return new ProjectSummaryView(
+                project.getId(),
+                project.getTitle(),
+                project.getSummary(),
+                project.getProjectType(),
+                project.getPosition(),
+                project.getLeaderName(),
+                project.getLeaderAvatarUrl(),
+                project.getThumbnailUrl(),
+                project.getCurrentRecruitment(),
+                project.getTotalRecruitment(),
+                formatDeadline(project.getRecruitmentDeadline()),
+                splitTechStacks(project.getTechStackCsv())
+        );
+    }
+
+    private ProjectDetailView toDetailView(Project project) {
+        return new ProjectDetailView(
+                project.getId(),
+                project.getTitle(),
+                project.getSummary(),
+                project.getDescription(),
+                project.getProjectType(),
+                project.getPosition(),
+                project.getLeaderName(),
+                project.getLeaderRole(),
+                project.getLeaderAvatarUrl(),
+                project.getThumbnailUrl(),
+                project.getCurrentRecruitment(),
+                project.getTotalRecruitment(),
+                calculateProgressPercent(project.getCurrentRecruitment(), project.getTotalRecruitment()),
+                formatDeadline(project.getRecruitmentDeadline()),
+                project.getCreatedDate() != null ? project.getCreatedDate().format(DATE_FORMATTER) : "",
+                splitTechStacks(project.getTechStackCsv())
+        );
+    }
+
+    private List<String> splitTechStacks(String techStackCsv) {
+        if (techStackCsv == null) return List.of();
+        return Arrays.stream(techStackCsv.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .toList();
+    }
+
+    private String formatDeadline(LocalDate deadline) {
+        if (deadline == null) return "-";
+        long days = ChronoUnit.DAYS.between(LocalDate.now(), deadline);
+        if (days < 0) {
+            return "마감";
+        }
+        return "D-" + days;
+    }
+
+    private int calculateProgressPercent(Integer currentRecruitment, Integer totalRecruitment) {
+        if (currentRecruitment == null) currentRecruitment = 0;
+        if (totalRecruitment == null || totalRecruitment <= 0) {
+            return 0;
+        }
+        return Math.min(100, (currentRecruitment * 100) / totalRecruitment);
+    }
+
+    // --- REST API (HEAD) ---
+    public Page<ProjectListResponseDto> getProjects(String keyword, String projectType, 
+                                                    String progressMethod, Pageable pageable) {
+        Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, pageable);
+        
+        return projects.map(project -> new ProjectListResponseDto(
+                project.getId(),
+                project.getTitle(),
+                project.getRecruitmentCount(),
+                project.getProjectType(),
+                project.getProgressMethod(),
+                project.getRecruitmentEndAt(),
+                project.getClosed(),
+                project.getCreatedAt()
+        ));
+    }
+
+    public ProjectDetailResponseDto getProjectById(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+        
+        return new ProjectDetailResponseDto(
+                project.getId(),
+                project.getTitle(),
+                project.getDescription(),
+                project.getProjectType(),
+                project.getProgressMethod(),
+                project.getRecruitmentCount(),
+                project.getRecruitmentStartAt(),
+                project.getRecruitmentEndAt(),
+                project.getProjectStartAt(),
+                project.getProjectEndAt(),
+                project.getClosed(),
+                project.getCreatedAt(),
+                project.getUpdatedAt()
+        );
+    }
+
+    @Transactional
+    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request) {
+        LocalDateTime now = LocalDateTime.now();
+        Project project = new Project(
+                request.getTitle(),
+                request.getDescription(),
+                request.getProjectType(),
+                request.getProgressMethod(),
+                request.getRecruitmentCount(),
+                request.getRecruitmentStartAt(),
+                request.getRecruitmentEndAt(),
+                request.getProjectStartAt(),
+                request.getProjectEndAt(),
+                request.getClosed(),
+                now,
+                now
+        );
+        Project savedProject = projectRepository.save(project);
+        
+        return new ProjectDetailResponseDto(
+                savedProject.getId(), savedProject.getTitle(), savedProject.getDescription(),
+                savedProject.getProjectType(), savedProject.getProgressMethod(), savedProject.getRecruitmentCount(),
+                savedProject.getRecruitmentStartAt(), savedProject.getRecruitmentEndAt(), savedProject.getProjectStartAt(),
+                savedProject.getProjectEndAt(), savedProject.getClosed(), savedProject.getCreatedAt(), savedProject.getUpdatedAt()
+        );
+    }
+
+    @Transactional
+    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+        
+        project.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getProjectType(),
+                request.getProgressMethod(),
+                request.getRecruitmentCount(),
+                request.getRecruitmentStartAt(),
+                request.getRecruitmentEndAt(),
+                request.getProjectStartAt(),
+                request.getProjectEndAt(),
+                request.getClosed(),
+                LocalDateTime.now()
+        );
+        
+        Project updatedProject = projectRepository.save(project);
+        
+        return new ProjectDetailResponseDto(
+                updatedProject.getId(), updatedProject.getTitle(), updatedProject.getDescription(),
+                updatedProject.getProjectType(), updatedProject.getProgressMethod(), updatedProject.getRecruitmentCount(),
+                updatedProject.getRecruitmentStartAt(), updatedProject.getRecruitmentEndAt(), updatedProject.getProjectStartAt(),
+                updatedProject.getProjectEndAt(), updatedProject.getClosed(), updatedProject.getCreatedAt(), updatedProject.getUpdatedAt()
+        );
+    }
+
+    @Transactional
+    public void deleteProject(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+        projectRepository.delete(project);
+    }
+
+    /**
+     * 마이페이지용: 내가 참여한 프로젝트 목록 (D-Day, canReview 포함)
+     */
     public List<ParticipatedProjectResponse> getParticipatedProjects(User user) {
         return projectMemberRepository.findByUser(user).stream()
                 .map(pm -> {
                     Project project = pm.getProject();
-                    
-                    // 1. dDay 계산
-                    Long dDay = null;
-                    if (project.getRecruitmentDeadline() != null) {
-                        dDay = ChronoUnit.DAYS.between(LocalDate.now(), project.getRecruitmentDeadline());
-                    }
-                    
-                    // 2. 리뷰 가능 여부 계산 (마감 상태 && 내가 작성한 리뷰가 없음)
-                    boolean alreadyReviewed = reviewRepository.existsByProjectAndReviewer(project, user);
-                    boolean canReview = (project.getStatus() == ProjectStatus.COMPLETED) && !alreadyReviewed;
-                    
-                    return ParticipatedProjectResponse.of(project, pm.getRole(), canReview, dDay);
+                    boolean canReview = project.getRecruitmentDeadline() != null
+                            && !reviewRepository.existsByProjectAndReviewer(project, user)
+                            && LocalDate.now().isAfter(project.getRecruitmentDeadline());
+                    Long dDay = project.getRecruitmentDeadline() != null
+                            ? ChronoUnit.DAYS.between(LocalDate.now(), project.getRecruitmentDeadline())
+                            : null;
+                    // Project Entity에 status 필드가 없으므로 closed 여부로 판별
+                    String statusLabel = Boolean.TRUE.equals(project.getClosed()) ? "COMPLETED" : "PROCEEDING";
+                    return ParticipatedProjectResponse.builder()
+                            .projectId(project.getId())
+                            .title(project.getTitle())
+                            .userRole(pm.getRole())
+                            .canReview(canReview)
+                            .dDay(dDay)
+                            .closed(Boolean.TRUE.equals(project.getClosed()))
+                            .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 }
