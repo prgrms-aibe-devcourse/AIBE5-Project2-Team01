@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - Meetball</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf8f6',
+                            100: '#f2e8e5',
+                            200: '#e5d1cb',
+                            300: '#d1b3ab',
+                            400: '#b38d82',
+                            500: '#8d5b3e',
+                            600: '#7a4e35',
+                            700: '#633f2b',
+                            800: '#4a2c2a',
+                            900: '#2d1b1a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#FDF8F6] min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-white rounded-[3rem] shadow-[0_20px_60px_-15px_rgba(74,44,42,0.1)] p-12 text-center border border-brand-100">
+        <!-- Logo -->
+        <div class="w-16 h-16 bg-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-brand-200">
+            <span class="text-3xl font-black text-white italic">M</span>
+        </div>
+
+        <h1 class="text-3xl font-black text-brand-900 mb-3 tracking-tighter">반가워요!</h1>
+        <p class="text-gray-400 font-bold mb-12">밋볼에서 함께 성장할<br>팀원들을 만나보세요.</p>
+
+        <div class="space-y-4 mb-16">
+            <!-- Google -->
+            <button class="w-full h-16 flex items-center justify-center gap-4 bg-white border border-gray-100 rounded-2xl font-black text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-6 h-6">
+                구글로 시작하기
+            </button>
+            <!-- Kakao -->
+            <button class="w-full h-16 flex items-center justify-center gap-4 bg-[#FEE500] rounded-2xl font-black text-[#3C1E1E] hover:bg-[#FADA0A] transition-all shadow-sm">
+                <i class="fa-solid fa-comment text-xl"></i>
+                카카오로 시작하기
+            </button>
+            <!-- Naver -->
+            <button class="w-full h-16 flex items-center justify-center gap-4 bg-[#03C75A] rounded-2xl font-black text-white hover:bg-[#02b351] transition-all shadow-sm">
+                <span class="font-black text-xl italic">N</span>
+                네이버로 시작하기
+            </button>
+        </div>
+
+        <p class="text-[11px] text-gray-300 font-bold italic leading-relaxed">
+            "Great things in business are never done by one person."
+        </p>
+    </div>
+</body>
+</html>

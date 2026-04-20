@@ -10,6 +10,31 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap"
         rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf8f6',
+                            100: '#f2e8e5',
+                            200: '#e5d1cb',
+                            300: '#d1b3ab',
+                            400: '#b38d82',
+                            500: '#8d5b3e', // Primary Poodle Brown
+                            600: '#7a4e35',
+                            700: '#633f2b',
+                            800: '#4a2c2a', // Deep Coffee
+                            900: '#2d1b1a', // Near Black Brown
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard Variable"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
 <body class="bg-[#fdf8f6] text-gray-900 flex flex-col min-h-screen">
@@ -19,40 +44,54 @@
         <div id="view-mypage" class="page-view active">
             <!-- Header Section -->
             <div
-                class="bg-gradient-to-br from-brand-800 via-brand-600 to-brand-900 py-12 rounded-[2rem] mb-8 shadow-xl relative overflow-hidden">
+                class="bg-gradient-to-br from-[#4a2c2a] via-[#3d251e] to-[#2b1816] py-14 rounded-[2.5rem] mb-10 shadow-2xl relative overflow-hidden border border-white/5 flex flex-col lg:flex-row items-center justify-between">
                 <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none">
+                    class="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] -mr-48 -mt-48 pointer-events-none">
                 </div>
-                <div class="container mx-auto px-8 md:px-12 relative z-10">
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div class="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                            <div class="relative">
-                                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
-                                    class="w-28 h-28 rounded-full border-4 border-white/20 bg-white">
-                                <button
-                                    class="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full border border-gray-100 shadow-lg flex items-center justify-center text-gray-400">
-                                    <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
-                                </button>
-                            </div>
-                            <div class="text-white">
-                                <div class="flex items-center gap-3 justify-center md:justify-start mb-2">
-                                    <h2 class="text-3xl font-black">초코푸들</h2>
-                                    <span class="px-3 py-1 bg-white/20 rounded-lg text-xs font-bold">@chocopoodle</span>
-                                </div>
-                                <p class="font-bold mb-3">프론트엔드 개발자</p>
-                                <div class="flex items-center gap-2 justify-center md:justify-start mb-4">
-                                    <i class="fa-solid fa-star text-yellow-400"></i>
-                                    <span class="font-black text-lg">4.9</span>
-                                    <span class="text-white/60 font-bold">(12개의 리뷰)</span>
-                                </div>
-                                <p class="text-white/80 font-medium">귀여운 디자인을 좋아하는 열정적인 프론트엔드 개발자입니다!</p>
-                            </div>
+                <div
+                    class="absolute bottom-0 left-0 w-64 h-64 bg-brand-900/20 rounded-full blur-[80px] -ml-20 -mb-20 pointer-events-none">
+                </div>
+                
+                <div class="container mx-auto px-8 md:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 w-full">
+                    <div class="flex flex-col md:flex-row items-center gap-10 text-center md:text-left">
+                        <div class="relative group">
+                            <div class="absolute -inset-1.5 bg-white/10 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-500"></div>
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
+                                class="relative w-32 h-32 rounded-full border-4 border-white/20 bg-[#fdf8f6] shadow-2xl">
+                            <button
+                                class="absolute bottom-1 right-1 w-10 h-10 bg-white rounded-full border border-gray-100 shadow-xl flex items-center justify-center text-brand-800 hover:bg-brand-50 transition-all transform hover:scale-110 active:scale-90">
+                                <i class="fa-solid fa-camera text-sm"></i>
+                            </button>
                         </div>
-                        <button
-                            class="px-6 py-3 bg-white text-brand-900 rounded-xl font-black flex items-center gap-2 shadow-lg shadow-black/10 transition-all hover:scale-105">
-                            <i class="fa-regular fa-pen-to-square"></i> 프로필 수정
-                        </button>
+                        <div class="text-white">
+                            <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
+                                <h2 class="text-4xl font-black tracking-tight">초코푸들</h2>
+                                <span class="px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl text-xs font-black tracking-wider">@chocopoodle</span>
+                            </div>
+                            <p class="font-black text-brand-200 mb-4 text-lg">프론트엔드 개발자 <span class="mx-2 opacity-30">|</span> 3년차</p>
+                            <div class="flex items-center gap-3 justify-center md:justify-start mb-5 bg-black/10 w-fit px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-sm">
+                                <div class="flex gap-0.5">
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                    <i class="fa-solid fa-star text-yellow-400 text-sm"></i>
+                                </div>
+                                <span class="font-black text-lg">4.9</span>
+                                <span class="text-white/40 font-bold text-sm">(12개의 리뷰)</span>
+                            </div>
+                            <p class="text-white/70 font-medium leading-relaxed max-w-xl">"귀여운 디자인을 좋아하는 열정적인 프론트엔드 개발자입니다! 푸들처럼 사람들과 소통하며 함께 성장하는 프로젝트를 지향합니다."</p>
+                        </div>
                     </div>
+
+                    <div class="relative hidden xl:block shrink-0">
+                        <img th:src="@{/img/mascot.png}" class="w-48 h-48 drop-shadow-2xl opacity-40 hover:opacity-100 transition-opacity duration-500 transform rotate-12">
+                    </div>
+
+                    <button
+                        class="px-8 py-4 bg-white text-brand-900 rounded-2xl font-black flex items-center gap-3 shadow-2xl shadow-black/20 transition-all hover:scale-105 active:scale-95 group">
+                        <i class="fa-regular fa-pen-to-square group-hover:rotate-12 transition-transform"></i> 프로필 수정
+                    </button>
                 </div>
             </div>
 
@@ -327,6 +366,114 @@
 
     <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
+    <!-- Modals -->
+    <!-- Project Review Modal -->
+    <div id="projectReviewModal" class="modal-overlay fixed inset-0 z-[100] bg-black/60 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300 scale-95 opacity-0">
+            <div class="p-8 border-b border-gray-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900">프로젝트 리뷰</h2>
+                    <p class="text-sm font-medium text-gray-400 mt-1">완료된 프로젝트에 대한 소감을 남겨주세요.</p>
+                </div>
+                <button onclick="closeReviewModal('project')" class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-gray-900 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-8 space-y-6">
+                <div class="flex items-center gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div class="w-16 h-12 bg-white rounded-lg flex items-center justify-center text-brand-800 shadow-sm">
+                        <i class="fa-solid fa-box-archive text-xl"></i>
+                    </div>
+                    <div class="flex-grow space-y-2 w-full">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-black text-gray-400 w-10 italic">5 stars</span>
+                            <div class="flex-grow h-1.5 bg-white border border-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-brand-500 rounded-full" style="width: 85%"></div>
+                            </div>
+                            <span class="text-[10px] font-black text-gray-900 w-6">85%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-2">
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <p class="text-sm font-black text-gray-900">내 평점</p>
+                        <div class="px-3 py-1 bg-brand-50 text-brand-600 rounded-lg flex items-center gap-1.5 shadow-sm border border-brand-100">
+                            <i class="fa-solid fa-star text-brand-500 text-xs"></i>
+                            <span id="modalRatingScore" class="font-black text-sm">0.0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 text-4xl text-gray-300 review-stars cursor-pointer">
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setStar(this, 1)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setStar(this, 2)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setStar(this, 3)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setStar(this, 4)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setStar(this, 5)"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-black text-gray-900 mb-3">한 줄 평</label>
+                    <textarea id="projectReviewText" class="w-full h-24 bg-gray-50 border border-gray-100 rounded-2xl p-4 font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none" placeholder="프로젝트에 대한 짧은 후기를 남겨주세요."></textarea>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-50 flex gap-4">
+                <button onclick="closeReviewModal('project')" class="flex-1 py-4 bg-white border border-gray-200 text-gray-500 font-black rounded-xl hover:bg-white/50 transition-all">취소</button>
+                <button onclick="submitReview('project')" class="flex-1 py-4 bg-brand-600 text-white font-black rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-700 transition-all">리뷰 등록</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Peer Review Modal -->
+    <div id="peerReviewModal" class="modal-overlay fixed inset-0 z-[100] bg-black/60 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300 scale-95 opacity-0">
+            <div class="p-8 border-b border-gray-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900">피어 리뷰</h2>
+                    <p class="text-sm font-medium text-gray-400 mt-1">함께한 팀원들에게 평가를 남겨주세요.</p>
+                </div>
+                <button onclick="closeReviewModal('peer')" class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-gray-900 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-sm font-black text-gray-900 mb-3">팀원 선택</label>
+                    <select id="peerSelect" class="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all">
+                        <option value="">팀원을 선택하세요</option>
+                        <option value="김개발 (백엔드)">김개발 (백엔드)</option>
+                        <option value="이디자인 (UI/UX)">이디자인 (UI/UX)</option>
+                        <option value="박기획 (PM)">박기획 (PM)</option>
+                    </select>
+                </div>
+
+                <div class="text-center pt-4">
+                    <p class="text-sm font-black text-gray-900 mb-4">이 팀원과의 협업 만족도는 어떠셨나요?</p>
+                    <div class="flex items-center justify-center gap-2 text-4xl text-gray-300 peer-stars cursor-pointer">
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setPeerStar(this, 1)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setPeerStar(this, 2)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setPeerStar(this, 3)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setPeerStar(this, 4)"></i>
+                        <i class="fa-solid fa-star hover:text-brand-500 transition-colors" onclick="setPeerStar(this, 5)"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-black text-gray-900 mb-3">피어 리뷰 내용</label>
+                    <textarea id="peerReviewText" class="w-full h-24 bg-gray-50 border border-gray-100 rounded-2xl p-4 font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none" placeholder="팀원의 강점이나 아쉬웠던 점을 적어주세요."></textarea>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-50 flex gap-4">
+                <button onclick="closeReviewModal('peer')" class="flex-1 py-4 bg-white border border-gray-200 text-gray-500 font-black rounded-xl hover:bg-white/50 transition-all">취소</button>
+                <button onclick="submitReview('peer')" class="flex-1 py-4 bg-gray-900 text-white font-black rounded-xl shadow-lg shadow-gray-900/20 hover:bg-gray-800 transition-all">리뷰 등록</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(content => {
@@ -341,6 +488,90 @@
             const activeBtn = document.getElementById('tab-' + tabName);
             activeBtn.classList.add('active', 'bg-white', 'border', 'border-gray-100', 'text-gray-900', 'shadow-sm');
             activeBtn.classList.remove('text-gray-400');
+        }
+
+        function openReviewModal(type) {
+            const modalId = type === 'project' ? 'projectReviewModal' : 'peerReviewModal';
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeReviewModal(type) {
+            const modalId = type === 'project' ? 'projectReviewModal' : 'peerReviewModal';
+            const modal = document.getElementById(modalId);
+            modal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+            modal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function setStar(element, rating) {
+            const container = element.parentElement;
+            const stars = container.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if(index < rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-brand-500');
+                } else {
+                    star.classList.remove('text-brand-500');
+                    star.classList.add('text-gray-300');
+                }
+            });
+            const scoreDisplay = document.getElementById('modalRatingScore');
+            if (scoreDisplay) scoreDisplay.innerText = rating.toFixed(1);
+        }
+
+        function setPeerStar(element, rating) {
+            const container = element.parentElement;
+            const stars = container.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if(index < rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-brand-500');
+                } else {
+                    star.classList.remove('text-brand-500');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function submitReview(type) {
+            const text = type === 'project' ? document.getElementById('projectReviewText').value : document.getElementById('peerReviewText').value;
+            if (!text) {
+                alert('리뷰 내용을 입력해주세요.');
+                return;
+            }
+            
+            // 실제 동작을 시뮬레이션하기 위해 '받은 피어 리뷰' 탭에 새로운 리뷰 추가
+            if (type === 'peer') {
+                const peerName = document.getElementById('peerSelect').value || '익명 팀원';
+                const reviewsContainer = document.querySelector('#content-reviews .space-y-6');
+                const newReview = document.createElement('div');
+                newReview.className = 'p-6 bg-brand-50 border border-brand-100 rounded-2xl shadow-sm animate-fade-in-up';
+                newReview.innerHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${peerName}" class="w-10 h-10 rounded-full border border-gray-200 bg-white">
+                        <div>
+                            <div class="flex gap-1 text-xs mb-0.5">
+                                <i class="fa-solid fa-star text-yellow-400"></i><i class="fa-solid fa-star text-yellow-400"></i><i class="fa-solid fa-star text-yellow-400"></i><i class="fa-solid fa-star text-yellow-400"></i><i class="fa-solid fa-star text-yellow-400"></i>
+                            </div>
+                            <p class="text-xs font-black text-brand-800 uppercase tracking-widest leading-none">${peerName} · 방금 전</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 font-medium leading-relaxed italic">"${text}"</p>
+                `;
+                reviewsContainer.prepend(newReview);
+                alert('팀원 리뷰가 등록되었습니다! "받은 피어 리뷰" 탭에서 확인하실 수 있습니다.');
+            } else {
+                alert('프로젝트 리뷰가 성공적으로 등록되었습니다!');
+            }
+            
+            closeReviewModal(type);
         }
     </script>
 </body>
