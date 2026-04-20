@@ -10,9 +10,12 @@ import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -110,16 +113,21 @@ public class ProjectService {
 
     // --- REST API (HEAD) ---
     public Page<ProjectListResponseDto> getProjects(String keyword, String projectType, 
-                                                    String progressMethod, Pageable pageable) {
-        Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, pageable);
+                                                    String progressMethod, String position, 
+                                                    String techStack, Pageable pageable) {
+        Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, position, techStack, pageable);
         
         return projects.map(project -> new ProjectListResponseDto(
                 project.getId(),
                 project.getTitle(),
-                project.getRecruitmentCount(),
+                project.getCurrentRecruitment(),
+                project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount(),
                 project.getProjectType(),
                 project.getProgressMethod(),
-                project.getRecruitmentEndAt(),
+                project.getPosition(),
+                splitTechStacks(project.getTechStackCsv()),
+                project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt(),
+                formatDeadline(project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
                 project.getClosed(),
                 project.getCreatedAt()
         ));
@@ -147,7 +155,14 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request) {
+    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request, String requesterName) {
+        if (requesterName == null || requesterName.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required. Please provide X-User-Name header.");
+        }
+
+        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        String finalRequesterName = utf8RequesterName.contains("\uFFFD") ? requesterName : utf8RequesterName;
+
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
                 request.getTitle(),
@@ -163,6 +178,9 @@ public class ProjectService {
                 now,
                 now
         );
+        
+        project.setLeaderName(finalRequesterName);
+
         Project savedProject = projectRepository.save(project);
         
         return new ProjectDetailResponseDto(
@@ -174,10 +192,21 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request) {
+    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request, String requesterName) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
         
+        if (requesterName == null || requesterName.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+
+        if (!isLeader) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
+        }
+
         project.update(
                 request.getTitle(),
                 request.getDescription(),
@@ -203,9 +232,21 @@ public class ProjectService {
     }
 
     @Transactional
-    public void deleteProject(Long projectId) {
+    public void deleteProject(Long projectId, String requesterName) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        
+        if (requesterName == null || requesterName.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+
+        if (!isLeader) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can delete the project.");
+        }
+
         projectRepository.delete(project);
     }
 }

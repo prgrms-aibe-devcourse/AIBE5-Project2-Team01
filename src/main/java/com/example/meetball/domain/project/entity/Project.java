@@ -183,6 +183,7 @@ public class Project {
     public String getPosition() { return position; }
     public String getProgressMethod() { return progressMethod; }
     public String getLeaderName() { return leaderName; }
+    public void setLeaderName(String leaderName) { this.leaderName = leaderName; }
     public String getLeaderRole() { return leaderRole; }
     public String getLeaderAvatarUrl() { return leaderAvatarUrl; }
     public String getThumbnailUrl() { return thumbnailUrl; }
