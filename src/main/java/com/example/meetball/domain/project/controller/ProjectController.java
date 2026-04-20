@@ -1,10 +1,12 @@
 package com.example.meetball.domain.project.controller;
 
 import com.example.meetball.domain.project.dto.ProjectCreateRequestDto;
-import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
 import com.example.meetball.domain.project.dto.ProjectListResponseDto;
+import com.example.meetball.domain.project.dto.ProjectSummaryView;
+import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.project.service.ProjectService;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,10 +34,11 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    // --- MVC (front2) ---
     @GetMapping("/projects")
     public String projects(Model model) {
-        model.addAttribute("projects", projectService.getProjectSummaries());
+        List<ProjectSummaryView> projects = projectService.getProjectSummaries();
+        model.addAttribute("projects", projects);
+        model.addAttribute("projectCount", projects.size());
         return "home/index";
     }
 
@@ -59,7 +62,6 @@ public class ProjectController {
         return "project/manage";
     }
 
-    // --- REST API (HEAD) ---
     @ResponseBody
     @GetMapping("/api/projects")
     public Page<ProjectListResponseDto> getProjects(

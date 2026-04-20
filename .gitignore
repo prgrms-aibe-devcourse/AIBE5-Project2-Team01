@@ -43,6 +43,9 @@ target/
 # Logs
 *.log
 
+# Runtime uploads
+uploads/
+
 # Environment
 .env
 .env.*

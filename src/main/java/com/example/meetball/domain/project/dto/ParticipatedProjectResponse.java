@@ -11,6 +11,7 @@ public class ParticipatedProjectResponse {
     private Long projectId;
     private String title;
     private String userRole; // LEADER, MEMBER
+    private String status;
     private boolean canReview;
     private boolean closed; // 프로젝트 마감 여부
     
@@ -22,8 +23,10 @@ public class ParticipatedProjectResponse {
                 .projectId(project.getId())
                 .title(project.getTitle())
                 .userRole(role)
+                .status(Boolean.TRUE.equals(project.getClosed()) ? "COMPLETED" : "PROCEEDING")
                 .canReview(canReview)
                 .dDay(dDay)
+                .closed(Boolean.TRUE.equals(project.getClosed()))
                 .build();
     }
 }

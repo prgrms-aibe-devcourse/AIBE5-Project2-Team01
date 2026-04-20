@@ -19,12 +19,14 @@ import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class DataInitializer implements CommandLineRunner {
 
     private final CommentRepository commentRepository;
