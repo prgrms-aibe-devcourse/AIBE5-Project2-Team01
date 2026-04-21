@@ -26,7 +26,7 @@ public class ProjectRepositoryTest {
         projectRepository.save(new Project("React 프로젝트", "요약", "설명", "사이드", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), "JS"));
 
         // when
-        Page<Project> results = projectRepository.findProjectsWithFilters("Spring", null, null, PageRequest.of(0, 10));
+        Page<Project> results = projectRepository.findProjectsWithFilters("Spring", null, null, null, null, PageRequest.of(0, 10));
 
         // then
         assertThat(results.getContent()).hasSize(1);
@@ -41,7 +41,7 @@ public class ProjectRepositoryTest {
         projectRepository.save(new Project("공모전", "요약", "설명", "COMPETITION", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), "JS"));
 
         // when
-        Page<Project> results = projectRepository.findProjectsWithFilters(null, "STUDY", null, PageRequest.of(0, 10));
+        Page<Project> results = projectRepository.findProjectsWithFilters(null, "STUDY", null, null, null, PageRequest.of(0, 10));
 
         // then
         assertThat(results.getContent()).hasSize(1);
