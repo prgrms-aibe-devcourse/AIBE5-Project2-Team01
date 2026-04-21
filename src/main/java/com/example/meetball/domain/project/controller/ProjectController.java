@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -89,23 +89,23 @@ public class ProjectController {
     @ResponseBody
     @PostMapping("/api/projects")
     public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request,
-                                                  @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
-        return projectService.createProject(request, requesterName);
+                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
+        return projectService.createProject(request, userId);
     }
 
     @ResponseBody
     @PutMapping("/api/projects/{projectId}")
     public ProjectDetailResponseDto updateProject(@PathVariable("projectId") Long projectId,
                                                   @RequestBody ProjectUpdateRequestDto request,
-                                                  @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
-        return projectService.updateProject(projectId, request, requesterName);
+                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
+        return projectService.updateProject(projectId, request, userId);
     }
 
     @ResponseBody
     @DeleteMapping("/api/projects/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId,
-                                              @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
-        projectService.deleteProject(projectId, requesterName);
+                                              @SessionAttribute(name = "userId", required = false) Long userId) {
+        projectService.deleteProject(projectId, userId);
         return ResponseEntity.noContent().build();
     }
 }

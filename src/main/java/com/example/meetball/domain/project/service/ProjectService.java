@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import com.example.meetball.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -38,6 +40,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final ReviewRepository reviewRepository;
+    private final UserService userService;
 
     // --- MVC (front2) ---
     public List<ProjectSummaryView> getProjectSummaries() {
@@ -171,13 +174,13 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request, String requesterName) {
-        if (requesterName == null || requesterName.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required. Please provide X-User-Name header.");
+    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request, Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        String finalRequesterName = utf8RequesterName.contains("\uFFFD") ? requesterName : utf8RequesterName;
+        User user = userService.getUserById(userId);
+        String leaderNickname = user.getNickname();
 
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
@@ -195,7 +198,7 @@ public class ProjectService {
                 now
         );
         
-        project.setLeaderName(finalRequesterName);
+        project.setLeaderName(leaderNickname);
 
         Project savedProject = projectRepository.save(project);
         
@@ -208,16 +211,16 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request, String requesterName) {
+    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request, Long userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
         
-        if (requesterName == null || requesterName.trim().isEmpty()) {
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+        User user = userService.getUserById(userId);
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
         if (!isLeader) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
@@ -248,16 +251,16 @@ public class ProjectService {
     }
 
     @Transactional
-    public void deleteProject(Long projectId, String requesterName) {
+    public void deleteProject(Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
         
-        if (requesterName == null || requesterName.trim().isEmpty()) {
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+        User user = userService.getUserById(userId);
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
         if (!isLeader) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can delete the project.");

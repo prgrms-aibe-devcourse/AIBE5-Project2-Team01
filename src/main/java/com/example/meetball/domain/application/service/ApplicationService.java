@@ -32,10 +32,10 @@ public class ApplicationService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ApplicationResponseDto createApplication(Long projectId, ApplicationRequestDto request, String requesterName) {
+    public ApplicationResponseDto createApplication(Long projectId, ApplicationRequestDto request, Long userId) {
         // 1. 비회원 또는 사용자 식별 정보 없는 경우 지원 불가 처리
-        if (requesterName == null || requesterName.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required. Please provide X-User-Name header.");
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
         
         Project project = projectRepository.findById(projectId)
@@ -49,23 +49,23 @@ public class ApplicationService {
         }
 
         // yunseok1: user 조회
-        User user = null;
-        if (request.getUserId() != null) {
-            user = userRepository.findById(request.getUserId()).orElse(null);
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
+        
+        String applicantNickname = user.getNickname();
 
         // 4. 동일 사용자의 동일 프로젝트 중복 지원 불가 처리
-        if (applicationRepository.existsByProjectIdAndApplicantName(projectId, requesterName)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already applied to this project by applicant: " + requesterName);
+        if (applicationRepository.existsByProjectIdAndApplicantName(projectId, applicantNickname)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already applied to this project by applicant: " + applicantNickname);
         }
-        if (user != null && applicationRepository.existsByProjectAndUser(project, user)) {
+        if (applicationRepository.existsByProjectAndUser(project, user)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already applied to this project by user: " + user.getId());
         }
 
         Application application = Application.builder()
                 .project(project)
                 .user(user)
-                .applicantName(requesterName)
+                .applicantName(applicantNickname)
                 .position(request.getPosition())
                 .message(request.getMessage())
                 .status(ApplicationStatus.PENDING)
@@ -84,17 +84,19 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ApplicationResponseDto> getApplicationsByProjectId(Long projectId, String requesterName) {
+    public List<ApplicationResponseDto> getApplicationsByProjectId(Long projectId, Long userId) {
         // 2. 존재하지 않는 프로젝트
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
 
-        if (requesterName == null || requesterName.trim().isEmpty()) {
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
+        
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
         // 5. 지원 목록 조회는 권한 없는 사용자가 못 보게 막음
         if (!isLeader) {
@@ -108,7 +110,7 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationResponseDto updateApplicationStatus(Long applicationId, ApplicationStatusUpdateRequestDto request, String requesterName) {
+    public ApplicationResponseDto updateApplicationStatus(Long applicationId, ApplicationStatusUpdateRequestDto request, Long userId) {
         // 7. 존재하지 않는 지원(application) 상태 변경 시 적절한 예외 처리
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found with id: " + applicationId));
@@ -118,12 +120,14 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found.");
         }
 
-        if (requesterName == null || requesterName.trim().isEmpty()) {
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        String utf8RequesterName = new String(requesterName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        boolean isLeader = requesterName.equals(project.getLeaderName()) || utf8RequesterName.equals(project.getLeaderName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
+        
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
         // 6. 지원 상태 변경은 리더만 가능하도록 점검
         if (!isLeader) {
