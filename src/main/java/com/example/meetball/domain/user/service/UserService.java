@@ -71,7 +71,7 @@ public class UserService {
                     User newUser = User.builder()
                             .email(email)
                             .nickname(name != null ? name : "User_" + System.currentTimeMillis())
-                            .role("USER")
+                            .role("MEMBER")
                             .jobTitle("-")
                             .techStack("-")
                             .isPublic(true)

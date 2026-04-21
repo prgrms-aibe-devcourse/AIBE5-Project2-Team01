@@ -25,9 +25,13 @@ public class SecurityConfig {
                                 "/api/projects",
                                 "/api/projects/*",
                                 "/api/auth/**",
-                                "/projects/**"
+                                "/projects/**",
+                                "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
