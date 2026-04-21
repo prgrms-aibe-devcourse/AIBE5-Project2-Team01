@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Configuration
 @RequiredArgsConstructor
@@ -109,6 +110,22 @@ public class DataInitializer implements CommandLineRunner {
                     "React, Solidity, Go"
             ));
 
+            // HEAD 버전 호환을 위한 더미 프로젝트
+            Project p3 = new Project(
+                    "알고리즘 코딩테스트 스터디",
+                    "코테 대비반 모집합니다. 매주 프로그래머스 레벨 2~3 문제 풀이",
+                    "STUDY",
+                    "ONLINE",
+                    3,
+                    LocalDate.now(),
+                    LocalDate.now().plusDays(7),
+                    LocalDate.now().plusDays(14),
+                    LocalDate.now().plusMonths(2),
+                    false,
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+            projectRepository.save(p3);
             // 참여 정보 연결 (1번 유저: 팀장님, 2번 유저: 성실팀원)
             User leader = userRepository.findByEmail("leader@test.com").get();
             User member = userRepository.findByEmail("member@test.com").get();
@@ -125,6 +142,7 @@ public class DataInitializer implements CommandLineRunner {
             applicationRepository.save(Application.builder()
                     .user(guest)
                     .project(project1)
+                    .applicantName(guest.getNickname())
                     .position("백엔드 개발자")
                     .status(ApplicationStatus.PENDING)
                     .message("열심히 도와드리고 싶습니다!")
@@ -134,6 +152,7 @@ public class DataInitializer implements CommandLineRunner {
             applicationRepository.save(Application.builder()
                     .user(leader)
                     .project(project2)
+                    .applicantName(leader.getNickname())
                     .position("프론트엔드 개발자")
                     .status(ApplicationStatus.PENDING)
                     .message("디자인 감각이 뛰어난 프론트엔드입니다!")

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -34,6 +35,7 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    // --- MVC (front2) ---
     @GetMapping("/projects")
     public String projects(Model model) {
         List<ProjectSummaryView> projects = projectService.getProjectSummaries();
@@ -62,6 +64,7 @@ public class ProjectController {
         return "project/manage";
     }
 
+    // --- REST API ---
     @ResponseBody
     @GetMapping("/api/projects")
     public Page<ProjectListResponseDto> getProjects(
@@ -69,10 +72,12 @@ public class ProjectController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "projectType", required = false) String projectType,
-            @RequestParam(name = "progressMethod", required = false) String progressMethod
+            @RequestParam(name = "progressMethod", required = false) String progressMethod,
+            @RequestParam(name = "position", required = false) String position,
+            @RequestParam(name = "techStack", required = false) String techStack
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return projectService.getProjects(keyword, projectType, progressMethod, pageable);
+        return projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable);
     }
 
     @ResponseBody
@@ -83,21 +88,24 @@ public class ProjectController {
 
     @ResponseBody
     @PostMapping("/api/projects")
-    public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request) {
-        return projectService.createProject(request);
+    public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request,
+                                                  @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
+        return projectService.createProject(request, requesterName);
     }
 
     @ResponseBody
     @PutMapping("/api/projects/{projectId}")
     public ProjectDetailResponseDto updateProject(@PathVariable("projectId") Long projectId,
-                                                  @RequestBody ProjectUpdateRequestDto request) {
-        return projectService.updateProject(projectId, request);
+                                                  @RequestBody ProjectUpdateRequestDto request,
+                                                  @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
+        return projectService.updateProject(projectId, request, requesterName);
     }
 
     @ResponseBody
     @DeleteMapping("/api/projects/{projectId}")
-    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId) {
-        projectService.deleteProject(projectId);
+    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId,
+                                              @RequestHeader(value = "X-User-Name", required = false) String requesterName) {
+        projectService.deleteProject(projectId, requesterName);
         return ResponseEntity.noContent().build();
     }
 }

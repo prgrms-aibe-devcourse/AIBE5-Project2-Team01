@@ -1,0 +1,54 @@
+### 1. 지원하기 - 정상
+POST http://localhost:8080/api/projects/1/applications
+Content-Type: application/json
+X-User-Name: tester1
+
+{
+  "position": "백엔드",
+  "message": "지원합니다."
+}
+
+### 2. 지원하기 - 헤더 없음 -> 401 기대
+POST http://localhost:8080/api/projects/1/applications
+Content-Type: application/json
+
+{
+  "position": "백엔드",
+  "message": "지원합니다."
+}
+
+### 3. 중복 지원 -> 409 기대
+POST http://localhost:8080/api/projects/1/applications
+Content-Type: application/json
+X-User-Name: tester1
+
+{
+  "position": "백엔드",
+  "message": "다시 지원합니다."
+}
+
+### 4. 지원 목록 조회 - 팀장 이름으로 조회
+GET http://localhost:8080/api/projects/1/applications
+X-User-Name: 김밋볼
+
+### 5. 지원 목록 조회 - 팀장 아닌 이름 -> 403 기대
+GET http://localhost:8080/api/projects/1/applications
+X-User-Name: stranger
+
+### 6. 지원 상태 변경 - 팀장 이름으로 승인
+PATCH http://localhost:8080/api/applications/1/status
+Content-Type: application/json
+X-User-Name: 김밋볼
+
+{
+  "status": "APPROVED"
+}
+
+### 7. 지원 상태 변경 - 권한 없는 사용자 -> 403 기대
+PATCH http://localhost:8080/api/applications/1/status
+Content-Type: application/json
+X-User-Name: 네?
+
+{
+  "status": "REJECTED"
+}

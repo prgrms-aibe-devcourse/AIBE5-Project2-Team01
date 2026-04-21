@@ -1,0 +1,408 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.example:meetball >------------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ meetball ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 9 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ meetball ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ meetball ---
+[INFO] skip non existing resourceDirectory /Users/yunseok/Documents/GitHub/AIBE5_Project2_Team1/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ meetball ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.5:test (default-test) @ meetball ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.example.meetball.domain.mypage.controller.MyPageControllerTest
+12:42:25.359 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.meetball.domain.mypage.controller.MyPageControllerTest]: MyPageControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:42:25.438 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.meetball.MeetballApplication for test class com.example.meetball.domain.mypage.controller.MyPageControllerTest
+12:42:25.506 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.13)
+
+2026-04-20T12:42:25.632+09:00  INFO 13307 --- [meetball] [           main] c.e.m.d.m.c.MyPageControllerTest         : Starting MyPageControllerTest using Java 26 with PID 13307 (started by yunseok in /Users/yunseok/Documents/GitHub/AIBE5_Project2_Team1)
+2026-04-20T12:42:25.633+09:00  INFO 13307 --- [meetball] [           main] c.e.m.d.m.c.MyPageControllerTest         : No active profile set, falling back to 1 default profile: "default"
+2026-04-20T12:42:25.946+09:00  INFO 13307 --- [meetball] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-20T12:42:25.987+09:00  INFO 13307 --- [meetball] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 37 ms. Found 9 JPA repository interfaces.
+2026-04-20T12:42:26.246+09:00  INFO 13307 --- [meetball] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-20T12:42:26.277+09:00  INFO 13307 --- [meetball] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.45.Final
+2026-04-20T12:42:26.292+09:00  INFO 13307 --- [meetball] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-20T12:42:26.411+09:00  INFO 13307 --- [meetball] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-20T12:42:26.423+09:00  INFO 13307 --- [meetball] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-20T12:42:26.533+09:00  INFO 13307 --- [meetball] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:meetball user=SA
+2026-04-20T12:42:26.534+09:00  INFO 13307 --- [meetball] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-20T12:42:26.565+09:00  INFO 13307 --- [meetball] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-20T12:42:27.065+09:00  INFO 13307 --- [meetball] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table application (id bigint generated by default as identity, created_at timestamp(6), message TEXT, position varchar(255), status enum ('ACCEPTED','PENDING','REJECTED'), project_id bigint, user_id bigint, primary key (id))
+Hibernate: create table attachments (id bigint generated by default as identity, created_at timestamp(6), file_size bigint, link_url varchar(255), original_file_name varchar(255) not null, project_id bigint not null, stored_file_path varchar(255), type varchar(255), primary key (id))
+Hibernate: create table bookmarks (id bigint generated by default as identity, created_at timestamp(6), project_id bigint not null, user_id bigint not null, primary key (id))
+Hibernate: create table comment (id bigint generated by default as identity, author_nickname varchar(255) not null, author_role varchar(255) not null, content varchar(1000) not null, created_at timestamp(6), project_id bigint not null, parent_id bigint, primary key (id))
+Hibernate: create table project (id bigint generated by default as identity, content TEXT, recruitment_deadline date, status enum ('COMPLETED','PROCEEDING','RECRUITING'), tech_stack varchar(255), title varchar(255) not null, primary key (id))
+Hibernate: create table project_reads (id bigint generated by default as identity, read_at timestamp(6), project_id bigint, user_id bigint, primary key (id))
+Hibernate: create table project_member (id bigint generated by default as identity, role varchar(255), project_id bigint, user_id bigint, primary key (id))
+Hibernate: create table reviews (id bigint generated by default as identity, content TEXT, created_at timestamp(6), score float(53) not null, project_id bigint not null, reviewee_id bigint, reviewer_id bigint not null, primary key (id))
+Hibernate: create table users (id bigint generated by default as identity, email varchar(255) not null, is_public boolean not null, job_title varchar(255), nickname varchar(255), role varchar(255) not null, tech_stack varchar(255), primary key (id))
+Hibernate: alter table if exists bookmarks drop constraint if exists UK7j667gp1r43idwr5s6w8oroas
+Hibernate: alter table if exists bookmarks add constraint UK7j667gp1r43idwr5s6w8oroas unique (project_id, user_id)
+Hibernate: alter table if exists project_reads drop constraint if exists UKk0ev79e5dupd10oux9fm0k1us
+Hibernate: alter table if exists project_reads add constraint UKk0ev79e5dupd10oux9fm0k1us unique (user_id, project_id)
+Hibernate: alter table if exists users drop constraint if exists UK6dotkott2kjsp8vw4d0m25fb7
+Hibernate: alter table if exists users add constraint UK6dotkott2kjsp8vw4d0m25fb7 unique (email)
+Hibernate: alter table if exists users drop constraint if exists UK2ty1xmrrgtn89xt7kyxx6ta7h
+Hibernate: alter table if exists users add constraint UK2ty1xmrrgtn89xt7kyxx6ta7h unique (nickname)
+Hibernate: alter table if exists application add constraint FKrxh04lcvhpj4owpuk43oa0njh foreign key (project_id) references project
+Hibernate: alter table if exists application add constraint FKawte0mbtubellxed1dvpoxhdj foreign key (user_id) references users
+Hibernate: alter table if exists bookmarks add constraint FK2o32h3qib62eoq6q2lewdj450 foreign key (project_id) references project
+Hibernate: alter table if exists bookmarks add constraint FKdbsho2e05w5r13fkjqfjmge5f foreign key (user_id) references users
+Hibernate: alter table if exists comment add constraint FKde3rfu96lep00br5ov0mdieyt foreign key (parent_id) references comment
+Hibernate: alter table if exists project_reads add constraint FKp6ca7v6ai16igba5t96dwr3oq foreign key (project_id) references project
+Hibernate: alter table if exists project_reads add constraint FKkvk7ud93nj8749op64st92ayt foreign key (user_id) references users
+Hibernate: alter table if exists project_member add constraint FK103dwxad12nbaxtmnwus4eft2 foreign key (project_id) references project
+Hibernate: alter table if exists project_member add constraint FKmep5284pv47j2o523l14wyx4g foreign key (user_id) references users
+Hibernate: alter table if exists reviews add constraint FKih75j8y8lgql5f5bu6900l9nq foreign key (project_id) references project
+Hibernate: alter table if exists reviews add constraint FK1sjw2c8j34ew366vfqxergp0b foreign key (reviewee_id) references users
+Hibernate: alter table if exists reviews add constraint FKd1isgfajhtdl8mgg29up6mofi foreign key (reviewer_id) references users
+2026-04-20T12:42:27.114+09:00  INFO 13307 --- [meetball] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-20T12:42:27.788+09:00  WARN 13307 --- [meetball] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-20T12:42:28.093+09:00  INFO 13307 --- [meetball] [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:meetball'
+2026-04-20T12:42:28.134+09:00  INFO 13307 --- [meetball] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-20T12:42:28.134+09:00  INFO 13307 --- [meetball] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-20T12:42:28.135+09:00  INFO 13307 --- [meetball] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-04-20T12:42:28.156+09:00  INFO 13307 --- [meetball] [           main] c.e.m.d.m.c.MyPageControllerTest         : Started MyPageControllerTest in 2.655 seconds (process running for 3.169)
+Hibernate: select count(*) from users u1_0
+Hibernate: insert into users (email,is_public,job_title,nickname,role,tech_stack,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into users (email,is_public,job_title,nickname,role,tech_stack,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into users (email,is_public,job_title,nickname,role,tech_stack,id) values (?,?,?,?,?,?,default)
+Hibernate: select count(*) from project p1_0
+Hibernate: insert into project (content,recruitment_deadline,status,tech_stack,title,id) values (?,?,?,?,?,default)
+Hibernate: insert into project (content,recruitment_deadline,status,tech_stack,title,id) values (?,?,?,?,?,default)
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.email=?
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.email=?
+Hibernate: insert into project_member (project_id,role,user_id,id) values (?,?,?,default)
+Hibernate: insert into project_member (project_id,role,user_id,id) values (?,?,?,default)
+Hibernate: insert into project_member (project_id,role,user_id,id) values (?,?,?,default)
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.email=?
+Hibernate: insert into application (created_at,message,position,project_id,status,user_id,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into application (created_at,message,position,project_id,status,user_id,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into project_reads (project_id,read_at,user_id,id) values (?,?,?,default)
+Hibernate: insert into project_reads (project_id,read_at,user_id,id) values (?,?,?,default)
+Hibernate: insert into bookmarks (created_at,project_id,user_id,id) values (?,?,?,default)
+Hibernate: insert into users (email,is_public,job_title,nickname,role,tech_stack,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into reviews (content,created_at,project_id,reviewee_id,reviewer_id,score,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into reviews (content,created_at,project_id,reviewee_id,reviewer_id,score,id) values (?,?,?,?,?,?,default)
+Hibernate: select count(*) from comment c1_0
+Hibernate: insert into comment (author_nickname,author_role,content,created_at,parent_id,project_id,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into comment (author_nickname,author_role,content,created_at,parent_id,project_id,id) values (?,?,?,?,?,?,default)
+Hibernate: insert into comment (author_nickname,author_role,content,created_at,parent_id,project_id,id) values (?,?,?,?,?,?,default)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/Users/yunseok/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.content,r1_0.created_at,r1_0.project_id,r1_0.reviewee_id,r1_0.reviewer_id,r1_0.score from reviews r1_0 where r1_0.reviewee_id=? order by r1_0.created_at desc
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/reviews
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getMyReviews(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"reviewId":1,"reviewerNickname":"열정개발자","reviewerJobTitle":"백엔드 개발자","projectTitle":"AI 헬스케어 모바일 앱","content":"팀장님 리더십 덕분에 프로젝트 마무리 잘 할 수 있었습니다!","score":5.0,"createdAt":"2026-04-20T12:42:28.363343"}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select a1_0.id,a1_0.created_at,a1_0.message,a1_0.position,a1_0.project_id,a1_0.status,a1_0.user_id from application a1_0 where a1_0.user_id=?
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/applications
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getMyApplications(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"applicationId":2,"projectId":2,"projectTitle":"블록체인 기반 투표 시스템","position":"프론트엔드 개발자","status":"PENDING","appliedAt":"2026-04-20T12:42:28.357092"}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select pm1_0.id,pm1_0.project_id,pm1_0.role,pm1_0.user_id from project_member pm1_0 where pm1_0.user_id=?
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+Hibernate: select r1_0.id from reviews r1_0 where r1_0.project_id=? and r1_0.reviewer_id=? fetch first ? rows only
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/projects
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getMyProjects(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"projectId":1,"title":"AI 헬스케어 모바일 앱","status":"PROCEEDING","userRole":"LEADER","canReview":false,"dday":-30}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select pr1_0.id,pr1_0.project_id,pr1_0.read_at,pr1_0.user_id from project_reads pr1_0 where pr1_0.user_id=? order by pr1_0.read_at desc
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/recent-reads
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getRecentReads(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"projectId":2,"title":"블록체인 기반 투표 시스템","techStack":"React, Solidity, Go","readAt":"2026-04-20T12:42:28.359452"},{"projectId":1,"title":"AI 헬스케어 모바일 앱","techStack":"Java, Spring, Flutter","readAt":"2026-04-20T12:42:28.358115"}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select b1_0.id,b1_0.created_at,b1_0.project_id,b1_0.user_id from bookmarks b1_0 where b1_0.user_id=?
+Hibernate: select p1_0.id,p1_0.content,p1_0.recruitment_deadline,p1_0.status,p1_0.tech_stack,p1_0.title from project p1_0 where p1_0.id=?
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/bookmarks
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getMyBookmarks(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = [{"projectId":2,"title":"블록체인 기반 투표 시스템","techStack":"React, Solidity, Go"}]
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+Hibernate: select u1_0.id,u1_0.email,u1_0.is_public,u1_0.job_title,u1_0.nickname,u1_0.role,u1_0.tech_stack from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.content,r1_0.created_at,r1_0.project_id,r1_0.reviewee_id,r1_0.reviewer_id,r1_0.score from reviews r1_0 where r1_0.reviewee_id=? order by r1_0.created_at desc
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/mypage/profile
+       Parameters = {userId=[1], viewerId=[1]}
+          Headers = []
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.example.meetball.domain.mypage.controller.MyPageController
+           Method = com.example.meetball.domain.mypage.controller.MyPageController#getMyProfile(Long, Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = {"userId":1,"nickname":"팀장님","email":"leader@test.com","jobTitle":"프론트엔드 개발자","techStack":"React, TypeScript","role":"LEADER","meetBallIndex":36.7,"owner":true,"public":true}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+[ERROR] Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 3.471 s <<< FAILURE! -- in com.example.meetball.domain.mypage.controller.MyPageControllerTest
+[ERROR] com.example.meetball.domain.mypage.controller.MyPageControllerTest.getMyProjectsTest -- Time elapsed: 0.014 s <<< FAILURE!
+java.lang.AssertionError: No value at JSON path "$[0].dDay"
+	at org.springframework.test.util.JsonPathExpectationsHelper.evaluateJsonPath(JsonPathExpectationsHelper.java:351)
+	at org.springframework.test.util.JsonPathExpectationsHelper.assertExistsAndReturn(JsonPathExpectationsHelper.java:388)
+	at org.springframework.test.util.JsonPathExpectationsHelper.exists(JsonPathExpectationsHelper.java:239)
+	at org.springframework.test.web.servlet.result.JsonPathResultMatchers.lambda$exists$3(JsonPathResultMatchers.java:124)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.meetball.domain.mypage.controller.MyPageControllerTest.getMyProjectsTest(MyPageControllerTest.java:52)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+Caused by: com.jayway.jsonpath.PathNotFoundException: No results for path: $[0]['dDay']
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   MyPageControllerTest.getMyProjectsTest:52 No value at JSON path "$[0].dDay"
+[INFO] 
+[ERROR] Tests run: 6, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.557 s
+[INFO] Finished at: 2026-04-20T12:42:28+09:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.5:test (default-test) on project meetball: There are test failures.
+[ERROR] 
+[ERROR] See /Users/yunseok/Documents/GitHub/AIBE5_Project2_Team1/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

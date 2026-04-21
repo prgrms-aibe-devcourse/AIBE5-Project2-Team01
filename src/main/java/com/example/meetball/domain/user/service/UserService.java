@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -27,7 +26,6 @@ public class UserService {
     public Optional<User> findDefaultUser() {
         return userRepository.findFirstByOrderByIdAsc();
     }
-
     @Transactional
     public void updateUserProfile(Long userId, UserProfileUpdateRequest request) {
         User user = getUserById(userId);

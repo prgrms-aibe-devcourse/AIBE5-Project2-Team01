@@ -15,6 +15,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(length = 120)
     private String title;
 
@@ -80,6 +81,7 @@ public class Project {
     protected Project() {
     }
 
+
     public Project(String title, String description, String projectType, String progressMethod,
                    Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                    LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed,
@@ -96,7 +98,7 @@ public class Project {
         this.closed = closed;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-
+        // Sync fields for safety
         this.createdDate = createdAt != null ? createdAt.toLocalDate() : null;
         this.recruitmentDeadline = recruitmentEndAt;
         this.totalRecruitment = recruitmentCount;
@@ -107,11 +109,10 @@ public class Project {
         this.thumbnailUrl = "";
         this.leaderAvatarUrl = "";
         this.techStackCsv = "";
-        this.summary = description != null && description.length() > 50
-                ? description.substring(0, 50)
-                : description;
+        this.summary = description != null && description.length() > 50 ? description.substring(0, 50) : description;
     }
 
+    // --- Constructor from front2 ---
     public Project(
             String title,
             String summary,
@@ -142,13 +143,13 @@ public class Project {
         this.recruitmentDeadline = recruitmentDeadline;
         this.createdDate = createdDate;
         this.techStackCsv = techStackCsv;
-
+        // Sync fields for safety
         this.recruitmentCount = totalRecruitment;
         this.recruitmentEndAt = recruitmentDeadline;
         this.createdAt = createdDate != null ? createdDate.atStartOfDay() : LocalDateTime.now();
         this.updatedAt = this.createdAt;
         this.closed = false;
-        this.progressMethod = "ONLINE";
+        this.progressMethod = "ONLINE"; // default
     }
 
     public void update(String title, String description, String projectType, String progressMethod,
@@ -165,107 +166,36 @@ public class Project {
         this.projectEndAt = projectEndAt;
         this.closed = closed;
         this.updatedAt = updatedAt;
-
+        
         this.recruitmentDeadline = recruitmentEndAt;
         this.totalRecruitment = recruitmentCount;
-        this.summary = description != null && description.length() > 50
-                ? description.substring(0, 50)
-                : description;
+        this.summary = description != null && description.length() > 50 ? description.substring(0, 50) : description;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getProjectType() {
-        return projectType;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public String getProgressMethod() {
-        return progressMethod;
-    }
-
-    public String getLeaderName() {
-        return leaderName;
-    }
-
-    public String getLeaderRole() {
-        return leaderRole;
-    }
-
-    public String getLeaderAvatarUrl() {
-        return leaderAvatarUrl;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    public Integer getCurrentRecruitment() {
-        return currentRecruitment;
-    }
-
-    public Integer getTotalRecruitment() {
-        return totalRecruitment;
-    }
-
-    public Integer getRecruitmentCount() {
-        return recruitmentCount;
-    }
-
-    public LocalDate getRecruitmentStartAt() {
-        return recruitmentStartAt;
-    }
-
-    public LocalDate getRecruitmentDeadline() {
-        return recruitmentDeadline;
-    }
-
-    public LocalDate getRecruitmentEndAt() {
-        return recruitmentEndAt;
-    }
-
-    public LocalDate getProjectStartAt() {
-        return projectStartAt;
-    }
-
-    public LocalDate getProjectEndAt() {
-        return projectEndAt;
-    }
-
-    public Boolean getClosed() {
-        return closed;
-    }
-
-    public LocalDate getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getTechStackCsv() {
-        return techStackCsv;
-    }
+    // Getters
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getSummary() { return summary; }
+    public String getDescription() { return description; }
+    public String getProjectType() { return projectType; }
+    public String getPosition() { return position; }
+    public String getProgressMethod() { return progressMethod; }
+    public String getLeaderName() { return leaderName; }
+    public void setLeaderName(String leaderName) { this.leaderName = leaderName; }
+    public String getLeaderRole() { return leaderRole; }
+    public String getLeaderAvatarUrl() { return leaderAvatarUrl; }
+    public String getThumbnailUrl() { return thumbnailUrl; }
+    public Integer getCurrentRecruitment() { return currentRecruitment; }
+    public Integer getTotalRecruitment() { return totalRecruitment; }
+    public Integer getRecruitmentCount() { return recruitmentCount; }
+    public LocalDate getRecruitmentStartAt() { return recruitmentStartAt; }
+    public LocalDate getRecruitmentDeadline() { return recruitmentDeadline; }
+    public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }
+    public LocalDate getProjectStartAt() { return projectStartAt; }
+    public LocalDate getProjectEndAt() { return projectEndAt; }
+    public Boolean getClosed() { return closed; }
+    public LocalDate getCreatedDate() { return createdDate; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public String getTechStackCsv() { return techStackCsv; }
 }
