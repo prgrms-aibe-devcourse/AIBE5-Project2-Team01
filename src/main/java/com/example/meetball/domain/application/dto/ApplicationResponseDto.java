@@ -24,6 +24,7 @@ public class ApplicationResponseDto {
     public ApplicationResponseDto(Application application) {
         this.id = application.getId();
         this.projectId = application.getProjectId() != null ? application.getProjectId() : (application.getProject() != null ? application.getProject().getId() : null);
+        this.projectTitle = application.getProject() != null ? application.getProject().getTitle() : null;
         this.userId = application.getUser() != null ? application.getUser().getId() : null;
         this.userNickname = application.getUser() != null ? application.getUser().getNickname() : null;
         this.applicantName = application.getApplicantName();

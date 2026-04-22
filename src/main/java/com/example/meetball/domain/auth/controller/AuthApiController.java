@@ -32,8 +32,16 @@ public class AuthApiController {
             // Initialize Http Session
             HttpSession session = request.getSession(true);
             session.setAttribute("userId", user.getId());
+            session.setAttribute("userNickname", user.getNickname());
 
-            return ResponseEntity.ok(new AuthResponseDto(user));
+            // 닉네임이 기본값이거나 직무 정보가 없는 경우 프로필 설정 유도
+            if ("-".equals(user.getJobTitle()) || user.getNickname().startsWith("User_")) {
+                session.setAttribute("needsProfile", true);
+            } else {
+                session.removeAttribute("needsProfile");
+            }
+
+            return ResponseEntity.ok(new AuthResponseDto(user, requestDto.getCredential()));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google token: " + e.getMessage());
         } catch (Exception e) {
@@ -51,7 +59,7 @@ public class AuthApiController {
         Long userId = (Long) session.getAttribute("userId");
         User user = userService.getUserById(userId);
 
-        return ResponseEntity.ok(new AuthResponseDto(user));
+        return ResponseEntity.ok(new AuthResponseDto(user, null));
     }
 
     @PostMapping("/logout")

@@ -11,11 +11,13 @@ public class AuthResponseDto {
     private String email;
     private String nickname;
     private String role;
+    private String credential;
 
-    public AuthResponseDto(User user) {
+    public AuthResponseDto(User user, String credential) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
         this.role = user.getRole();
+        this.credential = credential;
     }
 }

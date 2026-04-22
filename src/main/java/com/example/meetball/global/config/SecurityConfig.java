@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final com.example.meetball.global.auth.service.CustomOAuth2UserService customOAuth2UserService;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -23,11 +25,7 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/img/**",
                                 "/h2-console/**",
-                                "/api/projects",
-                                "/api/projects/*",
-                                "/api/auth/**",
-                                "/api/recommendations",
-                                "/api/recommendations/**",
+                                "/api/**",
                                 "/projects/**"
                         ).permitAll()
                         .anyRequest().authenticated()
@@ -37,6 +35,13 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login") // 커스텀 로그인 페이지 사용
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .defaultSuccessUrl("/", true)
                 );
 
         return http.build();

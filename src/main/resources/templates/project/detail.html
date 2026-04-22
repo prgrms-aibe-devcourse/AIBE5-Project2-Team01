@@ -278,9 +278,10 @@
             </div>
 
             <!-- Right Side: Sidebar -->
-            <aside class="lg:col-span-4 space-y-8">
-                <section
-                    class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 sticky top-24 floating-sidebar">
+            <aside class="lg:col-span-4 translate-y-0">
+                <div class="space-y-8">
+                    <section
+                        class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10">
                     <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
                         <div class="flex items-center gap-2">
                             <button
@@ -317,12 +318,13 @@
                             class="w-full py-6 bg-poodle-100 text-poodle-400 border border-poodle-200 rounded-[1.5rem] font-black text-lg text-center cursor-not-allowed">
                             참여 중인 프로젝트입니다 🎯
                         </div>
-                </section>
-        </div>
+                    </div> <!-- 302행 div 닫기 -->
+                </section> <!-- 282행 section 닫기 -->
 
-        <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
-            class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 보고 있습니다.</p>
-        </div>
+                <div class="bg-white rounded-[2.5rem] p-10 shadow-xl shadow-poodle-900/5 border border-poodle-50 space-y-10">
+                    <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
+                        class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 보고 있습니다.</p>
+
 
         <div class="space-y-6">
             <div class="flex items-start gap-4">
@@ -385,10 +387,9 @@
                         <p class="text-[9px] text-poodle-300 font-black uppercase">Member / UI/UX Designer</p>
                     </div>
                 </div>
-            </div>
-        </div>
-        </section>
-        </aside>
+                    </div>
+                </div> <!-- 사이드바 컨테이너 닫기 -->
+            </aside>
         </div>
     </main>
 

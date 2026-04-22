@@ -11,23 +11,31 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
+import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.service.UserService;
+
 @RestController
 @RequiredArgsConstructor
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+    private final UserService userService;
+
+    private Long resolveUserId(Long sessionUserId) {
+        if (sessionUserId != null) return sessionUserId;
+        return userService.findDefaultUser().map(User::getId).orElse(null);
+    }
 
     // =====================================================
     // 지원자용 API
     // =====================================================
 
-    /** 프로젝트에 지원하기 */
     @PostMapping("/api/projects/{projectId}/applications")
     public ResponseEntity<ApplicationResponseDto> applyToProject(
             @PathVariable("projectId") Long projectId,
             @RequestBody ApplicationRequestDto request,
             @SessionAttribute(name = "userId", required = false) Long userId) {
-        return ResponseEntity.status(201).body(applicationService.createApplication(projectId, request, userId));
+        return ResponseEntity.status(201).body(applicationService.createApplication(projectId, request, resolveUserId(userId)));
     }
 
     /** 내가 지원한 목록 조회 (마이페이지용) */
@@ -45,7 +53,7 @@ public class ApplicationController {
     public List<ApplicationResponseDto> getApplications(
             @PathVariable("projectId") Long projectId,
             @SessionAttribute(name = "userId", required = false) Long userId) {
-        return applicationService.getApplicationsByProjectId(projectId, userId);
+        return applicationService.getApplicationsByProjectId(projectId, resolveUserId(userId));
     }
 
     /** 지원 상태 변경 (승인/거절) */
@@ -54,6 +62,6 @@ public class ApplicationController {
             @PathVariable("applicationId") Long applicationId,
             @RequestBody ApplicationStatusUpdateRequestDto request,
             @SessionAttribute(name = "userId", required = false) Long userId) {
-        return applicationService.updateApplicationStatus(applicationId, request, userId);
+        return applicationService.updateApplicationStatus(applicationId, request, resolveUserId(userId));
     }
 }
