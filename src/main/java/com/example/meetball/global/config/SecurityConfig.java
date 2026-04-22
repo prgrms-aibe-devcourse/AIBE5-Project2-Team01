@@ -22,11 +22,13 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/img/**",
+                                "/h2-console/**",
                                 "/api/projects",
                                 "/api/projects/*",
                                 "/api/auth/**",
-                                "/projects/**",
-                                "/h2-console/**"
+                                "/api/recommendations",
+                                "/api/recommendations/**",
+                                "/projects/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
