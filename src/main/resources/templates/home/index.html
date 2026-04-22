@@ -4,114 +4,268 @@
 <head th:replace="~{fragments/head :: commonHead('홈')}"></head>
 
 <body class="text-poodle-900 flex flex-col min-h-screen">
-<header th:replace="~{fragments/header :: mainHeader}"></header>
+    <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-<main class="flex-grow container mx-auto px-4 py-12 animate-fade-in-up">
-    <!-- Hero Section (Slim Version) -->
-    <section class="mb-12 relative py-12 md:py-16 bg-gradient-to-br from-poodle-700 via-poodle-600 to-poodle-900 rounded-[3rem] px-8 md:px-12 overflow-hidden shadow-2xl flex flex-col items-center justify-center text-center">
-        <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-meatball/10 rounded-full blur-[80px] -ml-16 -mb-16 pointer-events-none"></div>
-        
-        <div class="relative z-10 max-w-4xl w-full mx-auto">
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
-                <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
+    <main class="flex-grow container mx-auto px-4 py-12 animate-fade-in-up">
+        <!-- Hero Section (Slim Version) -->
+        <section
+            class="mb-12 relative py-12 md:py-16 bg-gradient-to-br from-poodle-700 via-poodle-600 to-poodle-900 rounded-[3rem] px-8 md:px-12 overflow-hidden shadow-2xl flex flex-col items-center justify-center text-center">
+            <div
+                class="absolute top-0 right-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none">
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter mb-5 leading-tight">
-                사이드 프로젝트 팀원을<br>구하는 가장 똑똑한 방법
-            </h1>
-            <p class="text-sm md:text-base text-poodle-100 font-bold mb-8 opacity-80 max-w-xl mx-auto leading-relaxed">
-                갈색 푸들 마스코트와 함께 나에게 딱 맞는 팀을 찾아보세요.
-            </p>
-            <a th:href="@{/projects}" class="group relative inline-flex items-center gap-4 px-10 py-5 bg-meatball text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl hover:scale-105 active:scale-95 transition-all border-2 border-white/10">
-                <span class="relative z-10">지금 바로 팀원 찾기</span>
-                <i class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]"></div>
-            </a>
-        </div>
-    </section>
+            <div
+                class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-meatball/10 rounded-full blur-[80px] -ml-16 -mb-16 pointer-events-none">
+            </div>
 
-    <!-- Filter Section (Slim) -->
-    <section class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
-        <div class="bg-white p-8 rounded-[3rem] border border-poodle-50 shadow-sm space-y-6">
-            <div class="flex flex-wrap gap-4 items-center">
-                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Position</span>
-                <button class="px-5 py-2 rounded-xl bg-poodle-900 text-white text-xs font-black">전체</button>
-                <button class="px-5 py-2 rounded-xl border border-poodle-50 text-poodle-400 text-xs font-black hover:bg-poodle-50 transition-all">프론트엔드</button>
-                <button class="px-5 py-2 rounded-xl border border-poodle-50 text-poodle-400 text-xs font-black hover:bg-poodle-50 transition-all">백엔드</button>
+            <div class="relative z-10 max-w-4xl w-full mx-auto">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
+                    <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter mb-5 leading-tight">
+                    사이드 프로젝트 팀원을<br>구하는 가장 똑똑한 방법
+                </h1>
+                <p
+                    class="text-sm md:text-base text-poodle-100 font-bold mb-8 opacity-80 max-w-xl mx-auto leading-relaxed">
+                    갈색 푸들 마스코트와 함께 나에게 딱 맞는 팀을 찾아보세요.
+                </p>
+                <a th:href="@{/projects}"
+                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-meatball text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl hover:scale-105 active:scale-95 transition-all border-2 border-white/10">
+                    <span class="relative z-10">지금 바로 팀원 찾기</span>
+                    <i
+                        class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]">
+                    </div>
+                </a>
             </div>
-            <div class="h-px bg-poodle-50/50 w-full"></div>
-            <div class="flex flex-wrap gap-4 items-center">
-                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Tech</span>
-                <div class="flex flex-wrap gap-2 text-meatball">
-                    <span class="px-3 py-1.5 bg-meatball/5 border border-meatball/10 rounded-lg text-[10px] font-black">Spring Boot</span>
-                    <span class="px-3 py-1.5 bg-meatball/5 border border-meatball/10 rounded-lg text-[10px] font-black">MySQL</span>
+        </section>
+
+        <!-- Search & Filter Section -->
+        <section class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="bg-white p-8 rounded-[3rem] border border-poodle-50 shadow-sm space-y-6">
+                <!-- Keyword Search -->
+                <div
+                    class="flex items-center bg-poodle-50/50 rounded-2xl p-2 border border-poodle-100 focus-within:border-meatball/30 focus-within:bg-white transition-all">
+                    <div class="px-4 text-poodle-300"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <input type="text" id="keywordInput" placeholder="관심 있는 프로젝트명이나 기술 스택을 검색해보세요!"
+                        class="w-full bg-transparent border-none outline-none text-poodle-800 font-bold placeholder-poodle-300 text-sm py-2"
+                        onkeypress="if(event.key === 'Enter') fetchProjects()">
+                    <button onclick="fetchProjects()"
+                        class="px-6 py-3 bg-poodle-800 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all">검색</button>
+                </div>
+
+                <div class="h-px bg-poodle-50/50 w-full"></div>
+
+                <!-- Filters -->
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Project Type -->
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <span
+                            class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Type</span>
+                        <button onclick="setFilter('projectType', '')"
+                            class="filter-btn type-filter active px-4 py-1.5 rounded-xl bg-poodle-900 text-white text-[11px] font-black transition-all">전체</button>
+                        <button onclick="setFilter('projectType', '사이드 프로젝트')"
+                            class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">사이드
+                            프로젝트</button>
+                        <button onclick="setFilter('projectType', '공모전')"
+                            class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">공모전</button>
+                    </div>
+                    <!-- Progress Method -->
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <span
+                            class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 md:ml-4">Method</span>
+                        <button onclick="setFilter('progressMethod', '')"
+                            class="filter-btn method-filter active px-4 py-1.5 rounded-xl bg-poodle-900 text-white text-[11px] font-black transition-all">전체</button>
+                        <button onclick="setFilter('progressMethod', '온라인')"
+                            class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">온라인</button>
+                        <button onclick="setFilter('progressMethod', '오프라인')"
+                            class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">오프라인</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Project List (Slim Cards) -->
-    <section class="mb-24 animate-fade-in-up" style="animation-delay: 0.4s;">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-3xl font-black text-poodle-900 tracking-tight">모집 중인 프로젝트</h2>
-            <a th:href="@{/register}" class="px-6 py-4 bg-poodle-900 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-900/10 hover:bg-meatball transition-all flex items-center gap-2">
-                <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
-            </a>
-        </div>
-
-        <!-- Empty State -->
-        <div th:if="${#lists.isEmpty(projects)}" class="py-32 text-center bg-white rounded-[3rem] border border-poodle-50">
-            <div class="w-20 h-20 bg-poodle-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-dog text-poodle-200 text-3xl animate-tail-wag"></i>
+        <!-- Project List (Slim Cards) -->
+        <section class="mb-24 animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-black text-poodle-900 tracking-tight">모집 중인 프로젝트</h2>
+                <a th:href="@{/register}"
+                    class="px-6 py-4 bg-poodle-900 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-900/10 hover:bg-meatball transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
+                </a>
             </div>
-            <p class="text-poodle-900 font-black text-xl">등록된 프로젝트가 없습니다.</p>
-        </div>
 
-        <div th:unless="${#lists.isEmpty(projects)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <article th:each="project : ${projects}" class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
-                <!-- Image Section (Compacted) -->
+            <!-- Project Container (Dynamic via JS) -->
+            <div id="projectContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Cards will be injected here -->
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="mt-12 flex items-center justify-center gap-4" id="paginationContainer">
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
+
+    <script>
+        let filterState = {
+            keyword: '',
+            projectType: '',
+            progressMethod: '',
+            page: 0
+        };
+
+        function setFilter(type, value) {
+            filterState[type] = value;
+            filterState.page = 0; // 필터 시 1페이지로 리셋
+
+            // UI 버튼 활성화 토글 로직
+            const parent = document.querySelectorAll(`.${type}-filter`);
+            if (parent.length > 0) {
+                parent.forEach(btn => {
+                    btn.classList.remove('active', 'bg-poodle-900', 'text-white');
+                    btn.classList.add('border', 'border-poodle-50', 'text-poodle-400');
+                });
+                // 선택된 버튼 처리 (value='' 인 경우 '전체' 버튼 찾기 위해 임시 우회)
+                const activeBtn = Array.from(parent).find(b => {
+                    return (value === '' && b.innerText === '전체') || b.innerText === value;
+                });
+                if (activeBtn) {
+                    activeBtn.classList.add('active', 'bg-poodle-900', 'text-white');
+                    activeBtn.classList.remove('border', 'border-poodle-50', 'text-poodle-400');
+                }
+            }
+
+            fetchProjects();
+        }
+
+        async function fetchProjects(page = 0) {
+            filterState.page = page;
+
+            // 검색어 반영
+            const keywordInput = document.getElementById('keywordInput').value;
+            filterState.keyword = keywordInput;
+
+            try {
+                const query = new URLSearchParams({
+                    page: filterState.page,
+                    size: 6,
+                    keyword: filterState.keyword,
+                    projectType: filterState.projectType,
+                    progressMethod: filterState.progressMethod
+                }).toString();
+
+                const res = await fetch(`/api/projects?${query}`);
+                if (!res.ok) throw new Error('API fetch error');
+                const data = await res.json();
+
+                renderProjects(data.content);
+                renderPagination(data);
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projectContainer');
+            if (!projects || projects.length === 0) {
+                container.classList.remove('grid');
+                container.innerHTML = `
+                <div class="py-32 text-center bg-white rounded-[3rem] border border-poodle-50 w-full">
+                    <div class="w-20 h-20 bg-poodle-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-dog text-poodle-200 text-3xl"></i>
+                    </div>
+                    <p class="text-poodle-900 font-black text-xl">조건에 맞는 프로젝트가 없습니다.</p>
+                </div>`;
+                return;
+            }
+
+            container.classList.add('grid');
+            container.innerHTML = projects.map(p => {
+                const currentRecruit = p.currentRecruitment || 0;
+                const totalRecruit = p.totalRecruitment || 0;
+                const percentage = totalRecruit > 0 ? (currentRecruit * 100 / totalRecruit) : 0;
+
+                // 기술 스택 (Array 처리)
+                const techBadges = (p.techStacks || []).map(tech =>
+                    `<span class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">${tech}</span>`
+                ).join('');
+
+                return `
+            <article class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+                <!-- Image Section -->
                 <div class="relative h-44 overflow-hidden">
-                    <img th:src="${project.thumbnailUrl}" th:alt="${project.title}" src="https://picsum.photos/seed/project/600/400"
+                    <img src="${p.thumbnailUrl || 'https://picsum.photos/seed/project/600/400'}" alt="${p.title}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute top-4 left-4">
-                        <span th:text="${project.deadlineLabel}" class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">D-14</span>
+                        <span class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">${p.deadlineLabel || '-'}</span>
                     </div>
                 </div>
 
                 <div class="p-6 flex flex-col flex-grow">
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <span th:text="${project.projectType}" class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">Side Project</span>
-                        <span th:text="${project.position}" class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">Backend</span>
+                        <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${p.projectType || ''}</span>
+                        <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${p.position || '미지정'}</span>
                     </div>
 
-                    <h3 th:text="${project.title}" class="text-xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors line-clamp-1">프로젝트 제목</h3>
-                    <p th:text="${project.summary}" class="text-[11px] text-poodle-400 font-bold leading-relaxed mb-4 line-clamp-2">프로젝트의 핵심 요약 내용이 들어갑니다.</p>
+                    <h3 class="text-xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors line-clamp-1">${p.title}</h3>
+                    <p class="text-[11px] text-poodle-400 font-bold leading-relaxed mb-4 line-clamp-2">${p.summary || ''}</p>
 
                     <div class="flex flex-wrap gap-1.5 mb-6">
-                        <span th:each="techStack : ${project.techStacks}" th:text="${techStack}" class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">Spring Boot</span>
+                        ${techBadges}
                     </div>
 
                     <div class="mt-auto pt-4 border-t border-poodle-50">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit Status</span>
                             <span class="text-xs font-black text-poodle-900">
-                                <span th:text="${project.currentRecruitment}" class="text-meatball">0</span> <span class="text-poodle-100">/</span> <span th:text="${project.totalRecruitment}">0</span>
+                                <span class="text-meatball">${currentRecruit}</span> <span class="text-poodle-100">/</span> <span>${totalRecruit}</span>
                             </span>
                         </div>
                         <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
-                            <div class="h-full bg-meatball rounded-full" th:style="'width: ' + (${project.currentRecruitment} * 100 / ${project.totalRecruitment}) + '%'"></div>
+                            <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
-                        <a th:href="@{/projects/{id}(id=${project.id})}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
+                        <a href="/projects/${p.id}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
                             프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
                 </div>
-            </article>
-        </div>
-    </section>
-</main>
+            </article>`;
+            }).join('');
+        }
 
-<footer th:replace="~{fragments/footer :: mainFooter}"></footer>
+        function renderPagination(pageData) {
+            const wrap = document.getElementById('paginationContainer');
+            if (pageData.totalPages <= 1) {
+                wrap.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            html += `<button onclick="fetchProjects(${pageData.number - 1})" ${pageData.first ? 'disabled' : ''} class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-poodle-100 text-poodle-400 hover:text-meatball hover:border-meatball transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                     <i class="fa-solid fa-chevron-left text-xs"></i>
+                 </button>`;
+
+            for (let i = 0; i < pageData.totalPages; i++) {
+                if (i === pageData.number) {
+                    html += `<button class="w-10 h-10 flex items-center justify-center rounded-2xl bg-meatball text-white font-black shadow-lg shadow-meatball/20 transition-all">${i + 1}</button>`;
+                } else {
+                    html += `<button onclick="fetchProjects(${i})" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-poodle-100 text-poodle-400 hover:text-poodle-900 transition-all font-black">${i + 1}</button>`;
+                }
+            }
+
+            html += `<button onclick="fetchProjects(${pageData.number + 1})" ${pageData.last ? 'disabled' : ''} class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-poodle-100 text-poodle-400 hover:text-meatball hover:border-meatball transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                     <i class="fa-solid fa-chevron-right text-xs"></i>
+                 </button>`;
+
+            wrap.innerHTML = html;
+        }
+
+        // 초기에 0페이지 목록 로드
+        document.addEventListener('DOMContentLoaded', () => fetchProjects(0));
+    </script>
 </body>
 
 </html>

@@ -120,20 +120,11 @@ public class ProjectService {
         return value == null ? 0 : value;
     }
 
-    public Page<ProjectListResponseDto> getProjects(String keyword, String projectType,
+    public Page<ProjectSummaryView> getProjects(String keyword, String projectType,
                                                     String progressMethod, Pageable pageable) {
         Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, pageable);
 
-        return projects.map(project -> new ProjectListResponseDto(
-                project.getId(),
-                project.getTitle(),
-                project.getRecruitmentCount(),
-                project.getProjectType(),
-                project.getProgressMethod(),
-                project.getRecruitmentEndAt(),
-                project.getClosed(),
-                project.getCreatedAt()
-        ));
+        return projects.map(this::toSummaryView);
     }
 
     public ProjectDetailResponseDto getProjectById(Long projectId) {

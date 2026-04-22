@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/head :: commonHead('프로젝트 관리')}"></head>
 
 <body class="text-poodle-900">
@@ -16,17 +17,23 @@
         <div class="grid grid-cols-1 gap-12">
             <!-- Project Management Card -->
             <div class="bg-white rounded-5xl border border-poodle-50 shadow-sm overflow-hidden">
-                <div class="p-10 bg-poodle-50/50 border-b border-poodle-50 flex items-center justify-between flex-wrap gap-6 text-center sm:text-left">
+                <div
+                    class="p-10 bg-poodle-50/50 border-b border-poodle-50 flex items-center justify-between flex-wrap gap-6 text-center sm:text-left">
                     <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <img src="https://picsum.photos/seed/food/200" class="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-white">
+                        <img src="https://picsum.photos/seed/food/200"
+                            class="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-white">
                         <div>
-                            <span class="px-3 py-1 bg-meatball text-white rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block">Recruiting</span>
+                            <span
+                                class="px-3 py-1 bg-meatball text-white rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block">Recruiting</span>
                             <h2 class="text-2xl font-black text-poodle-900 leading-tight">AI 기반 맛집 추천 서비스</h2>
                         </div>
                     </div>
                     <div class="flex gap-3 w-full sm:w-auto">
-                        <button class="flex-grow sm:flex-grow-0 px-6 py-3 bg-white border border-poodle-100 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-50 transition-colors">수정</button>
-                        <button class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-700/10 hover:bg-poodle-900 transition-colors">모집 마감</button>
+                        <button
+                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-white border border-poodle-100 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-50 transition-colors">수정</button>
+                        <button
+                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-700/10 hover:bg-poodle-900 transition-colors">모집
+                            마감</button>
                     </div>
                 </div>
 
@@ -35,45 +42,107 @@
                         <div class="flex items-center justify-between mb-8">
                             <h3 class="text-xl font-black text-poodle-900 flex items-center gap-3">
                                 <i class="fa-solid fa-users text-meatball"></i>
-                                지원자 현황 <span class="bg-poodle-100 text-poodle-600 px-3 py-1 rounded-full text-xs ml-1 italic">2명</span>
+                                지원자 현황 <span
+                                    class="bg-poodle-100 text-poodle-600 px-3 py-1 rounded-full text-xs ml-1 italic">2명</span>
                             </h3>
-                            <button class="text-[10px] font-black text-poodle-300 uppercase tracking-widest hover:text-meatball transition-colors">전체 보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>
+                            <button
+                                class="text-[10px] font-black text-poodle-300 uppercase tracking-widest hover:text-meatball transition-colors">전체
+                                보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             <!-- Applicant Card 1 -->
-                            <div class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
+                            <div
+                                class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
                                 <div class="flex items-center gap-4 mb-8 text-left">
                                     <div class="relative">
-                                        <img src="https://picsum.photos/seed/user2/100" class="w-14 h-14 rounded-2xl shadow-sm border border-white">
-                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse"></div>
+                                        <img src="https://picsum.photos/seed/user2/100"
+                                            class="w-14 h-14 rounded-2xl shadow-sm border border-white">
+                                        <div
+                                            class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse">
+                                        </div>
                                     </div>
                                     <div class="flex-grow">
                                         <h4 class="font-black text-poodle-900 leading-tight">디자인요정</h4>
-                                        <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">UI/UX Designer</span>
+                                        <span
+                                            class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">UI/UX
+                                            Designer</span>
                                     </div>
                                 </div>
-                                <p class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">"안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다..."</p>
-                                <button onclick="openApplicantModal('디자인요정', 'UI/UX Designer', '안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다. 피그마 사용 숙련도가 높고 팀 프로젝트 경험도 다수 있습니다. 함께하고 싶어요!', 'https://picsum.photos/seed/user2/100')" 
-                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세 보기</button>
+                                <p
+                                    class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
+                                    "안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다..."</p>
+                                <button
+                                    onclick="openApplicantModal('디자인요정', 'UI/UX Designer', '안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다. 피그마 사용 숙련도가 높고 팀 프로젝트 경험도 다수 있습니다. 함께하고 싶어요!', 'https://picsum.photos/seed/user2/100')"
+                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세
+                                    보기</button>
                             </div>
 
                             <!-- Applicant Card 2 -->
-                            <div class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
+                            <div
+                                class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
                                 <div class="flex items-center gap-4 mb-8 text-left">
                                     <div class="relative">
-                                        <img src="https://picsum.photos/seed/user4/100" class="w-14 h-14 rounded-2xl shadow-sm border border-white">
-                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse"></div>
+                                        <img src="https://picsum.photos/seed/user4/100"
+                                            class="w-14 h-14 rounded-2xl shadow-sm border border-white">
+                                        <div
+                                            class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse">
+                                        </div>
                                     </div>
                                     <div class="flex-grow">
                                         <h4 class="font-black text-poodle-900 leading-tight">서버마스터</h4>
-                                        <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">Backend Master</span>
+                                        <span
+                                            class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">Backend
+                                            Master</span>
                                     </div>
                                 </div>
-                                <p class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">"Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다."</p>
-                                <button onclick="openApplicantModal('서버마스터', 'Backend Master', 'Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다. 안정적인 서버 아키텍처 설계를 좋아해요!', 'https://picsum.photos/seed/user4/100')" 
-                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세 보기</button>
+                                <p
+                                    class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
+                                    "Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다."</p>
+                                <button
+                                    onclick="openApplicantModal('서버마스터', 'Backend Master', 'Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다. 안정적인 서버 아키텍처 설계를 좋아해요!', 'https://picsum.photos/seed/user4/100')"
+                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세
+                                    보기</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 첨부파일 관리 섹션 (추가) -->
+                    <div class="mt-12 pt-12 border-t border-poodle-50">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-xl font-black text-poodle-900 flex items-center gap-3">
+                                <i class="fa-solid fa-paperclip text-meatball"></i>
+                                첨부파일 관리
+                            </h3>
+                        </div>
+
+                        <!-- 업로드 폼 -->
+                        <div
+                            class="p-8 rounded-4xl bg-poodle-50/20 border-2 border-dashed border-poodle-100 hover:border-meatball/30 transition-all text-center">
+                            <form id="attachmentForm" class="flex flex-col items-center gap-4">
+                                <input type="hidden" id="projectId" th:value="${project != null ? project.id : 1}"
+                                    value="1" />
+
+                                <div
+                                    class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-poodle-300 shadow-sm mb-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="font-black text-poodle-900">클릭하거나 파일을 드래그하여 업로드하세요</p>
+                                    <p class="text-xs text-poodle-400 font-bold mt-1">포트폴리오, 기획서 등 모든 파일 업로드 가능</p>
+                                </div>
+                                <input type="file" id="fileInput" name="file" class="hidden"
+                                    onchange="uploadAttachment()" />
+                                <button type="button" onclick="document.getElementById('fileInput').click()"
+                                    class="mt-4 px-8 py-3 bg-white border border-poodle-200 text-poodle-600 rounded-2xl font-black text-sm hover:bg-poodle-50 hover:border-meatball hover:text-meatball transition-all">
+                                    파일 선택
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- 업로드된 파일 목록 -->
+                        <div class="mt-8 space-y-4" id="attachmentList">
+                            <!-- JS를 통해 동적으로 로드되는 첨부파일 항목들 -->
                         </div>
                     </div>
                 </div>
@@ -83,14 +152,18 @@
 
     <!-- 🐾 Applicant Detail Modal -->
     <div id="applicantModal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity" onclick="closeApplicantModal()"></div>
+        <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity"
+            onclick="closeApplicantModal()"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
-            <div class="bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(62,39,35,0.2)] overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
+            <div
+                class="bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(62,39,35,0.2)] overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
                 <div class="relative p-10 pb-6 border-b border-poodle-50 text-center">
-                    <button onclick="closeApplicantModal()" class="absolute top-10 right-10 w-10 h-10 bg-poodle-50 text-poodle-300 rounded-full flex items-center justify-center hover:bg-poodle-100 transition-all">
+                    <button onclick="closeApplicantModal()"
+                        class="absolute top-10 right-10 w-10 h-10 bg-poodle-50 text-poodle-300 rounded-full flex items-center justify-center hover:bg-poodle-100 transition-all">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
-                    <div class="inline-flex w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl items-center justify-center mb-4">
+                    <div
+                        class="inline-flex w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl items-center justify-center mb-4">
                         <i class="fa-solid fa-file-invoice text-2xl"></i>
                     </div>
                     <h2 class="text-3xl font-black text-poodle-900 tracking-tight">지원자 상세 프로필</h2>
@@ -98,27 +171,34 @@
 
                 <div class="p-10 space-y-10 max-h-[60vh] overflow-y-auto no-scrollbar">
                     <div class="flex items-center gap-6 p-8 bg-poodle-50/50 rounded-[2.5rem] border border-poodle-100">
-                        <img id="modalImg" src="" class="w-20 h-20 bg-white rounded-2xl shadow-sm border border-poodle-50">
+                        <img id="modalImg" src=""
+                            class="w-20 h-20 bg-white rounded-2xl shadow-sm border border-poodle-50">
                         <div class="space-y-2">
                             <h4 id="modalName" class="text-2xl font-black text-poodle-900">지원자명</h4>
                             <div class="flex items-center gap-2">
-                                <span id="modalRole" class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase tracking-widest">POSITION</span>
-                                <span class="bg-poodle-50 text-poodle-300 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter shadow-sm border border-poodle-100">Verified</span>
+                                <span id="modalRole"
+                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase tracking-widest">POSITION</span>
+                                <span
+                                    class="bg-poodle-50 text-poodle-300 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter shadow-sm border border-poodle-100">Verified</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="space-y-4">
-                        <h5 class="text-xs font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Application Message</h5>
-                        <div id="modalMsg" class="p-8 bg-poodle-50/30 border-2 border-transparent hover:border-meatball/10 rounded-[2rem] font-bold text-poodle-600 leading-relaxed text-sm italic transition-all">
+                        <h5 class="text-xs font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">
+                            Application Message</h5>
+                        <div id="modalMsg"
+                            class="p-8 bg-poodle-50/30 border-2 border-transparent hover:border-meatball/10 rounded-[2rem] font-bold text-poodle-600 leading-relaxed text-sm italic transition-all">
                             메시지 내용이 여기에 표시됩니다.
                         </div>
                     </div>
                 </div>
 
                 <div class="p-10 pt-0 flex gap-4">
-                    <button onclick="closeApplicantModal()" class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">Reject</button>
-                    <button class="flex-[2] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">Accept</button>
+                    <button onclick="closeApplicantModal()"
+                        class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">Reject</button>
+                    <button
+                        class="flex-[2] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">Accept</button>
                 </div>
             </div>
         </div>
@@ -128,8 +208,14 @@
 
     <style>
         /* 🎨 Manage Page UI Expansion */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 
     <script>
@@ -138,7 +224,7 @@
             document.getElementById('modalRole').innerText = role;
             document.getElementById('modalMsg').innerText = `"${msg}"`;
             document.getElementById('modalImg').src = img;
-            
+
             document.getElementById('applicantModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
@@ -147,6 +233,84 @@
             document.getElementById('applicantModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
+
+        // ==========================================
+        // 첨부파일 관리 스크립트 연결
+        // ==========================================
+        const MOCK_ROLE = 'LEADER'; // 로그인 전이라 임시값 사용
+
+        async function fetchAttachments() {
+            const projectId = document.getElementById('projectId').value;
+            try {
+                const response = await fetch(`/api/projects/${projectId}/attachments`);
+                if (!response.ok) throw new Error('파일 목록 조회 실패');
+
+                const files = await response.json();
+                renderAttachments(files, projectId);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function renderAttachments(files, projectId) {
+            const listDiv = document.getElementById('attachmentList');
+            if (!files || files.length === 0) {
+                listDiv.innerHTML = `<p class="text-center text-poodle-400 font-bold py-4">등록된 첨부파일이 없습니다.</p>`;
+                return;
+            }
+
+            listDiv.innerHTML = files.map(f => `
+                <div class="flex items-center justify-between p-4 bg-white border border-poodle-50 rounded-2xl shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-poodle-50 text-meatball rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-file"></i>
+                        </div>
+                        <div>
+                            <p class="font-black text-poodle-900 text-sm">${f.originalFileName}</p>
+                            <p class="text-[10px] text-poodle-400 font-bold uppercase">Uploaded at ${new Date(f.uploadedAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <a href="/api/projects/${projectId}/attachments/${f.id}/download" 
+                       class="w-8 h-8 bg-poodle-50 text-poodle-400 hover:bg-meatball hover:text-white rounded-lg flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-download text-xs"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        async function uploadAttachment() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const projectId = document.getElementById('projectId').value;
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // userRole은 컨트롤러 요구사항대로 파라미터 전달 (기본값 GUEST라 업로드 안됨)
+                const response = await fetch(`/api/projects/${projectId}/attachments?userRole=${MOCK_ROLE}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('파일 업로드에 성공했습니다.');
+                    fetchAttachments(); // 목록 갱신
+                } else {
+                    alert('파일 업로드 실패 (권한 없음 또는 서버 오류)');
+                }
+            } catch (error) {
+                console.error('업로드 에러:', error);
+                alert('업로드 중 오류가 발생했습니다.');
+            } finally {
+                fileInput.value = ''; // 초기화
+            }
+        }
+
+        // 페이지 로드 시 첨부파일 목록 조회
+        document.addEventListener('DOMContentLoaded', fetchAttachments);
     </script>
 </body>
+
 </html>
