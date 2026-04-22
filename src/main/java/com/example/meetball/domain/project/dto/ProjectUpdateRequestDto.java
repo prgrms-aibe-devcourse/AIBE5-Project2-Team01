@@ -8,6 +8,9 @@ public class ProjectUpdateRequestDto {
     private String description;
     private String projectType;
     private String progressMethod;
+    private String position;
+    private String techStackCsv;
+    private String thumbnailUrl;
     private Integer recruitmentCount;
     private LocalDate recruitmentStartAt;
     private LocalDate recruitmentEndAt;
@@ -37,6 +40,9 @@ public class ProjectUpdateRequestDto {
     public String getDescription() { return description; }
     public String getProjectType() { return projectType; }
     public String getProgressMethod() { return progressMethod; }
+    public String getPosition() { return position; }
+    public String getTechStackCsv() { return techStackCsv; }
+    public String getThumbnailUrl() { return thumbnailUrl; }
     public Integer getRecruitmentCount() { return recruitmentCount; }
     public LocalDate getRecruitmentStartAt() { return recruitmentStartAt; }
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }

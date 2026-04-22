@@ -19,6 +19,8 @@ public record ProjectDetailView(
         int progressPercent,
         String deadlineLabel,
         String createdDateLabel,
+        String recruitmentPeriodLabel,
+        String projectPeriodLabel,
         List<String> techStacks
 ) {
 }

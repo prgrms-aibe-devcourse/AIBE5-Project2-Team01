@@ -3,7 +3,7 @@
 
 <head th:replace="~{fragments/head :: commonHead(${project.title})}"></head>
 
-<body class="text-poodle-900 bg-poodle-50/10">
+<body class="text-poodle-900 bg-poodle-50">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
 
     <main class="container mx-auto px-4 py-12 max-w-7xl">
@@ -27,7 +27,7 @@
                 <div class="flex items-center gap-4 text-poodle-100/60 text-xs font-bold">
                     <span th:text="'등록일: ' + ${project.createdDateLabel}">등록일: 2024.04.01</span>
                     <span class="w-1 h-1 bg-white/20 rounded-full"></span>
-                    <span>조회수 248</span>
+                    <span id="readStatusLabel">프로젝트 상세</span>
                 </div>
             </div>
         </section>
@@ -48,7 +48,8 @@
                     <button onclick="switchTab('communication')" id="tab-communication"
                         class="tab-link py-5 text-sm font-black text-poodle-300 hover:text-poodle-600 transition-all relative whitespace-nowrap">
                         커뮤니케이션 <span
-                            class="bg-poodle-50 text-poodle-400 px-2 py-0.5 rounded-full text-[9px] ml-1">3</span>
+                            id="comment-count-badge"
+                            class="bg-poodle-50 text-poodle-400 px-2 py-0.5 rounded-full text-[9px] ml-1">0</span>
                     </button>
                 </nav>
 
@@ -117,45 +118,8 @@
                         </div>
                         <div class="space-y-8 flex-grow">
                             <h3 class="text-2xl font-black text-poodle-900 tracking-tight">참고 파일 & 링크</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <!-- File Card -->
-                                <div
-                                    class="group flex items-center justify-between p-6 bg-poodle-50/30 border-2 border-poodle-100 rounded-[1.5rem] hover:bg-white hover:border-meatball/30 hover:shadow-xl transition-all duration-300">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-12 h-12 bg-white border border-poodle-50 rounded-2xl text-meatball shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i class="fa-solid fa-file-pdf text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-black text-poodle-800">기획서.pdf</p>
-                                            <p class="text-[9px] text-poodle-400 font-bold uppercase tracking-tight">
-                                                2.4MB • PDF Document</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        class="w-10 h-10 bg-white text-poodle-200 border border-poodle-50 rounded-xl flex items-center justify-center hover:bg-meatball hover:text-white transition-all shadow-sm">
-                                        <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
-                                    </button>
-                                </div>
-                                <!-- Link Card -->
-                                <div
-                                    class="group flex items-center justify-between p-6 bg-poodle-50/30 border-2 border-poodle-100 rounded-[1.5rem] hover:bg-white hover:border-meatball/30 hover:shadow-xl transition-all duration-300">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-12 h-12 bg-white border border-poodle-50 rounded-2xl text-blue-400 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i class="fa-brands fa-github text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-black text-poodle-800">GitHub</p>
-                                            <p class="text-[9px] text-poodle-400 font-bold uppercase tracking-tight">
-                                                View Source Code</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        class="w-10 h-10 bg-white text-poodle-200 border border-poodle-50 rounded-xl flex items-center justify-center hover:bg-meatball hover:text-white transition-all shadow-sm">
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                                    </button>
-                                </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="attachments-container-recruitment">
+                                <div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">불러오는 중...</div>
                             </div>
                         </div>
                     </section>
@@ -213,39 +177,24 @@
                             <p class="text-[10px] text-meatball font-black uppercase tracking-[0.3em] mb-4">Overall
                                 Experience</p>
                             <div class="flex items-center gap-4">
-                                <div class="flex text-meatball text-3xl gap-1">
-                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                        class="fa-solid fa-star-half-stroke"></i>
+                                <div id="reviewStars" class="flex text-meatball text-3xl gap-1">
+                                    <i class="fa-regular fa-star text-poodle-200"></i>
+                                    <i class="fa-regular fa-star text-poodle-200"></i>
+                                    <i class="fa-regular fa-star text-poodle-200"></i>
+                                    <i class="fa-regular fa-star text-poodle-200"></i>
+                                    <i class="fa-regular fa-star text-poodle-200"></i>
                                 </div>
                                 <div class="flex items-end gap-1">
-                                    <span class="text-5xl font-black text-poodle-900 leading-none">4.8</span>
+                                    <span id="reviewAverage" class="text-5xl font-black text-poodle-900 leading-none">0.0</span>
                                     <span class="text-xl font-bold text-poodle-200">/ 5.0</span>
                                 </div>
                             </div>
+                            <p id="reviewTotal" class="mt-4 text-[10px] font-black text-poodle-300 uppercase tracking-widest">아직 리뷰가 없습니다</p>
                         </div>
 
                         <!-- 리뷰 리스트 -->
-                        <div class="space-y-6">
-                            <div
-                                class="p-8 bg-white border-2 border-poodle-50 rounded-[2rem] space-y-4 hover:border-meatball/20 transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
-                                            <i class="fa-solid fa-user-secret"></i>
-                                        </div>
-                                        <p class="text-sm font-black text-poodle-900">익명 팀원 1</p>
-                                    </div>
-                                    <div class="flex text-meatball text-xs gap-1">
-                                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                            class="fa-solid fa-star"></i>
-                                    </div>
-                                </div>
-                                <p class="text-poodle-500 font-bold text-base italic">"AI 기술을 실생활에 접목해보는 아주 유익한 시간이었습니다.
-                                    팀원들 모두 수고하셨어요!"</p>
-                            </div>
+                        <div id="reviewDistribution" class="space-y-3">
+                            <div class="p-8 text-center text-sm font-bold text-poodle-300 border border-poodle-50 rounded-[2rem]">리뷰 요약을 불러오는 중...</div>
                         </div>
                     </section>
                 </div>
@@ -265,7 +214,7 @@
                             <textarea id="commentContent" placeholder="프로젝트에 대해 궁금한 점을 남겨주세요... 🐶"
                                 class="w-full h-40 p-8 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-[2.5rem] outline-none transition-all font-bold text-poodle-800 resize-none"></textarea>
                             <button onclick="postComment()"
-                                class="absolute bottom-6 right-6 px-10 py-5 bg-poodle-900 text-white rounded-[1.5rem] font-black text-sm hover:bg-meatball transition-all shadow-xl active:scale-95">
+                                class="absolute bottom-6 right-6 px-10 py-5 bg-poodle-600 text-white rounded-[1.5rem] font-black text-sm hover:bg-meatball hover:text-poodle-900 transition-all shadow-xl active:scale-95">
                                 댓글 등록하기
                             </button>
                         </div>
@@ -283,12 +232,12 @@
                     class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 lg:sticky lg:top-24">
                     <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
                         <div class="flex items-center gap-2">
-                            <button
+                            <button id="bookmarkBtn" onclick="toggleBookmark()"
                                 class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300 hover:text-meatball hover:bg-white transition-all group">
-                                <i class="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform"></i>
-                                <span class="text-sm font-black text-poodle-700">32</span>
+                                <i id="bookmarkIcon" class="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform"></i>
+                                <span id="bookmarkCount" class="text-sm font-black text-poodle-700">0</span>
                             </button>
-                            <button
+                            <button onclick="shareProject()"
                                 class="w-10 h-10 flex items-center justify-center bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300 hover:text-poodle-600 hover:bg-white transition-all">
                                 <i class="fa-solid fa-share-nodes text-sm"></i>
                             </button>
@@ -301,17 +250,17 @@
 
                     <div class="space-y-4">
                         <a th:if="${role == 'GUEST'}" th:href="@{/login(redirect=${currentProjectPath})}"
-                            class="flex items-center justify-center w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            class="flex items-center justify-center w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                             로그인 후 지원하기
                         </a>
 
                         <button th:if="${role == 'REGULAR_USER'}" onclick="openApplyModal()"
-                            class="w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            class="w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                             프로젝트 지원하기
                         </button>
 
                         <a th:if="${role == 'LEADER'}" th:href="@{/projects/__${project.id}__/manage}"
-                            class="flex items-center justify-center w-full py-6 bg-meatball text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            class="flex items-center justify-center w-full py-6 bg-meatball text-poodle-900 rounded-[1.5rem] font-black text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
                             프로젝트 관리하기
                         </a>
 
@@ -321,7 +270,7 @@
                         </div>
 
                         <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
-                            class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 이 프로젝트를 검토하고 있습니다.</p>
+                            class="text-[10px] text-poodle-300 font-bold text-center italic">지원 후 마이페이지에서 진행 상태를 확인할 수 있습니다.</p>
                     </div>
 
                     <div class="space-y-6 pt-2">
@@ -331,7 +280,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Recruitment</p>
-                                <p class="text-sm font-black text-poodle-800">2024.04.01 ~ 04.30</p>
+                                <p th:text="${project.recruitmentPeriodLabel}" class="text-sm font-black text-poodle-800">2024.04.01 ~ 04.30</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -340,7 +289,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Duration</p>
-                                <p class="text-sm font-black text-poodle-800">3개월 (<span th:text="${project.progressMethod}">온라인</span>)</p>
+                                <p th:text="${project.projectPeriodLabel}" class="text-sm font-black text-poodle-800">2024.05.01 ~ 2024.07.31</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -362,15 +311,10 @@
                         <div class="space-y-3">
                             <div class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
                                 <span class="text-xs font-black text-poodle-700 flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span> 프론트엔드
+                                    <span class="w-2 h-2 bg-meatball rounded-full"></span>
+                                    <span th:text="${#strings.isEmpty(project.position) ? '모집 포지션' : project.position}">프론트엔드</span>
                                 </span>
-                                <span class="text-xs font-black text-meatball">1 / 2</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
-                                <span class="text-xs font-black text-poodle-700 flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span> 백엔드
-                                </span>
-                                <span class="text-xs font-black text-meatball">1 / 1</span>
+                                <span th:text="${project.currentRecruitment + ' / ' + project.totalRecruitment}" class="text-xs font-black text-meatball">1 / 2</span>
                             </div>
                         </div>
                     </div>
@@ -396,23 +340,10 @@
                                     <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
-                                <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
-                                    <i class="fa-solid fa-user text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-black text-poodle-800">이민수</p>
-                                    <p class="text-[9px] text-poodle-300 font-black uppercase">Member / Frontend</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
-                                <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
-                                    <i class="fa-solid fa-user text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-black text-poodle-800">김지아</p>
-                                    <p class="text-[9px] text-poodle-300 font-black uppercase">Member / UI/UX Designer</p>
-                                </div>
+                            <div class="p-4 bg-white border border-poodle-50 rounded-2xl">
+                                <p class="text-[11px] text-poodle-300 font-bold leading-relaxed">
+                                    팀원 목록은 지원 승인 후 프로젝트 관리 화면에서 확인할 수 있습니다.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -478,21 +409,13 @@
                             <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 포지션 선택
                         </h4>
                         <div class="grid grid-cols-2 gap-4">
-                            <button onclick="selectPosition(this)"
+                            <button onclick="selectPosition(this)" th:text="${#strings.isEmpty(project.position) ? '지원 포지션' : project.position}"
                                 class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all">
                                 프론트엔드 개발자
                             </button>
-                            <button onclick="selectPosition(this)"
-                                class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all">
-                                백엔드 개발자
-                            </button>
-                            <button onclick="selectPosition(this)"
-                                class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all">
-                                AI/ML 엔지니어
-                            </button>
                             <button
                                 class="py-5 px-6 rounded-2xl border-2 border-poodle-50 bg-poodle-50/50 text-[11px] font-black text-poodle-200 cursor-not-allowed italic">
-                                UI/UX 디자이너 (모집완료)
+                                추가 포지션은 팀장에게 문의
                             </button>
                         </div>
                     </div>
@@ -507,9 +430,9 @@
                     </div>
 
                     <!-- Alert Box -->
-                    <div class="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 flex items-start gap-4">
-                        <i class="fa-solid fa-circle-info text-blue-400 mt-1"></i>
-                        <p class="text-[11px] font-bold text-blue-600 leading-relaxed">
+                    <div class="p-6 bg-poodle-100/60 rounded-2xl border border-poodle-200 flex items-start gap-4">
+                        <i class="fa-solid fa-circle-info text-meatball mt-1"></i>
+                        <p class="text-[11px] font-bold text-poodle-600 leading-relaxed">
                             지원 시 나의 마이페이지 프로필(닉네임, 직무 역량, 링크 등)이 요약되어 팀장님께 공개되는 것에 동의하게 됩니다.
                         </p>
                     </div>
@@ -522,7 +445,7 @@
                         취소
                     </button>
                     <button onclick="submitApplication()"
-                        class="flex-[1.5] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        class="flex-[1.5] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                         지원서 제출하기
                     </button>
                 </div>
@@ -569,6 +492,7 @@
         };
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
+        const projectId = () => document.getElementById('applicationProjectId')?.value;
 
         function openApplyModal() {
             document.getElementById('applyModal').classList.remove('hidden');
@@ -660,17 +584,21 @@
         // Comments Script
         // ===================================
         async function fetchComments() {
-            const projectId = document.getElementById('applicationProjectId')?.value;
-            if(!projectId) return;
+            const currentProjectId = projectId();
+            if(!currentProjectId) return;
 
             try {
-                const res = await fetch(`/api/projects/${projectId}/comments`);
+                const res = await fetch(`/api/projects/${currentProjectId}/comments`);
                 if(!res.ok) throw new Error('댓글 불러오기 실패');
                 
                 // Pagination Response { content: [], ... }
                 const data = await res.json();
                 const comments = data.content || [];
                 const container = document.getElementById('comments-container');
+                const countBadge = document.getElementById('comment-count-badge');
+                if (countBadge) {
+                    countBadge.textContent = String(data.totalElements ?? comments.length);
+                }
 
                 if (comments.length === 0) {
                     container.innerHTML = '<div class="text-center text-poodle-300 font-bold py-10">첫 번째 댓글을 남겨보세요!</div>';
@@ -703,19 +631,19 @@
         }
 
         async function postComment() {
-            const projectId = document.getElementById('applicationProjectId').value;
+            const currentProjectId = projectId();
             const content = document.getElementById('commentContent').value.trim();
 
             if (!content) {
                 alert('댓글 내용을 입력해주세요.'); return;
             }
             if (!CURRENT_USER.nickname) {
-                window.location.href = `/login?redirect=/projects/${projectId}`;
+                window.location.href = `/login?redirect=/projects/${currentProjectId}`;
                 return;
             }
 
             try {
-                const res = await meetballFetch(`/api/projects/${projectId}/comments`, {
+                const res = await meetballFetch(`/api/projects/${currentProjectId}/comments`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -736,10 +664,10 @@
 
         async function deleteComment(commentId) {
             if(!confirm('댓글을 삭제할까요?')) return;
-            const projectId = document.getElementById('applicationProjectId').value;
+            const currentProjectId = projectId();
             
             try {
-                const res = await meetballFetch(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' });
+                const res = await meetballFetch(`/api/projects/${currentProjectId}/comments/${commentId}`, { method: 'DELETE' });
                 if(res.ok) {
                     fetchComments();
                 } else {
@@ -754,16 +682,28 @@
         // Attachments Script
         // ===================================
         async function fetchAttachments() {
-            const projectId = document.getElementById('applicationProjectId')?.value;
-            if(!projectId) return;
+            const currentProjectId = projectId();
+            if(!currentProjectId) return;
 
             try {
-                const res = await fetch(`/api/projects/${projectId}/attachments`);
+                const res = await fetch(`/api/projects/${currentProjectId}/attachments`);
                 if(!res.ok) throw new Error('첨부파일 로드 실패');
                 
                 const attachments = await res.json();
-                const container = document.getElementById('attachments-container-detail');
+                renderAttachments(attachments, currentProjectId);
+            } catch (err) {
+                console.error(err);
+                renderAttachments([], currentProjectId);
+            }
+        }
 
+        function renderAttachments(attachments, currentProjectId) {
+            const containers = [
+                document.getElementById('attachments-container-detail'),
+                document.getElementById('attachments-container-recruitment')
+            ].filter(Boolean);
+
+            containers.forEach(container => {
                 if (!attachments || attachments.length === 0) {
                     container.innerHTML = '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 결과물이나 링크가 없습니다.</div>';
                     return;
@@ -772,7 +712,7 @@
                 container.innerHTML = attachments.map(item => {
                     const isLink = item.type === 'LINK';
                     const icon = isLink ? 'fa-link' : 'fa-download';
-                    const fileProjectId = encodeURIComponent(String(projectId));
+                    const fileProjectId = encodeURIComponent(String(currentProjectId));
                     const attachmentId = encodeURIComponent(String(item.id ?? ''));
                     const href = safeUrl(isLink ? item.linkUrl : `/api/projects/${fileProjectId}/attachments/${attachmentId}/download`);
                     const subText = isLink ? 'External Link' : (Math.round((item.fileSize || 0) / 1024) + ' KB');
@@ -792,12 +732,148 @@
                     </a>
                     `;
                 }).join('');
+            });
+        }
+
+        async function fetchBookmarkStatus() {
+            const currentProjectId = projectId();
+            if (!currentProjectId) return;
+
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/bookmarks`);
+                if (!res.ok) return;
+                const data = await res.json();
+                renderBookmark(data);
             } catch (err) {
-                console.error(err);
+                console.error('Bookmark status error', err);
             }
         }
 
+        async function toggleBookmark() {
+            const currentProjectId = projectId();
+            if (!currentProjectId) return;
+            if (!CURRENT_USER.nickname) {
+                window.location.href = `/login?redirect=/projects/${currentProjectId}`;
+                return;
+            }
+
+            try {
+                const res = await meetballFetch(`/api/projects/${currentProjectId}/bookmarks`, { method: 'POST' });
+                if (!res.ok) throw new Error('북마크 변경 실패');
+                const data = await res.json();
+                renderBookmark(data);
+            } catch (err) {
+                console.error('Bookmark toggle error', err);
+                alert('관심 프로젝트 변경에 실패했습니다.');
+            }
+        }
+
+        function renderBookmark(data) {
+            const isBookmarked = Boolean(data.bookmarked ?? data.isBookmarked);
+            const count = Number(data.totalBookmarks ?? 0);
+            const icon = document.getElementById('bookmarkIcon');
+            const countNode = document.getElementById('bookmarkCount');
+            const button = document.getElementById('bookmarkBtn');
+            if (countNode) countNode.textContent = String(count);
+            if (icon) {
+                icon.classList.toggle('fa-solid', isBookmarked);
+                icon.classList.toggle('fa-regular', !isBookmarked);
+                icon.classList.toggle('text-meatball', isBookmarked);
+            }
+            if (button) {
+                button.classList.toggle('text-meatball', isBookmarked);
+                button.classList.toggle('bg-white', isBookmarked);
+            }
+        }
+
+        async function recordRead() {
+            const currentProjectId = projectId();
+            if (!currentProjectId || !CURRENT_USER.nickname) return;
+            try {
+                const res = await meetballFetch(`/api/projects/${currentProjectId}/read`, { method: 'POST' });
+                if (res.ok) {
+                    const label = document.getElementById('readStatusLabel');
+                    if (label) label.textContent = '최근 본 프로젝트에 저장됨';
+                }
+            } catch (err) {
+                console.error('Read history error', err);
+            }
+        }
+
+        function shareProject() {
+            const url = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => alert('프로젝트 링크를 복사했습니다.'));
+                return;
+            }
+            window.prompt('프로젝트 링크', url);
+        }
+
+        async function fetchReviewSummary() {
+            const currentProjectId = projectId();
+            if (!currentProjectId) return;
+
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/reviews/summary`);
+                if (!res.ok) throw new Error('리뷰 요약 로드 실패');
+                renderReviewSummary(await res.json());
+            } catch (err) {
+                console.error('Review summary error', err);
+                renderReviewSummary({ averageScore: 0, totalReviews: 0, scorePercentages: {} });
+            }
+        }
+
+        function renderReviewSummary(summary) {
+            const average = Number(summary.averageScore || 0);
+            const total = Number(summary.totalReviews || 0);
+            const percentages = summary.scorePercentages || {};
+            const averageNode = document.getElementById('reviewAverage');
+            const totalNode = document.getElementById('reviewTotal');
+            const starsNode = document.getElementById('reviewStars');
+            const distributionNode = document.getElementById('reviewDistribution');
+
+            if (averageNode) averageNode.textContent = average.toFixed(1);
+            if (totalNode) totalNode.textContent = total > 0 ? `총 ${total}개의 프로젝트 리뷰` : '아직 리뷰가 없습니다';
+            if (starsNode) starsNode.innerHTML = buildStars(average, 'text-3xl');
+            if (!distributionNode) return;
+
+            if (total <= 0) {
+                distributionNode.innerHTML = '<div class="p-8 text-center text-sm font-bold text-poodle-300 border border-poodle-50 rounded-[2rem]">프로젝트가 완료된 뒤 팀 리뷰가 쌓이면 이곳에 표시됩니다.</div>';
+                return;
+            }
+
+            distributionNode.innerHTML = [5, 4, 3, 2, 1].map(score => {
+                const percent = Number(percentages[score] ?? percentages[String(score)] ?? 0);
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="w-10 text-xs font-black text-poodle-400">${score}점</span>
+                        <div class="flex-1 h-2 bg-poodle-50 rounded-full overflow-hidden">
+                            <div class="h-full bg-meatball rounded-full" style="width: ${Math.min(100, Math.max(0, percent))}%"></div>
+                        </div>
+                        <span class="w-12 text-right text-xs font-black text-poodle-500">${percent}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buildStars(score, sizeClass) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                if (score >= i) {
+                    html += `<i class="fa-solid fa-star text-meatball ${sizeClass}"></i>`;
+                } else if (score >= i - 0.5) {
+                    html += `<i class="fa-solid fa-star-half-stroke text-meatball ${sizeClass}"></i>`;
+                } else {
+                    html += `<i class="fa-regular fa-star text-poodle-200 ${sizeClass}"></i>`;
+                }
+            }
+            return html;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            recordRead();
+            fetchBookmarkStatus();
+            fetchReviewSummary();
             fetchComments();
             fetchAttachments();
         });

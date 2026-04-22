@@ -9,41 +9,34 @@
     <main class="flex-grow container mx-auto px-4 py-12 animate-fade-in-up">
         <!-- Hero Section (Slim Version) -->
         <section
-            class="mb-12 relative py-12 md:py-16 bg-gradient-to-br from-poodle-700 via-poodle-600 to-poodle-900 rounded-[3rem] px-8 md:px-12 overflow-hidden shadow-2xl flex flex-col items-center justify-center text-center">
-            <div
-                class="absolute top-0 right-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none">
-            </div>
-            <div
-                class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-meatball/10 rounded-full blur-[80px] -ml-16 -mb-16 pointer-events-none">
-            </div>
+            class="mb-12 relative min-h-[26rem] bg-poodle-100 rounded-[3rem] px-8 md:px-14 py-12 md:py-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.12)] border border-white/80 flex items-center">
+            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball mascot"
+                 class="absolute right-[-5rem] md:right-8 bottom-[-3rem] w-[20rem] md:w-[28rem] max-w-none object-contain opacity-20 md:opacity-95 pointer-events-none select-none">
 
-            <div class="relative z-10 max-w-4xl w-full mx-auto">
+            <div class="relative z-10 max-w-2xl">
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full border border-white text-poodle-600 text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
                     <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
                 </div>
-                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter mb-5 leading-tight">
-                    사이드 프로젝트 팀원을<br>구하는 가장 똑똑한 방법
+                <h1 class="text-4xl md:text-6xl font-black text-poodle-600 tracking-tighter mb-5 leading-tight">
+                    같이 할 사람,<br>여기서 만나요
                 </h1>
                 <p
-                    class="text-sm md:text-base text-poodle-100 font-bold mb-8 opacity-80 max-w-xl mx-auto leading-relaxed">
-                    갈색 푸들 마스코트와 함께 나에게 딱 맞는 팀을 찾아보세요.
+                    class="text-sm md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
+                    미트볼에서 프로젝트 팀원을 찾아보세요. 따뜻한 매칭 흐름으로 나에게 맞는 팀과 더 빨리 만날 수 있습니다.
                 </p>
                 <a th:href="@{/projects}"
-                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-meatball text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl hover:scale-105 active:scale-95 transition-all border-2 border-white/10">
+                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-105 active:scale-95 transition-all">
                     <span class="relative z-10">지금 바로 팀원 찾기</span>
                     <i
                         class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]">
-                    </div>
                 </a>
             </div>
         </section>
 
         <!-- Search & Filter Section -->
         <section class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
-            <div class="bg-white p-8 rounded-[3rem] border border-poodle-50 shadow-sm space-y-6">
+            <div class="meetball-card p-8 rounded-[3rem] space-y-6">
                 <!-- Keyword Search -->
                 <div
                     class="flex items-center bg-poodle-50/50 rounded-2xl p-2 border border-poodle-100 focus-within:border-meatball/30 focus-within:bg-white transition-all">
@@ -52,37 +45,86 @@
                         class="w-full bg-transparent border-none outline-none text-poodle-800 font-bold placeholder-poodle-300 text-sm py-2"
                         onkeypress="if(event.key === 'Enter') fetchProjects()">
                     <button onclick="fetchProjects()"
-                        class="px-6 py-3 bg-poodle-800 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all">검색</button>
+                        class="px-6 py-3 bg-poodle-600 text-white rounded-xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all">검색</button>
                 </div>
 
                 <div class="h-px bg-poodle-50/50 w-full"></div>
 
                 <!-- Filters -->
-                <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex flex-col gap-6">
                     <!-- Project Type -->
-                    <div class="flex flex-wrap gap-3 items-center">
-                        <span
-                            class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Type</span>
-                        <button onclick="setFilter('projectType', '')"
-                            class="filter-btn type-filter active px-4 py-1.5 rounded-xl bg-poodle-900 text-white text-[11px] font-black transition-all">전체</button>
-                        <button onclick="setFilter('projectType', '사이드 프로젝트')"
-                            class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">사이드
-                            프로젝트</button>
-                        <button onclick="setFilter('projectType', '공모전')"
-                            class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">공모전</button>
-                    </div>
-                    <!-- Progress Method -->
-                    <div class="flex flex-wrap gap-3 items-center">
-                        <span
-                            class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 md:ml-4">Method</span>
-                        <button onclick="setFilter('progressMethod', '')"
-                            class="filter-btn method-filter active px-4 py-1.5 rounded-xl bg-poodle-900 text-white text-[11px] font-black transition-all">전체</button>
-                        <button onclick="setFilter('progressMethod', '온라인')"
-                            class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">온라인</button>
-                        <button onclick="setFilter('progressMethod', '오프라인')"
-                            class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">오프라인</button>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <span
+                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Type</span>
+                            <button onclick="setFilter('projectType', '')"
+                                class="filter-btn type-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
+                            <button onclick="setFilter('projectType', '사이드 프로젝트')"
+                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">사이드
+                                프로젝트</button>
+                            <button onclick="setFilter('projectType', '공모전')"
+                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">공모전</button>
+                        </div>
+                        <!-- Progress Method -->
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <span
+                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Method</span>
+                            <button onclick="setFilter('progressMethod', '')"
+                                class="filter-btn method-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
+                            <button onclick="setFilter('progressMethod', '온라인')"
+                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">온라인</button>
+                            <button onclick="setFilter('progressMethod', '오프라인')"
+                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">오프라인</button>
+                        </div>
+                        <!-- Position -->
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <span
+                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Role</span>
+                            <button onclick="setFilter('position', '')"
+                                class="filter-btn position-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
+                            <button onclick="setFilter('position', '프론트엔드')"
+                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">프론트엔드</button>
+                            <button onclick="setFilter('position', '백엔드')"
+                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">백엔드</button>
+                            <button onclick="setFilter('position', '디자인')"
+                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">디자인</button>
+                            <button onclick="setFilter('position', 'AI')"
+                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">AI/데이터</button>
+                        </div>
+                        <!-- Tech Stack -->
+                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+                            <span
+                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Tech</span>
+                            <div class="flex items-center gap-2 bg-poodle-50/50 rounded-xl px-3 py-2 border border-poodle-100 flex-grow">
+                                <input type="text" id="techStackInput" placeholder="Spring, React 등"
+                                    class="w-full bg-transparent outline-none text-xs font-black text-poodle-700 placeholder:text-poodle-200"
+                                    onkeypress="if(event.key === 'Enter') applyTechStackFilter()">
+                                <button onclick="applyTechStackFilter()" class="w-8 h-8 rounded-lg bg-white text-poodle-400 hover:text-meatball border border-poodle-100 transition-all">
+                                    <i class="fa-solid fa-check text-[10px]"></i>
+                                </button>
+                                <button onclick="clearTechStackFilter()" class="w-8 h-8 rounded-lg bg-white text-poodle-200 hover:text-red-400 border border-poodle-100 transition-all">
+                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Personalized Recommendations -->
+        <section th:if="${isLoggedIn}" id="recommendationSection" class="mb-16 hidden animate-fade-in-up">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <p class="text-[10px] font-black text-meatball uppercase tracking-[0.25em] mb-2">Smart Matching</p>
+                    <h2 class="text-2xl font-black text-poodle-900 tracking-tight">나에게 맞는 추천 프로젝트</h2>
+                </div>
+                <a th:href="@{/user/mypage}" class="text-xs font-black text-poodle-300 hover:text-meatball transition-colors">
+                    프로필 보러가기 <i class="fa-solid fa-chevron-right ml-1"></i>
+                </a>
+            </div>
+            <div id="recommendationContainer" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="p-8 bg-white rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">추천을 불러오는 중...</div>
             </div>
         </section>
 
@@ -90,10 +132,22 @@
         <section class="mb-24 animate-fade-in-up" style="animation-delay: 0.4s;">
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-3xl font-black text-poodle-900 tracking-tight">모집 중인 프로젝트</h2>
-                <a th:href="@{/register}"
-                    class="px-6 py-4 bg-poodle-900 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-900/10 hover:bg-meatball transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
-                </a>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 p-1 bg-white border border-poodle-50 rounded-2xl shadow-sm">
+                        <button type="button" id="btn-grid" onclick="setViewMode('grid')"
+                            class="view-btn active w-11 h-11 rounded-xl bg-poodle-600 text-white transition-all">
+                            <i class="fa-solid fa-table-cells-large text-xs"></i>
+                        </button>
+                        <button type="button" id="btn-list" onclick="setViewMode('list')"
+                            class="view-btn w-11 h-11 rounded-xl text-poodle-300 hover:text-meatball transition-all">
+                            <i class="fa-solid fa-list text-xs"></i>
+                        </button>
+                    </div>
+                    <a th:href="@{/register}"
+                        class="px-6 py-4 bg-poodle-600 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-600/10 hover:bg-meatball hover:text-poodle-900 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
+                    </a>
+                </div>
             </div>
 
             <!-- Project Container (Dynamic via JS) -->
@@ -117,6 +171,9 @@
             keyword: '',
             projectType: '',
             progressMethod: '',
+            position: '',
+            techStack: '',
+            viewMode: 'grid',
             page: 0
         };
 
@@ -128,7 +185,7 @@
             const parent = document.querySelectorAll(`.${type}-filter`);
             if (parent.length > 0) {
                 parent.forEach(btn => {
-                    btn.classList.remove('active', 'bg-poodle-900', 'text-white');
+                    btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-900', 'text-white');
                     btn.classList.add('border', 'border-poodle-50', 'text-poodle-400');
                 });
                 // 선택된 버튼 처리 (value='' 인 경우 '전체' 버튼 찾기 위해 임시 우회)
@@ -136,12 +193,39 @@
                     return (value === '' && b.innerText === '전체') || b.innerText === value;
                 });
                 if (activeBtn) {
-                    activeBtn.classList.add('active', 'bg-poodle-900', 'text-white');
+                    activeBtn.classList.add('active', 'bg-poodle-600', 'text-white');
                     activeBtn.classList.remove('border', 'border-poodle-50', 'text-poodle-400');
                 }
             }
 
             fetchProjects();
+        }
+
+        function applyTechStackFilter() {
+            filterState.techStack = document.getElementById('techStackInput').value.trim();
+            filterState.page = 0;
+            fetchProjects();
+        }
+
+        function clearTechStackFilter() {
+            document.getElementById('techStackInput').value = '';
+            filterState.techStack = '';
+            filterState.page = 0;
+            fetchProjects();
+        }
+
+        function setViewMode(mode) {
+            filterState.viewMode = mode === 'list' ? 'list' : 'grid';
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-900', 'text-white');
+                btn.classList.add('text-poodle-300');
+            });
+            const activeBtn = document.getElementById(filterState.viewMode === 'grid' ? 'btn-grid' : 'btn-list');
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-poodle-600', 'text-white');
+                activeBtn.classList.remove('text-poodle-300');
+            }
+            fetchProjects(filterState.page);
         }
 
         async function fetchProjects(page = 0) {
@@ -157,7 +241,9 @@
                     size: 6,
                     keyword: filterState.keyword,
                     projectType: filterState.projectType,
-                    progressMethod: filterState.progressMethod
+                    progressMethod: filterState.progressMethod,
+                    position: filterState.position,
+                    techStack: filterState.techStack
                 }).toString();
 
                 const res = await fetch(`/api/projects?${query}`);
@@ -174,18 +260,20 @@
         function renderProjects(projects) {
             const container = document.getElementById('projectContainer');
             if (!projects || projects.length === 0) {
-                container.classList.remove('grid');
+                container.className = 'block';
                 container.innerHTML = `
-                <div class="py-32 text-center bg-white rounded-[3rem] border border-poodle-50 w-full">
-                    <div class="w-20 h-20 bg-poodle-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
-                        <i class="fa-solid fa-dog text-poodle-200 text-3xl"></i>
+                <div class="py-32 text-center bg-white rounded-[3rem] border border-poodle-100 w-full">
+                    <div class="w-24 h-24 bg-poodle-100 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 overflow-hidden">
+                        <img src="/img/logo.png" alt="" class="w-full h-full object-contain p-2 opacity-70">
                     </div>
                     <p class="text-poodle-900 font-black text-xl">조건에 맞는 프로젝트가 없습니다.</p>
                 </div>`;
                 return;
             }
 
-            container.classList.add('grid');
+            container.className = filterState.viewMode === 'list'
+                ? 'grid grid-cols-1 gap-5'
+                : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8';
             container.innerHTML = projects.map(p => {
                 const currentRecruit = Number(p.currentRecruitment || 0);
                 const totalRecruit = Number(p.totalRecruitment || 0);
@@ -203,6 +291,44 @@
                     `<span class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">${escapeHtml(tech)}</span>`
                 ).join('');
 
+                if (filterState.viewMode === 'list') {
+                    return `
+            <article class="project-card bg-white rounded-[2rem] border border-poodle-50 overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+                <div class="grid grid-cols-1 md:grid-cols-[15rem_1fr_auto] gap-0 md:gap-6 items-stretch">
+                    <a href="/projects/${projectId}" class="relative h-48 md:h-full min-h-[12rem] overflow-hidden bg-poodle-50">
+                        <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <span class="absolute top-4 left-4 text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
+                    </a>
+                    <div class="p-6 md:p-7 flex flex-col justify-between gap-5">
+                        <div>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectType}</span>
+                                <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${position}</span>
+                            </div>
+                            <h3 class="text-2xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors">${title}</h3>
+                            <p class="text-sm text-poodle-400 font-bold leading-relaxed line-clamp-2">${summary}</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">${techBadges}</div>
+                    </div>
+                    <div class="p-6 md:p-7 md:w-56 flex md:flex-col items-center md:items-stretch justify-between gap-5 border-t md:border-t-0 md:border-l border-poodle-50">
+                        <div class="w-full">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit</span>
+                                <span class="text-xs font-black text-poodle-900"><span class="text-meatball">${currentRecruit}</span> / ${totalRecruit}</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden">
+                                <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <a href="/projects/${projectId}" class="shrink-0 inline-flex justify-center py-3.5 px-5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95">
+                            보기 <i class="fa-solid fa-chevron-right ml-1.5"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>`;
+                }
+
                 return `
             <article class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
                 <!-- Image Section -->
@@ -210,7 +336,7 @@
                     <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute top-4 left-4">
-                        <span class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
+                        <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
                     </div>
                 </div>
 
@@ -237,7 +363,7 @@
                         <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
                             <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
-                        <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
+                        <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
                             프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
@@ -260,7 +386,7 @@
 
             for (let i = 0; i < pageData.totalPages; i++) {
                 if (i === pageData.number) {
-                    html += `<button class="w-10 h-10 flex items-center justify-center rounded-2xl bg-meatball text-white font-black shadow-lg shadow-meatball/20 transition-all">${i + 1}</button>`;
+                    html += `<button class="w-10 h-10 flex items-center justify-center rounded-2xl bg-meatball text-poodle-900 font-black shadow-lg shadow-meatball/20 transition-all">${i + 1}</button>`;
                 } else {
                     html += `<button onclick="fetchProjects(${i})" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-poodle-100 text-poodle-400 hover:text-poodle-900 transition-all font-black">${i + 1}</button>`;
                 }
@@ -273,8 +399,47 @@
             wrap.innerHTML = html;
         }
 
+        async function fetchRecommendations() {
+            const section = document.getElementById('recommendationSection');
+            const container = document.getElementById('recommendationContainer');
+            if (!section || !container) return;
+
+            try {
+                const res = await fetch('/api/recommendations');
+                if (!res.ok) return;
+                const recommendations = await res.json();
+                if (!recommendations || recommendations.length === 0) return;
+
+                section.classList.remove('hidden');
+                container.innerHTML = recommendations.slice(0, 3).map(item => {
+                    const projectId = encodeURIComponent(String(item.projectId ?? ''));
+                    const title = escapeHtml(item.title || '추천 프로젝트');
+                    const score = Number(item.score || 0);
+                    const reasons = (item.reasons || []).slice(0, 2).map(reason =>
+                        `<span class="px-3 py-1 bg-poodle-50 text-poodle-500 rounded-lg text-[10px] font-black">${escapeHtml(reason)}</span>`
+                    ).join('');
+
+                    return `
+                        <a href="/projects/${projectId}" class="group p-7 bg-white border border-poodle-50 rounded-[2rem] shadow-sm hover:border-meatball/20 hover:shadow-xl transition-all">
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black">MATCH ${score}</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-poodle-200 group-hover:text-meatball transition-colors"></i>
+                            </div>
+                            <h3 class="text-lg font-black text-poodle-900 leading-snug mb-4 group-hover:text-meatball transition-colors">${title}</h3>
+                            <div class="flex flex-wrap gap-2">${reasons}</div>
+                        </a>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Recommendation fetch error:', error);
+            }
+        }
+
         // 초기에 0페이지 목록 로드
-        document.addEventListener('DOMContentLoaded', () => fetchProjects(0));
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRecommendations();
+            fetchProjects(0);
+        });
     </script>
 </body>
 

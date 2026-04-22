@@ -23,30 +23,32 @@
                 extend: {
                     colors: {
                         poodle: {
-                            50: '#F7F5F4',
-                            100: '#EFEBE9',
-                            200: '#D7CCC8',
-                            300: '#A1887F',
-                            400: '#8D6E63',
-                            500: '#795548',
-                            600: '#6D4C41',
-                            700: '#5D4037', // Deep Poodle Brown
-                            800: '#4E342E',
-                            900: '#3E2723',
+                            50: '#FFF7EF',
+                            100: '#FFE9D3',
+                            200: '#FFD7B7',
+                            300: '#F4B47F',
+                            400: '#CF875B',
+                            500: '#9A5B3F',
+                            600: '#653728',
+                            700: '#542E24',
+                            800: '#42241D',
+                            900: '#2D1B17',
                         },
                         meatball: {
-                            DEFAULT: '#FF6B35', // Primary Orange
-                            50: '#FFF1ED',
-                            100: '#FFE1D6',
-                            200: '#FFC1AD',
-                            300: '#FFA082',
-                            400: '#FF8159',
-                            500: '#FF6B35',
-                            600: '#FF541A',
-                            700: '#E64400',
-                            800: '#BF3900',
-                            900: '#992E00',
-                        }
+                            DEFAULT: '#F07F37',
+                            50: '#FFF3EA',
+                            100: '#FFE3CC',
+                            200: '#FFC89F',
+                            300: '#F7A86F',
+                            400: '#F07F37',
+                            500: '#DF6B24',
+                            600: '#C35519',
+                            700: '#9F4215',
+                            800: '#7C3516',
+                            900: '#5F2B16',
+                        },
+                        cream: '#FFE9D3',
+                        cocoa: '#653728'
                     },
                     borderRadius: {
                         '4xl': '2rem',
@@ -96,7 +98,26 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        body { background-color: #FDFBFA; }
+        body {
+            background-color: #FFF7EF;
+            color: #653728;
+        }
+
+        ::selection {
+            background: #FFE9D3;
+            color: #653728;
+        }
+
+        .meetball-card {
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(101, 55, 40, 0.08);
+            box-shadow: 0 24px 60px rgba(101, 55, 40, 0.08);
+        }
+
+        .meetball-cream-panel {
+            background: #FFE9D3;
+            border: 1px solid rgba(101, 55, 40, 0.08);
+        }
         
         .progress-bar-shine {
             background-size: 200% 100%;

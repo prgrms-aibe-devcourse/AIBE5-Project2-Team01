@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -89,8 +90,19 @@ public class ProjectService {
                 calculateProgressPercent(project.getCurrentRecruitment(), project.getTotalRecruitment()),
                 formatDeadline(project.getRecruitmentDeadline()),
                 project.getCreatedDate() != null ? project.getCreatedDate().format(DATE_FORMATTER) : "",
+                formatPeriod(project.getRecruitmentStartAt(), project.getRecruitmentEndAt() != null ? project.getRecruitmentEndAt() : project.getRecruitmentDeadline()),
+                formatPeriod(project.getProjectStartAt(), project.getProjectEndAt()),
                 splitTechStacks(project.getTechStackCsv())
         );
+    }
+
+    private String formatPeriod(LocalDate start, LocalDate end) {
+        if (start == null && end == null) {
+            return "-";
+        }
+        String startText = start != null ? start.format(DATE_FORMATTER) : "-";
+        String endText = end != null ? end.format(DATE_FORMATTER) : "-";
+        return startText + " ~ " + endText;
     }
 
     private List<String> splitTechStacks(String techStackCsv) {
@@ -197,6 +209,11 @@ public class ProjectService {
         );
 
         project.setLeaderName(leaderNickname);
+        project.updateDiscoveryFields(
+                cleanText(request.getPosition()),
+                normalizeCsv(request.getTechStackCsv()),
+                cleanText(request.getThumbnailUrl())
+        );
 
         Project savedProject = projectRepository.save(project);
         projectMemberRepository.save(ProjectMember.builder()
@@ -241,6 +258,11 @@ public class ProjectService {
                 request.getClosed(),
                 LocalDateTime.now()
         );
+        project.updateDiscoveryFields(
+                cleanText(request.getPosition()),
+                normalizeCsv(request.getTechStackCsv()),
+                cleanText(request.getThumbnailUrl())
+        );
 
         Project updatedProject = projectRepository.save(project);
 
@@ -274,6 +296,28 @@ public class ProjectService {
         return projectMemberRepository.findByProjectAndUser(project, user)
                 .map(projectMember -> "LEADER".equals(projectMember.getRole()))
                 .orElse(false);
+    }
+
+    private String cleanText(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? "" : trimmed;
+    }
+
+    private String normalizeCsv(String value) {
+        if (value == null) {
+            return null;
+        }
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(token -> !token.isEmpty())
+                .distinct()
+                .limit(10)
+                .filter(Objects::nonNull)
+                .reduce((left, right) -> left + ", " + right)
+                .orElse("");
     }
 
     public List<ParticipatedProjectResponse> getParticipatedProjects(User user) {
