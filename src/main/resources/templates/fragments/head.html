@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="commonHead(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Meetball'">Meetball</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        poodle: {
+                            50: '#F7F5F4',
+                            100: '#EFEBE9',
+                            200: '#D7CCC8',
+                            300: '#A1887F',
+                            400: '#8D6E63',
+                            500: '#795548',
+                            600: '#6D4C41',
+                            700: '#5D4037', // Deep Poodle Brown
+                            800: '#4E342E',
+                            900: '#3E2723',
+                        },
+                        meatball: {
+                            DEFAULT: '#FF6B35', // Primary Orange
+                            50: '#FFF1ED',
+                            100: '#FFE1D6',
+                            200: '#FFC1AD',
+                            300: '#FFA082',
+                            400: '#FF8159',
+                            500: '#FF6B35',
+                            600: '#FF541A',
+                            700: '#E64400',
+                            800: '#BF3900',
+                            900: '#992E00',
+                        }
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                        '5xl': '3rem',
+                    },
+                    fontFamily: {
+                        sans: ['"Pretendard Variable"', 'Pretendard', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-subtle': 'bounce-subtle 3s infinite',
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                        'modal-up': 'modalUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'shine': 'shine 2s linear infinite',
+                        'tail-wag': 'tail-wag 0.5s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        'tail-wag': {
+                            'from': { transform: 'rotate(-10deg)' },
+                            'to': { transform: 'rotate(10deg)' },
+                        },
+                        'bounce-subtle': {
+                            '0%, 100%': { transform: 'translateY(-2%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        },
+                        'fadeInUp': {
+                            'from': { opacity: '0', transform: 'translateY(30px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        'modalUp': {
+                            'from': { opacity: '0', transform: 'translateY(40px) scale(0.98)' },
+                            'to': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        },
+                        'shine': {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global CSS Reset & Premium Scrollbar */
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body { background-color: #FDFBFA; }
+        
+        .progress-bar-shine {
+            background-size: 200% 100%;
+            animation: shine 2s linear infinite;
+            background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+        }
+    </style>
+</head>
+</html>

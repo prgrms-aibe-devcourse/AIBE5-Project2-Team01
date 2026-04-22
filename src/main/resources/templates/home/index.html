@@ -1,150 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meetball - 프로젝트 매칭 플랫폼</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fdf8f6',
-                            100: '#f2e8e5',
-                            500: '#D2691E',
-                            600: '#b45a17',
-                            800: '#8B5A2B',
-                            900: '#5c3a21',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Pretendard Variable"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+<head th:replace="~{fragments/head :: commonHead('홈')}"></head>
 
-<body class="bg-[#fdf8f6] text-gray-900 flex flex-col min-h-screen">
+<body class="text-poodle-900 flex flex-col min-h-screen">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-<main class="flex-grow container mx-auto px-4 py-8">
-    <section class="mb-12 relative py-16 md:py-24 bg-gradient-to-br from-brand-800 via-brand-600 to-brand-900 rounded-[3rem] px-8 md:px-16 overflow-hidden shadow-xl flex flex-col items-center justify-center text-center">
-        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-400/20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
-        <div class="relative z-10 max-w-3xl w-full mx-auto">
-            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-5 leading-[1.3]">
+<main class="flex-grow container mx-auto px-4 py-12 animate-fade-in-up">
+    <!-- Hero Section (Slim Version) -->
+    <section class="mb-12 relative py-12 md:py-16 bg-gradient-to-br from-poodle-700 via-poodle-600 to-poodle-900 rounded-[3rem] px-8 md:px-12 overflow-hidden shadow-2xl flex flex-col items-center justify-center text-center">
+        <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-meatball/10 rounded-full blur-[80px] -ml-16 -mb-16 pointer-events-none"></div>
+        
+        <div class="relative z-10 max-w-4xl w-full mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
+                <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter mb-5 leading-tight">
                 사이드 프로젝트 팀원을<br>구하는 가장 똑똑한 방법
             </h1>
-            <p class="text-sm md:text-base text-white/80 font-medium mb-10">
-                백엔드 데이터와 연결된 프로젝트 목록을 탐색하고, 나에게 맞는 팀을 찾아보세요.
+            <p class="text-sm md:text-base text-poodle-100 font-bold mb-8 opacity-80 max-w-xl mx-auto leading-relaxed">
+                갈색 푸들 마스코트와 함께 나에게 딱 맞는 팀을 찾아보세요.
             </p>
-            <div class="relative w-full max-w-2xl mx-auto group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-purple-500 via-brand-400 to-pink-500 rounded-[2rem] blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                <form th:action="@{/projects}" method="get" class="relative flex items-center bg-white/95 backdrop-blur-xl rounded-[2rem] p-2 shadow-2xl">
-                    <div class="pl-4 pr-2 flex items-center justify-center">
-                        <i class="fa-solid fa-wand-magic-sparkles text-brand-500 text-xl"></i>
-                    </div>
-                    <input type="text" name="keyword" placeholder="기술 스택, 프로젝트명 검색..."
-                           class="w-full bg-transparent border-none outline-none text-gray-700 font-bold px-3 py-3 md:py-4 text-sm md:text-base placeholder-gray-400">
-                    <button class="shrink-0 bg-gray-900 hover:bg-brand-600 text-white font-black px-6 md:px-8 py-3 md:py-4 rounded-xl transition-colors shadow-lg">
-                        탐색
-                    </button>
-                </form>
+            <a th:href="@{/projects}" class="group relative inline-flex items-center gap-4 px-10 py-5 bg-meatball text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl hover:scale-105 active:scale-95 transition-all border-2 border-white/10">
+                <span class="relative z-10">지금 바로 팀원 찾기</span>
+                <i class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]"></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Filter Section (Slim) -->
+    <section class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="bg-white p-8 rounded-[3rem] border border-poodle-50 shadow-sm space-y-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Position</span>
+                <button class="px-5 py-2 rounded-xl bg-poodle-900 text-white text-xs font-black">전체</button>
+                <button class="px-5 py-2 rounded-xl border border-poodle-50 text-poodle-400 text-xs font-black hover:bg-poodle-50 transition-all">프론트엔드</button>
+                <button class="px-5 py-2 rounded-xl border border-poodle-50 text-poodle-400 text-xs font-black hover:bg-poodle-50 transition-all">백엔드</button>
             </div>
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-3 text-white/80 text-xs font-bold">
-                <span>현재 등록 프로젝트:</span>
-                <span th:text="${projectCount}" class="px-3 py-1 bg-white/10 rounded-full border border-white/10">0</span>
-                <span class="px-3 py-1 bg-white/10 rounded-full border border-white/10">#SpringBoot</span>
-                <span class="px-3 py-1 bg-white/10 rounded-full border border-white/10">#Thymeleaf</span>
-                <span class="px-3 py-1 bg-white/10 rounded-full border border-white/10">#JPA</span>
+            <div class="h-px bg-poodle-50/50 w-full"></div>
+            <div class="flex flex-wrap gap-4 items-center">
+                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Tech</span>
+                <div class="flex flex-wrap gap-2 text-meatball">
+                    <span class="px-3 py-1.5 bg-meatball/5 border border-meatball/10 rounded-lg text-[10px] font-black">Spring Boot</span>
+                    <span class="px-3 py-1.5 bg-meatball/5 border border-meatball/10 rounded-lg text-[10px] font-black">MySQL</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="mb-8 space-y-6">
-        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-            <div class="flex flex-wrap gap-2 items-center">
-                <span class="text-xs font-black text-gray-400 mr-2 w-12">포지션</span>
-                <span class="px-4 py-1.5 rounded-full bg-brand-800 text-white text-sm font-black">전체</span>
-                <span class="px-4 py-1.5 rounded-full border border-gray-200 text-sm font-bold text-gray-500">프론트엔드</span>
-                <span class="px-4 py-1.5 rounded-full border border-gray-200 text-sm font-bold text-gray-500">백엔드</span>
-                <span class="px-4 py-1.5 rounded-full border border-gray-200 text-sm font-bold text-gray-500">디자이너</span>
-                <span class="px-4 py-1.5 rounded-full border border-gray-200 text-sm font-bold text-gray-500">기획자</span>
-            </div>
-            <div class="h-px bg-gray-50 w-full"></div>
-            <div class="flex flex-wrap gap-2 items-center">
-                <span class="text-xs font-black text-gray-400 mr-2 w-12">기술스택</span>
-                <span class="px-3 py-1 bg-brand-50 border border-brand-100 text-brand-800 rounded-full text-xs font-bold">Spring Boot</span>
-                <span class="px-3 py-1 bg-brand-50 border border-brand-100 text-brand-800 rounded-full text-xs font-bold">Thymeleaf</span>
-                <span class="px-3 py-1 bg-brand-50 border border-brand-100 text-brand-800 rounded-full text-xs font-bold">MySQL</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="mb-20">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-2xl font-black text-gray-900">모집 중인 프로젝트</h2>
-                <p class="text-sm text-gray-500 font-bold mt-1">
-                    서버에서 조회한 프로젝트를 Thymeleaf로 렌더링합니다.
-                </p>
-            </div>
-            <a th:href="@{/register}" class="hidden sm:inline-flex px-5 py-3 bg-brand-800 text-white rounded-xl text-sm font-black shadow-lg hover:bg-brand-900 transition-colors">
-                프로젝트 등록
+    <!-- Project List (Slim Cards) -->
+    <section class="mb-24 animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-black text-poodle-900 tracking-tight">모집 중인 프로젝트</h2>
+            <a th:href="@{/register}" class="px-6 py-4 bg-poodle-900 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-900/10 hover:bg-meatball transition-all flex items-center gap-2">
+                <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
             </a>
         </div>
 
-        <div th:if="${#lists.isEmpty(projects)}" class="py-24 text-center bg-white rounded-[2rem] border-2 border-dashed border-gray-200">
-            <p class="text-gray-500 font-bold text-lg">등록된 프로젝트가 없습니다.</p>
-            <p class="text-gray-400 mt-1">첫 프로젝트를 등록해 팀원을 모집해보세요.</p>
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(projects)}" class="py-32 text-center bg-white rounded-[3rem] border border-poodle-50">
+            <div class="w-20 h-20 bg-poodle-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-dog text-poodle-200 text-3xl animate-tail-wag"></i>
+            </div>
+            <p class="text-poodle-900 font-black text-xl">등록된 프로젝트가 없습니다.</p>
         </div>
 
-        <div th:unless="${#lists.isEmpty(projects)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <article th:each="project : ${projects}" class="project-card bg-white rounded-[1.5rem] p-6 border border-gray-100 flex flex-col h-full relative overflow-hidden group">
-                <div class="flex justify-between items-start mb-5">
-                    <div class="flex flex-col gap-2">
-                        <span th:text="${project.projectType}" class="w-fit px-3 py-1 bg-brand-50 text-brand-800 rounded-lg text-[11px] font-black border border-brand-100">사이드 프로젝트</span>
-                        <span th:text="${project.position}" class="w-fit px-3 py-1 bg-gray-50 text-gray-500 rounded-lg text-[11px] font-black border border-gray-100">백엔드</span>
+        <div th:unless="${#lists.isEmpty(projects)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <article th:each="project : ${projects}" class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+                <!-- Image Section (Compacted) -->
+                <div class="relative h-44 overflow-hidden">
+                    <img th:src="${project.thumbnailUrl}" th:alt="${project.title}" src="https://picsum.photos/seed/project/600/400"
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute top-4 left-4">
+                        <span th:text="${project.deadlineLabel}" class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">D-14</span>
                     </div>
-                    <span th:text="${project.deadlineLabel}" class="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1 rounded-full">D-14</span>
                 </div>
 
-                <h3 th:text="${project.title}" class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-brand-800 transition-colors">프로젝트 제목</h3>
-                <p th:text="${project.summary}" class="text-sm text-gray-500 font-medium leading-relaxed mb-5 line-clamp-2">프로젝트 요약</p>
-
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <span th:each="techStack : ${project.techStacks}" th:text="${techStack}" class="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 rounded-lg text-[11px] font-bold">Spring Boot</span>
-                </div>
-
-                <div class="mt-auto">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-black text-gray-400">모집 현황</span>
-                        <span class="text-xs font-black text-brand-800">
-                            <span th:text="${project.currentRecruitment}">0</span> /
-                            <span th:text="${project.totalRecruitment}">0</span>
-                        </span>
+                <div class="p-6 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span th:text="${project.projectType}" class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">Side Project</span>
+                        <span th:text="${project.position}" class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">Backend</span>
                     </div>
-                    <a th:href="@{/projects/{id}(id=${project.id})}" class="mt-4 w-full inline-flex justify-center py-3 bg-gray-900 text-white rounded-xl text-sm font-black hover:bg-brand-800 transition-colors">
-                        상세 보기
-                    </a>
+
+                    <h3 th:text="${project.title}" class="text-xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors line-clamp-1">프로젝트 제목</h3>
+                    <p th:text="${project.summary}" class="text-[11px] text-poodle-400 font-bold leading-relaxed mb-4 line-clamp-2">프로젝트의 핵심 요약 내용이 들어갑니다.</p>
+
+                    <div class="flex flex-wrap gap-1.5 mb-6">
+                        <span th:each="techStack : ${project.techStacks}" th:text="${techStack}" class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">Spring Boot</span>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-poodle-50">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit Status</span>
+                            <span class="text-xs font-black text-poodle-900">
+                                <span th:text="${project.currentRecruitment}" class="text-meatball">0</span> <span class="text-poodle-100">/</span> <span th:text="${project.totalRecruitment}">0</span>
+                            </span>
+                        </div>
+                        <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
+                            <div class="h-full bg-meatball rounded-full" th:style="'width: ' + (${project.currentRecruitment} * 100 / ${project.totalRecruitment}) + '%'"></div>
+                        </div>
+                        <a th:href="@{/projects/{id}(id=${project.id})}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
+                            프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
                 </div>
             </article>
         </div>
     </section>
 </main>
 
-<footer class="py-10 text-center text-xs font-bold text-gray-400">
-    © 2026 Meetball. Spring Boot + Thymeleaf 기반 프로젝트 매칭 서비스
-</footer>
+<footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 </body>
+
 </html>

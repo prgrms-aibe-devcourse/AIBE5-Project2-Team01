@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <footer th:fragment="mainFooter" class="bg-poodle-900 text-poodle-100 pt-24 pb-12 overflow-hidden relative">
+        <!-- Decoration light -->
+        <div class="absolute top-0 left-0 w-96 h-96 bg-meatball/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
+                <!-- Branding Section -->
+                <div class="col-span-1 md:col-span-1 space-y-8">
+                    <a th:href="@{/}" class="flex items-center gap-3 group translate-z-0">
+                        <div class="w-12 h-12 bg-meatball text-white rounded-2xl flex items-center justify-center shadow-[0_10px_20px_rgba(255,107,53,0.3)] group-hover:scale-110 transition-all duration-500">
+                            <i class="fa-solid fa-dog text-2xl animate-tail-wag"></i>
+                        </div>
+                        <span class="text-3xl font-black tracking-tighter text-white">Meetball</span>
+                    </a>
+                    <p class="text-poodle-300 text-sm font-bold leading-relaxed max-w-xs">
+                        우리만의 특별한 팀원을 만나는 곳,<br>
+                        미트볼 푸들과 함께 똑똑하게 매칭하세요.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-meatball hover:border-meatball transition-all group/icon">
+                            <i class="fa-brands fa-instagram text-base group-hover:scale-110"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-meatball hover:border-meatball transition-all group/icon">
+                            <i class="fa-brands fa-github text-base group-hover:scale-110"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-meatball hover:border-meatball transition-all group/icon">
+                            <i class="fa-solid fa-blog text-base group-hover:scale-110"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links Section 1 -->
+                <div>
+                    <h4 class="text-white font-black text-sm uppercase tracking-[0.2em] mb-8">Service</h4>
+                    <ul class="space-y-4 text-poodle-400 text-sm font-bold">
+                        <li><a th:href="@{/projects}" class="hover:text-meatball transition-colors">프로젝트 탐색</a></li>
+                        <li><a th:href="@{/register}" class="hover:text-meatball transition-colors">프로젝트 등록</a></li>
+                        <li><a th:href="@{/project/manage}" class="hover:text-meatball transition-colors">내 프로젝트 관리</a></li>
+                    </ul>
+                </div>
+
+                <!-- Links Section 2 -->
+                <div>
+                    <h4 class="text-white font-black text-sm uppercase tracking-[0.2em] mb-8">Support</h4>
+                    <ul class="space-y-4 text-poodle-400 text-sm font-bold">
+                        <li><a href="#" class="hover:text-meatball transition-colors">자주 묻는 질문</a></li>
+                        <li><a href="#" class="hover:text-meatball transition-colors">공지사항</a></li>
+                        <li><a href="#" class="hover:text-meatball transition-colors">문의하기</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter/Badge Section -->
+                <div>
+                    <div class="bg-white/5 rounded-[2rem] p-8 border border-white/5 space-y-6">
+                        <div>
+                            <h4 class="text-white font-black text-xs mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-medal text-meatball"></i>
+                                Premium Matching
+                            </h4>
+                            <p class="text-poodle-500 text-[11px] font-bold leading-relaxed">
+                                미트볼은 신뢰할 수 있는 개발자 커뮤니티 성장을 지향합니다.
+                            </p>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-meatball/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-meatball border border-meatball/10">
+                            Trusted By Developers
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-poodle-600 text-[11px] font-bold tracking-tight">
+                    &copy; 2026 Meetball Team. Crafted with <i class="fa-solid fa-heart text-meatball mx-1"></i> for Developers.
+                </p>
+                <div class="flex gap-10 text-poodle-500 text-[11px] font-black uppercase tracking-widest">
+                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                    <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookies</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🚀 Premium Back to Top Button -->
+        <button id="backToTop" class="fixed bottom-10 right-10 w-14 h-14 bg-meatball text-white rounded-2xl shadow-[0_20px_40px_rgba(255,107,53,0.3)] flex items-center justify-center translate-y-32 opacity-0 transition-all duration-700 hover:scale-110 active:scale-95 z-[999] group overflow-hidden">
+            <i class="fa-solid fa-chevron-up text-xl group-hover:-translate-y-1 transition-transform duration-300"></i>
+            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-800 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl">BACK TO TOP</span>
+        </button>
+            <i class="fa-solid fa-chevron-up text-xl group-hover:-translate-y-1 transition-transform pointer-events-none"></i>
+            <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-900 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl pointer-events-none">TOP</span>
+        </button>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const topBtn = document.getElementById('backToTop');
+                
+                // 스크롤 이벤트 핸들러
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        topBtn.classList.remove('translate-y-32', 'opacity-0');
+                        topBtn.classList.add('translate-y-0', 'opacity-100');
+                    } else {
+                        topBtn.classList.add('translate-y-32', 'opacity-0');
+                        topBtn.classList.remove('translate-y-0', 'opacity-100');
+                    }
+                });
+
+                // 클릭 시 상단 이동
+                topBtn.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        </script>
+    </footer>
+</body>
+</html>
