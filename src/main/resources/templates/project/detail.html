@@ -300,8 +300,13 @@
                     </div>
 
                     <div class="space-y-4">
-                        <!-- 일반 참여자 / 역할 미정(GUEST)일 때만 지원 버튼 노출 -->
-                        <button th:if="${role == 'REGULAR_USER' or role == 'GUEST'}" onclick="openApplyModal()"
+                        <a th:if="${role == 'GUEST'}" th:href="@{/login(redirect=${currentProjectPath})}"
+                            class="flex items-center justify-center w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            로그인 후 지원하기 🐾
+                        </a>
+
+                        <!-- 일반 참여자일 때만 지원 버튼 노출 -->
+                        <button th:if="${role == 'REGULAR_USER'}" onclick="openApplyModal()"
                             class="w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
                             프로젝트 지원하기 🐾
                         </button>
@@ -416,10 +421,10 @@
 
                 <div class="p-10 space-y-10 max-h-[70vh] overflow-y-auto no-scrollbar">
                     <!-- User Profile Summary -->
-                    <div
+                    <div th:if="${currentUser != null}"
                         class="p-8 bg-poodle-50/50 rounded-[2.5rem] border border-poodle-100 flex items-center gap-6 relative overflow-hidden group hover:bg-white hover:border-meatball/20 transition-all">
                         <div class="relative">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky"
+                            <img th:src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + ${currentUser.nickname}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky"
                                 class="w-20 h-20 bg-white rounded-2xl shadow-sm border border-poodle-50">
                             <div
                                 class="absolute -bottom-2 -right-2 w-8 h-8 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] shadow-lg shadow-meatball/20">
@@ -428,23 +433,16 @@
                         </div>
                         <div class="space-y-3 flex-grow">
                             <div class="flex items-center gap-3">
-                                <h4 class="text-xl font-black text-poodle-900">김밋볼</h4>
-                                <span class="text-[10px] font-bold text-poodle-300 tracking-tight">@meetball_dev</span>
+                                <h4 th:text="${currentUser.nickname}" class="text-xl font-black text-poodle-900">사용자</h4>
+                                <span th:text="${currentUser.email}" class="text-[10px] font-bold text-poodle-300 tracking-tight">user@example.com</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span
-                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase">백엔드
-                                    개발자 - 3년차</span>
+                                <span th:text="${#strings.isEmpty(currentUser.jobTitle) ? '프로필 직무 미설정' : currentUser.jobTitle}"
+                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase">직무</span>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <span
-                                    class="px-2.5 py-1 bg-poodle-100 text-poodle-600 rounded-md text-[9px] font-black">React</span>
-                                <span
-                                    class="px-2.5 py-1 bg-poodle-100 text-poodle-600 rounded-md text-[9px] font-black">Node.js</span>
-                                <span
-                                    class="px-2.5 py-1 bg-white border border-poodle-100 text-meatball rounded-md text-[9px] font-black ml-2">AI/ML</span>
-                                <span
-                                    class="px-2.5 py-1 bg-white border border-poodle-100 text-meatball rounded-md text-[9px] font-black">핀테크</span>
+                                <span th:text="${#strings.isEmpty(currentUser.techStack) ? '기술 스택 미설정' : currentUser.techStack}"
+                                    class="px-2.5 py-1 bg-poodle-100 text-poodle-600 rounded-md text-[9px] font-black">기술 스택</span>
                             </div>
                         </div>
                     </div>
@@ -540,7 +538,12 @@
         }
     </style>
 
-    <script>
+    <script th:inline="javascript">
+        const CURRENT_USER = {
+            nickname: /*[[${currentUser != null ? currentUser.nickname : null}]]*/ null,
+            role: /*[[${currentUser != null ? currentUser.role : 'NONE'}]]*/ 'NONE'
+        };
+
         function openApplyModal() {
             document.getElementById('applyModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -584,6 +587,11 @@
             const projectId = document.getElementById('applicationProjectId').value;
             const message = document.getElementById('applyMessage').value;
             const selectedBtn = document.querySelector('.pos-btn.selected');
+
+            if (!CURRENT_USER.nickname) {
+                window.location.href = `/login?redirect=/projects/${projectId}`;
+                return;
+            }
             
             if (!selectedBtn) {
                 alert('지원 포지션을 선택해주세요.');
@@ -594,13 +602,9 @@
                 return;
             }
 
-            // 임시: 현재 URL에서 userId 스니핑, 없으면 1
-            const params = new URLSearchParams(window.location.search);
-            const userId = params.get('userId') || 1;
             const position = selectedBtn.innerText.trim();
 
             const payload = {
-                userId: parseInt(userId),
                 position: position,
                 message: message
             };
@@ -629,9 +633,6 @@
         // ===================================
         // Comments Script
         // ===================================
-        const MOCK_NICKNAME = '김밋볼'; // 임시 닉네임
-        const MOCK_ROLE = 'MEMBER';
-
         async function fetchComments() {
             const projectId = document.getElementById('applicationProjectId')?.value;
             if(!projectId) return;
@@ -658,7 +659,7 @@
                         <div class="bg-poodle-50/30 p-6 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
                             <h4 class="font-black text-poodle-900 text-sm mb-1">${c.authorNickname} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${dateStr}</span></h4>
                             <p class="text-sm font-bold text-poodle-700 leading-relaxed">${c.content}</p>
-                            ${c.authorNickname === MOCK_NICKNAME ? `
+                            ${CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname ? `
                             <button onclick="deleteComment(${c.id})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>
                             ` : ''}
                         </div>
@@ -677,14 +678,16 @@
             if (!content) {
                 alert('댓글 내용을 입력해주세요.'); return;
             }
+            if (!CURRENT_USER.nickname) {
+                window.location.href = `/login?redirect=/projects/${projectId}`;
+                return;
+            }
 
             try {
                 const res = await fetch(`/api/projects/${projectId}/comments`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        authorNickname: MOCK_NICKNAME,
-                        authorRole: MOCK_ROLE,
                         content: content
                     })
                 });

@@ -94,68 +94,35 @@ public class ReviewService {
     }
 
     @Transactional
-    public void addReview(Long projectId, ReviewRequestDto requestDto) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
-
-        User reviewer = userRepository.findByNickname(requestDto.getReviewerNickname())
-                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다: " + requestDto.getReviewerNickname()));
-
-        // 권한 체크: 작성자가 해당 프로젝트의 멤버인지 확인
-        if (!projectMemberRepository.existsByProjectAndUser(project, reviewer)) {
-            throw new IllegalArgumentException("이 프로젝트의 멤버만 리뷰를 작성할 수 있습니다.");
-        }
-
-        User reviewee = null;
+    public void addReview(Long projectId, Long reviewerId, ReviewRequestDto requestDto) {
+        Long revieweeId = null;
         if (requestDto.getTargetUserNickname() != null && !requestDto.getTargetUserNickname().isBlank()) {
-            reviewee = userRepository.findByNickname(requestDto.getTargetUserNickname())
-                    .orElseThrow(() -> new IllegalArgumentException("리뷰 대상자를 찾을 수 없습니다: " + requestDto.getTargetUserNickname()));
-            
-            // 본인 리뷰 방지
-            if (reviewer.getId().equals(reviewee.getId())) {
-                throw new IllegalArgumentException("자신에 대한 리뷰는 작성할 수 없습니다.");
-            }
-            
-            // 대상자가 프로젝트 멤버인지 확인
-            if (!projectMemberRepository.existsByProjectAndUser(project, reviewee)) {
-                throw new IllegalArgumentException("리뷰 대상자가 프로젝트 멤버가 아닙니다.");
-            }
+            revieweeId = userRepository.findByNickname(requestDto.getTargetUserNickname())
+                    .orElseThrow(() -> new IllegalArgumentException("리뷰 대상자를 찾을 수 없습니다: " + requestDto.getTargetUserNickname()))
+                    .getId();
         }
 
-        if (requestDto.getScore() < 0.5 || requestDto.getScore() > 5.0) {
-            throw new IllegalArgumentException("별점은 0.5점에서 5.0점 사이여야 합니다.");
-        }
-
-        if (reviewRepository.existsByProjectAndReviewerAndReviewee(project, reviewer, reviewee)) {
-            throw new IllegalArgumentException("이미 해당 대상에 대해 리뷰를 제출하셨습니다.");
-        }
-
-        Review review = Review.builder()
-                .project(project)
-                .reviewer(reviewer)
-                .reviewee(reviewee)
-                .content(requestDto.getContent()) 
-                .score(requestDto.getScore())
-                .build();
-
-        reviewRepository.save(review);
+        addReview(projectId, reviewerId, revieweeId, requestDto.getContent(), requestDto.getScore());
     }
 
-    /**
-     * 프로젝트 참여 팀원 중 본인을 제외한 목록을 반환합니다.
-     */
     @Transactional(readOnly = true)
-    public List<ReviewTargetResponse> getTeammatesForReview(Long projectId, String currentNickname) {
+    public List<ReviewTargetResponse> getTeammatesForReview(Long projectId, Long currentUserId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
-        
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (!projectMemberRepository.existsByProjectAndUser(project, currentUser)) {
+            throw new IllegalArgumentException("이 프로젝트의 참여 멤버만 팀원 목록을 조회할 수 있습니다.");
+        }
+
         return projectMemberRepository.findByProject(project).stream()
                 .map(pm -> pm.getUser())
-                .filter(u -> !u.getNickname().equals(currentNickname))
-                .map(u -> ReviewTargetResponse.builder()
-                        .userId(u.getId())
-                        .nickname(u.getNickname())
-                        .jobTitle(u.getJobTitle())
+                .filter(user -> !user.getId().equals(currentUser.getId()))
+                .map(user -> ReviewTargetResponse.builder()
+                        .userId(user.getId())
+                        .nickname(user.getNickname())
+                        .jobTitle(user.getJobTitle())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -173,6 +140,10 @@ public class ReviewService {
         }
 
         User reviewee = revieweeId != null ? userRepository.findById(revieweeId).orElse(null) : null;
+
+        if (reviewee != null && reviewer.getId().equals(reviewee.getId())) {
+            throw new IllegalArgumentException("자신에 대한 리뷰는 작성할 수 없습니다.");
+        }
 
         // 피어 리뷰인 경우 대상자도 멤버인지 확인
         if (reviewee != null && !projectMemberRepository.existsByProjectAndUser(project, reviewee)) {

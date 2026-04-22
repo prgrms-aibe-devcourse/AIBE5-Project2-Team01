@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,12 @@ class AttachmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private MockHttpSession session(Long userId) {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", userId);
+        return session;
+    }
+
     @Test
     @DisplayName("MultipartFile 첨부파일 업로드 성공 테스트")
     void uploadAttachmentSuccess() throws Exception {
@@ -35,7 +42,7 @@ class AttachmentControllerTest {
         // when & then
         mockMvc.perform(multipart("/api/projects/1/attachments")
                 .file(file)
-                .param("userRole", "MEMBER"))
+                .session(session(1L)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.originalFileName").value("test-report.pdf"))
                 .andExpect(jsonPath("$.fileSize").value("Test Content Data".getBytes().length));

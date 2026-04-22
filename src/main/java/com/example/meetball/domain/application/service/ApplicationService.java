@@ -7,6 +7,8 @@ import com.example.meetball.domain.application.entity.Application;
 import com.example.meetball.domain.application.entity.ApplicationStatus;
 import com.example.meetball.domain.application.repository.ApplicationRepository;
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectMember;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
@@ -29,6 +31,7 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -142,6 +145,16 @@ public class ApplicationService {
         }
 
         application.updateStatus(nextStatus, LocalDateTime.now());
+        if ((nextStatus == ApplicationStatus.ACCEPTED || nextStatus == ApplicationStatus.APPROVED)
+                && application.getUser() != null
+                && !projectMemberRepository.existsByProjectAndUser(project, application.getUser())) {
+            projectMemberRepository.save(ProjectMember.builder()
+                    .project(project)
+                    .user(application.getUser())
+                    .role("MEMBER")
+                    .build());
+        }
+
         Application updatedApplication = applicationRepository.save(application);
 
         return new ApplicationResponseDto(updatedApplication);

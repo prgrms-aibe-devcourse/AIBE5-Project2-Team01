@@ -61,10 +61,10 @@ public class ReviewServiceTest {
     void addReview_Success() {
         // given
         // 멤버가 리더에게 리뷰를 남깁니다.
-        ReviewRequestDto request = new ReviewRequestDto(5.0, "멤버", "MEMBER", "리더", "리더님 최고!");
+        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "리더님 최고!");
 
         // when
-        reviewService.addReview(project.getId(), request);
+        reviewService.addReview(project.getId(), member.getId(), request);
 
         // then
         double meetBallIndex = reviewService.calculateMeetBallIndex(leader);
@@ -75,12 +75,12 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 등록 실패 - 프로젝트 참여자가 아닌 경우")
     void addReview_NonParticipant_Fail() {
         // given
-        ReviewRequestDto request = new ReviewRequestDto(5.0, "불청객", "USER", "리더", "몰래 남기기");
+        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "몰래 남기기");
 
         // when & then
-        assertThatThrownBy(() -> reviewService.addReview(project.getId(), request))
+        assertThatThrownBy(() -> reviewService.addReview(project.getId(), nonParticipant.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이 프로젝트의 멤버만");
+                .hasMessageContaining("이 프로젝트의 참여 멤버만");
     }
 
     @Test
@@ -88,10 +88,10 @@ public class ReviewServiceTest {
     void addReview_SelfReview_Fail() {
         // given
         // 리더가 본인 '리더' 닉네임에게 리뷰 남기기 시도
-        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "LEADER", "리더", "나 최고!");
+        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "나 최고!");
 
         // when & then
-        assertThatThrownBy(() -> reviewService.addReview(project.getId(), request))
+        assertThatThrownBy(() -> reviewService.addReview(project.getId(), leader.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("자신에 대한 리뷰는 작성할 수 없습니다");
     }
@@ -100,13 +100,12 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 등록 실패 - 중복 리뷰 방지")
     void addReview_Duplicate_Fail() {
         // given
-        ReviewRequestDto request = new ReviewRequestDto(5.0, "멤버", "MEMBER", "리더", "첫 리뷰");
-        reviewService.addReview(project.getId(), request);
+        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "첫 리뷰");
+        reviewService.addReview(project.getId(), member.getId(), request);
 
         // when & then
-        assertThatThrownBy(() -> reviewService.addReview(project.getId(), request))
+        assertThatThrownBy(() -> reviewService.addReview(project.getId(), member.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 해당 대상에 대해 리뷰를 제출하셨습니다");
     }
 }
-

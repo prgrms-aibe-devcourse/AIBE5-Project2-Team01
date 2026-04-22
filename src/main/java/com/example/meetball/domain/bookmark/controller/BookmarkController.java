@@ -3,8 +3,10 @@ package com.example.meetball.domain.bookmark.controller;
 import com.example.meetball.domain.bookmark.dto.BookmarkResponseDto;
 import com.example.meetball.domain.bookmark.service.BookmarkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/bookmarks")
@@ -17,7 +19,7 @@ public class BookmarkController {
     @GetMapping
     public ResponseEntity<BookmarkResponseDto> getBookmarkStatus(
             @PathVariable Long projectId,
-            @RequestParam(defaultValue = "1") Long userId) {
+            @SessionAttribute(name = "userId", required = false) Long userId) {
         return ResponseEntity.ok(bookmarkService.getBookmarkStatus(projectId, userId));
     }
 
@@ -25,7 +27,11 @@ public class BookmarkController {
     @PostMapping
     public ResponseEntity<?> toggleBookmark(
             @PathVariable Long projectId,
-            @RequestParam(defaultValue = "1") Long userId) {
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
         try {
             BookmarkResponseDto responseDto = bookmarkService.toggleBookmark(projectId, userId);
             return ResponseEntity.ok(responseDto);

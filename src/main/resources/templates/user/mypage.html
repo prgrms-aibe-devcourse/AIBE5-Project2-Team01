@@ -427,7 +427,7 @@
         }
 
         try {
-            const response = await fetch(`/api/mypage/profile?userId=${userId}`, {
+            const response = await fetch('/api/mypage/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -453,11 +453,8 @@
     }
 
     async function loadBookmarks() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/bookmarks?userId=${userId}`);
+            const response = await fetch('/api/mypage/bookmarks');
             if (!response.ok) throw new Error('북마크 조회 실패');
 
             const bookmarks = await response.json();
@@ -505,11 +502,8 @@
     }
 
     async function loadApplications() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/applications?userId=${userId}`);
+            const response = await fetch('/api/mypage/applications');
             if (!response.ok) throw new Error('지원 현황 조회 실패');
 
             const applications = await response.json();
@@ -580,11 +574,8 @@
     }
 
     async function loadParticipatingProjects() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/projects?userId=${userId}`);
+            const response = await fetch('/api/mypage/projects');
             if (!response.ok) throw new Error('프로젝트 현황 조회 실패');
             
             const projects = await response.json();
@@ -669,11 +660,8 @@
     }
 
     async function loadReviews() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/reviews?userId=${userId}`);
+            const response = await fetch('/api/mypage/reviews');
             if (!response.ok) throw new Error('리뷰 목록 조회 실패');
             
             const reviews = await response.json();
@@ -742,7 +730,6 @@
 
     async function openReviewModal(projectId) {
         targetProjectIdForReview = projectId;
-        const currentNickname = document.getElementById('hiddenProfileNickname').value;
         const targetSelect = document.getElementById('reviewTargetSelect');
         targetSelect.innerHTML = '<option value="">불러오는 중...</option>';
         
@@ -753,7 +740,7 @@
         document.body.style.overflow = 'hidden';
 
         try {
-            const res = await fetch(`/api/projects/${projectId}/reviews/teammates?currentNickname=` + encodeURIComponent(currentNickname));
+            const res = await fetch(`/api/projects/${projectId}/reviews/teammates`);
             if (!res.ok) throw new Error('팀원 목록을 불러오지 못했습니다.');
             const teammates = await res.json();
             
@@ -781,7 +768,6 @@
         const targetUserNickname = document.getElementById('reviewTargetSelect').value;
         const score = parseFloat(document.getElementById('reviewScore').value);
         const content = document.getElementById('reviewContent').value;
-        const reviewerNickname = document.getElementById('hiddenProfileNickname').value;
 
         if (!targetUserNickname) {
             alert('평가할 팀원을 선택해주세요.');
@@ -790,8 +776,6 @@
 
         const payload = {
             score: score,
-            reviewerNickname: reviewerNickname,
-            reviewerRole: "MEMBER", // 임시 값
             targetUserNickname: targetUserNickname,
             content: content
         };
@@ -862,4 +846,3 @@
 </div>
 </body>
 </html>
-

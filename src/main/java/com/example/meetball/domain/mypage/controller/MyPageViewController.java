@@ -3,14 +3,13 @@ package com.example.meetball.domain.mypage.controller;
 import com.example.meetball.domain.mypage.dto.MyPageProfileResponse;
 import com.example.meetball.domain.mypage.service.MyPageService;
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,20 +20,20 @@ import java.util.List;
 public class MyPageViewController {
 
     private final MyPageService myPageService;
-    private final UserService userService;
 
     @GetMapping("/mypage")
     public String myPage(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long viewerId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             Model model) {
 
-        Long resolvedUserId = resolveUserId(userId);
+        Long resolvedUserId = resolveUserId(userId, sessionUserId);
         if (resolvedUserId == null) {
-            return renderEmptyMyPage(model, "등록된 사용자 정보가 아직 없습니다.");
+            return "redirect:/login?redirect=/user/mypage";
         }
 
-        Long resolvedViewerId = viewerId != null ? viewerId : resolvedUserId;
+        Long resolvedViewerId = viewerId != null ? viewerId : sessionUserId;
 
         try {
             MyPageProfileResponse profile = myPageService.getMyProfile(resolvedUserId, resolvedViewerId);
@@ -50,14 +49,12 @@ public class MyPageViewController {
         return "user/mypage";
     }
 
-    private Long resolveUserId(Long userId) {
+    private Long resolveUserId(Long userId, Long sessionUserId) {
         if (userId != null) {
             return userId;
         }
 
-        return userService.findDefaultUser()
-                .map(User::getId)
-                .orElse(null);
+        return sessionUserId;
     }
 
     private String renderEmptyMyPage(Model model, String message) {

@@ -3,9 +3,10 @@ package com.example.meetball.global.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.CrossOriginOpenerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,12 +20,19 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/login",
+                                "/register",
+                                "/error",
+                                "/mypage",
+                                "/user/mypage",
                                 "/css/**",
                                 "/js/**",
                                 "/img/**",
                                 "/h2-console/**",
                                 "/api/projects",
-                                "/api/projects/*",
+                                "/api/projects/**",
+                                "/api/mypage/**",
+                                "/api/applications/**",
+                                "/api/users/**",
                                 "/api/auth/**",
                                 "/api/recommendations",
                                 "/api/recommendations/**",
@@ -34,6 +42,10 @@ public class SecurityConfig {
                 )
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                        .referrerPolicy(referrerPolicy -> referrerPolicy
+                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER_WHEN_DOWNGRADE))
+                        .crossOriginOpenerPolicy(crossOriginOpenerPolicy -> crossOriginOpenerPolicy
+                                .policy(CrossOriginOpenerPolicyHeaderWriter.CrossOriginOpenerPolicy.SAME_ORIGIN_ALLOW_POPUPS))
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")

@@ -6,8 +6,10 @@ import com.example.meetball.domain.projectread.service.ProjectReadService;
 import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/read")
@@ -21,7 +23,10 @@ public class ProjectReadController {
     @PostMapping
     public ResponseEntity<Void> recordRead(
             @PathVariable Long projectId,
-            @RequestParam Long userId) {
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
         
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));

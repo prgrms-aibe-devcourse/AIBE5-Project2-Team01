@@ -71,9 +71,6 @@
                         <div
                             class="p-8 rounded-4xl bg-poodle-50/20 border-2 border-dashed border-poodle-100 hover:border-meatball/30 transition-all text-center">
                             <form id="attachmentForm" class="flex flex-col items-center gap-4">
-                                <input type="hidden" id="projectId" th:value="${project != null ? project.id : 1}"
-                                    value="1" />
-
                                 <div
                                     class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-poodle-300 shadow-sm mb-2">
                                     <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
@@ -269,7 +266,6 @@
         }
         // 첨부파일 관리 스크립트 연결
         // ==========================================
-        const MOCK_ROLE = 'LEADER'; // 로그인 전이라 임시값 사용
 
         async function fetchAttachments() {
             const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
@@ -321,8 +317,7 @@
             formData.append('file', file);
 
             try {
-                // userRole은 컨트롤러 요구사항대로 파라미터 전달 (기본값 GUEST라 업로드 안됨)
-                const response = await fetch(`/api/projects/${projectId}/attachments?userRole=${MOCK_ROLE}`, {
+                const response = await fetch(`/api/projects/${projectId}/attachments`, {
                     method: 'POST',
                     body: formData
                 });
@@ -331,7 +326,7 @@
                     alert('파일 업로드에 성공했습니다.');
                     fetchAttachments(); // 목록 갱신
                 } else {
-                    alert('파일 업로드 실패 (권한 없음 또는 서버 오류)');
+                    alert(response.status === 401 ? '로그인이 필요합니다.' : '파일 업로드 실패 (권한 없음 또는 서버 오류)');
                 }
             } catch (error) {
                 console.error('업로드 에러:', error);
@@ -354,7 +349,7 @@
 
                 if (response.ok) {
                     alert('프로젝트가 성공적으로 삭제되었습니다.');
-                    window.location.href = '/mypage'; // 삭제 후 마이페이지나 홈으로 이동
+                    window.location.href = '/user/mypage'; // 삭제 후 마이페이지로 이동
                 } else {
                     alert('프로젝트 삭제에 실패했습니다.');
                 }

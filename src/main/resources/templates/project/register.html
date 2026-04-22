@@ -306,8 +306,6 @@
             }
 
             try {
-                // 임시로 userRole 파라미터를 줘서 바로 생성 권한을 Mock 처리할 수 있으나, 
-                // ProjectController 에서는 아직 userId Mocking이 안되어 있을 수 있음
                 const response = await fetch('/api/projects', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -329,4 +327,3 @@
     </script>
 </body>
 </html>
-

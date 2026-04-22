@@ -2,14 +2,22 @@ package com.example.meetball.domain.attachment.controller;
 
 import com.example.meetball.domain.attachment.dto.AttachmentResponseDto;
 import com.example.meetball.domain.attachment.service.AttachmentService;
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.repository.ProjectRepository;
+import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.service.UserService;
+import com.example.meetball.global.auth.enums.ProjectDetailRole;
+import com.example.meetball.global.auth.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -20,6 +28,9 @@ import java.util.List;
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
+    private final ProjectRepository projectRepository;
+    private final UserService userService;
+    private final AuthorizationService authorizationService;
 
     // 해당 프로젝트의 모든 첨부파일 목록 조회
     @GetMapping
@@ -32,10 +43,18 @@ public class AttachmentController {
     public ResponseEntity<AttachmentResponseDto> uploadAttachment(
             @PathVariable Long projectId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(defaultValue = "GUEST") String userRole) {
-        
-        if ("GUEST".equals(userRole)) {
-            return ResponseEntity.status(403).build(); // 권한 없음
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        User user = userService.getUserById(userId);
+        ProjectDetailRole role = authorizationService.getProjectDetailRole(user, project);
+
+        if (role != ProjectDetailRole.LEADER && role != ProjectDetailRole.MEMBER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only project members can upload attachments.");
         }
 
         AttachmentResponseDto responseDto = attachmentService.uploadFile(projectId, file);
