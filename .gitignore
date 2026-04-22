@@ -42,6 +42,7 @@ target/
 
 # Logs
 *.log
+test_output.txt
 
 # Runtime uploads
 uploads/
@@ -49,11 +50,12 @@ uploads/
 # Environment
 .env
 .env.*
+.local/
 
 # Temporary files
 *.tmp
 *.swp
-HELP.mdß
+HELP.md
 Todo.txt
 
 docs/

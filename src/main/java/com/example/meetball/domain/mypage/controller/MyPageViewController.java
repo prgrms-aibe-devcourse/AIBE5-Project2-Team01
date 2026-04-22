@@ -76,7 +76,6 @@ public class MyPageViewController {
         model.addAttribute("participatedProjects", Collections.emptyList());
         model.addAttribute("isOwner", false);
         model.addAttribute("mypageNotice", message);
-
         return "user/mypage";
     }
 }

@@ -22,6 +22,12 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // HEAD
+    @Column(name = "project_id", insertable = false, updatable = false)
+    private Long projectId;
+
+    @Column(name = "applicant_name")
+    private String applicantName;
     // 마이페이지 연동: User 엔티티 직접 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -33,12 +39,12 @@ public class Application {
     private Project project;
 
     private String position;
+    @Column(columnDefinition = "TEXT")
+    private String message;
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
-    @Column(columnDefinition = "TEXT")
-    private String message;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -47,13 +53,20 @@ public class Application {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Unified Constructor
     @Builder
-    public Application(User user, Project project, String position, ApplicationStatus status, String message) {
-        this.user = user;
+    public Application(Project project, User user, String applicantName, String position, ApplicationStatus status, String message) {
         this.project = project;
+        if (project != null) {
+            this.projectId = project.getId();
+        }
+        this.user = user;
+        this.applicantName = applicantName;
         this.position = position;
         this.status = status;
         this.message = message;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateStatus(ApplicationStatus status, LocalDateTime updatedAt) {

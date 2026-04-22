@@ -12,17 +12,21 @@ import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.review.repository.ReviewRepository;
 import com.example.meetball.domain.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import com.example.meetball.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -30,11 +34,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final ReviewRepository reviewRepository;
+    private final UserService userService;
 
+    // --- MVC (front2) ---
     public List<ProjectSummaryView> getProjectSummaries() {
         return projectRepository.findAllByOrderByCreatedDateDescIdDesc()
                 .stream()
@@ -120,11 +125,27 @@ public class ProjectService {
         return value == null ? 0 : value;
     }
 
-    public Page<ProjectSummaryView> getProjects(String keyword, String projectType,
-                                                    String progressMethod, Pageable pageable) {
-        Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, pageable);
+    public Page<ProjectListResponseDto> getProjects(String keyword, String projectType,
+                                                    String progressMethod, String position,
+                                                    String techStack, Pageable pageable) {
+        Page<Project> projects = projectRepository.findProjectsWithFilters(keyword, projectType, progressMethod, position, techStack, pageable);
 
-        return projects.map(this::toSummaryView);
+        return projects.map(project -> new ProjectListResponseDto(
+                project.getId(),
+                project.getTitle(),
+                project.getSummary(),
+                project.getThumbnailUrl(),
+                project.getCurrentRecruitment(),
+                project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount(),
+                project.getProjectType(),
+                project.getProgressMethod(),
+                project.getPosition(),
+                splitTechStacks(project.getTechStackCsv()),
+                project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt(),
+                formatDeadline(project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
+                project.getClosed(),
+                project.getCreatedAt()
+        ));
     }
 
     public ProjectDetailResponseDto getProjectById(Long projectId) {
@@ -149,7 +170,14 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request) {
+    public ProjectDetailResponseDto createProject(ProjectCreateRequestDto request, Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        User user = userService.getUserById(userId);
+        String leaderNickname = user.getNickname();
+
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
                 request.getTitle(),
@@ -165,6 +193,9 @@ public class ProjectService {
                 now,
                 now
         );
+
+        project.setLeaderName(leaderNickname);
+
         Project savedProject = projectRepository.save(project);
 
         return new ProjectDetailResponseDto(
@@ -176,9 +207,20 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request) {
+    public ProjectDetailResponseDto updateProject(Long projectId, ProjectUpdateRequestDto request, Long userId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        User user = userService.getUserById(userId);
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
+
+        if (!isLeader) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
+        }
 
         project.update(
                 request.getTitle(),
@@ -205,9 +247,21 @@ public class ProjectService {
     }
 
     @Transactional
-    public void deleteProject(Long projectId) {
+    public void deleteProject(Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        User user = userService.getUserById(userId);
+        boolean isLeader = user.getNickname().equals(project.getLeaderName());
+
+        if (!isLeader) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can delete the project.");
+        }
+
         projectRepository.delete(project);
     }
 
