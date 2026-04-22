@@ -18,4 +18,10 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
     Optional<ProjectMember> findByProjectAndUser(Project project, User user);
 
     List<ProjectMember> findByProject(Project project);
+
+    long countByProject(Project project);
+
+    void deleteByProject(Project project);
+
+    void deleteByProjectAndUser(Project project, User user);
 }

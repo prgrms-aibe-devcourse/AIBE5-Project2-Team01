@@ -13,7 +13,8 @@ public class ParticipatedProjectResponse {
     private String userRole; // LEADER, MEMBER
     private String status;
     private boolean canReview;
-    private boolean closed; // 프로젝트 마감 여부
+    private boolean closed; // 모집 마감 여부
+    private boolean completed; // 프로젝트 완료 여부
     
     @JsonProperty("dDay")
     private Long dDay; // 마감일까지 남은 일수 (모집 중일 때만)
@@ -23,10 +24,11 @@ public class ParticipatedProjectResponse {
                 .projectId(project.getId())
                 .title(project.getTitle())
                 .userRole(role)
-                .status(Boolean.TRUE.equals(project.getClosed()) ? "COMPLETED" : "PROCEEDING")
+                .status(project.isCompleted() ? "COMPLETED" : "PROCEEDING")
                 .canReview(canReview)
                 .dDay(dDay)
                 .closed(Boolean.TRUE.equals(project.getClosed()))
+                .completed(project.isCompleted())
                 .build();
     }
 }

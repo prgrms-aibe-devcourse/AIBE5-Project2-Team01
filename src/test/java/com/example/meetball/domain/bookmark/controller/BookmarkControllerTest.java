@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +40,15 @@ class BookmarkControllerTest {
         mockMvc.perform(post("/api/projects/1/bookmarks").session(session(2L)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bookmarked").value(false));
+    }
+
+    @Test
+    @DisplayName("비회원도 프로젝트 찜 개수는 조회할 수 있다")
+    void getBookmarkStatusGuestCanReadCount() throws Exception {
+        mockMvc.perform(get("/api/projects/1/bookmarks"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookmarked").value(false))
+                .andExpect(jsonPath("$.totalBookmarks").isNumber());
     }
 
     @Test

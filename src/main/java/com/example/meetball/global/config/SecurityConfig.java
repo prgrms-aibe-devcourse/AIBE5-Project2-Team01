@@ -3,6 +3,7 @@ package com.example.meetball.global.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -23,7 +24,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
-                                "/login",
                                 "/register",
                                 "/error",
                                 "/mypage",
@@ -32,15 +32,17 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/img/**",
                                 "/h2-console/**",
+                                "/projects/**",
+                                "/people/**"
+                        ).permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/api/projects",
-                                "/api/projects/**",
-                                "/api/mypage/**",
-                                "/api/applications/**",
-                                "/api/users/**",
-                                "/api/auth/**",
-                                "/api/recommendations",
-                                "/api/recommendations/**",
-                                "/projects/**"
+                                "/api/projects/*",
+                                "/api/projects/*/comments",
+                                "/api/projects/*/attachments",
+                                "/api/projects/*/bookmarks",
+                                "/api/projects/*/reviews/summary"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

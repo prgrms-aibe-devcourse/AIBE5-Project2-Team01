@@ -59,6 +59,25 @@ class MyPageControllerTest {
     }
 
     @Test
+    @DisplayName("마이페이지 API로 타인의 프로필이나 프로젝트를 조회할 수 없다")
+    void myPageRejectsOtherUserScope() throws Exception {
+        mockMvc.perform(get("/api/mypage/profile")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/mypage/projects")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/mypage/projects/completed")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("사용자가 지원한 프로젝트 목록을 조회한다")
     void getMyApplicationsTest() throws Exception {
         Long userId = 1L;

@@ -45,6 +45,14 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.getMyApplications(userId));
     }
 
+    /** 내가 낸 지원 철회 */
+    @PatchMapping("/api/applications/{applicationId}/withdraw")
+    public ApplicationResponseDto withdrawApplication(
+            @PathVariable("applicationId") Long applicationId,
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        return applicationService.withdrawApplication(applicationId, userId);
+    }
+
     // =====================================================
     // 팀장용 API
     // =====================================================
@@ -64,5 +72,13 @@ public class ApplicationController {
             @RequestBody ApplicationStatusUpdateRequestDto request,
             @SessionAttribute(name = "userId", required = false) Long userId) {
         return applicationService.updateApplicationStatus(applicationId, request, userId);
+    }
+
+    /** 지원서 삭제 또는 승인된 팀원 추방 */
+    @DeleteMapping("/api/applications/{applicationId}")
+    public ApplicationResponseDto removeApplication(
+            @PathVariable("applicationId") Long applicationId,
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        return applicationService.removeApplication(applicationId, userId);
     }
 }

@@ -99,7 +99,7 @@ public class CommentService {
             }
             return;
         }
-        // Legacy seed comments do not have authorUserId yet.
+        // Existing imported comments may not have authorUserId yet.
         if (!comment.getAuthorNickname().equals(currentUser.getNickname())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot modify another user's comment.");
         }

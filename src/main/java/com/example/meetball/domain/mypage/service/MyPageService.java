@@ -17,10 +17,11 @@ import com.example.meetball.domain.user.service.UserService;
 import com.example.meetball.global.auth.enums.MyPageAccess;
 import com.example.meetball.global.auth.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,20 +38,11 @@ public class MyPageService {
 
     @Transactional(readOnly = true)
     public MyPageProfileResponse getMyProfile(Long userId, Long viewerId) {
+        requireOwnerAccess(userId, viewerId);
         User user = userService.getUserById(userId);
-        User viewer = viewerId != null ? userService.getUserById(viewerId) : null;
-        
-        // 권한 체크
-        MyPageAccess access = authorizationService.getMyPageAccess(viewer, user);
-        boolean isOwner = (access == MyPageAccess.OWNER);
-
-        // 비공개 프로필 처리: 본인이 아니고 비공개 설정인 경우
-        if (!isOwner && !user.isPublic()) {
-            throw new RuntimeException("비공개 프로필입니다."); // 추후 커스텀 예외로 변경 가능
-        }
 
         double meetBallIndex = reviewService.calculateMeetBallIndex(user);
-        return MyPageProfileResponse.from(user, meetBallIndex, isOwner);
+        return MyPageProfileResponse.from(user, meetBallIndex, true);
     }
 
     @Transactional
@@ -60,65 +52,43 @@ public class MyPageService {
 
     @Transactional(readOnly = true)
     public List<BookmarkedProjectResponse> getMyBookmarks(Long userId, Long viewerId) {
-        if (!isOwnerAccess(userId, viewerId)) {
-            return Collections.emptyList();
-        }
+        requireOwnerAccess(userId, viewerId);
         User user = userService.getUserById(userId);
         return bookmarkService.getBookmarkedProjects(user);
     }
 
     @Transactional(readOnly = true)
     public List<ApplicationResponseDto> getMyApplications(Long userId, Long viewerId) {
-        if (!isOwnerAccess(userId, viewerId)) {
-            return Collections.emptyList();
-        }
+        requireOwnerAccess(userId, viewerId);
         return applicationService.getMyApplications(userId);
     }
 
     @Transactional(readOnly = true)
     public List<ParticipatedProjectResponse> getMyProjects(Long userId, Long viewerId) {
-        // 참여한 프로젝트 목록은 공개 정보이므로 타인도 조회 가능 (단, 유저가 공개 상태여야 함)
+        requireOwnerAccess(userId, viewerId);
         User user = userService.getUserById(userId);
-        User viewer = viewerId != null ? userService.getUserById(viewerId) : null;
-        
-        if (authorizationService.getMyPageAccess(viewer, user) == MyPageAccess.VISITOR && !user.isPublic()) {
-            return Collections.emptyList();
-        }
-        
         return projectService.getParticipatedProjects(user);
     }
 
     @Transactional(readOnly = true)
     public List<ParticipatedProjectResponse> getCompletedProjects(Long userId, Long viewerId) {
-        // 마감된 프로젝트는 성과 지표이므로 공개 정보입니다.
+        requireOwnerAccess(userId, viewerId);
         User user = userService.getUserById(userId);
-        User viewer = viewerId != null ? userService.getUserById(viewerId) : null;
-        
-        if (authorizationService.getMyPageAccess(viewer, user) == MyPageAccess.VISITOR && !user.isPublic()) {
-            return Collections.emptyList();
-        }
-        
-        // closed == true인 프로젝트만 필터링
         return projectService.getParticipatedProjects(user).stream()
-                .filter(p -> Boolean.TRUE.equals(p.isClosed()))
+                .filter(ParticipatedProjectResponse::isCompleted)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ReadProjectResponse> getRecentReads(Long userId, Long viewerId) {
-        if (!isOwnerAccess(userId, viewerId)) {
-            return Collections.emptyList();
-        }
+        requireOwnerAccess(userId, viewerId);
         User user = userService.getUserById(userId);
         return projectReadService.getReadHistory(user);
     }
 
     @Transactional(readOnly = true)
     public List<UserReviewResponse> getMyReviews(Long userId, Long viewerId) {
-        // 상세 텍스트 리뷰는 본인만 확인 가능
-        if (!isOwnerAccess(userId, viewerId)) {
-            return Collections.emptyList();
-        }
+        requireOwnerAccess(userId, viewerId);
         
         User user = userService.getUserById(userId);
         return reviewService.getUserReviews(user);
@@ -132,5 +102,11 @@ public class MyPageService {
         User user = userService.getUserById(userId);
         User viewer = userService.getUserById(viewerId);
         return authorizationService.getMyPageAccess(viewer, user) == MyPageAccess.OWNER;
+    }
+
+    private void requireOwnerAccess(Long userId, Long viewerId) {
+        if (!isOwnerAccess(userId, viewerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "My page is only available for the signed-in user.");
+        }
     }
 }

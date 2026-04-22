@@ -1,12 +1,17 @@
 package com.example.meetball.domain.project.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Project {
@@ -28,7 +33,7 @@ public class Project {
     @Column(name = "project_type", length = 40)
     private String projectType;
 
-    @Column(length = 40)
+    @Column(length = 1000)
     private String position;
 
     @Column(name = "progress_method")
@@ -67,6 +72,8 @@ public class Project {
 
     private Boolean closed;
 
+    private Boolean completed;
+
     private LocalDate createdDate;
 
     @Column(name = "created_at", updatable = false)
@@ -75,8 +82,16 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(length = 500)
+    @Column(length = 1000)
     private String techStackCsv;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC, id ASC")
+    private List<ProjectTechStack> techStackSelections = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC, id ASC")
+    private List<ProjectPosition> positionSelections = new ArrayList<>();
 
     protected Project() {
     }
@@ -85,6 +100,14 @@ public class Project {
     public Project(String title, String description, String projectType, String progressMethod,
                    Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                    LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed,
+                   LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(title, description, projectType, progressMethod, recruitmentCount, recruitmentStartAt, recruitmentEndAt,
+                projectStartAt, projectEndAt, closed, false, createdAt, updatedAt);
+    }
+
+    public Project(String title, String description, String projectType, String progressMethod,
+                   Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
+                   LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, Boolean completed,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
@@ -95,7 +118,11 @@ public class Project {
         this.recruitmentEndAt = recruitmentEndAt;
         this.projectStartAt = projectStartAt;
         this.projectEndAt = projectEndAt;
-        this.closed = closed;
+        this.closed = Boolean.TRUE.equals(closed);
+        this.completed = Boolean.TRUE.equals(completed);
+        if (Boolean.TRUE.equals(this.completed)) {
+            this.closed = true;
+        }
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         // Sync fields for safety
@@ -149,12 +176,14 @@ public class Project {
         this.createdAt = createdDate != null ? createdDate.atStartOfDay() : LocalDateTime.now();
         this.updatedAt = this.createdAt;
         this.closed = false;
+        this.completed = false;
         this.progressMethod = "ONLINE"; // default
     }
 
     public void update(String title, String description, String projectType, String progressMethod,
                        Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
-                       LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, LocalDateTime updatedAt) {
+                       LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, Boolean completed,
+                       LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
         this.projectType = projectType;
@@ -164,7 +193,19 @@ public class Project {
         this.recruitmentEndAt = recruitmentEndAt;
         this.projectStartAt = projectStartAt;
         this.projectEndAt = projectEndAt;
-        this.closed = closed;
+        if (closed != null) {
+            this.closed = closed;
+        } else if (this.closed == null) {
+            this.closed = false;
+        }
+        if (completed != null) {
+            this.completed = completed;
+        } else if (this.completed == null) {
+            this.completed = false;
+        }
+        if (Boolean.TRUE.equals(this.completed)) {
+            this.closed = true;
+        }
         this.updatedAt = updatedAt;
 
         this.recruitmentDeadline = recruitmentEndAt;
@@ -182,6 +223,67 @@ public class Project {
         if (thumbnailUrl != null) {
             this.thumbnailUrl = thumbnailUrl;
         }
+    }
+
+    public void replaceTechStacks(List<String> techStacks) {
+        this.techStackSelections.clear();
+        if (techStacks == null) {
+            return;
+        }
+        for (int i = 0; i < techStacks.size(); i++) {
+            this.techStackSelections.add(new ProjectTechStack(this, techStacks.get(i), i));
+        }
+    }
+
+    public void replacePositions(List<com.example.meetball.domain.project.support.ProjectSelectionCatalog.PositionCapacity> positions) {
+        List<String> requestedNames = new ArrayList<>();
+        if (positions != null) {
+            for (var position : positions) {
+                requestedNames.add(position.name());
+            }
+        }
+
+        this.positionSelections.removeIf(existing -> !requestedNames.contains(existing.getPositionName()));
+        if (positions == null) {
+            return;
+        }
+
+        for (int i = 0; i < positions.size(); i++) {
+            var position = positions.get(i);
+            ProjectPosition existing = this.positionSelections.stream()
+                    .filter(current -> position.name().equals(current.getPositionName()))
+                    .findFirst()
+                    .orElse(null);
+            if (existing == null) {
+                this.positionSelections.add(new ProjectPosition(this, position.name(), position.capacity(), i));
+            } else {
+                existing.updateCapacityAndOrder(position.capacity(), i);
+            }
+        }
+        this.positionSelections.sort((left, right) -> Integer.compare(left.getSortOrder(), right.getSortOrder()));
+    }
+
+    public void incrementCurrentRecruitment() {
+        int current = currentRecruitment == null ? 0 : currentRecruitment;
+        Integer capacity = totalRecruitment != null ? totalRecruitment : recruitmentCount;
+        if (capacity != null && capacity > 0 && current >= capacity) {
+            throw new IllegalStateException("Recruitment count is already full.");
+        }
+        this.currentRecruitment = current + 1;
+    }
+
+    public void decrementCurrentRecruitment() {
+        int current = currentRecruitment == null ? 0 : currentRecruitment;
+        this.currentRecruitment = Math.max(0, current - 1);
+    }
+
+    public boolean isRecruitmentFull() {
+        Integer capacity = totalRecruitment != null ? totalRecruitment : recruitmentCount;
+        if (capacity == null || capacity <= 0) {
+            return false;
+        }
+        int current = currentRecruitment == null ? 0 : currentRecruitment;
+        return current >= capacity;
     }
 
     // Getters
@@ -205,9 +307,13 @@ public class Project {
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }
     public LocalDate getProjectStartAt() { return projectStartAt; }
     public LocalDate getProjectEndAt() { return projectEndAt; }
-    public Boolean getClosed() { return closed; }
+    public Boolean getClosed() { return Boolean.TRUE.equals(closed); }
+    public Boolean getCompleted() { return Boolean.TRUE.equals(completed); }
+    public boolean isCompleted() { return Boolean.TRUE.equals(completed); }
     public LocalDate getCreatedDate() { return createdDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public String getTechStackCsv() { return techStackCsv; }
+    public List<ProjectTechStack> getTechStackSelections() { return techStackSelections; }
+    public List<ProjectPosition> getPositionSelections() { return positionSelections; }
 }

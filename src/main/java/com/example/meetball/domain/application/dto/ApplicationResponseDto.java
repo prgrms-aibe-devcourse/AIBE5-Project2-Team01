@@ -1,6 +1,7 @@
 package com.example.meetball.domain.application.dto;
 
 import com.example.meetball.domain.application.entity.Application;
+import com.example.meetball.domain.application.entity.ApplicationStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,11 +29,22 @@ public class ApplicationResponseDto {
         this.userId = application.getUser() != null ? application.getUser().getId() : null;
         this.userNickname = application.getUser() != null ? application.getUser().getNickname() : null;
         this.applicantName = application.getApplicantName();
-        this.position = application.getPosition();
+        this.position = application.getProjectPosition() != null
+                ? application.getProjectPosition().getPositionName()
+                : application.getPosition();
         this.message = application.getMessage();
-        this.status = application.getStatus() != null ? application.getStatus().name() : null;
+        this.status = normalizeStatus(application.getStatus());
         this.createdAt = application.getCreatedAt();
         this.updatedAt = application.getUpdatedAt();
     }
-}
 
+    private String normalizeStatus(ApplicationStatus status) {
+        if (status == null) {
+            return null;
+        }
+        if (status == ApplicationStatus.APPROVED) {
+            return ApplicationStatus.ACCEPTED.name();
+        }
+        return status.name();
+    }
+}

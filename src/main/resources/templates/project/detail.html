@@ -11,7 +11,7 @@
         <section
             class="relative h-[28rem] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-poodle-900/10 mb-10 group">
             <img th:src="${project.thumbnailUrl}" th:alt="${project.title}"
-                src="https://picsum.photos/seed/code/1200/600"
+                src="/img/logo.png"
                 class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105">
             <div class="absolute inset-0 bg-gradient-to-t from-poodle-900/80 via-poodle-900/20 to-transparent"></div>
             <div class="absolute inset-0 flex flex-col justify-end p-12 text-white">
@@ -81,10 +81,11 @@
                             <div class="space-y-5">
                                 <p class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] italic">Tech
                                     Stacks</p>
-                                <div class="flex flex-wrap gap-3">
-                                    <span th:each="tech : ${project.techStacks}" th:text="${tech}"
-                                        class="px-5 py-2.5 bg-poodle-50 text-poodle-700 rounded-xl text-xs font-black border border-poodle-100 hover:bg-poodle-100 transition-colors">React
-                                        Native</span>
+	                                <div class="flex flex-wrap gap-3">
+	                                    <span th:each="tech : ${project.techStacks}"
+	                                          th:attr="data-tech-chip=${tech}"
+	                                          th:text="${tech}"
+	                                          class="px-5 py-2.5 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">ReactNative</span>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-10 border-t border-poodle-50">
@@ -230,11 +231,15 @@
             <aside class="lg:col-span-4">
                 <section
                     class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 lg:sticky lg:top-24">
-                    <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
-                        <div class="flex items-center gap-2">
-                            <button id="bookmarkBtn" onclick="toggleBookmark()"
-                                class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300 hover:text-meatball hover:bg-white transition-all group">
-                                <i id="bookmarkIcon" class="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform"></i>
+	                    <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
+	                        <div class="flex items-center gap-2">
+	                            <span class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300">
+	                                <i class="fa-regular fa-eye text-lg"></i>
+	                                <span id="detailReadCount" th:text="${project.readCount}" class="text-sm font-black text-poodle-700">0</span>
+	                            </span>
+	                            <button id="bookmarkBtn" onclick="toggleBookmark()"
+	                                class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300 hover:text-meatball hover:bg-white transition-all group">
+	                                <i id="bookmarkIcon" class="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform"></i>
                                 <span id="bookmarkCount" class="text-sm font-black text-poodle-700">0</span>
                             </button>
                             <button onclick="shareProject()"
@@ -249,10 +254,10 @@
                     </div>
 
                     <div class="space-y-4">
-                        <a th:if="${role == 'GUEST'}" th:href="@{/login(redirect=${currentProjectPath})}"
+                        <button th:if="${role == 'GUEST'}" type="button" onclick="openLoginModal(window.location.pathname)"
                             class="flex items-center justify-center w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                             로그인 후 지원하기
-                        </a>
+                        </button>
 
                         <button th:if="${role == 'REGULAR_USER'}" onclick="openApplyModal()"
                             class="w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
@@ -303,20 +308,25 @@
                         </div>
                     </div>
 
-                    <div class="pt-8 border-t border-poodle-50 space-y-5">
-                        <div class="flex items-center gap-2 text-sm font-black text-poodle-900">
-                            <i class="fa-solid fa-users text-meatball text-xs"></i>
-                            <span>모집 포지션 현황</span>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
-                                <span class="text-xs font-black text-poodle-700 flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-meatball rounded-full"></span>
-                                    <span th:text="${#strings.isEmpty(project.position) ? '모집 포지션' : project.position}">프론트엔드</span>
-                                </span>
-                                <span th:text="${project.currentRecruitment + ' / ' + project.totalRecruitment}" class="text-xs font-black text-meatball">1 / 2</span>
-                            </div>
-                        </div>
+	                    <div class="pt-8 border-t border-poodle-50 space-y-5">
+	                        <div class="flex items-center gap-2 text-sm font-black text-poodle-900">
+	                            <i class="fa-solid fa-users text-meatball text-xs"></i>
+	                            <span>모집 포지션 현황</span>
+	                        </div>
+	                        <div class="space-y-2">
+	                            <div th:if="${#lists.isEmpty(project.positionStatuses)}"
+	                                 class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
+	                                <span class="text-xs font-black text-poodle-500">모집 포지션</span>
+	                                <span th:text="${project.currentRecruitment + '/' + project.totalRecruitment}" class="text-xs font-black text-meatball">0/1</span>
+	                            </div>
+	                            <div th:each="status : ${project.positionStatuses}"
+	                                 class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
+	                                <span th:text="${status.name()}" class="text-xs font-black text-poodle-700">프론트엔드</span>
+	                                <span th:text="${status.current() + '/' + status.capacity()}"
+	                                      th:classappend="${status.full()} ? ' text-red-400' : ' text-meatball'"
+	                                      class="text-xs font-black">0/1</span>
+	                            </div>
+	                        </div>
                     </div>
 
                     <div class="pt-8 border-t border-poodle-50 space-y-6">
@@ -325,10 +335,27 @@
                             <span class="px-3 py-1 bg-meatball/5 text-meatball rounded-full text-[9px] font-black uppercase tracking-widest">Team Members</span>
                         </div>
                         <div class="space-y-4">
-                            <div class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
+                            <a th:if="${project.leaderUserId != null}"
+                               th:href="@{/people/{userId}(userId=${project.leaderUserId})}"
+                               class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl hover:border-meatball/30 hover:bg-white transition-all group/leader">
                                 <div class="relative">
                                     <img th:src="${project.leaderAvatarUrl}"
-                                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
+                                        src="/img/logo.png"
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                    <div
+                                        class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
+                                        <i class="fa-solid fa-crown"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900 group-hover/leader:text-meatball transition-colors">팀장님</p>
+                                    <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
+                                </div>
+                            </a>
+                            <div th:unless="${project.leaderUserId != null}" class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
+                                <div class="relative">
+                                    <img th:src="${project.leaderAvatarUrl}"
+                                        src="/img/logo.png"
                                         class="w-12 h-12 bg-white rounded-xl shadow-sm">
                                     <div
                                         class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
@@ -379,7 +406,7 @@
                     <div th:if="${currentUser != null}"
                         class="p-8 bg-poodle-50/50 rounded-[2.5rem] border border-poodle-100 flex items-center gap-6 relative overflow-hidden group hover:bg-white hover:border-meatball/20 transition-all">
                         <div class="relative">
-                            <img th:src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + ${currentUser.nickname}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky"
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png"
                                 class="w-20 h-20 bg-white rounded-2xl shadow-sm border border-poodle-50">
                             <div
                                 class="absolute -bottom-2 -right-2 w-8 h-8 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] shadow-lg shadow-meatball/20">
@@ -389,16 +416,21 @@
                         <div class="space-y-3 flex-grow">
                             <div class="flex items-center gap-3">
                                 <h4 th:text="${currentUser.nickname}" class="text-xl font-black text-poodle-900">사용자</h4>
-                                <span th:text="${currentUser.email}" class="text-[10px] font-bold text-poodle-300 tracking-tight">user@example.com</span>
+                                <span th:text="${currentUser.email}" class="text-[10px] font-bold text-poodle-300 tracking-tight">-</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span th:text="${#strings.isEmpty(currentUser.jobTitle) ? '프로필 직무 미설정' : currentUser.jobTitle}"
                                     class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase">직무</span>
                             </div>
-                            <div class="flex flex-wrap gap-2">
-                                <span th:text="${#strings.isEmpty(currentUser.techStack) ? '기술 스택 미설정' : currentUser.techStack}"
-                                    class="px-2.5 py-1 bg-poodle-100 text-poodle-600 rounded-md text-[9px] font-black">기술 스택</span>
-                            </div>
+	                            <div class="flex flex-wrap gap-2" th:with="stacks=${currentUser.techStack != null ? #strings.arraySplit(currentUser.techStack, ',') : new String[]{}}">
+	                                <span th:each="stack : ${stacks}"
+	                                      th:if="${!#strings.isEmpty(#strings.trim(stack))}"
+	                                      th:attr="data-tech-chip=${#strings.trim(stack)}"
+	                                      th:text="${#strings.trim(stack)}"
+	                                      class="px-2.5 py-1 bg-white text-poodle-600 rounded-full text-[9px] font-black border border-poodle-100">기술 스택</span>
+	                                <span th:if="${#strings.isEmpty(currentUser.techStack)}"
+	                                      class="px-2.5 py-1 bg-poodle-100 text-poodle-600 rounded-md text-[9px] font-black">기술 스택 미설정</span>
+	                            </div>
                         </div>
                     </div>
 
@@ -408,16 +440,28 @@
                         <h4 class="text-lg font-black text-poodle-900 tracking-tight flex items-center gap-3">
                             <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 포지션 선택
                         </h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button onclick="selectPosition(this)" th:text="${#strings.isEmpty(project.position) ? '지원 포지션' : project.position}"
-                                class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all">
-                                프론트엔드 개발자
-                            </button>
-                            <button
-                                class="py-5 px-6 rounded-2xl border-2 border-poodle-50 bg-poodle-50/50 text-[11px] font-black text-poodle-200 cursor-not-allowed italic">
-                                추가 포지션은 팀장에게 문의
-                            </button>
-                        </div>
+	                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+	                            <button th:if="${#lists.isEmpty(project.positionStatuses)}" onclick="selectPosition(this)" type="button"
+	                                    data-position="지원 포지션"
+	                                    aria-pressed="false"
+	                                    class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all">
+	                                <span class="inline-flex items-center justify-center gap-2">
+	                                    <span>지원 포지션</span>
+	                                    <i class="selected-check fa-solid fa-check hidden text-[10px]"></i>
+	                                </span>
+	                            </button>
+		                            <button th:each="status : ${project.positionStatuses}" onclick="selectPosition(this)" type="button"
+		                                    th:attr="data-position=${status.name()}"
+	                                    th:disabled="${status.full()}"
+	                                    aria-pressed="false"
+	                                    class="pos-btn py-5 px-6 rounded-2xl border-2 border-poodle-50 text-sm font-black text-poodle-400 hover:border-meatball/30 hover:text-poodle-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-poodle-50 disabled:hover:text-poodle-400">
+	                                <span class="inline-flex items-center justify-center gap-2">
+	                                    <span th:text="${status.name()}">프론트엔드</span>
+	                                    <i class="selected-check fa-solid fa-check hidden text-[10px]"></i>
+	                                </span>
+	                                <span th:text="${status.current() + '/' + status.capacity()}" class="block mt-1 text-[10px] font-black text-poodle-300">0/1</span>
+	                            </button>
+	                        </div>
                     </div>
 
                     <!-- Message Box -->
@@ -478,10 +522,14 @@
         }
 
         .pos-btn.selected {
-            border-color: theme('colors.meatball.500') !important;
-            background-color: white !important;
-            color: theme('colors.meatball.500') !important;
-            box-shadow: 0 10px 20px -5px rgba(255, 107, 53, 0.15);
+            border-color: #F07F37 !important;
+            background-color: #FFF3EA !important;
+            color: #DF6B24 !important;
+            box-shadow: 0 12px 24px -8px rgba(240, 127, 55, 0.32);
+        }
+
+        .pos-btn.selected .selected-check {
+            display: inline-block !important;
         }
     </style>
 
@@ -505,8 +553,13 @@
         }
 
         function selectPosition(btn) {
-            document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('selected'));
+            if (btn.disabled) return;
+            document.querySelectorAll('.pos-btn').forEach(b => {
+                b.classList.remove('selected');
+                b.setAttribute('aria-pressed', 'false');
+            });
             btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', 'true');
         }
 
         function switchTab(tabId) {
@@ -539,20 +592,20 @@
             const selectedBtn = document.querySelector('.pos-btn.selected');
 
             if (!CURRENT_USER.nickname) {
-                window.location.href = `/login?redirect=/projects/${projectId}`;
+                openLoginModal(`/projects/${projectId}`);
                 return;
             }
             
             if (!selectedBtn) {
-                alert('지원 포지션을 선택해주세요.');
+                await meetballAlert('지원 포지션을 선택해주세요.');
                 return;
             }
             if (!message.trim()) {
-                alert('지원 메시지를 작성해주세요.');
+                await meetballAlert('지원 메시지를 작성해주세요.');
                 return;
             }
 
-            const position = selectedBtn.innerText.trim();
+            const position = selectedBtn.dataset.position || selectedBtn.innerText.trim();
 
             const payload = {
                 position: position,
@@ -567,16 +620,16 @@
                 });
 
                 if (response.ok) {
-                    alert('성공적으로 지원되었습니다! 마이페이지에서 상태를 확인하세요.');
+                    await meetballAlert('성공적으로 지원되었습니다! 마이페이지에서 상태를 확인하세요.');
                     closeApplyModal();
                     // 추가로 버튼 상태를 변경할 수 있습니다.
                 } else {
                     const err = await response.text();
-                    alert('지원 실패: ' + err);
+                    await meetballAlert('지원 실패: ' + err, { type: 'error' });
                 }
             } catch (error) {
                 console.error('Error submitting application:', error);
-                alert('네트워크 오류가 발생했습니다.');
+                await meetballAlert('네트워크 오류가 발생했습니다.', { type: 'error' });
             }
         }
 
@@ -608,17 +661,20 @@
                 container.innerHTML = comments.map(c => {
                     const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
                     const author = escapeHtml(c.authorNickname);
+                    const authorUserId = Number(c.authorUserId);
+                    const authorLink = Number.isFinite(authorUserId)
+                        ? `<a href="/people/${authorUserId}" class="hover:text-meatball transition-colors">${author}</a>`
+                        : `<span>${author}</span>`;
                     const content = escapeHtml(c.content);
-                    const authorSeed = encodeURIComponent(c.authorNickname || 'user');
                     const commentId = Number(c.id);
                     const deleteButton = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname && Number.isFinite(commentId)
                         ? `<button onclick="deleteComment(${commentId})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>`
                         : '';
                     return `
                     <div class="flex gap-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${authorSeed}" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
+                        <img src="/img/logo.png" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
                         <div class="bg-poodle-50/30 p-6 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
-                            <h4 class="font-black text-poodle-900 text-sm mb-1">${author} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
+                            <h4 class="font-black text-poodle-900 text-sm mb-1">${authorLink} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
                             <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
                             ${deleteButton}
                         </div>
@@ -635,10 +691,10 @@
             const content = document.getElementById('commentContent').value.trim();
 
             if (!content) {
-                alert('댓글 내용을 입력해주세요.'); return;
+                await meetballAlert('댓글 내용을 입력해주세요.'); return;
             }
             if (!CURRENT_USER.nickname) {
-                window.location.href = `/login?redirect=/projects/${currentProjectId}`;
+                openLoginModal(`/projects/${currentProjectId}`);
                 return;
             }
 
@@ -655,7 +711,7 @@
                     document.getElementById('commentContent').value = '';
                     fetchComments();
                 } else {
-                    alert('댓글 등록에 실패했습니다.');
+                    await meetballAlert('댓글 등록에 실패했습니다.', { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);
@@ -663,7 +719,7 @@
         }
 
         async function deleteComment(commentId) {
-            if(!confirm('댓글을 삭제할까요?')) return;
+            if(!await meetballConfirm('댓글을 삭제할까요?', { confirmText: '삭제', cancelText: '취소' })) return;
             const currentProjectId = projectId();
             
             try {
@@ -671,7 +727,7 @@
                 if(res.ok) {
                     fetchComments();
                 } else {
-                    alert('삭제에 실패했습니다.');
+                    await meetballAlert('삭제에 실패했습니다.', { type: 'error' });
                 }
             } catch (err) {
                 console.error('Delete Comment Error', err);
@@ -753,7 +809,7 @@
             const currentProjectId = projectId();
             if (!currentProjectId) return;
             if (!CURRENT_USER.nickname) {
-                window.location.href = `/login?redirect=/projects/${currentProjectId}`;
+                openLoginModal(`/projects/${currentProjectId}`);
                 return;
             }
 
@@ -764,7 +820,7 @@
                 renderBookmark(data);
             } catch (err) {
                 console.error('Bookmark toggle error', err);
-                alert('관심 프로젝트 변경에 실패했습니다.');
+                await meetballAlert('관심 프로젝트 변경에 실패했습니다.', { type: 'error' });
             }
         }
 
@@ -800,13 +856,18 @@
             }
         }
 
-        function shareProject() {
+        async function shareProject() {
             const url = window.location.href;
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(url).then(() => alert('프로젝트 링크를 복사했습니다.'));
-                return;
+                try {
+                    await navigator.clipboard.writeText(url);
+                    await meetballAlert('프로젝트 링크를 복사했습니다.');
+                    return;
+                } catch (error) {
+                    console.error('Clipboard copy error:', error);
+                }
             }
-            window.prompt('프로젝트 링크', url);
+            await meetballPrompt('아래 프로젝트 링크를 복사해주세요.', url, { title: '프로젝트 공유', confirmText: '닫기' });
         }
 
         async function fetchReviewSummary() {

@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -24,7 +26,12 @@ public class User {
 
     private String jobTitle; // 직무 (예: 백엔드 개발자)
 
-    private String techStack; // 기술 스택 (예: Java, Spring Boot)
+    @Column(length = 1000)
+    private String techStack; // 지정 기술 스택 CSV (예: Java, Spring)
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC, id ASC")
+    private List<UserTechStack> techStackSelections = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean isPublic = true; // 프로필 공개 여부 기본값 true
@@ -48,6 +55,16 @@ public class User {
         this.jobTitle = jobTitle;
         this.techStack = techStack;
         this.isPublic = isPublic;
+    }
+
+    public void replaceTechStacks(List<String> techStacks) {
+        this.techStackSelections.clear();
+        if (techStacks == null) {
+            return;
+        }
+        for (int i = 0; i < techStacks.size(); i++) {
+            this.techStackSelections.add(new UserTechStack(this, techStacks.get(i), i));
+        }
     }
 
     // 권한 승급 로직 등

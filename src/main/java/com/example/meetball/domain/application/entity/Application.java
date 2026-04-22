@@ -1,6 +1,7 @@
 package com.example.meetball.domain.application.entity;
 
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectPosition;
 import com.example.meetball.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,11 +39,16 @@ public class Application {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_position_id")
+    private ProjectPosition projectPosition;
+
     private String position;
     @Column(columnDefinition = "TEXT")
     private String message;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 30, columnDefinition = "varchar(30)")
     private ApplicationStatus status;
 
 
@@ -55,13 +61,14 @@ public class Application {
 
     // Unified Constructor
     @Builder
-    public Application(Project project, User user, String applicantName, String position, ApplicationStatus status, String message) {
+    public Application(Project project, User user, String applicantName, String position, ProjectPosition projectPosition, ApplicationStatus status, String message) {
         this.project = project;
         if (project != null) {
             this.projectId = project.getId();
         }
         this.user = user;
         this.applicantName = applicantName;
+        this.projectPosition = projectPosition;
         this.position = position;
         this.status = status;
         this.message = message;
@@ -72,5 +79,16 @@ public class Application {
     public void updateStatus(ApplicationStatus status, LocalDateTime updatedAt) {
         this.status = status;
         this.updatedAt = updatedAt;
+    }
+
+    public void updatePosition(String position) {
+        this.position = position;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateProjectPosition(ProjectPosition projectPosition) {
+        this.projectPosition = projectPosition;
+        this.position = projectPosition != null ? projectPosition.getPositionName() : this.position;
+        this.updatedAt = LocalDateTime.now();
     }
 }

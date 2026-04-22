@@ -87,7 +87,7 @@ public class ProjectController {
     @GetMapping("/register")
     public String register(@SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login?redirect=/register";
+            return "redirect:/?login=1&redirect=/register";
         }
         return "project/register";
     }
@@ -95,9 +95,9 @@ public class ProjectController {
     @GetMapping("/projects/{id}/manage")
     public String manage(@PathVariable("id") Long id,
                          @SessionAttribute(name = "userId", required = false) Long userId,
-                         Model model) {
+        Model model) {
         if (userId == null) {
-            return "redirect:/login?redirect=/projects/" + id + "/manage";
+            return "redirect:/?login=1&redirect=/projects/" + id + "/manage";
         }
 
         com.example.meetball.domain.project.entity.Project project = projectRepository.findById(id)
@@ -124,10 +124,11 @@ public class ProjectController {
             @RequestParam(name = "projectType", required = false) String projectType,
             @RequestParam(name = "progressMethod", required = false) String progressMethod,
             @RequestParam(name = "position", required = false) String position,
-            @RequestParam(name = "techStack", required = false) String techStack
+            @RequestParam(name = "techStack", required = false) String techStack,
+            @SessionAttribute(name = "userId", required = false) Long userId
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable);
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable, userId);
         return ProjectPageResponseDto.from(projects);
     }
 

@@ -112,6 +112,10 @@ public class ReviewService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        if (!project.isCompleted()) {
+            throw new IllegalArgumentException("완료된 프로젝트에서만 팀원 리뷰를 작성할 수 있습니다.");
+        }
+
         if (!projectMemberRepository.existsByProjectAndUser(project, currentUser)) {
             throw new IllegalArgumentException("이 프로젝트의 참여 멤버만 팀원 목록을 조회할 수 있습니다.");
         }
@@ -133,6 +137,10 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
         User reviewer = userRepository.findById(reviewerId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
+
+        if (!project.isCompleted()) {
+            throw new IllegalArgumentException("완료된 프로젝트에만 리뷰를 작성할 수 있습니다.");
+        }
         
         // 추가된 권한 체크: 작성자가 프로젝트 멤버인지 확인
         if (!projectMemberRepository.existsByProjectAndUser(project, reviewer)) {

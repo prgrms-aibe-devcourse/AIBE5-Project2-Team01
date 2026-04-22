@@ -17,6 +17,7 @@ public class ProjectCreateRequestDto {
     private LocalDate projectStartAt;
     private LocalDate projectEndAt;
     private Boolean closed;
+    private Boolean completed;
 
     public ProjectCreateRequestDto() {
     }
@@ -49,4 +50,5 @@ public class ProjectCreateRequestDto {
     public LocalDate getProjectStartAt() { return projectStartAt; }
     public LocalDate getProjectEndAt() { return projectEndAt; }
     public Boolean getClosed() { return closed; }
+    public Boolean getCompleted() { return completed; }
 }

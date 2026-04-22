@@ -21,22 +21,24 @@
                 <div
                     class="p-10 bg-poodle-50/50 border-b border-poodle-50 flex items-center justify-between flex-wrap gap-6 text-center sm:text-left">
                     <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <img src="https://picsum.photos/seed/food/200"
-                            class="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-white">
-                        <div>
-                            <span
-                                class="px-3 py-1 bg-meatball text-poodle-900 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block">Recruiting</span>
-                            <h2 class="text-2xl font-black text-poodle-900 leading-tight">AI 기반 맛집 추천 서비스</h2>
-                        </div>
+	                        <img th:src="${#strings.isEmpty(project.thumbnailUrl) ? '/img/logo.png' : project.thumbnailUrl}"
+                                src="/img/logo.png"
+	                            class="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-white">
+	                        <div>
+	                            <span
+	                                class="px-3 py-1 bg-meatball text-poodle-900 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
+                                    th:text="${project.completed ? 'Completed' : (project.closed ? 'Recruitment Closed' : 'Recruiting')}">Recruiting</span>
+	                            <h2 class="text-2xl font-black text-poodle-900 leading-tight" th:text="${project.title}">프로젝트명</h2>
+	                        </div>
                     </div>
                     <div class="flex gap-3 w-full sm:w-auto">
                         <button onclick="deleteProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-red-50 border border-red-200 text-red-500 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors">프로젝트 삭제</button>
-                        <button
-                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-white border border-poodle-100 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-50 transition-colors">수정</button>
-                        <button onclick="closeProject()"
+	                        <button th:if="${!project.closed}" onclick="closeProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/10 hover:bg-meatball hover:text-poodle-900 transition-colors">모집
                             마감</button>
+                            <button th:if="${!project.completed}" onclick="completeProject()"
+                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-meatball text-poodle-900 rounded-2xl font-black text-sm shadow-xl shadow-meatball/10 hover:bg-poodle-700 hover:text-white transition-colors">프로젝트 완료</button>
                     </div>
                 </div>
 
@@ -144,6 +146,8 @@
 
                 <div class="p-10 pt-0 flex gap-4">
                     <input type="hidden" id="modalApplicationId" />
+                    <button id="modalRemoveButton" onclick="removeApplication()"
+                        class="flex-1 py-5 bg-white border border-red-100 text-red-500 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">삭제</button>
                     <button onclick="updateStatus('REJECTED')"
                         class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">거절</button>
                     <button onclick="updateStatus('ACCEPTED')"
@@ -172,12 +176,13 @@
         const safeUrl = window.meetballSafeUrl;
         window.applicationDetails = {};
 
-        function openApplicantModal(id, name, role, msg, img) {
+        function openApplicantModal(id, name, role, msg, img, status) {
             document.getElementById('modalApplicationId').value = id;
             document.getElementById('modalName').innerText = name;
             document.getElementById('modalRole').innerText = role;
             document.getElementById('modalMsg').innerText = `"${msg}"`;
             document.getElementById('modalImg').src = img;
+            document.getElementById('modalRemoveButton').innerText = status === 'ACCEPTED' ? '추방' : '삭제';
 
             document.getElementById('applicantModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -186,7 +191,7 @@
         function openApplicantModalById(id) {
             const app = window.applicationDetails[id];
             if (!app) return;
-            openApplicantModal(app.id, app.userNickname || '', app.position || '', app.message || '', app.avatarUrl || '');
+            openApplicantModal(app.id, app.userNickname || '', app.position || '', app.message || '', app.avatarUrl || '', app.status || '');
         }
 
         function closeApplicantModal() {
@@ -206,16 +211,42 @@
                 });
 
                 if (response.ok) {
-                    alert('상태가 변경되었습니다.');
+                    await meetballAlert('상태가 변경되었습니다.');
                     closeApplicantModal();
                     fetchApplications(); // 목록 새로고침
                 } else {
                     const error = await response.text();
-                    alert('변경 실패: ' + error);
+                    await meetballAlert('변경 실패: ' + error, { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);
-                alert('오류가 발생했습니다.');
+                await meetballAlert('오류가 발생했습니다.', { type: 'error' });
+            }
+        }
+
+        async function removeApplication() {
+            const applicationId = document.getElementById('modalApplicationId').value;
+            if (!applicationId) return;
+            const app = window.applicationDetails[Number(applicationId)];
+            const actionLabel = app?.status === 'ACCEPTED' ? '추방' : '삭제';
+            if (!await meetballConfirm(`지원자를 ${actionLabel}하시겠습니까?`, { confirmText: actionLabel, cancelText: '취소' })) return;
+
+            try {
+                const response = await meetballFetch(`/api/applications/${applicationId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await meetballAlert(`지원자가 ${actionLabel}되었습니다.`);
+                    closeApplicantModal();
+                    fetchApplications();
+                } else {
+                    const error = await response.text();
+                    await meetballAlert(`${actionLabel} 실패: ${error}`, { type: 'error' });
+                }
+            } catch (err) {
+                console.error(err);
+                await meetballAlert('오류가 발생했습니다.', { type: 'error' });
             }
         }
 
@@ -248,7 +279,7 @@
                     const userNickname = app.userNickname || '';
                     const position = app.position || '';
                     const message = app.message || '';
-                    const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(userNickname || 'applicant')}`;
+                    const avatarUrl = '/img/logo.png';
                     window.applicationDetails[id] = { ...app, avatarUrl };
                     let statusBadge = '';
                     if(app.status === 'ACCEPTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase">승인됨</span>';
@@ -346,21 +377,21 @@
                 });
 
                 if (response.ok) {
-                    alert('파일 업로드에 성공했습니다.');
+                    await meetballAlert('파일 업로드에 성공했습니다.');
                     fetchAttachments(); // 목록 갱신
                 } else {
-                    alert(response.status === 401 ? '로그인이 필요합니다.' : '파일 업로드 실패 (권한 없음 또는 서버 오류)');
+                    await meetballAlert(response.status === 401 ? '로그인이 필요합니다.' : '파일 업로드 실패 (권한 없음 또는 서버 오류)', { type: 'error' });
                 }
             } catch (error) {
                 console.error('업로드 에러:', error);
-                alert('업로드 중 오류가 발생했습니다.');
+                await meetballAlert('업로드 중 오류가 발생했습니다.', { type: 'error' });
             } finally {
                 fileInput.value = ''; // 초기화
             }
         }
 
         async function deleteProject() {
-            if (!confirm('정말 이 프로젝트를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.')) return;
+            if (!await meetballConfirm('정말 이 프로젝트를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.', { confirmText: '삭제', cancelText: '취소' })) return;
             
             const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
             if(!projectId) return;
@@ -371,20 +402,18 @@
                 });
 
                 if (response.ok) {
-                    alert('프로젝트가 성공적으로 삭제되었습니다.');
+                    await meetballAlert('프로젝트가 성공적으로 삭제되었습니다.');
                     window.location.href = '/user/mypage'; // 삭제 후 마이페이지로 이동
                 } else {
-                    alert('프로젝트 삭제에 실패했습니다.');
+                    await meetballAlert('프로젝트 삭제에 실패했습니다.', { type: 'error' });
                 }
             } catch (err) {
                 console.error('Delete error', err);
-                alert('서버 오류가 발생했습니다.');
+                await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
             }
         }
 
-        async function closeProject() {
-            if (!confirm('이 프로젝트의 모집을 마감하시겠습니까?')) return;
-            
+        async function updateProjectStatus(updater, successMessage, failureMessage) {
             const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
             if(!projectId) return;
 
@@ -392,13 +421,12 @@
                 // 1. 기존 프로젝트 정보 조회
                 const getRes = await fetch(`/api/projects/${projectId}`);
                 if (!getRes.ok) {
-                    alert('프로젝트 정보를 불러오는데 실패했습니다.');
+                    await meetballAlert('프로젝트 정보를 불러오는데 실패했습니다.', { type: 'error' });
                     return;
                 }
                 const projectData = await getRes.json();
                 
-                // 2. closed 속성만 변경하여 PUT 요청
-                projectData.closed = true;
+                updater(projectData);
 
                 const putRes = await meetballFetch(`/api/projects/${projectId}`, {
                     method: 'PUT',
@@ -407,15 +435,38 @@
                 });
 
                 if (putRes.ok) {
-                    alert('모집이 마감되었습니다.');
+                    await meetballAlert(successMessage);
                     window.location.reload(); // 상태 반영을 위해 새로고침
                 } else {
-                    alert('모집 마감 처리에 실패했습니다.');
+                    await meetballAlert(failureMessage, { type: 'error' });
                 }
             } catch (err) {
-                console.error('Close error', err);
-                alert('서버 오류가 발생했습니다.');
+                console.error('Project status update error', err);
+                await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
             }
+        }
+
+        async function closeProject() {
+            if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
+            await updateProjectStatus(
+                projectData => {
+                    projectData.closed = true;
+                },
+                '모집이 마감되었습니다.',
+                '모집 마감 처리에 실패했습니다.'
+            );
+        }
+
+        async function completeProject() {
+            if (!await meetballConfirm('이 프로젝트를 완료 상태로 전환하시겠습니까? 완료 후 팀원 리뷰가 가능해집니다.', { confirmText: '완료 처리', cancelText: '취소' })) return;
+            await updateProjectStatus(
+                projectData => {
+                    projectData.closed = true;
+                    projectData.completed = true;
+                },
+                '프로젝트가 완료 처리되었습니다.',
+                '프로젝트 완료 처리에 실패했습니다.'
+            );
         }
 
         // 페이지 로드 시 첨부파일 및 지원자 목록 조회

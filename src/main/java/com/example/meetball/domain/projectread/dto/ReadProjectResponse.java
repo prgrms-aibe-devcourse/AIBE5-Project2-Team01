@@ -1,6 +1,9 @@
 package com.example.meetball.domain.projectread.dto;
 
 import com.example.meetball.domain.projectread.entity.ProjectRead;
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectTechStack;
+import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,11 +18,22 @@ public class ReadProjectResponse {
     private LocalDateTime readAt;
 
     public static ReadProjectResponse from(ProjectRead history) {
+        Project project = history.getProject();
         return ReadProjectResponse.builder()
-                .projectId(history.getProject().getId())
-                .title(history.getProject().getTitle())
-                .techStack(history.getProject().getTechStackCsv())
+                .projectId(project.getId())
+                .title(project.getTitle())
+                .techStack(formatTechStacks(project))
                 .readAt(history.getReadAt())
                 .build();
+    }
+
+    private static String formatTechStacks(Project project) {
+        if (project.getTechStackSelections() != null && !project.getTechStackSelections().isEmpty()) {
+            return project.getTechStackSelections().stream()
+                    .map(ProjectTechStack::getTechStackName)
+                    .reduce((left, right) -> left + ", " + right)
+                    .orElse("");
+        }
+        return ProjectSelectionCatalog.normalizeTechStackCsvOrDefault(project.getTechStackCsv());
     }
 }

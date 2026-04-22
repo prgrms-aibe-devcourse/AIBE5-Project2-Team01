@@ -3,12 +3,15 @@ package com.example.meetball.domain.user.service;
 import com.example.meetball.domain.user.dto.UserProfileUpdateRequest;
 import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
+import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -21,8 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    // TODO: 현재는 임시로 이메일(또는 ID)을 통해 유저를 찾는 방식으로 구현.
-    // 추후 Spring Security의 @AuthenticationPrincipal과 연동 예정
+    // 현재 컨트롤러 계약은 HttpSession의 userId를 기준으로 사용자를 조회합니다.
     @Transactional(readOnly = true)
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
@@ -43,19 +45,21 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
 
+        String normalizedTechStack = ProjectSelectionCatalog.normalizeTechStackCsv(request.getTechStack());
         user.updateProfile(
                 request.getNickname(),
                 request.getJobTitle(),
-                request.getTechStack(),
+                normalizedTechStack,
                 request.isPublic()
         );
+        user.replaceTechStacks(splitTechStacks(normalizedTechStack));
     }
 
     @Value("${google.client.id:}")
     private String googleClientId;
 
     @Transactional
-    public User processGoogleLogin(String credential) {
+    public GoogleLoginResult processGoogleLogin(String credential) {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
@@ -67,22 +71,38 @@ public class UserService {
                 String email = payload.getEmail();
                 String name = (String) payload.get("name");
 
-                return userRepository.findByEmail(email).orElseGet(() -> {
-                    User newUser = User.builder()
-                            .email(email)
-                            .nickname(name != null ? name : "User_" + System.currentTimeMillis())
-                            .role("MEMBER")
-                            .jobTitle("-")
-                            .techStack("-")
-                            .isPublic(true)
-                            .build();
-                    return userRepository.save(newUser);
-                });
+                Optional<User> existingUser = userRepository.findByEmail(email);
+                if (existingUser.isPresent()) {
+                    return new GoogleLoginResult(existingUser.get(), false);
+                }
+
+                User newUser = User.builder()
+                        .email(email)
+                        .nickname(name != null ? name : "User_" + System.currentTimeMillis())
+                        .role("MEMBER")
+                        .jobTitle("-")
+                        .techStack("")
+                        .isPublic(true)
+                        .build();
+                return new GoogleLoginResult(userRepository.save(newUser), true);
             } else {
                 throw new IllegalArgumentException("Invalid ID token.");
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to verify Google token: " + e.getMessage());
         }
+    }
+
+    public record GoogleLoginResult(User user, boolean newlyCreated) {
+    }
+
+    private List<String> splitTechStacks(String techStackCsv) {
+        if (techStackCsv == null || techStackCsv.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(techStackCsv.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .toList();
     }
 }
