@@ -2,13 +2,12 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: commonHead('마이페이지')}"></head>
 
-<body class="text-poodle-900">
+<body class="text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-<div class="bg-poodle-700 py-20 relative overflow-hidden">
-    <!-- Decoration -->
-    <div class="absolute top-0 right-0 w-80 h-80 bg-meatball/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-    <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
+<div class="meetball-cream-panel py-20 relative overflow-hidden">
+    <img th:src="@{/img/logo.png}" src="/img/logo.png" alt=""
+         class="absolute right-[-4rem] bottom-[-4rem] w-72 md:w-96 object-contain opacity-15 md:opacity-70 pointer-events-none select-none">
 
     <div class="container mx-auto px-4 relative z-10">
         <div class="flex flex-col md:flex-row items-center justify-between gap-10">
@@ -16,30 +15,30 @@
                 <div class="relative group">
                     <img th:src="|https://api.dicebear.com/7.x/adventurer/svg?seed=${profile.nickname}|"
                          src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
-                         class="w-32 h-32 rounded-3xl border-4 border-white/10 shadow-2xl bg-white shadow-poodle-900/20" alt="profile">
+                         class="w-32 h-32 rounded-3xl border-4 border-white shadow-2xl bg-white shadow-poodle-600/15" alt="profile">
                     <button type="button" onclick="openEditProfileModal()"
-                            class="absolute -bottom-2 -right-2 w-10 h-10 bg-meatball text-white rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
+                            class="absolute -bottom-2 -right-2 w-10 h-10 bg-meatball text-poodle-900 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
                         <i class="fa-solid fa-camera text-sm"></i>
                     </button>
                 </div>
                 <div>
                     <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
-                        <h2 class="text-4xl font-black text-white tracking-tighter" th:text="${profile.nickname}">닉네임</h2>
-                        <span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg text-[10px] font-black text-poodle-100 uppercase tracking-widest border border-white/5"
+                        <h2 class="text-4xl font-black text-poodle-600 tracking-tighter" th:text="${profile.nickname}">닉네임</h2>
+                        <span class="px-3 py-1 bg-white/70 backdrop-blur-md rounded-lg text-[10px] font-black text-poodle-600 uppercase tracking-widest border border-white"
                               th:text="${profile.role}">MEMBER</span>
                     </div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start mb-6 text-poodle-200">
+                    <div class="flex items-center gap-2 justify-center md:justify-start mb-6 text-poodle-400">
                         <i class="fa-solid fa-star text-meatball"></i>
-                        <span class="font-black text-xl text-white" th:text="${profile.meetBallIndex}">4.7</span>
+                        <span class="font-black text-xl text-poodle-600" th:text="${profile.meetBallIndex}">4.7</span>
                         <span class="text-xs font-bold opacity-60">/ 5.0 (Peer Index)</span>
                     </div>
-                    <p class="text-poodle-100 font-medium opacity-80 max-w-md mx-auto md:mx-0 leading-relaxed" th:text="${profile.techStack}">
+                    <p class="text-poodle-500 font-medium max-w-md mx-auto md:mx-0 leading-relaxed" th:text="${profile.techStack}">
                         사용자의 기술 스택이나 간단한 소개가 표시됩니다.
                     </p>
                 </div>
             </div>
             <button type="button" th:if="${isOwner}" onclick="openEditProfileModal()"
-                    class="px-8 py-4 bg-white text-poodle-700 rounded-2xl font-black flex items-center gap-2 shadow-xl shadow-poodle-900/20 transition-all hover:bg-meatball hover:text-white group">
+                    class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black flex items-center gap-2 shadow-xl shadow-poodle-600/20 transition-all hover:bg-meatball hover:text-poodle-900 group">
                 <i class="fa-regular fa-pen-to-square group-hover:scale-110 transition-transform"></i> 프로필 수정
             </button>
             <input type="hidden" id="hiddenProfileNickname" th:value="${profile.nickname}" />
@@ -61,7 +60,7 @@
             <!-- 고도화된 탭 바 (정적 카드 스타일로 변경) -->
             <div class="relative bg-white rounded-[2.5rem] p-2 border border-poodle-50 shadow-[0_20px_50px_rgba(62,39,35,0.08)] inline-flex items-center gap-1 min-w-full md:min-w-fit overflow-x-auto no-scrollbar scroll-smooth">
                 <button type="button" onclick="switchTab('profile')" id="tab-profile"
-                        class="tab-btn active px-10 py-4 bg-poodle-700 rounded-full text-sm font-black text-white shadow-xl shadow-poodle-700/20 transition-all whitespace-nowrap">
+                        class="tab-btn active px-10 py-4 bg-poodle-600 rounded-full text-sm font-black text-white shadow-xl shadow-poodle-600/20 transition-all whitespace-nowrap">
                     <i class="fa-solid fa-user-gear mr-2 opacity-80"></i>프로필 정보
                 </button>
                 <button type="button" onclick="switchTab('participating')" id="tab-participating"
@@ -128,10 +127,22 @@
                             <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Verified Tech Stacks</label>
                             <div class="flex flex-wrap gap-2.5 p-1" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
                                 <span th:each="stack : ${stacks}" th:text="${stack.trim()}" 
-                                      class="px-5 py-2.5 bg-poodle-900 text-white rounded-xl text-xs font-black shadow-lg shadow-poodle-900/10">Java</span>
+                                      class="px-5 py-2.5 bg-poodle-600 text-white rounded-xl text-xs font-black shadow-lg shadow-poodle-600/10">Java</span>
                                 <span th:if="${profile.techStack == null or profile.techStack == ''}" class="text-poodle-200 italic text-sm font-bold">등록된 기술 스택이 없습니다.</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="pt-16 border-t-2 border-dashed border-poodle-100 relative z-10">
+                    <h3 class="text-3xl font-black text-poodle-900 mb-8 tracking-tight flex items-center gap-4">
+                        <div class="w-10 h-10 bg-poodle-50 rounded-2xl flex items-center justify-center text-meatball">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        최근 본 프로젝트
+                    </h3>
+                    <div id="recent-reads-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="p-8 bg-poodle-50/30 rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">최근 본 프로젝트를 불러오는 중...</div>
                     </div>
                 </div>
             </div>
@@ -171,7 +182,7 @@
                 <div class="group/section border-b border-poodle-50 transition-colors hover:bg-poodle-50/10">
                     <div class="p-12 space-y-8">
                         <div class="flex items-center gap-5">
-                            <div class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                            <div class="w-14 h-14 bg-poodle-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-poodle-600/20">
                                 <i class="fa-solid fa-users text-xl"></i>
                             </div>
                             <div>
@@ -185,7 +196,7 @@
                         </div>
 
                         <div class="text-center pt-2">
-                            <button onclick="toggleSection('member-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-blue-500 transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
+                            <button onclick="toggleSection('member-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-meatball transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
                                 참여 팀 더 보기 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
@@ -222,7 +233,7 @@
             <!-- Applied Content (지원한 프로젝트) -->
             <div id="content-applied" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm">
                 <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
-                    <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
+                    <div class="w-10 h-10 bg-poodle-100 rounded-2xl flex items-center justify-center text-meatball">
                         <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     지원한 프로젝트
@@ -252,7 +263,7 @@
             <!-- Reviews Content (받은 리뷰) -->
             <div id="content-reviews" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm relative overflow-hidden">
                 <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
-                    <div class="w-10 h-10 bg-yellow-50 rounded-2xl flex items-center justify-center text-yellow-500">
+                    <div class="w-10 h-10 bg-poodle-100 rounded-2xl flex items-center justify-center text-meatball">
                         <i class="fa-solid fa-comment-dots"></i>
                     </div>
                     받은 피어 리뷰
@@ -330,7 +341,7 @@
                 <button onclick="closeEditProfileModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 hover:text-poodle-600 transition-all">
                     취소
                 </button>
-                <button onclick="updateProfile()" class="flex-[2] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                <button onclick="updateProfile()" class="flex-[2] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                     수정 완료하기
                 </button>
             </div>
@@ -366,7 +377,7 @@
         });
         
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active', 'bg-poodle-700', 'text-white', 'shadow-xl', 'shadow-poodle-700/20');
+            btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-700', 'text-white', 'shadow-xl', 'shadow-poodle-600/20', 'shadow-poodle-700/20');
             btn.classList.add('text-poodle-400');
             const icon = btn.querySelector('i');
             if(icon) icon.classList.add('opacity-50');
@@ -380,7 +391,7 @@
         
         const activeBtn = document.getElementById('tab-' + tabName);
         if (activeBtn) {
-            activeBtn.classList.add('active', 'bg-poodle-700', 'text-white', 'shadow-xl', 'shadow-poodle-700/20');
+            activeBtn.classList.add('active', 'bg-poodle-600', 'text-white', 'shadow-xl', 'shadow-poodle-600/20');
             activeBtn.classList.remove('text-poodle-400');
             const icon = activeBtn.querySelector('i');
             if(icon) icon.classList.remove('opacity-50');
@@ -396,6 +407,48 @@
         } else if (tabName === 'reviews') {
             loadReviews();
         }
+    }
+
+    async function loadRecentReads() {
+        const container = document.getElementById('recent-reads-container');
+        if (!container) return;
+
+        try {
+            const response = await fetch('/api/mypage/recent-reads');
+            if (!response.ok) throw new Error('최근 본 프로젝트 조회 실패');
+            const reads = await response.json();
+            renderRecentReads(reads);
+        } catch (error) {
+            console.error('Error fetching recent reads:', error);
+            container.innerHTML = '<div class="p-8 bg-poodle-50/30 rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">최근 본 프로젝트를 불러오지 못했습니다.</div>';
+        }
+    }
+
+    function renderRecentReads(reads) {
+        const container = document.getElementById('recent-reads-container');
+        if (!reads || reads.length === 0) {
+            container.innerHTML = '<div class="p-8 bg-poodle-50/30 rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">아직 최근 본 프로젝트가 없습니다.</div>';
+            return;
+        }
+
+        container.innerHTML = reads.slice(0, 4).map(item => {
+            const projectId = encodeURIComponent(String(item.projectId ?? ''));
+            const title = escapeHtml(item.title || '프로젝트 제목 없음');
+            const techStack = escapeHtml(item.techStack || '기술 스택 미정');
+            const readAt = item.readAt ? new Date(item.readAt).toLocaleDateString('ko-KR') : '-';
+
+            return `
+                <a href="/projects/${projectId}" class="group p-6 bg-white border border-poodle-50 rounded-[2rem] shadow-sm hover:border-meatball/20 hover:shadow-xl transition-all">
+                    <div class="flex items-start justify-between gap-5">
+                        <div>
+                            <h4 class="text-base font-black text-poodle-900 mb-2 group-hover:text-meatball transition-colors">${title}</h4>
+                            <p class="text-[10px] font-black text-poodle-300 uppercase tracking-widest">${techStack}</p>
+                        </div>
+                        <span class="shrink-0 text-[10px] font-black text-poodle-300">${escapeHtml(readAt)}</span>
+                    </div>
+                </a>
+            `;
+        }).join('');
     }
 
     function toggleSection(containerId, btn) {
@@ -527,7 +580,7 @@
                         <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-poodle-900/5">
                             <i class="fa-solid fa-rocket text-poodle-100 text-4xl"></i>
                         </div>
-                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-meatball text-white rounded-lg flex items-center justify-center animate-bounce">
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-meatball text-poodle-900 rounded-lg flex items-center justify-center animate-bounce">
                             <i class="fa-solid fa-question text-[10px]"></i>
                         </div>
                     </div>
@@ -536,7 +589,7 @@
                         <p class="text-poodle-300 font-bold text-sm">미트볼 푸들이 사용자님께 딱 맞는 팀을 찾고 있어요 🐶</p>
                     </div>
                     <div class="pt-4">
-                        <a href="/" class="inline-flex items-center gap-3 px-10 py-5 bg-poodle-900 text-white rounded-full font-black text-sm shadow-2xl shadow-poodle-900/20 hover:bg-meatball hover:scale-105 active:scale-95 transition-all">
+                        <a href="/" class="inline-flex items-center gap-3 px-10 py-5 bg-poodle-600 text-white rounded-full font-black text-sm shadow-2xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-105 active:scale-95 transition-all">
                             프로젝트 둘러보기 <i class="fa-solid fa-arrow-right-long opacity-50"></i>
                         </a>
                     </div>
@@ -567,9 +620,9 @@
                             <span class="text-xs font-bold text-poodle-300">${escapeHtml(dateStr)} 지원</span>
                         </div>
                         <h5 class="text-xl font-black text-poodle-900 line-clamp-1">${escapeHtml(app.projectTitle || '프로젝트 제목 없음')}</h5>
-                        <p class="text-sm font-bold text-blue-500">지원 역할: ${escapeHtml(app.position)}</p>
+                        <p class="text-sm font-bold text-meatball">지원 역할: ${escapeHtml(app.position)}</p>
                     </div>
-                    <a href="/project/detail?id=${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-blue-500 hover:text-blue-500 transition-all text-center whitespace-nowrap whitespace-nowrap md:w-auto w-full">상세 보기</a>
+                    <a href="/project/detail?id=${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap whitespace-nowrap md:w-auto w-full">상세 보기</a>
                 </div>
                 ${app.message ? `<div class="mt-6 p-4 bg-poodle-50/50 rounded-2xl border border-poodle-50 text-sm font-medium text-poodle-600 italic">"${escapeHtml(app.message)}"</div>` : ''}
             </div>
@@ -608,7 +661,7 @@
                 const dDay = Number(p.dDay || 0);
                 let dDayBadge = '';
                 if (dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${dDay}</span>`;
-                else dDayBadge = `<span class="px-3 py-1 bg-poodle-900 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
+                else dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
                 
                 return `
                 <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] shadow-sm hover:border-meatball/30 hover:shadow-xl transition-all group/item">
@@ -620,7 +673,7 @@
                             <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
                         </div>
                         <div class="flex gap-3 w-full md:w-auto">
-                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all text-center">지원자 관리</a>
+                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all text-center">지원자 관리</a>
                         </div>
                     </div>
                 </div>
@@ -634,7 +687,7 @@
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = encodeURIComponent(String(p.projectId ?? ''));
                 const dDay = Number(p.dDay || 0);
-                let dDayBadge = `<span class="px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
+                let dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
                 return `
                 <div class="p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
@@ -644,7 +697,7 @@
                             </div>
                             <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
                         </div>
-                        <a href="/project/detail?id=${projectId}" class="w-full md:w-auto px-8 py-4 bg-white border border-poodle-100 text-poodle-600 rounded-2xl font-black text-xs hover:border-blue-500 hover:text-blue-500 transition-all text-center">상세 보기</a>
+                        <a href="/project/detail?id=${projectId}" class="w-full md:w-auto px-8 py-4 bg-white border border-poodle-100 text-poodle-600 rounded-2xl font-black text-xs hover:border-meatball hover:text-meatball transition-all text-center">상세 보기</a>
                     </div>
                 </div>
                 `;
@@ -658,7 +711,7 @@
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = Number(p.projectId);
                 const reviewButton = p.canReview && Number.isFinite(projectId)
-                    ? `<button onclick="openReviewModal(${projectId})" class="flex-1 md:flex-none px-6 py-4 bg-poodle-800 text-white rounded-2xl font-black text-xs hover:bg-black transition-all">팀원 리뷰</button>`
+                    ? `<button onclick="openReviewModal(${projectId})" class="flex-1 md:flex-none px-6 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all">팀원 리뷰</button>`
                     : '';
                 return `
                 <div class="p-8 bg-white/60 border border-poodle-50 rounded-[2.5rem] opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
@@ -720,7 +773,7 @@
             }
 
             return `
-            <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-yellow-200 hover:shadow-xl transition-all shadow-sm flex flex-col justify-between space-y-6">
+            <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-meatball/30 hover:shadow-xl transition-all shadow-sm flex flex-col justify-between space-y-6">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
@@ -732,7 +785,7 @@
                         </div>
                         <div class="flex text-sm">${stars}</div>
                     </div>
-                    <p class="text-xs font-black text-yellow-600 mb-2">${projectTitle}</p>
+                    <p class="text-xs font-black text-meatball mb-2">${projectTitle}</p>
                     <p class="text-sm font-bold text-poodle-600 leading-relaxed italic">"${content}"</p>
                 </div>
                 <div class="text-right">
@@ -824,6 +877,10 @@
             alert('오류가 발생했습니다.');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRecentReads();
+    });
 </script>
 
 <!-- Review Modal HTML -->
@@ -863,7 +920,7 @@
 
             <div class="p-10 pt-0 flex gap-4">
                 <button onclick="closeReviewModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 transition-all uppercase">취소</button>
-                <button onclick="submitReview()" class="flex-[1.5] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">제출하기</button>
+                <button onclick="submitReview()" class="flex-[1.5] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">제출하기</button>
             </div>
         </div>
     </div>

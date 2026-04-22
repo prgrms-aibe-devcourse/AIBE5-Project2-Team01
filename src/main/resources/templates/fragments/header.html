@@ -3,17 +3,17 @@
 <head>
 </head>
 <body>
-    <header th:fragment="mainHeader" class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 transition-all shadow-sm">
+    <header th:fragment="mainHeader" class="sticky top-0 z-50 bg-poodle-50/90 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
             <!-- Logo area -->
             <div class="flex items-center gap-12">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
                     <div class="relative">
                         <img th:src="@{/img/logo.png}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle" alt="Meetball" 
-                             class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
+                             class="w-12 h-12 rounded-[1.35rem] object-contain bg-white p-1 shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                         <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-meatball rounded-full border-2 border-white animate-bounce-subtle"></div>
                     </div>
-                    <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
+                    <span class="text-2xl font-black tracking-tighter text-poodle-600 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
 
                 <!-- Desktop Menu -->
@@ -36,7 +36,7 @@
             <!-- Right Actions -->
             <div class="flex items-center gap-6">
                 <a th:if="${!isLoggedIn}" th:href="@{/login}"
-                   class="inline-flex items-center gap-2 px-5 py-3 bg-poodle-900 text-white rounded-2xl text-xs font-black shadow-lg shadow-poodle-900/10 hover:bg-meatball transition-all active:scale-95">
+                   class="inline-flex items-center gap-2 px-5 py-3 bg-poodle-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-poodle-600/15 hover:bg-meatball hover:text-poodle-900 transition-all active:scale-95">
                     <i class="fa-solid fa-right-to-bracket text-[11px]"></i>
                     로그인
                 </a>
@@ -49,7 +49,7 @@
 
                 <!-- User Profile -->
                 <div th:if="${isLoggedIn}" class="relative group h-full flex items-center">
-                    <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-50/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
+                    <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-100/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
                         <div class="relative">
                             <img th:src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + ${currentUser.nickname}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky" alt="Profile"
                                  class="w-10 h-10 rounded-2xl border-2 border-poodle-50 bg-white shadow-sm group-hover:border-meatball/20 transition-all">
@@ -61,7 +61,7 @@
                     </div>
 
                     <!-- Profile Dropdown -->
-                    <div class="absolute right-0 top-[4.5rem] w-56 bg-white/90 backdrop-blur-2xl rounded-[1.5rem] shadow-[0_20px_50px_rgba(62,39,35,0.1)] border border-poodle-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-4 z-50 p-2 overflow-hidden">
+                    <div class="absolute right-0 top-[4.5rem] w-56 bg-poodle-50/95 backdrop-blur-2xl rounded-[1.5rem] shadow-[0_20px_50px_rgba(101,55,40,0.14)] border border-poodle-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-4 z-50 p-2 overflow-hidden">
                         <div class="p-3 mb-2 border-b border-poodle-50">
                             <p class="text-[10px] font-black text-poodle-200 uppercase tracking-widest mb-1 leading-none">Signed in as</p>
                             <p th:text="${currentUser.email}" class="text-[11px] font-bold text-poodle-600 truncate">user@example.com</p>
@@ -132,7 +132,7 @@
 
                     <div class="pt-6">
                         <button type="submit"
-                            class="w-full py-5 bg-poodle-900 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-900/20 hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                            class="w-full py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
                             <span>시작하기</span>
                             <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                         </button>

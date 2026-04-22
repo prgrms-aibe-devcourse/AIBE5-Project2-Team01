@@ -1,39 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meetball - 오류가 발생했어요!</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT-font@v1.2.2/css/suit.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['SUIT', 'Nunito', 'sans-serif'],
-                    },
-                    colors: {
-                        meatball: '#FF6B6B',
-                        poodle: { 50: '#FDF8F5', 100: '#F5E6E1', 300: '#D4A59A', 700: '#6B4C41', 900: '#3E2723' },
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+<head th:replace="~{fragments/head :: commonHead('오류')}"></head>
 <body class="bg-poodle-50 text-poodle-900 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-2xl w-full text-center space-y-8 animate-fade-in-up flex flex-col items-center">
         <!-- Decoration Error Dog -->
         <div class="relative inline-block">
-            <div class="w-48 h-48 bg-white rounded-full shadow-2xl flex items-center justify-center relative z-10 mx-auto">
-                <i class="fa-solid fa-dog text-9xl text-poodle-300"></i>
+            <div class="w-48 h-48 bg-poodle-100 rounded-[3rem] shadow-2xl flex items-center justify-center relative z-10 mx-auto border border-white overflow-hidden">
+                <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
+                     class="w-full h-full object-contain p-4">
             </div>
-            <!-- Animated background blobs -->
-            <div class="absolute inset-0 bg-meatball/20 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute -inset-4 bg-poodle-300/20 rounded-full blur-2xl animate-spin" style="animation-duration: 8s;"></div>
         </div>
 
         <div class="space-y-4">
@@ -47,18 +22,10 @@
 
         <div class="pt-8">
             <a href="/"
-               class="inline-flex items-center gap-3 px-10 py-5 bg-poodle-900 text-white rounded-2xl font-black text-lg hover:bg-meatball transition-all shadow-xl hover:scale-105 active:scale-95 group">
+               class="inline-flex items-center gap-3 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg hover:bg-meatball hover:text-poodle-900 transition-all shadow-xl hover:scale-105 active:scale-95 group">
                 <i class="fa-solid fa-house group-hover:-translate-y-1 transition-transform"></i> 홈으로 돌아가기
             </a>
         </div>
     </div>
-
-    <style>
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    </style>
 </body>
 </html>

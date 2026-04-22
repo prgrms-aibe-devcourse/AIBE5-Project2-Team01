@@ -172,6 +172,18 @@ public class Project {
         this.summary = description != null && description.length() > 50 ? description.substring(0, 50) : description;
     }
 
+    public void updateDiscoveryFields(String position, String techStackCsv, String thumbnailUrl) {
+        if (position != null) {
+            this.position = position;
+        }
+        if (techStackCsv != null) {
+            this.techStackCsv = techStackCsv;
+        }
+        if (thumbnailUrl != null) {
+            this.thumbnailUrl = thumbnailUrl;
+        }
+    }
+
     // Getters
     public Long getId() { return id; }
     public String getTitle() { return title; }

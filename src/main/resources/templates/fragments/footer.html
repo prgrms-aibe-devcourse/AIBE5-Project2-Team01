@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-    <footer th:fragment="mainFooter" class="bg-poodle-900 text-poodle-100 pt-24 pb-12 overflow-hidden relative">
+    <footer th:fragment="mainFooter" class="bg-poodle-600 text-poodle-100 pt-24 pb-12 overflow-hidden relative">
         <!-- Decoration light -->
         <div class="absolute top-0 left-0 w-96 h-96 bg-meatball/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
         
@@ -10,8 +10,8 @@
                 <!-- Branding Section -->
                 <div class="col-span-1 md:col-span-1 space-y-8">
                     <a th:href="@{/}" class="flex items-center gap-3 group translate-z-0">
-                        <div class="w-12 h-12 bg-meatball text-white rounded-2xl flex items-center justify-center shadow-[0_10px_20px_rgba(255,107,53,0.3)] group-hover:scale-110 transition-all duration-500">
-                            <i class="fa-solid fa-dog text-2xl animate-tail-wag"></i>
+                        <div class="w-12 h-12 bg-poodle-100 rounded-2xl flex items-center justify-center shadow-[0_10px_24px_rgba(45,27,23,0.22)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball" class="w-full h-full object-contain p-1.5 animate-tail-wag">
                         </div>
                         <span class="text-3xl font-black tracking-tighter text-white">Meetball</span>
                     </a>
@@ -60,7 +60,7 @@
                                 <i class="fa-solid fa-medal text-meatball"></i>
                                 Premium Matching
                             </h4>
-                            <p class="text-poodle-500 text-[11px] font-bold leading-relaxed">
+                            <p class="text-poodle-200 text-[11px] font-bold leading-relaxed">
                                 미트볼은 신뢰할 수 있는 개발자 커뮤니티 성장을 지향합니다.
                             </p>
                         </div>
@@ -85,13 +85,10 @@
         </div>
 
         <!-- 🚀 Premium Back to Top Button -->
-        <button id="backToTop" class="fixed bottom-10 right-10 w-14 h-14 bg-meatball text-white rounded-2xl shadow-[0_20px_40px_rgba(255,107,53,0.3)] flex items-center justify-center translate-y-32 opacity-0 transition-all duration-700 hover:scale-110 active:scale-95 z-[999] group overflow-hidden">
+        <button id="backToTop" class="fixed bottom-10 right-10 w-14 h-14 bg-meatball text-poodle-900 rounded-2xl shadow-[0_20px_40px_rgba(240,127,55,0.3)] flex items-center justify-center translate-y-32 opacity-0 transition-all duration-700 hover:scale-110 active:scale-95 z-[999] group overflow-hidden">
             <i class="fa-solid fa-chevron-up text-xl group-hover:-translate-y-1 transition-transform duration-300"></i>
             <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-800 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl">BACK TO TOP</span>
-        </button>
-            <i class="fa-solid fa-chevron-up text-xl group-hover:-translate-y-1 transition-transform pointer-events-none"></i>
-            <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-900 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl pointer-events-none">TOP</span>
+            <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-800 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl">TOP</span>
         </button>
 
         <script>
