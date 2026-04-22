@@ -8,6 +8,7 @@ import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.projectread.dto.ReadProjectResponse;
 import com.example.meetball.domain.review.dto.UserReviewResponse;
 import com.example.meetball.domain.user.dto.UserProfileUpdateRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +36,15 @@ public class MyPageController {
     public ResponseEntity<Void> updateProfile(
             @RequestParam(required = false) Long userId,
             @RequestBody UserProfileUpdateRequest request,
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            HttpSession session) {
         Long currentUserId = requireSessionUser(sessionUserId);
         if (userId != null && !userId.equals(currentUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update another user's profile.");
         }
         myPageService.updateUserProfile(currentUserId, request);
+        session.setAttribute("userNickname", request.getNickname());
+        session.removeAttribute("needsProfile");
         return ResponseEntity.ok().build();
     }
 

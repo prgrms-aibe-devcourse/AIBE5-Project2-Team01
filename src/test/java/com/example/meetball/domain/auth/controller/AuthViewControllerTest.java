@@ -60,4 +60,13 @@ class AuthViewControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?redirect=/user/mypage"));
     }
+
+    @Test
+    @DisplayName("프로젝트 상세 페이지는 사이드바와 팀 정보를 함께 렌더링한다")
+    void projectDetailRendersSidebar() throws Exception {
+        mockMvc.perform(get("/projects/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Active Project")))
+                .andExpect(content().string(containsString("팀 멤버 소개")));
+    }
 }

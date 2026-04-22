@@ -78,6 +78,7 @@ public class ProjectService {
                 project.getSummary(),
                 project.getDescription(),
                 project.getProjectType(),
+                project.getProgressMethod(),
                 project.getPosition(),
                 project.getLeaderName(),
                 project.getLeaderRole(),

@@ -38,6 +38,7 @@ public class AuthApiController {
             // Initialize Http Session
             HttpSession session = request.getSession(true);
             session.setAttribute("userId", user.getId());
+            session.setAttribute("userNickname", user.getNickname());
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user.getEmail(),
@@ -47,6 +48,19 @@ public class AuthApiController {
             securityContext.setAuthentication(authentication);
             SecurityContextHolder.setContext(securityContext);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+            String nickname = user.getNickname();
+            boolean needsProfile = user.getJobTitle() == null
+                    || "-".equals(user.getJobTitle())
+                    || nickname == null
+                    || nickname.isBlank()
+                    || nickname.startsWith("User_");
+
+            if (needsProfile) {
+                session.setAttribute("needsProfile", true);
+            } else {
+                session.removeAttribute("needsProfile");
+            }
 
             return ResponseEntity.ok(new AuthResponseDto(user));
         } catch (IllegalArgumentException e) {

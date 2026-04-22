@@ -23,7 +23,6 @@ public class ApplicationController {
     // 지원자용 API
     // =====================================================
 
-    /** 프로젝트에 지원하기 */
     @PostMapping("/api/projects/{projectId}/applications")
     public ResponseEntity<ApplicationResponseDto> applyToProject(
             @PathVariable("projectId") Long projectId,

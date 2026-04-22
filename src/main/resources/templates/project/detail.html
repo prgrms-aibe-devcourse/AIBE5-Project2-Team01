@@ -278,9 +278,9 @@
             </div>
 
             <!-- Right Side: Sidebar -->
-            <aside class="lg:col-span-4 space-y-8">
+            <aside class="lg:col-span-4">
                 <section
-                    class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 sticky top-24 floating-sidebar">
+                    class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 lg:sticky lg:top-24">
                     <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
                         <div class="flex items-center gap-2">
                             <button
@@ -294,106 +294,130 @@
                             </button>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-meatball rounded-full animate-ping"></span>
-                            <span class="text-[10px] font-black text-poodle-400 uppercase tracking-widest">Active</span>
+                            <span class="w-2 h-2 bg-meatball rounded-full"></span>
+                            <span class="text-[10px] font-black text-poodle-400 uppercase tracking-[0.25em]">Active Project</span>
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <a th:if="${role == 'GUEST'}" th:href="@{/login(redirect=${currentProjectPath})}"
                             class="flex items-center justify-center w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            로그인 후 지원하기 🐾
+                            로그인 후 지원하기
                         </a>
 
-                        <!-- 일반 참여자일 때만 지원 버튼 노출 -->
                         <button th:if="${role == 'REGULAR_USER'}" onclick="openApplyModal()"
                             class="w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            프로젝트 지원하기 🐾
+                            프로젝트 지원하기
                         </button>
 
-                        <!-- 팀장일 때 노출되는 버튼 -->
                         <a th:if="${role == 'LEADER'}" th:href="@{/projects/__${project.id}__/manage}"
                             class="flex items-center justify-center w-full py-6 bg-meatball text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            프로젝트 관리하기 ⚙️
+                            프로젝트 관리하기
                         </a>
 
-                        <!-- 팀원일 때 노출되는 메시지 -->
                         <div th:if="${role == 'MEMBER'}"
                             class="w-full py-6 bg-poodle-100 text-poodle-400 border border-poodle-200 rounded-[1.5rem] font-black text-lg text-center cursor-not-allowed">
-                            참여 중인 프로젝트입니다 🎯
+                            참여 중인 프로젝트입니다
                         </div>
+
+                        <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
+                            class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 이 프로젝트를 검토하고 있습니다.</p>
+                    </div>
+
+                    <div class="space-y-6 pt-2">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Recruitment</p>
+                                <p class="text-sm font-black text-poodle-800">2024.04.01 ~ 04.30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Duration</p>
+                                <p class="text-sm font-black text-poodle-800">3개월 (<span th:text="${project.progressMethod}">온라인</span>)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Type</p>
+                                <p th:text="${project.progressMethod}" class="text-sm font-black text-poodle-800">온라인</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-poodle-50 space-y-5">
+                        <div class="flex items-center gap-2 text-sm font-black text-poodle-900">
+                            <i class="fa-solid fa-users text-meatball text-xs"></i>
+                            <span>모집 포지션 현황</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
+                                <span class="text-xs font-black text-poodle-700 flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span> 프론트엔드
+                                </span>
+                                <span class="text-xs font-black text-meatball">1 / 2</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-poodle-50/40 rounded-2xl border border-poodle-50">
+                                <span class="text-xs font-black text-poodle-700 flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span> 백엔드
+                                </span>
+                                <span class="text-xs font-black text-meatball">1 / 1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-poodle-50 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-black text-poodle-900 tracking-tight">팀 멤버 소개</h4>
+                            <span class="px-3 py-1 bg-meatball/5 text-meatball rounded-full text-[9px] font-black uppercase tracking-widest">Team Members</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
+                                <div class="relative">
+                                    <img th:src="${project.leaderAvatarUrl}"
+                                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                    <div
+                                        class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
+                                        <i class="fa-solid fa-crown"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900">팀장님</p>
+                                    <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
+                                <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
+                                    <i class="fa-solid fa-user text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-black text-poodle-800">이민수</p>
+                                    <p class="text-[9px] text-poodle-300 font-black uppercase">Member / Frontend</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
+                                <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
+                                    <i class="fa-solid fa-user text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-black text-poodle-800">김지아</p>
+                                    <p class="text-[9px] text-poodle-300 font-black uppercase">Member / UI/UX Designer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
-        </div>
-
-        <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
-            class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 보고 있습니다.</p>
-        </div>
-
-        <div class="space-y-6">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
-                    <i class="fa-regular fa-calendar-check"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] text-poodle-300 font-black uppercase mb-1">Recruitment</p>
-                    <p class="text-sm font-black text-poodle-800">2024.04.01 ~ 04.30</p>
-                </div>
-            </div>
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
-                    <i class="fa-regular fa-clock"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] text-poodle-300 font-black uppercase mb-1">Duration</p>
-                    <p class="text-sm font-black text-poodle-800">3개월 (온라인)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 팀 멤버 소개 -->
-        <div class="pt-8 border-t border-poodle-50 space-y-6">
-            <h4 class="text-lg font-black text-poodle-900 tracking-tight">팀 멤버 소개</h4>
-            <div class="space-y-4">
-                <!-- 팀장 -->
-                <div class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
-                    <div class="relative">
-                        <img th:src="${project.leaderAvatarUrl}"
-                            src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle"
-                            class="w-12 h-12 bg-white rounded-xl shadow-sm">
-                        <div
-                            class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
-                            <i class="fa-solid fa-crown"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900">팀장님</p>
-                        <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
-                    </div>
-                </div>
-                <!-- 팀원 1 -->
-                <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
-                    <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
-                        <i class="fa-solid fa-user text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-black text-poodle-800">이민수</p>
-                        <p class="text-[9px] text-poodle-300 font-black uppercase">Member / Frontend</p>
-                    </div>
-                </div>
-                <!-- 팀원 2 -->
-                <div class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl">
-                    <div class="w-12 h-12 bg-poodle-50 rounded-xl flex items-center justify-center text-poodle-200">
-                        <i class="fa-solid fa-user text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-black text-poodle-800">김지아</p>
-                        <p class="text-[9px] text-poodle-300 font-black uppercase">Member / UI/UX Designer</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </section>
-        </aside>
+            </aside>
         </div>
     </main>
 
