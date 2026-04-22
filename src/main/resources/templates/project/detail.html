@@ -567,6 +567,8 @@
             nickname: /*[[${currentUser != null ? currentUser.nickname : null}]]*/ null,
             role: /*[[${currentUser != null ? currentUser.role : 'NONE'}]]*/ 'NONE'
         };
+        const escapeHtml = window.meetballEscapeHtml;
+        const safeUrl = window.meetballSafeUrl;
 
         function openApplyModal() {
             document.getElementById('applyModal').classList.remove('hidden');
@@ -634,7 +636,7 @@
             };
 
             try {
-                const response = await fetch(`/api/projects/${projectId}/applications`, {
+                const response = await meetballFetch(`/api/projects/${projectId}/applications`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -677,15 +679,20 @@
 
                 container.innerHTML = comments.map(c => {
                     const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                    const author = escapeHtml(c.authorNickname);
+                    const content = escapeHtml(c.content);
+                    const authorSeed = encodeURIComponent(c.authorNickname || 'user');
+                    const commentId = Number(c.id);
+                    const deleteButton = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname && Number.isFinite(commentId)
+                        ? `<button onclick="deleteComment(${commentId})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>`
+                        : '';
                     return `
                     <div class="flex gap-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${c.authorNickname}" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${authorSeed}" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
                         <div class="bg-poodle-50/30 p-6 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
-                            <h4 class="font-black text-poodle-900 text-sm mb-1">${c.authorNickname} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${dateStr}</span></h4>
-                            <p class="text-sm font-bold text-poodle-700 leading-relaxed">${c.content}</p>
-                            ${CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname ? `
-                            <button onclick="deleteComment(${c.id})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>
-                            ` : ''}
+                            <h4 class="font-black text-poodle-900 text-sm mb-1">${author} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
+                            <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
+                            ${deleteButton}
                         </div>
                     </div>
                     `;
@@ -708,7 +715,7 @@
             }
 
             try {
-                const res = await fetch(`/api/projects/${projectId}/comments`, {
+                const res = await meetballFetch(`/api/projects/${projectId}/comments`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -732,7 +739,7 @@
             const projectId = document.getElementById('applicationProjectId').value;
             
             try {
-                const res = await fetch(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' });
+                const res = await meetballFetch(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' });
                 if(res.ok) {
                     fetchComments();
                 } else {
@@ -765,12 +772,14 @@
                 container.innerHTML = attachments.map(item => {
                     const isLink = item.type === 'LINK';
                     const icon = isLink ? 'fa-link' : 'fa-download';
-                    const href = isLink ? item.linkUrl : `/api/projects/${projectId}/attachments/${item.id}/download`;
-                    const subText = isLink ? 'External Link' : (Math.round(item.fileSize / 1024) + ' KB');
-                    const title = item.originalFileName || (isLink ? '외부 링크' : '파일');
+                    const fileProjectId = encodeURIComponent(String(projectId));
+                    const attachmentId = encodeURIComponent(String(item.id ?? ''));
+                    const href = safeUrl(isLink ? item.linkUrl : `/api/projects/${fileProjectId}/attachments/${attachmentId}/download`);
+                    const subText = isLink ? 'External Link' : (Math.round((item.fileSize || 0) / 1024) + ' KB');
+                    const title = escapeHtml(item.originalFileName || (isLink ? '외부 링크' : '파일'));
 
                     return `
-                    <a href="${href}" ${isLink ? 'target="_blank"' : ''}
+                    <a href="${escapeHtml(href)}" ${isLink ? 'target="_blank" rel="noopener noreferrer"' : ''}
                         class="group p-8 bg-poodle-50/30 border-2 border-poodle-100 rounded-3xl flex items-center gap-5 hover:bg-white hover:border-meatball/30 hover:shadow-xl transition-all">
                         <div
                             class="w-14 h-14 bg-white border border-poodle-50 rounded-2xl flex items-center justify-center text-meatball group-hover:scale-110 transition-transform shadow-sm flex-shrink-0">
@@ -778,7 +787,7 @@
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-sm font-black text-poodle-900 truncate">${title}</p>
-                            <p class="text-[10px] text-poodle-400 font-bold uppercase tracking-wider">${subText}</p>
+                            <p class="text-[10px] text-poodle-400 font-bold uppercase tracking-wider">${escapeHtml(subText)}</p>
                         </div>
                     </a>
                     `;

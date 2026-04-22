@@ -60,7 +60,7 @@ public class CommentController {
                 requestDto.getContent(), 
                 requestDto.getParentId()
         );
-        return ResponseEntity.ok(commentService.saveComment(commentData));
+        return ResponseEntity.ok(commentService.saveComment(commentData, user));
     }
 
     // 댓글 수정
@@ -73,7 +73,8 @@ public class CommentController {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        return ResponseEntity.ok(commentService.updateComment(commentId, requestDto));
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(commentService.updateComment(projectId, commentId, requestDto, user));
     }
 
     // 댓글 삭제
@@ -85,7 +86,8 @@ public class CommentController {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        commentService.deleteComment(commentId);
+        User user = userService.getUserById(userId);
+        commentService.deleteComment(projectId, commentId, user);
         return ResponseEntity.noContent().build();
     }
 }

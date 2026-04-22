@@ -223,9 +223,8 @@ public class ProjectService {
         }
 
         User user = userService.getUserById(userId);
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
         }
 
@@ -263,13 +262,18 @@ public class ProjectService {
         }
 
         User user = userService.getUserById(userId);
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can delete the project.");
         }
 
         projectRepository.delete(project);
+    }
+
+    private boolean isProjectLeader(Project project, User user) {
+        return projectMemberRepository.findByProjectAndUser(project, user)
+                .map(projectMember -> "LEADER".equals(projectMember.getRole()))
+                .orElse(false);
     }
 
     public List<ParticipatedProjectResponse> getParticipatedProjects(User user) {

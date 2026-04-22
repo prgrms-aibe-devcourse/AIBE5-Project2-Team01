@@ -28,7 +28,7 @@
                      data-shape="pill"
                      data-theme="outline"
                      data-text="continue_with"
-                     data-size="large"
+                     data-size="medium"
                      data-logo_alignment="left"
                      data-width="320">
                 </div>
@@ -72,7 +72,7 @@
             }
 
             try {
-                const result = await fetch('/api/auth/google', {
+                const result = await meetballFetch('/api/auth/google', {
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json' },

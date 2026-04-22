@@ -168,6 +168,10 @@
     </style>
 
     <script>
+        const escapeHtml = window.meetballEscapeHtml;
+        const safeUrl = window.meetballSafeUrl;
+        window.applicationDetails = {};
+
         function openApplicantModal(id, name, role, msg, img) {
             document.getElementById('modalApplicationId').value = id;
             document.getElementById('modalName').innerText = name;
@@ -177,6 +181,12 @@
 
             document.getElementById('applicantModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+        }
+
+        function openApplicantModalById(id) {
+            const app = window.applicationDetails[id];
+            if (!app) return;
+            openApplicantModal(app.id, app.userNickname || '', app.position || '', app.message || '', app.avatarUrl || '');
         }
 
         function closeApplicantModal() {
@@ -189,7 +199,7 @@
             if (!applicationId) return;
 
             try {
-                const response = await fetch(`/api/applications/${applicationId}/status`, {
+                const response = await meetballFetch(`/api/applications/${applicationId}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: newStatus })
@@ -232,8 +242,14 @@
                     return;
                 }
 
+                window.applicationDetails = {};
                 grid.innerHTML = apps.map(app => {
-                    const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${app.userNickname}`;
+                    const id = Number(app.id);
+                    const userNickname = app.userNickname || '';
+                    const position = app.position || '';
+                    const message = app.message || '';
+                    const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(userNickname || 'applicant')}`;
+                    window.applicationDetails[id] = { ...app, avatarUrl };
                     let statusBadge = '';
                     if(app.status === 'ACCEPTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase">승인됨</span>';
                     if(app.status === 'REJECTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-poodle-300 text-white rounded-full text-[10px] font-black uppercase">거절됨</span>';
@@ -246,14 +262,14 @@
                                 <img src="${avatarUrl}" class="w-14 h-14 rounded-2xl shadow-sm border border-white bg-poodle-50">
                             </div>
                             <div class="flex-grow">
-                                <h4 class="font-black text-poodle-900 leading-tight">${app.userNickname}</h4>
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">${app.position}</span>
+                                <h4 class="font-black text-poodle-900 leading-tight">${escapeHtml(userNickname)}</h4>
+                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">${escapeHtml(position)}</span>
                             </div>
                         </div>
                         <p class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
-                            "${app.message || ''}"
+                            "${escapeHtml(message)}"
                         </p>
-                        <button onclick="openApplicantModal(${app.id}, '${app.userNickname}', '${app.position}', '${app.message ? app.message.replace(/'/g, "\\'") : ''}', '${avatarUrl}')"
+                        <button onclick="openApplicantModalById(${id})"
                             class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">
                             상세 보기
                         </button>
@@ -288,23 +304,30 @@
                 return;
             }
 
-            listDiv.innerHTML = files.map(f => `
+            listDiv.innerHTML = files.map(f => {
+                const fileName = escapeHtml(f.originalFileName || '첨부파일');
+                const uploadedAt = f.createdAt || f.uploadedAt;
+                const uploadedLabel = uploadedAt ? new Date(uploadedAt).toLocaleDateString() : '-';
+                const downloadProjectId = encodeURIComponent(String(projectId));
+                const attachmentId = encodeURIComponent(String(f.id ?? ''));
+                return `
                 <div class="flex items-center justify-between p-4 bg-white border border-poodle-50 rounded-2xl shadow-sm">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-poodle-50 text-meatball rounded-xl flex items-center justify-center">
                             <i class="fa-solid fa-file"></i>
                         </div>
                         <div>
-                            <p class="font-black text-poodle-900 text-sm">${f.originalFileName}</p>
-                            <p class="text-[10px] text-poodle-400 font-bold uppercase">Uploaded at ${new Date(f.uploadedAt).toLocaleDateString()}</p>
+                            <p class="font-black text-poodle-900 text-sm">${fileName}</p>
+                            <p class="text-[10px] text-poodle-400 font-bold uppercase">Uploaded at ${escapeHtml(uploadedLabel)}</p>
                         </div>
                     </div>
-                    <a href="/api/projects/${projectId}/attachments/${f.id}/download" 
+                    <a href="${escapeHtml(safeUrl(`/api/projects/${downloadProjectId}/attachments/${attachmentId}/download`))}" 
                        class="w-8 h-8 bg-poodle-50 text-poodle-400 hover:bg-meatball hover:text-white rounded-lg flex items-center justify-center transition-all">
                         <i class="fa-solid fa-download text-xs"></i>
                     </a>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         async function uploadAttachment() {
@@ -317,7 +340,7 @@
             formData.append('file', file);
 
             try {
-                const response = await fetch(`/api/projects/${projectId}/attachments`, {
+                const response = await meetballFetch(`/api/projects/${projectId}/attachments`, {
                     method: 'POST',
                     body: formData
                 });
@@ -343,7 +366,7 @@
             if(!projectId) return;
 
             try {
-                const response = await fetch(`/api/projects/${projectId}`, {
+                const response = await meetballFetch(`/api/projects/${projectId}`, {
                     method: 'DELETE'
                 });
 
@@ -377,7 +400,7 @@
                 // 2. closed 속성만 변경하여 PUT 요청
                 projectData.closed = true;
 
-                const putRes = await fetch(`/api/projects/${projectId}`, {
+                const putRes = await meetballFetch(`/api/projects/${projectId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(projectData)

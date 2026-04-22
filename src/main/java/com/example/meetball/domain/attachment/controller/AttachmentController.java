@@ -48,14 +48,7 @@ public class AttachmentController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
-        User user = userService.getUserById(userId);
-        ProjectDetailRole role = authorizationService.getProjectDetailRole(user, project);
-
-        if (role != ProjectDetailRole.LEADER && role != ProjectDetailRole.MEMBER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only project members can upload attachments.");
-        }
+        requireProjectMember(projectId, userId, "Only project members can upload attachments.");
 
         AttachmentResponseDto responseDto = attachmentService.uploadFile(projectId, file);
         return ResponseEntity.status(201).body(responseDto);
@@ -65,10 +58,15 @@ public class AttachmentController {
     @GetMapping("/{attachmentId}/download")
     public ResponseEntity<Resource> downloadFile(
             @PathVariable Long projectId,
-            @PathVariable Long attachmentId) {
+            @PathVariable Long attachmentId,
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+        requireProjectMember(projectId, userId, "Only project members can download attachments.");
         
-        Resource resource = attachmentService.loadFileAsResource(attachmentId);
-        String originalFileName = attachmentService.getOriginalFileName(attachmentId);
+        Resource resource = attachmentService.loadFileAsResource(projectId, attachmentId);
+        String originalFileName = attachmentService.getOriginalFileName(projectId, attachmentId);
         
         // 한글 파일명 깨짐 방지
         String encodedUploadFileName = UriUtils.encode(originalFileName, StandardCharsets.UTF_8);
@@ -78,5 +76,16 @@ public class AttachmentController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
+    }
+
+    private void requireProjectMember(Long projectId, Long userId, String forbiddenMessage) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        User user = userService.getUserById(userId);
+        ProjectDetailRole role = authorizationService.getProjectDetailRole(user, project);
+
+        if (role != ProjectDetailRole.LEADER && role != ProjectDetailRole.MEMBER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, forbiddenMessage);
+        }
     }
 }

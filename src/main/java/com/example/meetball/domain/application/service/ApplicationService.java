@@ -99,10 +99,8 @@ public class ApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
 
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
-
         // 5. 지원 목록 조회는 권한 없는 사용자가 못 보게 막음
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can view the applications.");
         }
 
@@ -130,10 +128,8 @@ public class ApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
 
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
-
         // 6. 지원 상태 변경은 리더만 가능하도록 점검
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update application status.");
         }
 
@@ -158,5 +154,11 @@ public class ApplicationService {
         Application updatedApplication = applicationRepository.save(application);
 
         return new ApplicationResponseDto(updatedApplication);
+    }
+
+    private boolean isProjectLeader(Project project, User user) {
+        return projectMemberRepository.findByProjectAndUser(project, user)
+                .map(projectMember -> "LEADER".equals(projectMember.getRole()))
+                .orElse(false);
     }
 }
