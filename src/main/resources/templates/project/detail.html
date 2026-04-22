@@ -268,10 +268,25 @@
                 </div>
 
                 <div class="space-y-4">
-                    <button onclick="openApplyModal()" class="w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <!-- 일반 참여자 / 역할 미정(GUEST)일 때만 지원 버튼 노출 -->
+                    <button th:if="${role == 'REGULAR_USER' or role == 'GUEST'}"
+                            onclick="openApplyModal()" class="w-full py-6 bg-poodle-800 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:scale-[1.02] active:scale-[0.98] transition-all">
                         프로젝트 지원하기 🐾
                     </button>
-                    <p class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 보고 있습니다.</p>
+                    
+                    <!-- 팀장일 때 노출되는 버튼 -->
+                    <a th:if="${role == 'LEADER'}" th:href="@{/manage}" 
+                       class="flex items-center justify-center w-full py-6 bg-meatball text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        프로젝트 관리하기 ⚙️
+                    </a>
+                    
+                    <!-- 팀원일 때 노출되는 메시지 -->
+                    <div th:if="${role == 'MEMBER'}" class="w-full py-6 bg-poodle-100 text-poodle-400 border border-poodle-200 rounded-[1.5rem] font-black text-lg text-center cursor-not-allowed">
+                        참여 중인 프로젝트입니다 🎯
+                    </div>
+
+                    <p th:if="${role == 'REGULAR_USER' or role == 'GUEST'}" 
+                       class="text-[10px] text-poodle-300 font-bold text-center italic">이미 14명의 지원자가 보고 있습니다.</p>
                 </div>
 
                 <div class="space-y-6">
