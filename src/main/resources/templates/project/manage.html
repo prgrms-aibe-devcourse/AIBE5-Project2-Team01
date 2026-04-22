@@ -5,6 +5,7 @@
 
 <body class="text-poodle-900">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
+    <input type="hidden" id="projectId" th:value="${projectId}">
 
     <main class="container mx-auto px-4 py-16">
         <div class="flex flex-col lg:flex-row gap-8 items-end justify-between mb-12">
@@ -29,9 +30,11 @@
                         </div>
                     </div>
                     <div class="flex gap-3 w-full sm:w-auto">
+                        <button onclick="deleteProject()"
+                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-red-50 border border-red-200 text-red-500 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors">프로젝트 삭제</button>
                         <button
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-white border border-poodle-100 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-50 transition-colors">수정</button>
-                        <button
+                        <button onclick="closeProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-700/10 hover:bg-poodle-900 transition-colors">모집
                             마감</button>
                     </div>
@@ -42,68 +45,16 @@
                         <div class="flex items-center justify-between mb-8">
                             <h3 class="text-xl font-black text-poodle-900 flex items-center gap-3">
                                 <i class="fa-solid fa-users text-meatball"></i>
-                                지원자 현황 <span
-                                    class="bg-poodle-100 text-poodle-600 px-3 py-1 rounded-full text-xs ml-1 italic">2명</span>
+                                지원자 현황 <span id="applicant-count"
+                                    class="bg-poodle-100 text-poodle-600 px-3 py-1 rounded-full text-xs ml-1 italic">0명</span>
                             </h3>
                             <button
                                 class="text-[10px] font-black text-poodle-300 uppercase tracking-widest hover:text-meatball transition-colors">전체
                                 보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            <!-- Applicant Card 1 -->
-                            <div
-                                class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
-                                <div class="flex items-center gap-4 mb-8 text-left">
-                                    <div class="relative">
-                                        <img src="https://picsum.photos/seed/user2/100"
-                                            class="w-14 h-14 rounded-2xl shadow-sm border border-white">
-                                        <div
-                                            class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <h4 class="font-black text-poodle-900 leading-tight">디자인요정</h4>
-                                        <span
-                                            class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">UI/UX
-                                            Designer</span>
-                                    </div>
-                                </div>
-                                <p
-                                    class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
-                                    "안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다..."</p>
-                                <button
-                                    onclick="openApplicantModal('디자인요정', 'UI/UX Designer', '안녕하세요! 맛집 추천 앱 디자인에 정말 관심이 많습니다. 피그마 사용 숙련도가 높고 팀 프로젝트 경험도 다수 있습니다. 함께하고 싶어요!', 'https://picsum.photos/seed/user2/100')"
-                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세
-                                    보기</button>
-                            </div>
-
-                            <!-- Applicant Card 2 -->
-                            <div
-                                class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all">
-                                <div class="flex items-center gap-4 mb-8 text-left">
-                                    <div class="relative">
-                                        <img src="https://picsum.photos/seed/user4/100"
-                                            class="w-14 h-14 rounded-2xl shadow-sm border border-white">
-                                        <div
-                                            class="absolute -top-1 -right-1 w-4 h-4 bg-meatball rounded-full border-2 border-white animate-pulse">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <h4 class="font-black text-poodle-900 leading-tight">서버마스터</h4>
-                                        <span
-                                            class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">Backend
-                                            Master</span>
-                                    </div>
-                                </div>
-                                <p
-                                    class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
-                                    "Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다."</p>
-                                <button
-                                    onclick="openApplicantModal('서버마스터', 'Backend Master', 'Node.js 백엔드 개발자입니다. 대규모 트래픽 처리에 자신 있습니다. 안정적인 서버 아키텍처 설계를 좋아해요!', 'https://picsum.photos/seed/user4/100')"
-                                    class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">상세
-                                    보기</button>
-                            </div>
+                        <div id="applications-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <!-- JS Rendered -->
                         </div>
                     </div>
 
@@ -195,10 +146,11 @@
                 </div>
 
                 <div class="p-10 pt-0 flex gap-4">
-                    <button onclick="closeApplicantModal()"
-                        class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">Reject</button>
-                    <button
-                        class="flex-[2] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">Accept</button>
+                    <input type="hidden" id="modalApplicationId" />
+                    <button onclick="updateStatus('REJECTED')"
+                        class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">거절</button>
+                    <button onclick="updateStatus('ACCEPTED')"
+                        class="flex-[2] py-5 bg-meatball text-white rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">승인</button>
                 </div>
             </div>
         </div>
@@ -219,7 +171,8 @@
     </style>
 
     <script>
-        function openApplicantModal(name, role, msg, img) {
+        function openApplicantModal(id, name, role, msg, img) {
+            document.getElementById('modalApplicationId').value = id;
             document.getElementById('modalName').innerText = name;
             document.getElementById('modalRole').innerText = role;
             document.getElementById('modalMsg').innerText = `"${msg}"`;
@@ -234,13 +187,93 @@
             document.body.style.overflow = 'auto';
         }
 
-        // ==========================================
+        async function updateStatus(newStatus) {
+            const applicationId = document.getElementById('modalApplicationId').value;
+            if (!applicationId) return;
+
+            try {
+                const response = await fetch(`/api/applications/${applicationId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    alert('상태가 변경되었습니다.');
+                    closeApplicantModal();
+                    fetchApplications(); // 목록 새로고침
+                } else {
+                    const error = await response.text();
+                    alert('변경 실패: ' + error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('오류가 발생했습니다.');
+            }
+        }
+
+        async function fetchApplications() {
+            const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
+            console.log('Fetching applications for project:', projectId);
+            if(!projectId) return;
+
+            try {
+                const res = await fetch(`/api/projects/${projectId}/applications`);
+                if (!res.ok) throw new Error('조회 실패');
+
+                const apps = await res.json();
+                
+                // Show count
+                const countSpan = document.getElementById('applicant-count');
+                if (countSpan) countSpan.innerText = apps.length + '명';
+
+                const grid = document.getElementById('applications-grid');
+                if (!grid) return;
+
+                if (apps.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full p-8 text-center text-poodle-400 font-bold">지원자가 없습니다.</div>';
+                    return;
+                }
+
+                grid.innerHTML = apps.map(app => {
+                    const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${app.userNickname}`;
+                    let statusBadge = '';
+                    if(app.status === 'ACCEPTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase">승인됨</span>';
+                    if(app.status === 'REJECTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-poodle-300 text-white rounded-full text-[10px] font-black uppercase">거절됨</span>';
+
+                    return `
+                    <div class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all relative">
+                        ${statusBadge}
+                        <div class="flex items-center gap-4 mb-8 text-left mt-2">
+                            <div class="relative">
+                                <img src="${avatarUrl}" class="w-14 h-14 rounded-2xl shadow-sm border border-white bg-poodle-50">
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-black text-poodle-900 leading-tight">${app.userNickname}</h4>
+                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">${app.position}</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
+                            "${app.message || ''}"
+                        </p>
+                        <button onclick="openApplicantModal(${app.id}, '${app.userNickname}', '${app.position}', '${app.message ? app.message.replace(/'/g, "\\'") : ''}', '${avatarUrl}')"
+                            class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">
+                            상세 보기
+                        </button>
+                    </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
         // 첨부파일 관리 스크립트 연결
         // ==========================================
         const MOCK_ROLE = 'LEADER'; // 로그인 전이라 임시값 사용
 
         async function fetchAttachments() {
-            const projectId = document.getElementById('projectId').value;
+            const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
+            if (!projectId) return;
             try {
                 const response = await fetch(`/api/projects/${projectId}/attachments`);
                 if (!response.ok) throw new Error('파일 목록 조회 실패');
@@ -308,8 +341,70 @@
             }
         }
 
-        // 페이지 로드 시 첨부파일 목록 조회
-        document.addEventListener('DOMContentLoaded', fetchAttachments);
+        async function deleteProject() {
+            if (!confirm('정말 이 프로젝트를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.')) return;
+            
+            const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
+            if(!projectId) return;
+
+            try {
+                const response = await fetch(`/api/projects/${projectId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('프로젝트가 성공적으로 삭제되었습니다.');
+                    window.location.href = '/mypage'; // 삭제 후 마이페이지나 홈으로 이동
+                } else {
+                    alert('프로젝트 삭제에 실패했습니다.');
+                }
+            } catch (err) {
+                console.error('Delete error', err);
+                alert('서버 오류가 발생했습니다.');
+            }
+        }
+
+        async function closeProject() {
+            if (!confirm('이 프로젝트의 모집을 마감하시겠습니까?')) return;
+            
+            const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
+            if(!projectId) return;
+
+            try {
+                // 1. 기존 프로젝트 정보 조회
+                const getRes = await fetch(`/api/projects/${projectId}`);
+                if (!getRes.ok) {
+                    alert('프로젝트 정보를 불러오는데 실패했습니다.');
+                    return;
+                }
+                const projectData = await getRes.json();
+                
+                // 2. closed 속성만 변경하여 PUT 요청
+                projectData.closed = true;
+
+                const putRes = await fetch(`/api/projects/${projectId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (putRes.ok) {
+                    alert('모집이 마감되었습니다.');
+                    window.location.reload(); // 상태 반영을 위해 새로고침
+                } else {
+                    alert('모집 마감 처리에 실패했습니다.');
+                }
+            } catch (err) {
+                console.error('Close error', err);
+                alert('서버 오류가 발생했습니다.');
+            }
+        }
+
+        // 페이지 로드 시 첨부파일 및 지원자 목록 조회
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAttachments();
+            fetchApplications();
+        });
     </script>
 </body>
 

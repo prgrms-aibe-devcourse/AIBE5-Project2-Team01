@@ -86,8 +86,9 @@ public class ProjectController {
         return "project/register";
     }
 
-    @GetMapping("/manage")
-    public String manage() {
+    @GetMapping("/projects/{id}/manage")
+    public String manage(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("projectId", id);
         return "project/manage";
     }
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class ApplicationResponseDto {
     private Long id;
     private Long projectId;
+    private String projectTitle; // 추가: 프로젝트 이름
     private Long userId;
     private String userNickname; // 팀장 화면에서 지원자 식별용
     private String position;
@@ -20,6 +21,7 @@ public class ApplicationResponseDto {
     public ApplicationResponseDto(Application application) {
         this.id = application.getId();
         this.projectId = application.getProject() != null ? application.getProject().getId() : null;
+        this.projectTitle = application.getProject() != null ? application.getProject().getTitle() : null;
         this.userId = application.getUser() != null ? application.getUser().getId() : null;
         this.userNickname = application.getUser() != null ? application.getUser().getNickname() : null;
         this.position = application.getPosition();

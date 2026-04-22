@@ -51,4 +51,28 @@ public class ProjectDetailResponseDto {
     public Boolean getClosed() { return closed; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    // --- Helper methods for Thymeleaf ---
+    public String getThumbnailUrl() {
+        return "https://picsum.photos/seed/" + (id != null ? id : "default") + "/1200/600";
+    }
+
+    public String getDeadlineLabel() {
+        if (closed != null && closed) return "마감됨";
+        if (recruitmentEndAt == null) return "진행 중";
+        long days = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), recruitmentEndAt);
+        if (days < 0) return "마감됨";
+        if (days == 0) return "D-DAY";
+        return "D-" + days;
+    }
+
+    public String getCreatedDateLabel() {
+        if (createdAt == null) return "-";
+        return createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    }
+
+    public java.util.List<String> getTechStacks() {
+        // 임시 더미 혹은 기본값 반환. 원래는 Project 엔티티에서 가져와야 함.
+        return java.util.Arrays.asList("Java", "Spring", "MySQL");
+    }
 }
