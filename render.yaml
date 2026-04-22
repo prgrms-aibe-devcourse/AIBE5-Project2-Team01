@@ -7,6 +7,8 @@ services:
     dockerContext: .
     healthCheckPath: /
     envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
       - key: SPRING_DATASOURCE_HOST
         fromDatabase:
           name: meetball-db

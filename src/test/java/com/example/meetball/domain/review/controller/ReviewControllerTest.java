@@ -32,11 +32,11 @@ class ReviewControllerTest {
     @Test
     @DisplayName("리뷰 중복 등록 방지 테스트")
     void duplicateReviewTest() throws Exception {
-        // given: 이미 '팀장님'이 리뷰를 남긴 상태 (DataInitializer)
-        ReviewRequestDto dto = new ReviewRequestDto(5.0, "팀장님", "LEADER", "", "중복 테스트");
+        // given: 이미 '초코푸들'이 2번 프로젝트 리뷰를 남긴 상태 (DataInitializer)
+        ReviewRequestDto dto = new ReviewRequestDto(5.0, "초코푸들", "LEADER", "", "중복 테스트");
 
         // when & then: 동일한 프로젝트에 다시 등록 시도
-        mockMvc.perform(post("/api/projects/1/reviews")
+        mockMvc.perform(post("/api/projects/2/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().is4xxClientError()); // 400 에러 기대
@@ -47,7 +47,7 @@ class ReviewControllerTest {
     void contentLimitTest() throws Exception {
         // given: 100자가 넘는 문자열 생성
         String longContent = "A".repeat(101);
-        ReviewRequestDto dto = new ReviewRequestDto(5.0, "성실팀원", "MEMBER", "", longContent);
+        ReviewRequestDto dto = new ReviewRequestDto(5.0, "성실한리트리버", "MEMBER", "", longContent);
 
         // when & then
         mockMvc.perform(post("/api/projects/1/reviews")
@@ -73,9 +73,9 @@ class ReviewControllerTest {
     @DisplayName("요약 리포트 조회 (별점 평균 검증)")
     void getReviewSummary() throws Exception {
         // when & then
-        mockMvc.perform(get("/api/projects/1/reviews/summary"))
+        mockMvc.perform(get("/api/projects/2/reviews/summary"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.averageScore").value(4.5))
+                .andExpect(jsonPath("$.averageScore").value(5.0))
                 .andExpect(jsonPath("$.totalReviews").value(1));
     }
 }

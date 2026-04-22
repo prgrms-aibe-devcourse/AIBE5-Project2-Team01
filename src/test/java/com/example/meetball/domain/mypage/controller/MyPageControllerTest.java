@@ -22,7 +22,7 @@ class MyPageControllerTest {
     @Test
     @DisplayName("마이페이지 프로필 정보를 성공적으로 조회한다")
     void getMyProfileTest() throws Exception {
-        // given: DataInitializer에 의해 1번 유저(팀장님)가 생성되어 있음
+        // given: DataInitializer에 의해 1번 유저(초코푸들)가 생성되어 있음
         Long userId = 1L;
 
         // when & then
@@ -30,7 +30,7 @@ class MyPageControllerTest {
                         .param("userId", String.valueOf(userId))
                         .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nickname").value("팀장님"))
+                .andExpect(jsonPath("$.nickname").value("초코푸들"))
                 .andExpect(jsonPath("$.role").value("LEADER"))
                 .andExpect(jsonPath("$.meetBallIndex").value(36.7))
                 .andDo(print());
@@ -82,29 +82,29 @@ class MyPageControllerTest {
     @Test
     @DisplayName("사용자가 관심 등록한 프로젝트 목록을 조회한다")
     void getMyBookmarksTest() throws Exception {
-        Long userId = 1L; // 팀장님
+        Long userId = 3L; // 열정고양이
 
         mockMvc.perform(get("/api/mypage/bookmarks")
                         .param("userId", String.valueOf(userId))
                         .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].title").value("블록체인 기반 투표 시스템"))
+                .andExpect(jsonPath("$[0].title").value("AI 기반 헬스케어 모바일 앱 개발"))
                 .andDo(print());
     }
 
     @Test
     @DisplayName("사용자가 받은 피어 리뷰 목록을 조회한다")
     void getMyReviewsTest() throws Exception {
-        Long userId = 1L; // 팀장님
+        Long userId = 1L; // 초코푸들
 
         mockMvc.perform(get("/api/mypage/reviews")
                         .param("userId", String.valueOf(userId))
                         .param("viewerId", String.valueOf(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].reviewerNickname").value("열정개발자"))
-                .andExpect(jsonPath("$[0].projectTitle").value("AI 헬스케어 모바일 앱"))
+                .andExpect(jsonPath("$[0].reviewerNickname").value("코딩하는비글"))
+                .andExpect(jsonPath("$[0].projectTitle").value("반려견 케어 서비스 [멍멍 비서]"))
                 .andDo(print());
     }
 }
