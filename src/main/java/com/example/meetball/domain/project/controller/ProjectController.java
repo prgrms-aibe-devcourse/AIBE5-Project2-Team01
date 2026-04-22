@@ -3,6 +3,7 @@ package com.example.meetball.domain.project.controller;
 import com.example.meetball.domain.project.dto.ProjectCreateRequestDto;
 import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
 import com.example.meetball.domain.project.dto.ProjectListResponseDto;
+import com.example.meetball.domain.project.dto.ProjectPageResponseDto;
 import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.project.service.ProjectService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -43,6 +45,7 @@ public class ProjectController {
         this.authorizationService = authorizationService;
     }
 
+    // --- MVC (front2) ---
     @GetMapping("/projects")
     public String projects(Model model) {
         List<ProjectSummaryView> projects = projectService.getProjectSummaries();
@@ -91,17 +94,21 @@ public class ProjectController {
         return "project/manage";
     }
 
+    // --- REST API ---
     @ResponseBody
     @GetMapping("/api/projects")
-    public Page<ProjectSummaryView> getProjects(
+    public ProjectPageResponseDto<ProjectListResponseDto> getProjects(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "6") int size,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "projectType", required = false) String projectType,
-            @RequestParam(name = "progressMethod", required = false) String progressMethod
+            @RequestParam(name = "progressMethod", required = false) String progressMethod,
+            @RequestParam(name = "position", required = false) String position,
+            @RequestParam(name = "techStack", required = false) String techStack
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate", "id"));
-        return projectService.getProjects(keyword, projectType, progressMethod, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable);
+        return ProjectPageResponseDto.from(projects);
     }
 
     @ResponseBody
@@ -112,21 +119,24 @@ public class ProjectController {
 
     @ResponseBody
     @PostMapping("/api/projects")
-    public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request) {
-        return projectService.createProject(request);
+    public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request,
+                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
+        return projectService.createProject(request, userId);
     }
 
     @ResponseBody
     @PutMapping("/api/projects/{projectId}")
     public ProjectDetailResponseDto updateProject(@PathVariable("projectId") Long projectId,
-                                                  @RequestBody ProjectUpdateRequestDto request) {
-        return projectService.updateProject(projectId, request);
+                                                  @RequestBody ProjectUpdateRequestDto request,
+                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
+        return projectService.updateProject(projectId, request, userId);
     }
 
     @ResponseBody
     @DeleteMapping("/api/projects/{projectId}")
-    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId) {
-        projectService.deleteProject(projectId);
+    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId,
+                                              @SessionAttribute(name = "userId", required = false) Long userId) {
+        projectService.deleteProject(projectId, userId);
         return ResponseEntity.noContent().build();
     }
 }

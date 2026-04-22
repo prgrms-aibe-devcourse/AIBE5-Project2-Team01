@@ -170,11 +170,33 @@ public class DataInitializer implements CommandLineRunner {
             projectMemberRepository.save(ProjectMember.builder().user(member).project(project3).role("LEADER").build());
             projectMemberRepository.save(ProjectMember.builder().user(dev).project(project4).role("LEADER").build());
 
+            // 지원 데이터
+            applicationRepository.save(Application.builder()
+                    .user(guest)
+                    .project(project1)
+                    .applicantName(guest.getNickname())
+                    .position("UI/UX 디자이너")
+                    .status(ApplicationStatus.PENDING)
+                    .message("사용자 경험 설계와 화면 플로우 정리에 기여하고 싶습니다!")
+                    .build());
+
+            applicationRepository.save(Application.builder()
+                    .user(leader)
+                    .project(project3)
+                    .applicantName(leader.getNickname())
+                    .position("프론트엔드 개발자")
+                    .status(ApplicationStatus.PENDING)
+                    .message("여행 일정 공유 화면을 직관적으로 구현해보고 싶습니다!")
+                    .build());
+
             // 찜 및 조회 기록
             bookmarkRepository.save(Bookmark.builder().user(guest).project(project1).build());
             bookmarkRepository.save(Bookmark.builder().user(guest).project(project3).build());
+            bookmarkRepository.save(Bookmark.builder().user(leader).project(project2).build());
             projectReadRepository.save(ProjectRead.builder().user(guest).project(project1).build());
             projectReadRepository.save(ProjectRead.builder().user(guest).project(project2).build());
+            projectReadRepository.save(ProjectRead.builder().user(leader).project(project1).build());
+            projectReadRepository.save(ProjectRead.builder().user(leader).project(project2).build());
 
             // 리뷰 (성과 탭 확인용)
             reviewRepository.save(Review.builder()

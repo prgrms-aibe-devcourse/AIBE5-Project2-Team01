@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Collections;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +33,6 @@ public class UserService {
     public Optional<User> findDefaultUser() {
         return userRepository.findFirstByOrderByIdAsc();
     }
-
     @Transactional
     public void updateUserProfile(Long userId, UserProfileUpdateRequest request) {
         User user = getUserById(userId);
@@ -44,5 +49,40 @@ public class UserService {
                 request.getTechStack(),
                 request.isPublic()
         );
+    }
+
+    @Value("${google.client.id:}")
+    private String googleClientId;
+
+    @Transactional
+    public User processGoogleLogin(String credential) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(credential);
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+
+                return userRepository.findByEmail(email).orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .nickname(name != null ? name : "User_" + System.currentTimeMillis())
+                            .role("MEMBER")
+                            .jobTitle("-")
+                            .techStack("-")
+                            .isPublic(true)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+            } else {
+                throw new IllegalArgumentException("Invalid ID token.");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to verify Google token: " + e.getMessage());
+        }
     }
 }
