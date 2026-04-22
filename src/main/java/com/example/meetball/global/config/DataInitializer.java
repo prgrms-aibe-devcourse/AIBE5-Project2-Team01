@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Configuration
 @RequiredArgsConstructor
@@ -44,166 +45,169 @@ public class DataInitializer implements CommandLineRunner {
         // 0. 테스트용 유저 데이터 생성
         if (userRepository.count() == 0) {
             userRepository.save(User.builder()
-                    .email("leader@test.com")
-                    .nickname("팀장님")
-                    .jobTitle("프론트엔드 개발자")
-                    .techStack("React, TypeScript")
+                    .email("leader@meetball.com")
+                    .nickname("초코푸들")
+                    .jobTitle("프론트엔드 리더")
+                    .techStack("React, TypeScript, TailwindCSS")
                     .isPublic(true)
                     .role("LEADER")
                     .build());
 
             userRepository.save(User.builder()
-                    .email("member@test.com")
-                    .nickname("성실팀원")
+                    .email("member@meetball.com")
+                    .nickname("성실한리트리버")
                     .jobTitle("백엔드 개발자")
-                    .techStack("Java, Spring Boot")
+                    .techStack("Java, Spring Boot, MySQL")
                     .isPublic(true)
                     .role("MEMBER")
                     .build());
 
             userRepository.save(User.builder()
-                    .email("guest@test.com")
-                    .nickname("익명게스트")
-                    .jobTitle("취업준비생")
-                    .techStack("Python")
+                    .email("guest@meetball.com")
+                    .nickname("열정고양이")
+                    .jobTitle("UI/UX 디자이너")
+                    .techStack("Figma, Adobe XD")
                     .isPublic(false)
                     .role("GUEST")
+                    .build());
+            
+            userRepository.save(User.builder()
+                    .email("dev@meetball.com")
+                    .nickname("코딩하는비글")
+                    .jobTitle("풀스택 개발자")
+                    .techStack("Next.js, Node.js")
+                    .isPublic(true)
+                    .role("MEMBER")
                     .build());
         }
 
         // 0-1. 테스트용 프로젝트 및 참여 멤버 데이터 생성
         if (projectRepository.count() == 0) {
-            // 프로젝트 1: AI 헬스케어 (마감된 프로젝트)
+            // 프로젝트 1: AI 헬스케어 (모집 중 - 메인 프로젝트)
             Project project1 = projectRepository.save(new Project(
-                    "AI 헬스케어 모바일 앱",
-                    "개인 건강 관리를 위한 AI 플랫폼",
-                    "사용자 건강 데이터를 AI로 분석하여 맞춤 운동과 식단을 추천하는 서비스",
+                    "AI 기반 헬스케어 모바일 앱 개발",
+                    "사용자의 건강 데이터를 분석하여 맞춤형 식단과 운동을 추천하는 AI 플랫폼입니다.",
+                    "사용자의 건강 데이터를 분석하여 맞춤형 운동 및 식단을 추천하는 AI 헬스케어 앱 개발입니다. 운동 기록, 식단 관리, 수면 패턴 분석 등의 기능을 통해 사용자에게 건강한 라이프스타일을 지원하는 것이 목표입니다.\n\n[주요 기능]\n- 운동 기록 및 분석\n- AI 기반 맞춤 운동 추천\n- 식단 관리 및 영양 분석\n- 수면 패턴 트래킹\n- 건강 목표 설정 및 달성 현황",
                     "사이드 프로젝트",
-                    "백엔드",
-                    "팀장님",
-                    "Frontend Developer",
-                    "https://api.dicebear.com/7.x/adventurer/svg?seed=leader",
-                    "https://picsum.photos/seed/health/800/400",
-                    3,
+                    "프론트엔드, 백엔드, AI/ML",
+                    "초코푸들",
+                    "Frontend Leader",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=poodle",
+                    "https://picsum.photos/seed/healthcare/1200/600",
+                    2,
                     5,
-                    LocalDate.now().minusDays(30), // 30일 전 마감
-                    LocalDate.now().minusDays(60),
-                    "Java, Spring, Flutter"
+                    LocalDate.now().plusDays(15),
+                    LocalDate.now().minusDays(2),
+                    "React Native, Python, TensorFlow, Flask"
             ));
 
-            // 프로젝트 2: 블록체인 투표 (모집 중)
+            // 프로젝트 2: 반려견 케어 서비스 "멍멍 비서" (완료된 프로젝트 - 성과 확인용)
             Project project2 = projectRepository.save(new Project(
-                    "블록체인 기반 투표 시스템",
-                    "투명한 투표를 위한 블록체인 플랫폼",
-                    "블록체인 기술로 투명하고 안전한 온라인 투표 시스템을 만들어봅니다.",
+                    "반려견 케어 서비스 [멍멍 비서]",
+                    "바쁜 주인들을 위해 반려견의 일정을 관리하고 산책 메이트를 매칭해주는 서비스입니다.",
+                    "이미 성공적으로 런칭하여 1,000명의 유저를 확보한 프로젝트입니다. 반려견의 사료 급여 정보, 산책 시간, 예방 접종 일정을 관리하고 근처의 산책 친구를 찾아주는 소셜 기능을 포함하고 있습니다.",
                     "스타트업",
-                    "프론트엔드",
-                    "성실팀원",
+                    "전 분야",
+                    "초코푸들",
+                    "Project Manager",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=poodle",
+                    "https://picsum.photos/seed/dog/1200/600",
+                    5,
+                    5,
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now().minusDays(100),
+                    "Next.js, Spring Boot, PostgreSQL, Redis"
+            ));
+            project2.update(project2.getTitle(), project2.getDescription(), project2.getProjectType(), "ONLINE", 5, LocalDate.now().minusDays(100), LocalDate.now().minusDays(1), LocalDate.now().minusDays(90), LocalDate.now().minusDays(1), true, LocalDateTime.now());
+
+            // 프로젝트 3: 여행 일정 공유 플랫폼 "TripMate" (모집 중)
+            Project project3 = projectRepository.save(new Project(
+                    "여행 일정 공유 플랫폼 [TripMate]",
+                    "전 세계 여행자들과 나만의 특별한 일정을 공유하고 동행을 구하는 소셜 플랫폼입니다.",
+                    "복잡한 여행 계획을 세우는 것이 힘든 사람들을 위해, 검증된 여행자들의 일정을 가져와 내 입맛대로 수정하고 동행을 구할 수 있는 서비스입니다. 지도 API를 활용한 실시간 경로 계산 기능이 핵심입니다.",
+                    "사이드 프로젝트",
+                    "모바일 앱",
+                    "성실한리트리버",
                     "Backend Developer",
                     "https://api.dicebear.com/7.x/adventurer/svg?seed=member",
-                    "https://picsum.photos/seed/vote/800/400",
-                    2,
-                    4,
-                    LocalDate.now().plusDays(7), // D-7
+                    "https://picsum.photos/seed/travel/1200/600",
+                    1,
+                    6,
+                    LocalDate.now().plusDays(20),
                     LocalDate.now().minusDays(5),
-                    "React, Solidity, Go"
+                    "Flutter, Firebase, Mapbox"
             ));
 
-            // 참여 정보 연결 (1번 유저: 팀장님, 2번 유저: 성실팀원)
-            User leader = userRepository.findByEmail("leader@test.com").get();
-            User member = userRepository.findByEmail("member@test.com").get();
+            // 프로젝트 4: 블록체인 기반 배지 시스템 (소규모 모집 중)
+            Project project4 = projectRepository.save(new Project(
+                    "블록체인 기반 교육 이력 배지 시스템",
+                    "자신의 학습 이력을 블록체인 배지로 인증하고 커리어를 관리하는 투명한 시스템입니다.",
+                    "수료증이나 증명서를 위조 없이 안전하게 보관하고, 기업이 신뢰할 수 있는 데이터를 제공하는 플랫폼입니다. NFT 기술을 활용하여 개인의 성취를 시각화합니다.",
+                    "기업 연계",
+                    "블록체인, 웹",
+                    "코딩하는비글",
+                    "Fullstack Developer",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=dev",
+                    "https://picsum.photos/seed/blockchain/1200/600",
+                    3,
+                    4,
+                    LocalDate.now().plusDays(5),
+                    LocalDate.now().minusDays(1),
+                    "Solidity, Go, React, Ethers.js"
+            ));
 
-            // 유저 1은 프로젝트 1의 팀장
+            // 사용자 연결
+            User leader = userRepository.findByEmail("leader@meetball.com").get();
+            User member = userRepository.findByEmail("member@meetball.com").get();
+            User dev = userRepository.findByEmail("dev@meetball.com").get();
+            User guest = userRepository.findByEmail("guest@meetball.com").get();
+
+            // 참여 데이터
             projectMemberRepository.save(ProjectMember.builder().user(leader).project(project1).role("LEADER").build());
-            // 유저 2는 프로젝트 1의 팀원
             projectMemberRepository.save(ProjectMember.builder().user(member).project(project1).role("MEMBER").build());
-            // 유저 2는 프로젝트 2의 팀장
-            projectMemberRepository.save(ProjectMember.builder().user(member).project(project2).role("LEADER").build());
+            projectMemberRepository.save(ProjectMember.builder().user(leader).project(project2).role("LEADER").build());
+            projectMemberRepository.save(ProjectMember.builder().user(dev).project(project2).role("MEMBER").build());
+            projectMemberRepository.save(ProjectMember.builder().user(member).project(project3).role("LEADER").build());
+            projectMemberRepository.save(ProjectMember.builder().user(dev).project(project4).role("LEADER").build());
 
-            // --- 추가: 지원 정보 샘플 ---
-            User guest = userRepository.findByEmail("guest@test.com").get();
-            applicationRepository.save(Application.builder()
-                    .user(guest)
-                    .project(project1)
-                    .position("백엔드 개발자")
-                    .status(ApplicationStatus.PENDING)
-                    .message("열심히 도와드리고 싶습니다!")
-                    .build());
+            // 찜 및 조회 기록
+            bookmarkRepository.save(Bookmark.builder().user(guest).project(project1).build());
+            bookmarkRepository.save(Bookmark.builder().user(guest).project(project3).build());
+            projectReadRepository.save(ProjectRead.builder().user(guest).project(project1).build());
+            projectReadRepository.save(ProjectRead.builder().user(guest).project(project2).build());
 
-            // --- 팀장님(ID: 1)도 프로젝트 2에 지원한 상황 추가 ---
-            applicationRepository.save(Application.builder()
-                    .user(leader)
-                    .project(project2)
-                    .position("프론트엔드 개발자")
-                    .status(ApplicationStatus.PENDING)
-                    .message("디자인 감각이 뛰어난 프론트엔드입니다!")
-                    .build());
-
-            // --- 추가: 조회 기록 샘플 ---
-            projectReadRepository.save(ProjectRead.builder().user(leader).project(project1).build());
-            projectReadRepository.save(ProjectRead.builder().user(leader).project(project2).build());
-
-            // --- 추가: 찜 기록 샘플 ---
-            bookmarkRepository.save(Bookmark.builder().user(leader).project(project2).build());
-
-            // --- 추가: 리뷰 샘플 (피어 리뷰) ---
-            User member1 = userRepository.save(User.builder()
-                    .nickname("열정개발자")
-                    .email("dev@test.com")
-                    .jobTitle("백엔드 개발자")
-                    .techStack("Java, Spring Boot")
-                    .role("MEMBER")
-                    .isPublic(true)
-                    .build());
-
-            // 열정개발자가 팀장님에게 남긴 피어 리뷰
+            // 리뷰 (성과 탭 확인용)
             reviewRepository.save(Review.builder()
-                    .project(project1)
-                    .reviewer(member1)
+                    .project(project2)
+                    .reviewer(dev)
                     .reviewee(leader)
-                    .content("팀장님 리더십 덕분에 프로젝트 마무리 잘 할 수 있었습니다!")
+                    .content("리더님의 명확한 디렉션 덕분에 일정 내에 멋진 결과물을 낼 수 있었습니다!")
                     .score(5.0)
                     .build());
 
-            // 팀장님이 프로젝트에 대해 남긴 총평 리뷰 (Project Review)
             reviewRepository.save(Review.builder()
-                    .project(project1)
+                    .project(project2)
                     .reviewer(leader)
-                    .reviewee(null) // 특정인 대상이 아닌 프로젝트 대상
-                    .content("좋은 협업 경험이었습니다.")
-                    .score(4.5)
+                    .reviewee(null)
+                    .content("모든 팀원이 완벽하게 협업하여 앱스토어 1위를 달성한 기념비적인 프로젝트입니다.")
+                    .score(5.0)
                     .build());
-        }
 
-        // 1. 댓글 더미 데이터 생성
-        if (commentRepository.count() == 0) {
-            // 1. 팀장 댓글
-            Comment leaderComment = Comment.builder()
-                    .projectId(1L)
-                    .authorNickname("팀장님")
-                    .authorRole("LEADER")
-                    .content("안녕하세요! 이번 프로젝트 팀장입니다. 궁금한 점은 언제든 댓글로 남겨주세요!")
-                    .build();
-            commentRepository.save(leaderComment);
-
-            // 2. 팀원 댓글 (답글 형식)
-            Comment memberReply = Comment.builder()
-                    .projectId(1L)
-                    .authorNickname("성실팀원")
-                    .authorRole("MEMBER")
-                    .content("팀장님 반갑습니다! 열심히 참여하겠습니다.")
-                    .parent(leaderComment)
-                    .build();
-            commentRepository.save(memberReply);
-
-            // 3. 일반 사용자(게스트) 댓글
-            Comment guestComment = Comment.builder()
-                    .projectId(1L)
-                    .authorNickname("익명게스트")
+            // 댓글 (커뮤니케이션 탭 확인용)
+            Comment c1 = commentRepository.save(Comment.builder()
+                    .projectId(project1.getId())
+                    .authorNickname("열정고양이")
                     .authorRole("GUEST")
-                    .content("이 프로젝트 기획이 정말 좋네요! 지원해보고 싶습니다.")
-                    .build();
-            commentRepository.save(guestComment);
+                    .content("프론트엔드 포지션 지원할 때 React Native 경험이 꼭 필수인가요?")
+                    .build());
+
+            commentRepository.save(Comment.builder()
+                    .projectId(project1.getId())
+                    .authorNickname("초코푸들")
+                    .authorRole("LEADER")
+                    .content("필수는 아니지만, 관련 지식이 있으시면 훨씬 수월하게 적응하실 수 있습니다!")
+                    .parent(c1)
+                    .build());
         }
     }
 }
