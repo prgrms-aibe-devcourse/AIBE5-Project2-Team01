@@ -347,6 +347,8 @@
 </style>
 
 <script>
+    const escapeHtml = window.meetballEscapeHtml;
+
     function openEditProfileModal() {
         document.getElementById('editProfileModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -427,7 +429,7 @@
         }
 
         try {
-            const response = await fetch(`/api/mypage/profile?userId=${userId}`, {
+            const response = await meetballFetch('/api/mypage/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -453,11 +455,8 @@
     }
 
     async function loadBookmarks() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/bookmarks?userId=${userId}`);
+            const response = await fetch('/api/mypage/bookmarks');
             if (!response.ok) throw new Error('북마크 조회 실패');
 
             const bookmarks = await response.json();
@@ -487,11 +486,12 @@
         }
 
         container.innerHTML = bookmarks.map(bm => {
-            const stacks = bm.techStack ? bm.techStack.split(',').map(s => `<span class="px-2.5 py-1 bg-poodle-50 text-poodle-600 rounded-lg text-[9px] font-black shadow-sm">${s.trim()}</span>`).join('') : '';
+            const stacks = bm.techStack ? bm.techStack.split(',').map(s => `<span class="px-2.5 py-1 bg-poodle-50 text-poodle-600 rounded-lg text-[9px] font-black shadow-sm">${escapeHtml(s.trim())}</span>`).join('') : '';
+            const projectId = encodeURIComponent(String(bm.projectId ?? ''));
             return `
-            <a href="/projects/${bm.projectId}" class="group block p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-red-200 hover:shadow-xl transition-all shadow-sm">
+            <a href="/projects/${projectId}" class="group block p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-red-200 hover:shadow-xl transition-all shadow-sm">
                 <div class="flex items-start justify-between mb-6">
-                    <h5 class="text-xl font-black text-poodle-900 group-hover:text-red-500 transition-colors line-clamp-2 leading-tight">${bm.title}</h5>
+                    <h5 class="text-xl font-black text-poodle-900 group-hover:text-red-500 transition-colors line-clamp-2 leading-tight">${escapeHtml(bm.title)}</h5>
                     <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
                         <i class="fa-solid fa-heart"></i>
                     </div>
@@ -505,11 +505,8 @@
     }
 
     async function loadApplications() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/applications?userId=${userId}`);
+            const response = await fetch('/api/mypage/applications');
             if (!response.ok) throw new Error('지원 현황 조회 실패');
 
             const applications = await response.json();
@@ -559,6 +556,7 @@
             }
 
             const dateStr = new Date(app.createdAt).toLocaleDateString('ko-KR');
+            const projectId = encodeURIComponent(String(app.projectId ?? ''));
 
             return `
             <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-blue-200 transition-all shadow-sm">
@@ -566,25 +564,22 @@
                     <div class="space-y-3">
                         <div class="flex items-center gap-3">
                             ${statusBadge}
-                            <span class="text-xs font-bold text-poodle-300">${dateStr} 지원</span>
+                            <span class="text-xs font-bold text-poodle-300">${escapeHtml(dateStr)} 지원</span>
                         </div>
-                        <h5 class="text-xl font-black text-poodle-900 line-clamp-1">${app.projectTitle || '프로젝트 제목 없음'}</h5>
-                        <p class="text-sm font-bold text-blue-500">지원 역할: ${app.position}</p>
+                        <h5 class="text-xl font-black text-poodle-900 line-clamp-1">${escapeHtml(app.projectTitle || '프로젝트 제목 없음')}</h5>
+                        <p class="text-sm font-bold text-blue-500">지원 역할: ${escapeHtml(app.position)}</p>
                     </div>
-                    <a href="/project/detail?id=${app.projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-blue-500 hover:text-blue-500 transition-all text-center whitespace-nowrap whitespace-nowrap md:w-auto w-full">상세 보기</a>
+                    <a href="/project/detail?id=${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-blue-500 hover:text-blue-500 transition-all text-center whitespace-nowrap whitespace-nowrap md:w-auto w-full">상세 보기</a>
                 </div>
-                ${app.message ? `<div class="mt-6 p-4 bg-poodle-50/50 rounded-2xl border border-poodle-50 text-sm font-medium text-poodle-600 italic">"${app.message}"</div>` : ''}
+                ${app.message ? `<div class="mt-6 p-4 bg-poodle-50/50 rounded-2xl border border-poodle-50 text-sm font-medium text-poodle-600 italic">"${escapeHtml(app.message)}"</div>` : ''}
             </div>
             `;
         }).join('');
     }
 
     async function loadParticipatingProjects() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/projects?userId=${userId}`);
+            const response = await fetch('/api/mypage/projects');
             if (!response.ok) throw new Error('프로젝트 현황 조회 실패');
             
             const projects = await response.json();
@@ -608,9 +603,12 @@
         // Leader
         if (leaderContainer) {
             leaderContainer.innerHTML = leaderProjects.length ? leaderProjects.map(p => {
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = encodeURIComponent(String(p.projectId ?? ''));
+                const dDay = Number(p.dDay || 0);
                 let dDayBadge = '';
-                if (p.dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${p.dDay}</span>`;
-                else dDayBadge = `<span class="px-3 py-1 bg-poodle-900 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${p.dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (p.dDay * -1) + '일차 🚀'}</span>`;
+                if (dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${dDay}</span>`;
+                else dDayBadge = `<span class="px-3 py-1 bg-poodle-900 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
                 
                 return `
                 <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] shadow-sm hover:border-meatball/30 hover:shadow-xl transition-all group/item">
@@ -619,10 +617,10 @@
                             <div class="flex items-center gap-3">
                                 ${dDayBadge}
                             </div>
-                            <h5 class="text-2xl font-black text-poodle-800">${p.title}</h5>
+                            <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
                         </div>
                         <div class="flex gap-3 w-full md:w-auto">
-                            <a href="/projects/${p.projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all text-center">지원자 관리</a>
+                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all text-center">지원자 관리</a>
                         </div>
                     </div>
                 </div>
@@ -633,7 +631,10 @@
         // Member
         if (memberContainer) {
             memberContainer.innerHTML = memberProjects.length ? memberProjects.map(p => {
-                let dDayBadge = `<span class="px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${p.dDay > 0 ? '마감까지 D-' + p.dDay : (p.dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (p.dDay * -1) + '일차 🚃')}</span>`;
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = encodeURIComponent(String(p.projectId ?? ''));
+                const dDay = Number(p.dDay || 0);
+                let dDayBadge = `<span class="px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
                 return `
                 <div class="p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
@@ -641,9 +642,9 @@
                             <div class="flex items-center gap-3">
                                 ${dDayBadge}
                             </div>
-                            <h5 class="text-2xl font-black text-poodle-800">${p.title}</h5>
+                            <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
                         </div>
-                        <a href="/project/detail?id=${p.projectId}" class="w-full md:w-auto px-8 py-4 bg-white border border-poodle-100 text-poodle-600 rounded-2xl font-black text-xs hover:border-blue-500 hover:text-blue-500 transition-all text-center">상세 보기</a>
+                        <a href="/project/detail?id=${projectId}" class="w-full md:w-auto px-8 py-4 bg-white border border-poodle-100 text-poodle-600 rounded-2xl font-black text-xs hover:border-blue-500 hover:text-blue-500 transition-all text-center">상세 보기</a>
                     </div>
                 </div>
                 `;
@@ -654,12 +655,17 @@
         if (closedContainer) {
             const overlayStr = `<div id="closed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>`;
             closedContainer.innerHTML = closedProjects.length ? closedProjects.map(p => {
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = Number(p.projectId);
+                const reviewButton = p.canReview && Number.isFinite(projectId)
+                    ? `<button onclick="openReviewModal(${projectId})" class="flex-1 md:flex-none px-6 py-4 bg-poodle-800 text-white rounded-2xl font-black text-xs hover:bg-black transition-all">팀원 리뷰</button>`
+                    : '';
                 return `
                 <div class="p-8 bg-white/60 border border-poodle-50 rounded-[2.5rem] opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                        <h5 class="text-xl font-black text-poodle-800 flex-grow">${p.title}</h5>
+                        <h5 class="text-xl font-black text-poodle-800 flex-grow">${title}</h5>
                         <div class="flex gap-3 w-full md:w-auto">
-                            ${p.canReview ? `<button onclick="openReviewModal(${p.projectId})" class="flex-1 md:flex-none px-6 py-4 bg-poodle-800 text-white rounded-2xl font-black text-xs hover:bg-black transition-all">팀원 리뷰</button>` : ''}
+                            ${reviewButton}
                         </div>
                     </div>
                 </div>
@@ -669,11 +675,8 @@
     }
 
     async function loadReviews() {
-        const userId = document.getElementById('profileUserId')?.value;
-        if (!userId) return;
-
         try {
-            const response = await fetch(`/api/mypage/reviews?userId=${userId}`);
+            const response = await fetch('/api/mypage/reviews');
             if (!response.ok) throw new Error('리뷰 목록 조회 실패');
             
             const reviews = await response.json();
@@ -704,6 +707,11 @@
 
         container.innerHTML = reviews.map(r => {
             const dateStr = new Date(r.createdAt).toLocaleDateString('ko-KR');
+            const reviewerNickname = escapeHtml(r.reviewerNickname || '익명');
+            const reviewerJobTitle = escapeHtml(r.reviewerJobTitle || '-');
+            const projectTitle = escapeHtml(r.projectTitle || '프로젝트');
+            const content = escapeHtml(r.content || '');
+            const avatarSeed = encodeURIComponent(r.reviewerNickname || 'reviewer');
             let stars = '';
             for (let i = 1; i <= 5; i++) {
                 if (i <= r.score) stars += '<i class="fa-solid fa-star text-meatball"></i>';
@@ -716,19 +724,19 @@
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${r.reviewerNickname}" class="w-10 h-10 rounded-xl bg-poodle-50 border-2 border-white shadow-sm" alt="reviewer">
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}" class="w-10 h-10 rounded-xl bg-poodle-50 border-2 border-white shadow-sm" alt="reviewer">
                             <div>
-                                <h6 class="text-sm font-black text-poodle-900">${r.reviewerNickname}</h6>
-                                <p class="text-[10px] font-bold text-poodle-300">${r.reviewerJobTitle || '-'}</p>
+                                <h6 class="text-sm font-black text-poodle-900">${reviewerNickname}</h6>
+                                <p class="text-[10px] font-bold text-poodle-300">${reviewerJobTitle}</p>
                             </div>
                         </div>
                         <div class="flex text-sm">${stars}</div>
                     </div>
-                    <p class="text-xs font-black text-yellow-600 mb-2">${r.projectTitle}</p>
-                    <p class="text-sm font-bold text-poodle-600 leading-relaxed italic">"${r.content}"</p>
+                    <p class="text-xs font-black text-yellow-600 mb-2">${projectTitle}</p>
+                    <p class="text-sm font-bold text-poodle-600 leading-relaxed italic">"${content}"</p>
                 </div>
                 <div class="text-right">
-                    <span class="text-[10px] font-bold text-poodle-300">${dateStr}</span>
+                    <span class="text-[10px] font-bold text-poodle-300">${escapeHtml(dateStr)}</span>
                 </div>
             </div>
             `;
@@ -742,7 +750,6 @@
 
     async function openReviewModal(projectId) {
         targetProjectIdForReview = projectId;
-        const currentNickname = document.getElementById('hiddenProfileNickname').value;
         const targetSelect = document.getElementById('reviewTargetSelect');
         targetSelect.innerHTML = '<option value="">불러오는 중...</option>';
         
@@ -753,7 +760,7 @@
         document.body.style.overflow = 'hidden';
 
         try {
-            const res = await fetch(`/api/projects/${projectId}/reviews/teammates?currentNickname=` + encodeURIComponent(currentNickname));
+            const res = await fetch(`/api/projects/${projectId}/reviews/teammates`);
             if (!res.ok) throw new Error('팀원 목록을 불러오지 못했습니다.');
             const teammates = await res.json();
             
@@ -761,7 +768,11 @@
                 targetSelect.innerHTML = '<option value="">평가할 팀원이 없습니다.</option>';
             } else {
                 targetSelect.innerHTML = '<option value="">평가할 팀원 선택</option>' + 
-                    teammates.map(t => `<option value="${t.nickname}">${t.nickname} (${t.jobTitle || '역할 미정'})</option>`).join('');
+                    teammates.map(t => {
+                        const nickname = escapeHtml(t.nickname || '');
+                        const jobTitle = escapeHtml(t.jobTitle || '역할 미정');
+                        return `<option value="${nickname}">${nickname} (${jobTitle})</option>`;
+                    }).join('');
             }
         } catch (e) {
             console.error(e);
@@ -781,7 +792,6 @@
         const targetUserNickname = document.getElementById('reviewTargetSelect').value;
         const score = parseFloat(document.getElementById('reviewScore').value);
         const content = document.getElementById('reviewContent').value;
-        const reviewerNickname = document.getElementById('hiddenProfileNickname').value;
 
         if (!targetUserNickname) {
             alert('평가할 팀원을 선택해주세요.');
@@ -790,14 +800,12 @@
 
         const payload = {
             score: score,
-            reviewerNickname: reviewerNickname,
-            reviewerRole: "MEMBER", // 임시 값
             targetUserNickname: targetUserNickname,
             content: content
         };
 
         try {
-            const res = await fetch(`/api/projects/${targetProjectIdForReview}/reviews`, {
+            const res = await meetballFetch(`/api/projects/${targetProjectIdForReview}/reviews`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -862,4 +870,3 @@
 </div>
 </body>
 </html>
-

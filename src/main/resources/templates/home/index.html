@@ -110,6 +110,9 @@
     <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
     <script>
+        const escapeHtml = window.meetballEscapeHtml;
+        const safeUrl = window.meetballSafeUrl;
+
         let filterState = {
             keyword: '',
             projectType: '',
@@ -184,34 +187,41 @@
 
             container.classList.add('grid');
             container.innerHTML = projects.map(p => {
-                const currentRecruit = p.currentRecruitment || 0;
-                const totalRecruit = p.totalRecruitment || 0;
-                const percentage = totalRecruit > 0 ? (currentRecruit * 100 / totalRecruit) : 0;
+                const currentRecruit = Number(p.currentRecruitment || 0);
+                const totalRecruit = Number(p.totalRecruitment || 0);
+                const percentage = totalRecruit > 0 ? Math.min(100, Math.max(0, currentRecruit * 100 / totalRecruit)) : 0;
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = encodeURIComponent(String(p.id ?? ''));
+                const thumbnailUrl = safeUrl(p.thumbnailUrl, 'https://picsum.photos/seed/project/600/400');
+                const deadlineLabel = escapeHtml(p.deadlineLabel || '-');
+                const projectType = escapeHtml(p.projectType || '');
+                const position = escapeHtml(p.position || '미지정');
+                const summary = escapeHtml(p.summary || '');
 
                 // 기술 스택 (Array 처리)
                 const techBadges = (p.techStacks || []).map(tech =>
-                    `<span class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">${tech}</span>`
+                    `<span class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">${escapeHtml(tech)}</span>`
                 ).join('');
 
                 return `
             <article class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
                 <!-- Image Section -->
                 <div class="relative h-44 overflow-hidden">
-                    <img src="${p.thumbnailUrl || 'https://picsum.photos/seed/project/600/400'}" alt="${p.title}"
+                    <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute top-4 left-4">
-                        <span class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">${p.deadlineLabel || '-'}</span>
+                        <span class="text-[9px] font-black text-white bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
                     </div>
                 </div>
 
                 <div class="p-6 flex flex-col flex-grow">
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${p.projectType || ''}</span>
-                        <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${p.position || '미지정'}</span>
+                        <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectType}</span>
+                        <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${position}</span>
                     </div>
 
-                    <h3 class="text-xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors line-clamp-1">${p.title}</h3>
-                    <p class="text-[11px] text-poodle-400 font-bold leading-relaxed mb-4 line-clamp-2">${p.summary || ''}</p>
+                    <h3 class="text-xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors line-clamp-1">${title}</h3>
+                    <p class="text-[11px] text-poodle-400 font-bold leading-relaxed mb-4 line-clamp-2">${summary}</p>
 
                     <div class="flex flex-wrap gap-1.5 mb-6">
                         ${techBadges}
@@ -227,7 +237,7 @@
                         <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
                             <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
-                        <a href="/projects/${p.id}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
+                        <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-900 text-white rounded-xl text-xs font-black hover:bg-meatball transition-all shadow-lg active:scale-95 group/btn">
                             프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>

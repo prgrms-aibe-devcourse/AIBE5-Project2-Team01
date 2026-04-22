@@ -8,6 +8,7 @@ public record ProjectDetailView(
         String summary,
         String description,
         String projectType,
+        String progressMethod,
         String position,
         String leaderName,
         String leaderRole,

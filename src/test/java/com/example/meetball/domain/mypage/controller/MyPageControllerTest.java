@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,6 +20,12 @@ class MyPageControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private MockHttpSession session(Long userId) {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", userId);
+        return session;
+    }
+
     @Test
     @DisplayName("마이페이지 프로필 정보를 성공적으로 조회한다")
     void getMyProfileTest() throws Exception {
@@ -27,8 +34,7 @@ class MyPageControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/mypage/profile")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("초코푸들"))
                 .andExpect(jsonPath("$.role").value("LEADER"))
@@ -42,8 +48,7 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/projects")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].title").exists())
@@ -59,8 +64,7 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/applications")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andDo(print());
@@ -72,8 +76,7 @@ class MyPageControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/api/mypage/recent-reads")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andDo(print());
@@ -85,8 +88,7 @@ class MyPageControllerTest {
         Long userId = 3L; // 열정고양이
 
         mockMvc.perform(get("/api/mypage/bookmarks")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].title").value("AI 기반 헬스케어 모바일 앱 개발"))
@@ -99,8 +101,7 @@ class MyPageControllerTest {
         Long userId = 1L; // 초코푸들
 
         mockMvc.perform(get("/api/mypage/reviews")
-                        .param("userId", String.valueOf(userId))
-                        .param("viewerId", String.valueOf(userId)))
+                        .session(session(userId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].reviewerNickname").value("코딩하는비글"))

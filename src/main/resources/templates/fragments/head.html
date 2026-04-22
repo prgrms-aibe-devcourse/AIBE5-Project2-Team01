@@ -3,6 +3,8 @@
 <head th:fragment="commonHead(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.headerName : ''}">
     <title th:text="${title} + ' - Meetball'">Meetball</title>
     
     <!-- Fonts -->
@@ -102,5 +104,45 @@
             background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
         }
     </style>
+
+    <script>
+        window.meetballEscapeHtml = function(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+
+        window.meetballSafeUrl = function(value, fallback = '#') {
+            const raw = String(value ?? '').trim();
+            if (!raw) return fallback;
+            if (/[<>"'\u0000-\u001F\u007F]/.test(raw)) return fallback;
+            if (raw.startsWith('/')) return raw.startsWith('//') ? fallback : raw;
+            try {
+                const url = new URL(raw);
+                return ['http:', 'https:'].includes(url.protocol) ? url.href : fallback;
+            } catch (error) {
+                return fallback;
+            }
+        };
+
+        window.meetballFetch = function(input, init = {}) {
+            const method = (init.method || 'GET').toUpperCase();
+            const safeMethod = ['GET', 'HEAD', 'OPTIONS', 'TRACE'].includes(method);
+            const headers = new Headers(init.headers || {});
+
+            if (!safeMethod) {
+                const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                const headerName = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+                if (token && headerName && !headers.has(headerName)) {
+                    headers.set(headerName, token);
+                }
+            }
+
+            return fetch(input, { ...init, headers });
+        };
+    </script>
 </head>
 </html>

@@ -59,10 +59,15 @@ public class BookmarkService {
 
     @Transactional(readOnly = true)
     public BookmarkResponseDto getBookmarkStatus(Long projectId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+
+        if (userId == null) {
+            return new BookmarkResponseDto(false, bookmarkRepository.countByProject(project));
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         boolean isBookmarked = bookmarkRepository.findByProjectAndUser(project, user).isPresent();
         int totalBookmarks = bookmarkRepository.countByProject(project);

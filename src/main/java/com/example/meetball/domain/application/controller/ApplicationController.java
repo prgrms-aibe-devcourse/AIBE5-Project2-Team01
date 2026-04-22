@@ -5,9 +5,11 @@ import com.example.meetball.domain.application.dto.ApplicationResponseDto;
 import com.example.meetball.domain.application.dto.ApplicationStatusUpdateRequestDto;
 import com.example.meetball.domain.application.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,7 +23,6 @@ public class ApplicationController {
     // 지원자용 API
     // =====================================================
 
-    /** 프로젝트에 지원하기 */
     @PostMapping("/api/projects/{projectId}/applications")
     public ResponseEntity<ApplicationResponseDto> applyToProject(
             @PathVariable("projectId") Long projectId,
@@ -32,7 +33,15 @@ public class ApplicationController {
 
     /** 내가 지원한 목록 조회 (마이페이지용) */
     @GetMapping("/api/users/{userId}/applications")
-    public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(
+            @PathVariable("userId") Long userId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        if (sessionUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+        if (!sessionUserId.equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot view another user's applications.");
+        }
         return ResponseEntity.ok(applicationService.getMyApplications(userId));
     }
 

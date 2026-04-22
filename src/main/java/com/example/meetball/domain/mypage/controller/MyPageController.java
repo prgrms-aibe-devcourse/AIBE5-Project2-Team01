@@ -8,9 +8,12 @@ import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.projectread.dto.ReadProjectResponse;
 import com.example.meetball.domain.review.dto.UserReviewResponse;
 import com.example.meetball.domain.user.dto.UserProfileUpdateRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,62 +24,78 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    // TODO: 현재는 RequestParam으로 userId를 받지만 추후 @AuthenticationPrincipal 로 토큰/세션 기반 인증 유저를 가져와야 함.
-    
     @GetMapping("/profile")
     public ResponseEntity<MyPageProfileResponse> getMyProfile(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getMyProfile(userId, viewerId));
+            @RequestParam(required = false) Long userId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getMyProfile(targetUserId, sessionUserId));
     }
 
     @PutMapping("/profile")
     public ResponseEntity<Void> updateProfile(
-            @RequestParam Long userId,
-            @RequestBody UserProfileUpdateRequest request) {
-        myPageService.updateUserProfile(userId, request);
+            @RequestParam(required = false) Long userId,
+            @RequestBody UserProfileUpdateRequest request,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            HttpSession session) {
+        Long currentUserId = requireSessionUser(sessionUserId);
+        if (userId != null && !userId.equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update another user's profile.");
+        }
+        myPageService.updateUserProfile(currentUserId, request);
+        session.setAttribute("userNickname", request.getNickname());
+        session.removeAttribute("needsProfile");
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/bookmarks")
     public ResponseEntity<List<BookmarkedProjectResponse>> getMyBookmarks(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getMyBookmarks(userId, viewerId));
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long currentUserId = requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getMyBookmarks(currentUserId, currentUserId));
     }
 
     @GetMapping("/applications")
     public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getMyApplications(userId, viewerId));
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long currentUserId = requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getMyApplications(currentUserId, currentUserId));
     }
 
     @GetMapping("/projects")
     public ResponseEntity<List<ParticipatedProjectResponse>> getMyProjects(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getMyProjects(userId, viewerId));
+            @RequestParam(required = false) Long userId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getMyProjects(targetUserId, sessionUserId));
     }
 
     @GetMapping("/projects/completed")
     public ResponseEntity<List<ParticipatedProjectResponse>> getCompletedProjects(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getCompletedProjects(userId, viewerId));
+            @RequestParam(required = false) Long userId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getCompletedProjects(targetUserId, sessionUserId));
     }
 
     @GetMapping("/recent-reads")
     public ResponseEntity<List<ReadProjectResponse>> getRecentReads(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getRecentReads(userId, viewerId));
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long currentUserId = requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getRecentReads(currentUserId, currentUserId));
     }
 
     @GetMapping("/reviews")
     public ResponseEntity<List<UserReviewResponse>> getMyReviews(
-            @RequestParam Long userId,
-            @RequestParam(required = false) Long viewerId) {
-        return ResponseEntity.ok(myPageService.getMyReviews(userId, viewerId));
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        Long currentUserId = requireSessionUser(sessionUserId);
+        return ResponseEntity.ok(myPageService.getMyReviews(currentUserId, currentUserId));
+    }
+
+    private Long requireSessionUser(Long sessionUserId) {
+        if (sessionUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+        return sessionUserId;
     }
 }

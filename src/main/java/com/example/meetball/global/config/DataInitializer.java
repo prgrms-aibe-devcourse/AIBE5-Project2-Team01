@@ -219,6 +219,7 @@ public class DataInitializer implements CommandLineRunner {
             Comment c1 = commentRepository.save(Comment.builder()
                     .projectId(project1.getId())
                     .authorNickname("열정고양이")
+                    .authorUserId(guest.getId())
                     .authorRole("GUEST")
                     .content("프론트엔드 포지션 지원할 때 React Native 경험이 꼭 필수인가요?")
                     .build());
@@ -226,6 +227,7 @@ public class DataInitializer implements CommandLineRunner {
             commentRepository.save(Comment.builder()
                     .projectId(project1.getId())
                     .authorNickname("초코푸들")
+                    .authorUserId(leader.getId())
                     .authorRole("LEADER")
                     .content("필수는 아니지만, 관련 지식이 있으시면 훨씬 수월하게 적응하실 수 있습니다!")
                     .parent(c1)

@@ -8,6 +8,7 @@ import com.example.meetball.domain.project.dto.ProjectListResponseDto;
 import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectMember;
 import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.review.repository.ReviewRepository;
@@ -77,6 +78,7 @@ public class ProjectService {
                 project.getSummary(),
                 project.getDescription(),
                 project.getProjectType(),
+                project.getProgressMethod(),
                 project.getPosition(),
                 project.getLeaderName(),
                 project.getLeaderRole(),
@@ -197,6 +199,11 @@ public class ProjectService {
         project.setLeaderName(leaderNickname);
 
         Project savedProject = projectRepository.save(project);
+        projectMemberRepository.save(ProjectMember.builder()
+                .project(savedProject)
+                .user(user)
+                .role("LEADER")
+                .build());
 
         return new ProjectDetailResponseDto(
                 savedProject.getId(), savedProject.getTitle(), savedProject.getDescription(),
@@ -216,9 +223,8 @@ public class ProjectService {
         }
 
         User user = userService.getUserById(userId);
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
         }
 
@@ -256,13 +262,18 @@ public class ProjectService {
         }
 
         User user = userService.getUserById(userId);
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
 
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can delete the project.");
         }
 
         projectRepository.delete(project);
+    }
+
+    private boolean isProjectLeader(Project project, User user) {
+        return projectMemberRepository.findByProjectAndUser(project, user)
+                .map(projectMember -> "LEADER".equals(projectMember.getRole()))
+                .orElse(false);
     }
 
     public List<ParticipatedProjectResponse> getParticipatedProjects(User user) {

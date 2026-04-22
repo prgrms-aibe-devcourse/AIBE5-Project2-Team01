@@ -5,6 +5,8 @@ import com.example.meetball.domain.application.dto.ApplicationResponseDto;
 import com.example.meetball.domain.application.dto.ApplicationStatusUpdateRequestDto;
 import com.example.meetball.domain.application.entity.ApplicationStatus;
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectMember;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
@@ -33,6 +35,9 @@ public class ApplicationServiceTest {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
 
     @Autowired
     private com.example.meetball.domain.application.repository.ApplicationRepository applicationRepository;
@@ -78,6 +83,12 @@ public class ApplicationServiceTest {
                 LocalDate.now(),
                 "Java"
         ));
+
+        projectMemberRepository.save(ProjectMember.builder()
+                .project(testProject)
+                .user(leaderUser)
+                .role("LEADER")
+                .build());
     }
 
     @Test

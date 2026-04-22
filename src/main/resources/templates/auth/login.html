@@ -17,18 +17,28 @@
         </div>
 
         <div class="space-y-4">
-            <a th:href="@{/}" class="w-full flex items-center justify-center gap-4 py-4.5 bg-white border border-poodle-100 rounded-2xl font-black text-poodle-700 hover:bg-poodle-50 hover:border-poodle-200 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm">
-                <img src="https://www.google.com/favicon.ico" class="w-5 h-5 grayscale group-hover:grayscale-0 transition-all">
-                <span class="text-sm">Google로 계속하기</span>
-            </a>
-            <a th:href="@{/}" class="w-full flex items-center justify-center gap-4 py-4.5 bg-[#FEE500] rounded-2xl font-black text-[#3C1E1E] hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm shadow-[#FEE500]/20">
-                <i class="fa-solid fa-comment text-lg"></i>
-                <span class="text-sm">Kakao로 시작하기</span>
-            </a>
-            <a th:href="@{/}" class="w-full flex items-center justify-center gap-4 py-4.5 bg-[#03C75A] rounded-2xl font-black text-white hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm shadow-[#03C75A]/20">
-                <span class="font-black text-lg">N</span>
-                <span class="text-sm">Naver로 계속하기</span>
-            </a>
+            <div th:if="${googleLoginEnabled}" class="flex justify-center">
+                <div id="g_id_onload"
+                     th:attr="data-client_id=${googleClientId}"
+                     data-callback="handleGoogleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="outline"
+                     data-text="continue_with"
+                     data-size="medium"
+                     data-logo_alignment="left"
+                     data-width="320">
+                </div>
+            </div>
+            <button th:unless="${googleLoginEnabled}" type="button" disabled
+                    class="w-full flex items-center justify-center gap-4 py-4.5 bg-white border border-poodle-100 rounded-2xl font-black text-poodle-300 cursor-not-allowed shadow-sm">
+                <img src="https://www.google.com/favicon.ico" class="w-5 h-5 grayscale transition-all" alt="">
+                <span class="text-sm">Google 로그인을 설정 중입니다</span>
+            </button>
+            <p id="loginError" class="hidden text-center text-xs font-black text-red-400 bg-red-50 border border-red-100 rounded-2xl px-4 py-3"></p>
         </div>
 
         <div class="mt-12 pt-10 border-t border-poodle-50 text-center space-y-4">
@@ -39,6 +49,47 @@
             </div>
         </div>
     </div>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function getRedirectTarget() {
+            const redirect = new URLSearchParams(window.location.search).get('redirect');
+            if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+                return redirect;
+            }
+            return '/';
+        }
+
+        function showLoginError(message) {
+            const errorBox = document.getElementById('loginError');
+            errorBox.textContent = message;
+            errorBox.classList.remove('hidden');
+        }
+
+        async function handleGoogleCredentialResponse(response) {
+            if (!response || !response.credential) {
+                showLoginError('Google 인증 정보를 받을 수 없습니다.');
+                return;
+            }
+
+            try {
+                const result = await meetballFetch('/api/auth/google', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                if (!result.ok) {
+                    showLoginError('Google 로그인에 실패했습니다.');
+                    return;
+                }
+
+                window.location.href = getRedirectTarget();
+            } catch (error) {
+                showLoginError('네트워크 오류가 발생했습니다.');
+            }
+        }
+    </script>
 </body>
 
 </html>

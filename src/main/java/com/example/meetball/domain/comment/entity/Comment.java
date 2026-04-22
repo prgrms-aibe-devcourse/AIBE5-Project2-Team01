@@ -30,6 +30,9 @@ public class Comment {
     @Column(nullable = false)
     private String authorNickname;
 
+    @Column(name = "author_user_id")
+    private Long authorUserId;
+
     @Column(nullable = false, length = 1000)
     private String content;
 
@@ -51,9 +54,10 @@ public class Comment {
     private List<Comment> children = new ArrayList<>();
 
     @Builder
-    public Comment(Long projectId, String authorNickname, String content, Comment parent, String authorRole) {
+    public Comment(Long projectId, String authorNickname, Long authorUserId, String content, Comment parent, String authorRole) {
         this.projectId = projectId;
         this.authorNickname = authorNickname;
+        this.authorUserId = authorUserId;
         this.content = content;
         this.parent = parent;
         this.authorRole = authorRole;

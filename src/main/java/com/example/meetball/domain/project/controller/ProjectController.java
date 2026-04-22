@@ -56,11 +56,12 @@ public class ProjectController {
 
     @GetMapping("/projects/{id}")
     public String detail(@PathVariable("id") Long id,
-                         @RequestParam(name = "userId", required = false) Long userId,
+                         @SessionAttribute(name = "userId", required = false) Long userId,
                          Model model) {
         try {
             // 1. DTO 추가
             model.addAttribute("project", projectService.getProjectDetail(id));
+            model.addAttribute("currentProjectPath", "/projects/" + id);
             
             // 2. 권한(Role) 확인 로직
             com.example.meetball.domain.project.entity.Project projectEntity = 
@@ -68,7 +69,6 @@ public class ProjectController {
             
             com.example.meetball.domain.user.entity.User currentUser = null;
             if (userId != null) {
-                // 임시로 DB에서 유저를 조회 (실제 로그인 기능 제외에 따른 Mocking)
                 currentUser = userService.getUserById(userId);
             }
             
@@ -85,13 +85,32 @@ public class ProjectController {
     }
 
     @GetMapping("/register")
-    public String register() {
+    public String register(@SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login?redirect=/register";
+        }
         return "project/register";
     }
 
     @GetMapping("/projects/{id}/manage")
-    public String manage(@PathVariable("id") Long id, Model model) {
+    public String manage(@PathVariable("id") Long id,
+                         @SessionAttribute(name = "userId", required = false) Long userId,
+                         Model model) {
+        if (userId == null) {
+            return "redirect:/login?redirect=/projects/" + id + "/manage";
+        }
+
+        com.example.meetball.domain.project.entity.Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + id));
+        com.example.meetball.domain.user.entity.User currentUser = userService.getUserById(userId);
+        com.example.meetball.global.auth.enums.ProjectDetailRole role =
+                authorizationService.getProjectDetailRole(currentUser, project);
+        if (role != com.example.meetball.global.auth.enums.ProjectDetailRole.LEADER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can manage the project.");
+        }
+
         model.addAttribute("projectId", id);
+        model.addAttribute("project", projectService.getProjectById(id));
         return "project/manage";
     }
 

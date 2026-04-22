@@ -7,6 +7,8 @@ import com.example.meetball.domain.application.entity.Application;
 import com.example.meetball.domain.application.entity.ApplicationStatus;
 import com.example.meetball.domain.application.repository.ApplicationRepository;
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectMember;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.repository.UserRepository;
@@ -29,6 +31,7 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -96,10 +99,8 @@ public class ApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
 
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
-
         // 5. 지원 목록 조회는 권한 없는 사용자가 못 보게 막음
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can view the applications.");
         }
 
@@ -127,10 +128,8 @@ public class ApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
 
-        boolean isLeader = user.getNickname().equals(project.getLeaderName());
-
         // 6. 지원 상태 변경은 리더만 가능하도록 점검
-        if (!isLeader) {
+        if (!isProjectLeader(project, user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update application status.");
         }
 
@@ -142,8 +141,24 @@ public class ApplicationService {
         }
 
         application.updateStatus(nextStatus, LocalDateTime.now());
+        if ((nextStatus == ApplicationStatus.ACCEPTED || nextStatus == ApplicationStatus.APPROVED)
+                && application.getUser() != null
+                && !projectMemberRepository.existsByProjectAndUser(project, application.getUser())) {
+            projectMemberRepository.save(ProjectMember.builder()
+                    .project(project)
+                    .user(application.getUser())
+                    .role("MEMBER")
+                    .build());
+        }
+
         Application updatedApplication = applicationRepository.save(application);
 
         return new ApplicationResponseDto(updatedApplication);
+    }
+
+    private boolean isProjectLeader(Project project, User user) {
+        return projectMemberRepository.findByProjectAndUser(project, user)
+                .map(projectMember -> "LEADER".equals(projectMember.getRole()))
+                .orElse(false);
     }
 }

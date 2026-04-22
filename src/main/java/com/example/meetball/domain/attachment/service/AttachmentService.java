@@ -5,11 +5,15 @@ import com.example.meetball.domain.attachment.entity.Attachment;
 import com.example.meetball.domain.attachment.repository.AttachmentRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,7 +29,9 @@ import java.util.stream.Collectors;
 public class AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
-    private final String uploadDir = "uploads/";
+
+    @Value("${app.upload-dir:uploads/}")
+    private String uploadDir;
 
     @PostConstruct
     public void init() {
@@ -40,8 +46,16 @@ public class AttachmentService {
     public AttachmentResponseDto uploadFile(Long projectId, MultipartFile file) {
         try {
             String originalFilename = file.getOriginalFilename();
-            String storedFileName = UUID.randomUUID().toString() + "_" + originalFilename;
-            Path filePath = Paths.get(uploadDir + storedFileName);
+            String safeOriginalFilename = StringUtils.cleanPath(originalFilename == null ? "attachment" : originalFilename);
+            if (safeOriginalFilename.contains("..")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file name.");
+            }
+            String storedFileName = UUID.randomUUID() + "_" + safeOriginalFilename;
+            Path uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Path filePath = uploadRoot.resolve(storedFileName).normalize();
+            if (!filePath.startsWith(uploadRoot)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file path.");
+            }
             
             // 물리적 파일 저장
             Files.copy(file.getInputStream(), filePath);
@@ -49,7 +63,7 @@ public class AttachmentService {
             // 메타데이터 DB 저장
             Attachment attachment = Attachment.builder()
                     .projectId(projectId)
-                    .originalFileName(originalFilename)
+                    .originalFileName(safeOriginalFilename)
                     .storedFilePath(storedFileName) 
                     .type("FILE")
                     .fileSize(file.getSize())
@@ -57,7 +71,8 @@ public class AttachmentService {
 
             Attachment savedAttachment = attachmentRepository.save(attachment);
             return new AttachmentResponseDto(savedAttachment);
-
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
@@ -71,12 +86,11 @@ public class AttachmentService {
     }
 
     @Transactional(readOnly = true)
-    public Resource loadFileAsResource(Long attachmentId) {
+    public Resource loadFileAsResource(Long projectId, Long attachmentId) {
         try {
-            Attachment attachment = attachmentRepository.findById(attachmentId)
-                    .orElseThrow(() -> new IllegalArgumentException("File not found with id: " + attachmentId));
-            
-            Path filePath = Paths.get(uploadDir).resolve(attachment.getStoredFilePath()).normalize();
+            Attachment attachment = findAttachmentInProject(projectId, attachmentId);
+
+            Path filePath = resolveStoredFilePath(attachment.getStoredFilePath());
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
@@ -90,10 +104,8 @@ public class AttachmentService {
     }
 
     @Transactional(readOnly = true)
-    public String getOriginalFileName(Long attachmentId) {
-        return attachmentRepository.findById(attachmentId)
-                .orElseThrow(() -> new IllegalArgumentException("File not found"))
-                .getOriginalFileName();
+    public String getOriginalFileName(Long projectId, Long attachmentId) {
+        return findAttachmentInProject(projectId, attachmentId).getOriginalFileName();
     }
 
     @Transactional
@@ -107,5 +119,23 @@ public class AttachmentService {
         
         Attachment saved = attachmentRepository.save(attachment);
         return new AttachmentResponseDto(saved);
+    }
+
+    private Attachment findAttachmentInProject(Long projectId, Long attachmentId) {
+        Attachment attachment = attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found with id: " + attachmentId));
+        if (!attachment.getProjectId().equals(projectId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found in this project.");
+        }
+        return attachment;
+    }
+
+    private Path resolveStoredFilePath(String storedFilePath) {
+        Path uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path filePath = uploadRoot.resolve(storedFilePath).normalize();
+        if (!filePath.startsWith(uploadRoot)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file path.");
+        }
+        return filePath;
     }
 }

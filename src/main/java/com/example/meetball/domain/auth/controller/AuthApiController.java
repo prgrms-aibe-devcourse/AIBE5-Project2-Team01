@@ -9,8 +9,14 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,7 +28,7 @@ public class AuthApiController {
     @PostMapping("/google")
     public ResponseEntity<AuthResponseDto> loginWithGoogle(@RequestBody AuthRequestDto requestDto, HttpServletRequest request) {
         if (requestDto.getCredential() == null || requestDto.getCredential().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Google ID Token is missing.");
+            return ResponseEntity.badRequest().build();
         }
 
         try {
@@ -32,12 +38,35 @@ public class AuthApiController {
             // Initialize Http Session
             HttpSession session = request.getSession(true);
             session.setAttribute("userId", user.getId());
+            session.setAttribute("userNickname", user.getNickname());
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user.getEmail(),
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+            );
+            securityContext.setAuthentication(authentication);
+            SecurityContextHolder.setContext(securityContext);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+            String nickname = user.getNickname();
+            boolean needsProfile = user.getJobTitle() == null
+                    || "-".equals(user.getJobTitle())
+                    || nickname == null
+                    || nickname.isBlank()
+                    || nickname.startsWith("User_");
+
+            if (needsProfile) {
+                session.setAttribute("needsProfile", true);
+            } else {
+                session.removeAttribute("needsProfile");
+            }
 
             return ResponseEntity.ok(new AuthResponseDto(user));
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google token: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing login");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -45,7 +74,7 @@ public class AuthApiController {
     public ResponseEntity<AuthResponseDto> getCurrentUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Long userId = (Long) session.getAttribute("userId");
@@ -60,6 +89,7 @@ public class AuthApiController {
         if (session != null) {
             session.invalidate();
         }
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }
 }
