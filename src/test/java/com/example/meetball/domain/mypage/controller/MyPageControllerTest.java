@@ -135,9 +135,10 @@ class MyPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "name": "열정고양이",
                                   "phoneNumber": "010-9876-5432",
                                   "birthDate": "1998-07-15",
-                                  "gender": "여성",
+                                  "gender": "여자",
                                   "jobTitle": "디자이너",
                                   "experienceYears": "1~3년",
                                   "organization": "Meetball Studio",
@@ -149,9 +150,10 @@ class MyPageControllerTest {
                 .andExpect(request().sessionAttributeDoesNotExist("needsProfile"));
 
         Profile profile = profileService.getProfileById(3L);
+        assertThat(profile.getAccount().getName()).isEqualTo("열정고양이");
         assertThat(profile.getPhoneNumber()).isEqualTo("010-9876-5432");
         assertThat(profile.getBirthDate()).hasToString("1998-07-15");
-        assertThat(profile.getGender()).isEqualTo("여성");
+        assertThat(profile.getGender()).isEqualTo("여자");
         assertThat(profile.getJobTitle()).isEqualTo("디자이너");
         assertThat(profile.getExperienceYears()).isEqualTo("1~3년");
         assertThat(profile.getOrganization()).isEqualTo("Meetball Studio");

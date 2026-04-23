@@ -75,7 +75,8 @@ public class ProfileService {
     public Profile completeOnboarding(Long profileId, ProfileOnboardingRequest request) {
         Profile profile = getProfileById(profileId);
 
-        String normalizedPhoneNumber = requireText(request.getPhoneNumber(), "전화번호를 입력해주세요.", 30);
+        String normalizedName = requireText(request.getName(), "이름을 입력해주세요.", 30);
+        String normalizedPhoneNumber = normalizePhoneNumber(request.getPhoneNumber());
         if (request.getBirthDate() == null) {
             throw new IllegalArgumentException("생년월일을 입력해주세요.");
         }
@@ -100,6 +101,7 @@ public class ProfileService {
                 .toList();
 
         profile.completeOnboarding(
+                normalizedName,
                 normalizedPhoneNumber,
                 request.getBirthDate(),
                 normalizedGender,
@@ -180,10 +182,32 @@ public class ProfileService {
 
     private String normalizeGender(String gender) {
         String normalizedGender = requireText(gender, "성별을 선택해주세요.", 10);
-        Set<String> allowed = Set.of("남성", "여성", "기타", "선택 안 함");
-        if (!allowed.contains(normalizedGender)) {
-            throw new IllegalArgumentException("지원하지 않는 성별 값입니다.");
+        return switch (normalizedGender) {
+            case "남", "남성", "남자", "male", "Male", "M", "m" -> "남자";
+            case "여", "여성", "여자", "female", "Female", "F", "f" -> "여자";
+            default -> throw new IllegalArgumentException("지원하지 않는 성별 값입니다.");
+        };
+    }
+
+    private String normalizePhoneNumber(String phoneNumber) {
+        String digits = requireText(phoneNumber, "전화번호를 입력해주세요.", 30).replaceAll("\\D", "");
+        if (digits.length() < 9 || digits.length() > 11) {
+            throw new IllegalArgumentException("전화번호 형식이 올바르지 않습니다.");
         }
-        return normalizedGender;
+        if (digits.startsWith("02")) {
+            if (digits.length() == 9) {
+                return digits.replaceFirst("(02)(\\d{3})(\\d{4})", "$1-$2-$3");
+            }
+            if (digits.length() == 10) {
+                return digits.replaceFirst("(02)(\\d{4})(\\d{4})", "$1-$2-$3");
+            }
+        }
+        if (digits.length() == 10) {
+            return digits.replaceFirst("(\\d{3})(\\d{3})(\\d{4})", "$1-$2-$3");
+        }
+        if (digits.length() == 11) {
+            return digits.replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
+        }
+        return digits;
     }
 }

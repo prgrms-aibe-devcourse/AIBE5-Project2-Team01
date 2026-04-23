@@ -176,6 +176,14 @@ public class Profile {
         return account != null ? account.getPhoneNumber() : "";
     }
 
+    public String getAccountName() {
+        if (account == null) {
+            return nickname;
+        }
+        String accountName = account.getName();
+        return accountName != null && !accountName.isBlank() ? accountName : nickname;
+    }
+
     public LocalDate getBirthDate() {
         return account != null ? account.getBirthDate() : null;
     }
@@ -227,6 +235,8 @@ public class Profile {
                 && nickname != null
                 && !nickname.isBlank()
                 && account != null
+                && account.getName() != null
+                && !account.getName().isBlank()
                 && account.getPhoneNumber() != null
                 && !account.getPhoneNumber().isBlank()
                 && account.getBirthDate() != null
@@ -249,6 +259,7 @@ public class Profile {
     }
 
     public void completeOnboarding(
+            String name,
             String phoneNumber,
             LocalDate birthDate,
             String gender,
@@ -259,7 +270,7 @@ public class Profile {
             List<TechStack> techStacks
     ) {
         if (account != null) {
-            account.updateBasicInfo(phoneNumber, birthDate, gender);
+            account.updateBasicInfo(name, phoneNumber, birthDate, gender);
         }
         this.organization = sanitizeText(organization, 100);
         this.orgVisible = orgVisible;

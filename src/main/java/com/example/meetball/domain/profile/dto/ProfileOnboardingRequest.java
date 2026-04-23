@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProfileOnboardingRequest {
 
+    private String name;
     private String phoneNumber;
     private LocalDate birthDate;
     private String gender;

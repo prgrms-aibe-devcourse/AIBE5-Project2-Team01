@@ -75,13 +75,14 @@ public class Account {
         this.email = email;
         this.socialProvider = PROVIDER_GOOGLE;
         this.socialIdentifier = socialIdentifier;
-        if (name != null && !name.isBlank()) {
+        if ((this.name == null || this.name.isBlank()) && name != null && !name.isBlank()) {
             this.name = name;
         }
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateBasicInfo(String phoneNumber, LocalDate birthDate, String gender) {
+    public void updateBasicInfo(String name, String phoneNumber, LocalDate birthDate, String gender) {
+        this.name = sanitize(name, 30);
         this.phoneNumber = sanitize(phoneNumber, 30);
         this.birthDate = birthDate;
         this.gender = sanitize(gender, 10);
