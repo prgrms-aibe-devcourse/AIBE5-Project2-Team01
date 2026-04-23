@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public final class ProjectSelectionCatalog {
 
-    private static final List<String> POSITION_OPTIONS = List.of(
+    private static final List<String> DEFAULT_POSITION_OPTIONS = List.of(
             "프론트엔드",
             "백엔드",
             "풀스택",
@@ -32,7 +32,7 @@ public final class ProjectSelectionCatalog {
             "기타"
     );
 
-    private static final Map<String, String> POSITION_ALIASES = Map.ofEntries(
+    private static final Map<String, String> DEFAULT_POSITION_ALIASES = Map.ofEntries(
             Map.entry(key("프론트엔드 개발"), "프론트엔드"),
             Map.entry(key("프론트엔드 개발자"), "프론트엔드"),
             Map.entry(key("프론트엔드 리더"), "프론트엔드"),
@@ -53,7 +53,7 @@ public final class ProjectSelectionCatalog {
             Map.entry(key("AI/데이터 엔지니어"), "데이터/AI")
     );
 
-    private static final List<String> TECH_STACK_OPTIONS = List.of(
+    private static final List<String> DEFAULT_TECH_STACK_OPTIONS = List.of(
             "JavaScript",
             "TypeScript",
             "React",
@@ -88,7 +88,7 @@ public final class ProjectSelectionCatalog {
             "Svelte"
     );
 
-    private static final Map<String, String> TECH_STACK_ALIASES = Map.ofEntries(
+    private static final Map<String, String> DEFAULT_TECH_STACK_ALIASES = Map.ofEntries(
             Map.entry(key("JS"), "JavaScript"),
             Map.entry(key("TS"), "TypeScript"),
             Map.entry(key("Node"), "Nodejs"),
@@ -104,26 +104,50 @@ public final class ProjectSelectionCatalog {
             Map.entry(key("PHP"), "php")
     );
 
-    private static final String DEFAULT_TECH_STACK = "JavaScript";
+    private static volatile List<String> positionOptions = DEFAULT_POSITION_OPTIONS;
+    private static volatile Map<String, String> positionAliases = DEFAULT_POSITION_ALIASES;
+    private static volatile List<String> techStackOptions = DEFAULT_TECH_STACK_OPTIONS;
+    private static volatile Map<String, String> techStackAliases = DEFAULT_TECH_STACK_ALIASES;
 
     private ProjectSelectionCatalog() {
     }
 
+    public static void configure(List<String> positions, Map<String, String> positionAliasMap,
+                                 List<String> techStacks, Map<String, String> techStackAliasMap) {
+        List<String> nextPositions = normalizeOptions(positions);
+        List<String> nextTechStacks = normalizeOptions(techStacks);
+        if (!nextPositions.isEmpty()) {
+            positionOptions = nextPositions;
+        }
+        if (!nextTechStacks.isEmpty()) {
+            techStackOptions = nextTechStacks;
+        }
+        positionAliases = normalizeAliasMap(positionAliasMap);
+        techStackAliases = normalizeAliasMap(techStackAliasMap);
+    }
+
+    public static void resetDefaults() {
+        positionOptions = DEFAULT_POSITION_OPTIONS;
+        positionAliases = DEFAULT_POSITION_ALIASES;
+        techStackOptions = DEFAULT_TECH_STACK_OPTIONS;
+        techStackAliases = DEFAULT_TECH_STACK_ALIASES;
+    }
+
     public static List<String> positionOptions() {
-        return POSITION_OPTIONS;
+        return positionOptions;
     }
 
     public static List<String> techStackOptions() {
-        return TECH_STACK_OPTIONS;
+        return techStackOptions;
     }
 
     public static String searchKey(String value) {
         return key(value);
     }
 
-    public static String normalizePositionCsv(String value) {
+    public static String normalizePositionText(String value) {
         LinkedHashMap<String, Integer> capacities = new LinkedHashMap<>();
-        for (String token : splitCsv(value)) {
+        for (String token : splitCommaSeparated(value)) {
             ParsedPosition parsed = parsePositionToken(token, true);
             capacities.merge(parsed.name(), parsed.capacity(), Integer::sum);
         }
@@ -135,59 +159,30 @@ public final class ProjectSelectionCatalog {
                 .collect(Collectors.joining(", "));
     }
 
-    public static String normalizePositionCsvOrDefault(String value, Integer fallbackTotal) {
-        LinkedHashMap<String, Integer> capacities = new LinkedHashMap<>();
-        for (String token : splitCsv(value)) {
-            String rawName = stripCapacity(token);
-            String canonicalName = canonicalPositionNameOrNull(rawName);
-            int capacity;
-            try {
-                capacity = parseCapacity(token).orElse(1);
-            } catch (IllegalArgumentException exception) {
-                capacity = 1;
-            }
-            capacities.merge(canonicalName != null ? canonicalName : "기타", Math.max(1, capacity), Integer::sum);
-        }
-        if (capacities.isEmpty()) {
-            capacities.put("기타", Math.max(1, fallbackTotal == null ? 1 : fallbackTotal));
-        }
-        return capacities.entrySet().stream()
-                .map(entry -> entry.getKey() + ":" + entry.getValue())
-                .collect(Collectors.joining(", "));
+    public static String normalizeTechStackText(String value) {
+        return String.join(", ", normalizeTechStackNames(splitCommaSeparated(value)));
     }
 
-    public static String normalizeTechStackCsv(String value) {
-        List<String> techStacks = splitCsv(value).stream()
+    public static List<String> normalizeTechStackNames(List<String> values) {
+        List<String> techStacks = (values == null ? List.<String>of() : values).stream()
                 .map(ProjectSelectionCatalog::canonicalTechStackName)
                 .distinct()
                 .toList();
         if (techStacks.isEmpty()) {
             throw new IllegalArgumentException("기술 스택을 1개 이상 선택해주세요.");
         }
-        return String.join(", ", techStacks);
-    }
-
-    public static String normalizeTechStackCsvOrDefault(String value) {
-        List<String> techStacks = splitCsv(value).stream()
-                .map(ProjectSelectionCatalog::canonicalTechStackNameOrNull)
-                .filter(option -> option != null && !option.isBlank())
-                .distinct()
-                .toList();
-        if (techStacks.isEmpty()) {
-            return DEFAULT_TECH_STACK;
-        }
-        return String.join(", ", techStacks);
+        return techStacks;
     }
 
     public static List<String> normalizeTechStackFilters(String value) {
-        return splitCsv(value).stream()
+        return splitCommaSeparated(value).stream()
                 .map(ProjectSelectionCatalog::canonicalTechStackName)
                 .distinct()
                 .toList();
     }
 
     public static List<PositionCapacity> parsePositionCapacities(String value, Integer fallbackTotal) {
-        List<String> tokens = splitCsv(value);
+        List<String> tokens = splitCommaSeparated(value);
         if (tokens.isEmpty()) {
             return List.of();
         }
@@ -224,7 +219,7 @@ public final class ProjectSelectionCatalog {
         }
     }
 
-    private static List<String> splitCsv(String value) {
+    private static List<String> splitCommaSeparated(String value) {
         if (value == null || value.isBlank()) {
             return List.of();
         }
@@ -270,7 +265,7 @@ public final class ProjectSelectionCatalog {
 
     private static String canonicalPositionName(String value) {
         String canonical = canonicalPositionNameOrOriginal(value);
-        if (!POSITION_OPTIONS.contains(canonical)) {
+        if (!positionOptions.contains(canonical)) {
             throw new IllegalArgumentException("허용되지 않은 모집 포지션입니다: " + value);
         }
         return canonical;
@@ -293,10 +288,10 @@ public final class ProjectSelectionCatalog {
         if (trimmed.isEmpty()) {
             return null;
         }
-        return POSITION_OPTIONS.stream()
+        return positionOptions.stream()
                 .filter(position -> key(position).equals(key(trimmed)))
                 .findFirst()
-                .orElse(POSITION_ALIASES.get(key(trimmed)));
+                .orElse(positionAliases.get(key(trimmed)));
     }
 
     private static String canonicalTechStackName(String value) {
@@ -309,15 +304,40 @@ public final class ProjectSelectionCatalog {
 
     private static String canonicalTechStackNameOrNull(String value) {
         String trimmed = value == null ? "" : value.trim();
-        String option = TECH_STACK_OPTIONS.stream()
+        String option = techStackOptions.stream()
                 .filter(tech -> key(tech).equals(key(trimmed)))
                 .findFirst()
-                .orElse(TECH_STACK_ALIASES.get(key(trimmed)));
+                .orElse(techStackAliases.get(key(trimmed)));
         return option;
     }
 
     private static String key(String value) {
         return value == null ? "" : value.replaceAll("\\s+", "").toLowerCase(Locale.ROOT);
+    }
+
+    private static List<String> normalizeOptions(List<String> values) {
+        if (values == null) {
+            return List.of();
+        }
+        return values.stream()
+                .map(value -> value == null ? "" : value.trim())
+                .filter(value -> !value.isEmpty())
+                .distinct()
+                .toList();
+    }
+
+    private static Map<String, String> normalizeAliasMap(Map<String, String> aliases) {
+        if (aliases == null || aliases.isEmpty()) {
+            return Map.of();
+        }
+        return aliases.entrySet().stream()
+                .filter(entry -> entry.getKey() != null && entry.getValue() != null)
+                .filter(entry -> !entry.getKey().isBlank() && !entry.getValue().isBlank())
+                .collect(Collectors.toUnmodifiableMap(
+                        entry -> key(entry.getKey()),
+                        entry -> entry.getValue().trim(),
+                        (left, right) -> left
+                ));
     }
 
     private record ParsedPosition(String name, int capacity) {

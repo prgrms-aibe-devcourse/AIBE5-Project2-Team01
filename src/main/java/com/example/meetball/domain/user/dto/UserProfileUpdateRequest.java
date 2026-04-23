@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +15,11 @@ import lombok.Setter;
 public class UserProfileUpdateRequest {
     private String nickname;
     private String jobTitle;
-    private String techStack;
+    private List<String> techStacks = List.of();
     @JsonProperty("isPublic")
     private boolean isPublic;
+
+    public List<String> getTechStacks() {
+        return techStacks == null ? List.of() : techStacks;
+    }
 }

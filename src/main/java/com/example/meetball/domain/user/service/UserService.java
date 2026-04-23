@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.Collections;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -46,14 +45,13 @@ public class UserService {
         }
 
         String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getJobTitle());
-        String normalizedTechStack = ProjectSelectionCatalog.normalizeTechStackCsv(request.getTechStack());
+        List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());
         user.updateProfile(
                 request.getNickname(),
                 normalizedPosition,
-                normalizedTechStack,
+                normalizedTechStacks,
                 request.isPublic()
         );
-        user.replaceTechStacks(splitTechStacks(normalizedTechStack));
     }
 
     @Value("${google.client.id:}")
@@ -82,7 +80,7 @@ public class UserService {
                         .nickname(name != null ? name : "User_" + System.currentTimeMillis())
                         .role("MEMBER")
                         .jobTitle("")
-                        .techStack("")
+                        .techStacks(List.of())
                         .isPublic(true)
                         .build();
                 return new GoogleLoginResult(userRepository.save(newUser), true);
@@ -95,15 +93,5 @@ public class UserService {
     }
 
     public record GoogleLoginResult(User user, boolean newlyCreated) {
-    }
-
-    private List<String> splitTechStacks(String techStackCsv) {
-        if (techStackCsv == null || techStackCsv.isBlank()) {
-            return List.of();
-        }
-        return Arrays.stream(techStackCsv.split(","))
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .toList();
     }
 }

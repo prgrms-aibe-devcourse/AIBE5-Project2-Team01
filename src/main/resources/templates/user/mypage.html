@@ -545,11 +545,11 @@
         }
     }
 
-    async function updateProfile() {
+	    async function updateProfile() {
         const userId = document.getElementById('profileUserId').value;
 	        const nickname = document.getElementById('editNickname').value;
 	        const jobTitle = editSelectedPosition;
-	        const techStack = Array.from(editSelectedTechStacks).join(', ');
+	        const techStacks = Array.from(editSelectedTechStacks);
 
 	        if (!userId) {
 	            await meetballAlert('로그인 정보가 없습니다.', { type: 'error' });
@@ -559,7 +559,7 @@
 	            await meetballAlert('포지션을 선택해주세요.');
 	            return;
 	        }
-	        if (!techStack) {
+	        if (techStacks.length === 0) {
 	            await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
 	            return;
 	        }
@@ -573,7 +573,7 @@
                 body: JSON.stringify({
                     nickname: nickname,
                     jobTitle: jobTitle,
-                    techStack: techStack,
+                    techStacks: techStacks,
                     isPublic: true
                 })
             });

@@ -38,7 +38,7 @@ class ProjectServiceTest {
         User user = User.builder().nickname("테스트유저").build();
         Project project = new Project(
                 "D-Day 0 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now(), LocalDate.now().minusDays(1), "Java"
+                0, 5, LocalDate.now(), LocalDate.now().minusDays(1), List.of("Java")
         );
         
         com.example.meetball.domain.project.entity.ProjectMember pm = 
@@ -59,7 +59,7 @@ class ProjectServiceTest {
         User user = User.builder().nickname("테스트유저").build();
         Project recruitmentClosedProject = new Project(
                 "모집 마감 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), "Java"
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), List.of("Java")
         );
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
@@ -77,7 +77,7 @@ class ProjectServiceTest {
         );
         Project completedProject = new Project(
                 "완료 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), "Java"
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), List.of("Java")
         );
         completedProject.update(
                 completedProject.getTitle(),
@@ -120,7 +120,7 @@ class ProjectServiceTest {
         User user = User.builder().nickname("테스트유저").build();
         Project project = new Project(
                 "D-Day 1 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().plusDays(1), LocalDate.now().minusDays(1), "Java"
+                0, 5, LocalDate.now().plusDays(1), LocalDate.now().minusDays(1), List.of("Java")
         );
         
         com.example.meetball.domain.project.entity.ProjectMember pm = 

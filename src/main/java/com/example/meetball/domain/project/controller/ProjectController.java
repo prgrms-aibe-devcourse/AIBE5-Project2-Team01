@@ -45,7 +45,6 @@ public class ProjectController {
         this.authorizationService = authorizationService;
     }
 
-    // --- MVC (front2) ---
     @GetMapping("/projects")
     public String projects(Model model) {
         List<ProjectSummaryView> projects = projectService.getProjectSummaries();

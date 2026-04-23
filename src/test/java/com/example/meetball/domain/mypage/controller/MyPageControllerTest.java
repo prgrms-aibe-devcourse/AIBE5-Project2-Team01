@@ -90,7 +90,7 @@ class MyPageControllerTest {
                                 {
                                   "nickname": "초코푸들",
                                   "jobTitle": "백엔드",
-                                  "techStack": "Java, Spring",
+                                  "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
                                 """))
@@ -103,7 +103,7 @@ class MyPageControllerTest {
                                 {
                                   "nickname": "초코푸들",
                                   "jobTitle": "백엔드",
-                                  "techStack": "Java, Spring",
+                                  "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
                                 """))

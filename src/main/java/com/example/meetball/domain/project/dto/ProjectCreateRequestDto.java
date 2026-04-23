@@ -1,6 +1,7 @@
 package com.example.meetball.domain.project.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class ProjectCreateRequestDto {
 
@@ -9,7 +10,7 @@ public class ProjectCreateRequestDto {
     private String projectType;
     private String progressMethod;
     private String position;
-    private String techStackCsv;
+    private List<String> techStacks = List.of();
     private String thumbnailUrl;
     private Integer recruitmentCount;
     private LocalDate recruitmentStartAt;
@@ -42,7 +43,7 @@ public class ProjectCreateRequestDto {
     public String getProjectType() { return projectType; }
     public String getProgressMethod() { return progressMethod; }
     public String getPosition() { return position; }
-    public String getTechStackCsv() { return techStackCsv; }
+    public List<String> getTechStacks() { return techStacks == null ? List.of() : techStacks; }
     public String getThumbnailUrl() { return thumbnailUrl; }
     public Integer getRecruitmentCount() { return recruitmentCount; }
     public LocalDate getRecruitmentStartAt() { return recruitmentStartAt; }

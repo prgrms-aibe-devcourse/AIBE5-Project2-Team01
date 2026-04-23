@@ -29,7 +29,6 @@ public class ProjectDetailResponseDto {
     private Boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String techStackCsv;
     private List<String> techStacks;
     private int readCount;
 
@@ -39,7 +38,7 @@ public class ProjectDetailResponseDto {
                                     Boolean closed, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this(id, title, null, description, projectType, progressMethod, null, null, null, null, null, null,
                 null, null, recruitmentCount, recruitmentStartAt, recruitmentEndAt, projectStartAt,
-                projectEndAt, closed, false, createdAt, updatedAt, null, List.of(), 0);
+                projectEndAt, closed, false, createdAt, updatedAt, List.of(), 0);
     }
 
     public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectType,
@@ -48,11 +47,11 @@ public class ProjectDetailResponseDto {
                                     Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
                                     LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
                                     Boolean closed, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                    String techStackCsv, List<String> techStacks) {
+                                    List<String> techStacks) {
         this(id, title, summary, description, projectType, progressMethod, position, leaderUserId, leaderName,
                 leaderRole, leaderAvatarUrl, thumbnailUrl, currentRecruitment, totalRecruitment, recruitmentCount,
                 recruitmentStartAt, recruitmentEndAt, projectStartAt, projectEndAt, closed, completed, createdAt,
-                updatedAt, techStackCsv, techStacks, 0);
+                updatedAt, techStacks, 0);
     }
 
     public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectType,
@@ -61,7 +60,7 @@ public class ProjectDetailResponseDto {
                                     Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
                                     LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
                                     Boolean closed, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                    String techStackCsv, List<String> techStacks, int readCount) {
+                                    List<String> techStacks, int readCount) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -85,7 +84,6 @@ public class ProjectDetailResponseDto {
         this.completed = completed;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.techStackCsv = techStackCsv;
         this.techStacks = techStacks == null ? List.of() : techStacks;
         this.readCount = readCount;
     }
@@ -112,7 +110,6 @@ public class ProjectDetailResponseDto {
     public Boolean getCompleted() { return completed; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public String getTechStackCsv() { return techStackCsv; }
 
     public String getThumbnailUrl() {
         return thumbnailUrl;

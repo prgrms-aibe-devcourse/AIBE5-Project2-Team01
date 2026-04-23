@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * 규칙 기반 AI 추천 서비스
  *
  * 점수 산정 기준:
- *   - 기술스택 일치 1개당 20점 (techStack vs techStackCsv)
- *   - 직무/포지션 유사 시 +30점 (jobTitle vs position, 부분 문자열 포함 비교)
+ *   - 기술스택 일치 1개당 20점 (user_tech_stack vs project_tech_stack)
+ *   - 직무/포지션 유사 시 +30점 (jobTitle vs project_position, 부분 문자열 포함 비교)
  *
  * 추천 대상: 모집 마감(closed)과 프로젝트 완료(completed)가 아닌 프로젝트만 포함
  * 정렬: 점수 내림차순 → 점수가 동일하면 projectId 오름차순
@@ -107,7 +107,7 @@ public class RecommendationService {
         if (techStackRaw == null || techStackRaw.isBlank()) {
             return Set.of();
         }
-        String normalized = ProjectSelectionCatalog.normalizeTechStackCsvOrDefault(techStackRaw);
+        String normalized = ProjectSelectionCatalog.normalizeTechStackText(techStackRaw);
         return java.util.Arrays.stream(normalized.split(","))
                 .map(String::trim)
                 .map(ProjectSelectionCatalog::searchKey)
@@ -127,10 +127,9 @@ public class RecommendationService {
     }
 
     /**
-     * 사용자의 기술스택 집합과 프로젝트의 techStackCsv 를 비교하여 일치하는 항목 수를 반환합니다.
+     * 사용자의 기술스택 집합과 프로젝트 기술스택 선택 목록을 비교하여 일치하는 항목 수를 반환합니다.
      *
      * @param userTechSet  사용자 기술 항목 집합 (소문자)
-     * @param projectTechCsv 프로젝트 기술 CSV 문자열
      * @return 일치하는 기술 항목 수
      */
     private int countTechStackMatches(Set<String> userTechSet, Project project) {
@@ -143,7 +142,7 @@ public class RecommendationService {
                 .map(ProjectSelectionCatalog::searchKey)
                 .filter(value -> !value.isEmpty())
                 .collect(Collectors.toSet())
-                : parseTechStack(project.getTechStackCsv());
+                : Set.of();
         if (projectTechSet.isEmpty()) {
             return 0;
         }

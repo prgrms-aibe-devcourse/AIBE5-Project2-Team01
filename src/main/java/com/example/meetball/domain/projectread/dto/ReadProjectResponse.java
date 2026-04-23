@@ -3,7 +3,6 @@ package com.example.meetball.domain.projectread.dto;
 import com.example.meetball.domain.projectread.entity.ProjectRead;
 import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.entity.ProjectTechStack;
-import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,6 +33,6 @@ public class ReadProjectResponse {
                     .reduce((left, right) -> left + ", " + right)
                     .orElse("");
         }
-        return ProjectSelectionCatalog.normalizeTechStackCsvOrDefault(project.getTechStackCsv());
+        return "";
     }
 }
