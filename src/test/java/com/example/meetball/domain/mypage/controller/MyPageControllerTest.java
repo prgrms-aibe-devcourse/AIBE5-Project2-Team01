@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -56,6 +57,63 @@ class MyPageControllerTest {
                 .andExpect(jsonPath("$[0].canReview").exists()) // 추가됨: 리뷰 가능 여부 필드 확인
                 .andExpect(jsonPath("$[0].dDay").exists())     // 추가됨: D-Day 필드 확인
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("마이페이지 API로 타인의 프로필이나 프로젝트를 조회할 수 없다")
+    void myPageRejectsOtherUserScope() throws Exception {
+        mockMvc.perform(get("/api/mypage/profile")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/mypage/projects")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/mypage/projects/completed")
+                        .param("userId", "2")
+                        .session(session(1L)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("마이페이지 프로필 수정 시 지정 포지션과 기술 스택이 저장된다")
+    void updateProfilePersistsSelectedPositionAndTechStacks() throws Exception {
+        MockHttpSession session = session(1L);
+
+        mockMvc.perform(put("/api/mypage/profile")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "초코푸들",
+                                  "jobTitle": "백엔드",
+                                  "techStack": "Java, Spring",
+                                  "isPublic": true
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(put("/api/mypage/profile")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "초코푸들",
+                                  "jobTitle": "백엔드",
+                                  "techStack": "Java, Spring",
+                                  "isPublic": true
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/mypage/profile")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.jobTitle").value("백엔드"))
+                .andExpect(jsonPath("$.techStack").value("Java, Spring"));
     }
 
     @Test

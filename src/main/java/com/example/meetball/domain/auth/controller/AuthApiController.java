@@ -33,7 +33,8 @@ public class AuthApiController {
 
         try {
             // Verify Google Token and fetch or create User
-            User user = userService.processGoogleLogin(requestDto.getCredential());
+            UserService.GoogleLoginResult loginResult = userService.processGoogleLogin(requestDto.getCredential());
+            User user = loginResult.user();
 
             // Initialize Http Session
             HttpSession session = request.getSession(true);
@@ -49,14 +50,7 @@ public class AuthApiController {
             SecurityContextHolder.setContext(securityContext);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-            String nickname = user.getNickname();
-            boolean needsProfile = user.getJobTitle() == null
-                    || "-".equals(user.getJobTitle())
-                    || nickname == null
-                    || nickname.isBlank()
-                    || nickname.startsWith("User_");
-
-            if (needsProfile) {
+            if (loginResult.newlyCreated()) {
                 session.setAttribute("needsProfile", true);
             } else {
                 session.removeAttribute("needsProfile");

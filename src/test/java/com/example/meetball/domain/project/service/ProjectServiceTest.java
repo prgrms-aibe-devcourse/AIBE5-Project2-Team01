@@ -13,10 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,13 +45,72 @@ class ProjectServiceTest {
             new com.example.meetball.domain.project.entity.ProjectMember(user, project, "MEMBER");
         
         when(projectMemberRepository.findByUser(user)).thenReturn(List.of(pm));
-        when(reviewRepository.existsByProjectAndReviewer(any(), any())).thenReturn(false);
 
         // when
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(user);
 
         // then
         assertThat(results.get(0).getDDay()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("모집 마감과 프로젝트 완료 상태는 참여 프로젝트 응답에서 분리된다")
+    void recruitmentClosedAndCompletedAreSeparated() {
+        User user = User.builder().nickname("테스트유저").build();
+        Project recruitmentClosedProject = new Project(
+                "모집 마감 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), "Java"
+        );
+        recruitmentClosedProject.update(
+                recruitmentClosedProject.getTitle(),
+                recruitmentClosedProject.getDescription(),
+                recruitmentClosedProject.getProjectType(),
+                recruitmentClosedProject.getProgressMethod(),
+                recruitmentClosedProject.getRecruitmentCount(),
+                LocalDate.now().minusDays(5),
+                LocalDate.now().minusDays(1),
+                LocalDate.now(),
+                LocalDate.now().plusDays(10),
+                true,
+                false,
+                LocalDateTime.now()
+        );
+        Project completedProject = new Project(
+                "완료 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), "Java"
+        );
+        completedProject.update(
+                completedProject.getTitle(),
+                completedProject.getDescription(),
+                completedProject.getProjectType(),
+                completedProject.getProgressMethod(),
+                completedProject.getRecruitmentCount(),
+                LocalDate.now().minusDays(5),
+                LocalDate.now().minusDays(1),
+                LocalDate.now().minusDays(4),
+                LocalDate.now().minusDays(1),
+                true,
+                true,
+                LocalDateTime.now()
+        );
+        com.example.meetball.domain.project.entity.ProjectMember closedMember =
+                new com.example.meetball.domain.project.entity.ProjectMember(user, recruitmentClosedProject, "MEMBER");
+        com.example.meetball.domain.project.entity.ProjectMember completedMember =
+                new com.example.meetball.domain.project.entity.ProjectMember(user, completedProject, "MEMBER");
+
+        when(projectMemberRepository.findByUser(user)).thenReturn(List.of(closedMember, completedMember));
+        when(reviewRepository.existsByProjectAndReviewer(completedProject, user)).thenReturn(false);
+
+        List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(user);
+
+        assertThat(results.get(0).isClosed()).isTrue();
+        assertThat(results.get(0).isCompleted()).isFalse();
+        assertThat(results.get(0).isCanReview()).isFalse();
+        assertThat(results.get(0).getStatus()).isEqualTo("PROCEEDING");
+        assertThat(results.get(1).isClosed()).isTrue();
+        assertThat(results.get(1).isCompleted()).isTrue();
+        assertThat(results.get(1).isCanReview()).isTrue();
+        assertThat(results.get(1).getStatus()).isEqualTo("COMPLETED");
     }
 
     @Test
@@ -68,7 +127,6 @@ class ProjectServiceTest {
             new com.example.meetball.domain.project.entity.ProjectMember(user, project, "MEMBER");
         
         when(projectMemberRepository.findByUser(user)).thenReturn(List.of(pm));
-        when(reviewRepository.existsByProjectAndReviewer(any(), any())).thenReturn(false);
 
         // when
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(user);

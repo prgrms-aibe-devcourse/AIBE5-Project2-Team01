@@ -19,12 +19,17 @@ public class ProjectListResponseDto {
     private LocalDate recruitmentEndAt;
     private String dDay;
     private Boolean closed;
+    private Boolean completed;
+    private int bookmarkCount;
+    private int readCount;
+    private boolean bookmarked;
     private LocalDateTime createdAt;
 
     public ProjectListResponseDto(Long id, String title, String summary, String thumbnailUrl,
                                   Integer currentRecruitment, Integer totalRecruitment, String projectType,
                                   String progressMethod, String position, List<String> techStacks,
-                                  LocalDate recruitmentEndAt, String dDay, Boolean closed, LocalDateTime createdAt) {
+                                  LocalDate recruitmentEndAt, String dDay, Boolean closed, Boolean completed,
+                                  int bookmarkCount, int readCount, boolean bookmarked, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -38,6 +43,10 @@ public class ProjectListResponseDto {
         this.recruitmentEndAt = recruitmentEndAt;
         this.dDay = dDay;
         this.closed = closed;
+        this.completed = completed;
+        this.bookmarkCount = bookmarkCount;
+        this.readCount = readCount;
+        this.bookmarked = bookmarked;
         this.createdAt = createdAt;
     }
 
@@ -55,5 +64,9 @@ public class ProjectListResponseDto {
     public String getDDay() { return dDay; }
     public String getDeadlineLabel() { return dDay; }
     public Boolean getClosed() { return closed; }
+    public Boolean getCompleted() { return completed; }
+    public int getBookmarkCount() { return bookmarkCount; }
+    public int getReadCount() { return readCount; }
+    public boolean isBookmarked() { return bookmarked; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

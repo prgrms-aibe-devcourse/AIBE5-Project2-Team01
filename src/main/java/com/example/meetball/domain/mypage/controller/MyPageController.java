@@ -28,8 +28,9 @@ public class MyPageController {
     public ResponseEntity<MyPageProfileResponse> getMyProfile(
             @RequestParam(required = false) Long userId,
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
-        return ResponseEntity.ok(myPageService.getMyProfile(targetUserId, sessionUserId));
+        Long currentUserId = requireSessionUser(sessionUserId);
+        requireSelfScope(userId, currentUserId);
+        return ResponseEntity.ok(myPageService.getMyProfile(currentUserId, currentUserId));
     }
 
     @PutMapping("/profile")
@@ -66,16 +67,18 @@ public class MyPageController {
     public ResponseEntity<List<ParticipatedProjectResponse>> getMyProjects(
             @RequestParam(required = false) Long userId,
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
-        return ResponseEntity.ok(myPageService.getMyProjects(targetUserId, sessionUserId));
+        Long currentUserId = requireSessionUser(sessionUserId);
+        requireSelfScope(userId, currentUserId);
+        return ResponseEntity.ok(myPageService.getMyProjects(currentUserId, currentUserId));
     }
 
     @GetMapping("/projects/completed")
     public ResponseEntity<List<ParticipatedProjectResponse>> getCompletedProjects(
             @RequestParam(required = false) Long userId,
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        Long targetUserId = userId != null ? userId : requireSessionUser(sessionUserId);
-        return ResponseEntity.ok(myPageService.getCompletedProjects(targetUserId, sessionUserId));
+        Long currentUserId = requireSessionUser(sessionUserId);
+        requireSelfScope(userId, currentUserId);
+        return ResponseEntity.ok(myPageService.getCompletedProjects(currentUserId, currentUserId));
     }
 
     @GetMapping("/recent-reads")
@@ -97,5 +100,11 @@ public class MyPageController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
         return sessionUserId;
+    }
+
+    private void requireSelfScope(Long requestedUserId, Long currentUserId) {
+        if (requestedUserId != null && !requestedUserId.equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "My page is only available for the signed-in user.");
+        }
     }
 }

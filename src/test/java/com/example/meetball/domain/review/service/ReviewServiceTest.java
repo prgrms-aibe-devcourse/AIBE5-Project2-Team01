@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,10 +47,25 @@ public class ReviewServiceTest {
         member = userRepository.save(User.builder().email("m@t.com").nickname("멤버").role("MEMBER").isPublic(true).build());
         nonParticipant = userRepository.save(User.builder().email("n@t.com").nickname("불청객").role("USER").isPublic(true).build());
 
-        project = projectRepository.save(new Project(
+        Project completedProject = new Project(
                 "리뷰 테스트 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
                 0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), "Java"
-        ));
+        );
+        completedProject.update(
+                completedProject.getTitle(),
+                completedProject.getDescription(),
+                completedProject.getProjectType(),
+                completedProject.getProgressMethod(),
+                completedProject.getRecruitmentCount(),
+                LocalDate.now().minusDays(10),
+                LocalDate.now().minusDays(1),
+                LocalDate.now().minusDays(9),
+                LocalDate.now().minusDays(1),
+                true,
+                true,
+                LocalDateTime.now()
+        );
+        project = projectRepository.save(completedProject);
 
         // 멤버 관계 설정
         projectMemberRepository.save(new ProjectMember(leader, project, "LEADER"));
@@ -94,6 +110,38 @@ public class ReviewServiceTest {
         assertThatThrownBy(() -> reviewService.addReview(project.getId(), leader.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("자신에 대한 리뷰는 작성할 수 없습니다");
+    }
+
+    @Test
+    @DisplayName("리뷰 등록 실패 - 모집 마감만 된 프로젝트는 완료 프로젝트가 아니다")
+    void addReview_RecruitmentClosedButNotCompleted_Fail() {
+        Project recruitmentClosedProject = new Project(
+                "모집만 마감된 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), "Java"
+        );
+        recruitmentClosedProject.update(
+                recruitmentClosedProject.getTitle(),
+                recruitmentClosedProject.getDescription(),
+                recruitmentClosedProject.getProjectType(),
+                recruitmentClosedProject.getProgressMethod(),
+                recruitmentClosedProject.getRecruitmentCount(),
+                LocalDate.now().minusDays(10),
+                LocalDate.now().minusDays(1),
+                LocalDate.now().minusDays(9),
+                LocalDate.now().minusDays(1),
+                true,
+                false,
+                LocalDateTime.now()
+        );
+        Project savedProject = projectRepository.save(recruitmentClosedProject);
+        projectMemberRepository.save(new ProjectMember(leader, savedProject, "LEADER"));
+        projectMemberRepository.save(new ProjectMember(member, savedProject, "MEMBER"));
+
+        ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "모집 마감은 완료가 아님");
+
+        assertThatThrownBy(() -> reviewService.addReview(savedProject.getId(), member.getId(), request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("완료된 프로젝트");
     }
 
     @Test

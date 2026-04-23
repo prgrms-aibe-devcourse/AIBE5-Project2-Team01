@@ -8,12 +8,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,5 +81,37 @@ class AttachmentControllerTest {
         mockMvc.perform(get("/api/projects/1/attachments/" + attachmentId + "/download")
                 .session(session(3L)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("관련 링크 첨부 등록 성공 테스트")
+    void uploadLinkAttachmentSuccess() throws Exception {
+        mockMvc.perform(post("/api/projects/1/attachments/links")
+                .session(session(1L))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "title": "프로젝트 기획서",
+                          "url": "https://example.com/spec"
+                        }
+                        """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.originalFileName").value("프로젝트 기획서"))
+                .andExpect(jsonPath("$.linkUrl").value("https://example.com/spec"));
+    }
+
+    @Test
+    @DisplayName("HTTP/HTTPS가 아닌 링크 첨부는 거부된다")
+    void uploadInvalidLinkAttachmentFails() throws Exception {
+        mockMvc.perform(post("/api/projects/1/attachments/links")
+                .session(session(1L))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "title": "위험한 링크",
+                          "url": "javascript:alert(1)"
+                        }
+                        """))
+                .andExpect(status().isBadRequest());
     }
 }

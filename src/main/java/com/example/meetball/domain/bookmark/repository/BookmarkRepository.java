@@ -18,4 +18,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     // 해당 프로젝트의 총 찜 개수 조회용
     int countByProject(Project project);
+
+    void deleteByProject(Project project);
 }

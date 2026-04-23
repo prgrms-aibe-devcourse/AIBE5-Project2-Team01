@@ -10,6 +10,7 @@ public record ProjectDetailView(
         String projectType,
         String progressMethod,
         String position,
+        Long leaderUserId,
         String leaderName,
         String leaderRole,
         String leaderAvatarUrl,
@@ -21,6 +22,9 @@ public record ProjectDetailView(
         String createdDateLabel,
         String recruitmentPeriodLabel,
         String projectPeriodLabel,
-        List<String> techStacks
+        List<String> techStacks,
+        List<ProjectPositionStatus> positionStatuses,
+        List<ProjectMemberProfile> teamMembers,
+        int readCount
 ) {
 }

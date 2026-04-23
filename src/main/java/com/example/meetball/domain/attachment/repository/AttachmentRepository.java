@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     List<Attachment> findByProjectId(Long projectId);
+
+    void deleteByProjectId(Long projectId);
 }

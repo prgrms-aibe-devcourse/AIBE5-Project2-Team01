@@ -38,6 +38,9 @@ target/
 .env.*
 .local/
 
+# Runtime uploads
+uploads/
+
 # Temporary files
 *.tmp
 *.swp

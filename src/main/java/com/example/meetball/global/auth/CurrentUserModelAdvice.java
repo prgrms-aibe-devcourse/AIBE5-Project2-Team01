@@ -4,6 +4,7 @@ import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,11 +15,16 @@ public class CurrentUserModelAdvice {
 
     private final UserService userService;
 
+    @Value("${google.client.id:}")
+    private String googleClientId;
+
     @ModelAttribute
     public void addCurrentUser(Model model, HttpSession session) {
         User currentUser = resolveCurrentUser(session);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("isLoggedIn", currentUser != null);
+        model.addAttribute("googleClientId", googleClientId);
+        model.addAttribute("googleLoginEnabled", googleClientId != null && !googleClientId.isBlank());
     }
 
     private User resolveCurrentUser(HttpSession session) {

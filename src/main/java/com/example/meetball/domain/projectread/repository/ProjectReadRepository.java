@@ -15,4 +15,8 @@ public interface ProjectReadRepository extends JpaRepository<ProjectRead, Long> 
     List<ProjectRead> findByUserOrderByReadAtDesc(User user);
 
     Optional<ProjectRead> findByProjectAndUser(Project project, User user);
+
+    int countByProject(Project project);
+
+    void deleteByProject(Project project);
 }

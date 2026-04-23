@@ -57,56 +57,66 @@
                         <div class="flex flex-wrap gap-3 items-center">
                             <span
                                 class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Type</span>
-                            <button onclick="setFilter('projectType', '')"
+                            <button onclick="setFilter('projectType', '')" data-value=""
                                 class="filter-btn type-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
-                            <button onclick="setFilter('projectType', '사이드 프로젝트')"
+                            <button onclick="setFilter('projectType', '사이드 프로젝트')" data-value="사이드 프로젝트"
                                 class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">사이드
                                 프로젝트</button>
-                            <button onclick="setFilter('projectType', '공모전')"
+                            <button onclick="setFilter('projectType', '스타트업')" data-value="스타트업"
+                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">스타트업</button>
+                            <button onclick="setFilter('projectType', '공모전')" data-value="공모전"
                                 class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">공모전</button>
+                            <button onclick="setFilter('projectType', '기업 연계')" data-value="기업 연계"
+                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">기업 연계</button>
+                            <button onclick="setFilter('projectType', '스터디')" data-value="스터디"
+                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">스터디</button>
                         </div>
                         <!-- Progress Method -->
                         <div class="flex flex-wrap gap-3 items-center">
                             <span
                                 class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Method</span>
-                            <button onclick="setFilter('progressMethod', '')"
+                            <button onclick="setFilter('progressMethod', '')" data-value=""
                                 class="filter-btn method-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
-                            <button onclick="setFilter('progressMethod', '온라인')"
+                            <button onclick="setFilter('progressMethod', '온라인')" data-value="온라인"
                                 class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">온라인</button>
-                            <button onclick="setFilter('progressMethod', '오프라인')"
+                            <button onclick="setFilter('progressMethod', '오프라인')" data-value="오프라인"
                                 class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">오프라인</button>
+                            <button onclick="setFilter('progressMethod', '온/오프 혼합')" data-value="온/오프 혼합"
+                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">혼합</button>
                         </div>
-                        <!-- Position -->
-                        <div class="flex flex-wrap gap-3 items-center">
-                            <span
-                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Role</span>
-                            <button onclick="setFilter('position', '')"
-                                class="filter-btn position-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
-                            <button onclick="setFilter('position', '프론트엔드')"
-                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">프론트엔드</button>
-                            <button onclick="setFilter('position', '백엔드')"
-                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">백엔드</button>
-                            <button onclick="setFilter('position', '디자인')"
-                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">디자인</button>
-                            <button onclick="setFilter('position', 'AI')"
-                                class="filter-btn position-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">AI/데이터</button>
-                        </div>
-                        <!-- Tech Stack -->
-                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
-                            <span
-                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Tech</span>
-                            <div class="flex items-center gap-2 bg-poodle-50/50 rounded-xl px-3 py-2 border border-poodle-100 flex-grow">
-                                <input type="text" id="techStackInput" placeholder="Spring, React 등"
-                                    class="w-full bg-transparent outline-none text-xs font-black text-poodle-700 placeholder:text-poodle-200"
-                                    onkeypress="if(event.key === 'Enter') applyTechStackFilter()">
-                                <button onclick="applyTechStackFilter()" class="w-8 h-8 rounded-lg bg-white text-poodle-400 hover:text-meatball border border-poodle-100 transition-all">
-                                    <i class="fa-solid fa-check text-[10px]"></i>
-                                </button>
-                                <button onclick="clearTechStackFilter()" class="w-8 h-8 rounded-lg bg-white text-poodle-200 hover:text-red-400 border border-poodle-100 transition-all">
-                                    <i class="fa-solid fa-xmark text-[10px]"></i>
-                                </button>
-                            </div>
-                        </div>
+	                        <!-- Position -->
+	                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+	                            <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Role</span>
+	                            <div class="relative flex-grow">
+	                                <select id="positionFilterSelect" onchange="setPositionFilter(this.value)"
+	                                        class="w-full bg-poodle-50/50 border border-poodle-100 rounded-xl px-4 py-3 text-xs font-black text-poodle-700 outline-none focus:bg-white focus:border-meatball/30 appearance-none">
+	                                    <option value="">전체</option>
+	                                </select>
+	                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-[10px]"></i>
+	                            </div>
+	                        </div>
+	                        <!-- Tech Stack -->
+	                        <div class="space-y-3 lg:col-span-2">
+	                            <div class="flex flex-wrap items-center gap-3">
+	                                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Tech</span>
+	                                <button type="button" onclick="toggleTechStackPanel()"
+	                                        class="inline-flex items-center gap-3 px-5 py-3 bg-white border border-poodle-100 rounded-xl text-xs font-black text-poodle-600 hover:border-meatball/30 hover:text-meatball transition-all">
+	                                    <i class="fa-solid fa-layer-group text-[10px]"></i>
+	                                    기술 스택
+	                                    <i class="fa-solid fa-chevron-down text-[10px] text-poodle-200"></i>
+	                                </button>
+	                                <button id="techStackClearBtn" type="button" onclick="clearTechStackFilter()"
+	                                        class="hidden inline-flex items-center gap-2 px-4 py-3 bg-poodle-50 text-poodle-500 border border-poodle-100 rounded-xl text-xs font-black hover:bg-white hover:text-red-400 transition-all">
+	                                    <i class="fa-solid fa-rotate-left text-[10px]"></i>
+	                                    초기화
+	                                </button>
+	                                <div id="selectedTechStackSummary" class="flex flex-wrap gap-2"></div>
+	                            </div>
+	                            <div id="techStackPanel" class="hidden rounded-[2rem] border border-poodle-100 bg-white p-6 shadow-sm space-y-5">
+	                                <div id="techStackTabs" class="flex flex-wrap gap-2 border-b border-poodle-50 pb-4"></div>
+	                                <div id="techStackFilterOptions" class="flex flex-wrap gap-3"></div>
+	                            </div>
+	                        </div>
                     </div>
                 </div>
             </div>
@@ -163,19 +173,21 @@
 
     <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
-    <script>
+    <script th:inline="javascript">
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
+        const HOME_LOGGED_IN = Boolean(/*[[${isLoggedIn}]]*/ false);
 
-        let filterState = {
-            keyword: '',
-            projectType: '',
-            progressMethod: '',
-            position: '',
-            techStack: '',
-            viewMode: 'grid',
-            page: 0
-        };
+	        let filterState = {
+	            keyword: '',
+	            projectType: '',
+	            progressMethod: '',
+	            position: '',
+	            techStacks: [],
+	            viewMode: 'grid',
+	            page: 0
+	        };
+	        let activeTechCategory = '인기';
 
         function setFilter(type, value) {
             filterState[type] = value;
@@ -188,9 +200,9 @@
                     btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-900', 'text-white');
                     btn.classList.add('border', 'border-poodle-50', 'text-poodle-400');
                 });
-                // 선택된 버튼 처리 (value='' 인 경우 '전체' 버튼 찾기 위해 임시 우회)
+	                // 선택된 버튼 처리
                 const activeBtn = Array.from(parent).find(b => {
-                    return (value === '' && b.innerText === '전체') || b.innerText === value;
+                    return b.dataset.value === value || (value === '' && b.innerText === '전체') || b.innerText === value;
                 });
                 if (activeBtn) {
                     activeBtn.classList.add('active', 'bg-poodle-600', 'text-white');
@@ -201,18 +213,73 @@
             fetchProjects();
         }
 
-        function applyTechStackFilter() {
-            filterState.techStack = document.getElementById('techStackInput').value.trim();
-            filterState.page = 0;
-            fetchProjects();
-        }
+	        function setPositionFilter(value) {
+	            filterState.position = value;
+	            filterState.page = 0;
+	            fetchProjects();
+	        }
 
-        function clearTechStackFilter() {
-            document.getElementById('techStackInput').value = '';
-            filterState.techStack = '';
-            filterState.page = 0;
-            fetchProjects();
-        }
+	        function toggleTechStackPanel() {
+	            document.getElementById('techStackPanel')?.classList.toggle('hidden');
+	        }
+
+	        function setTechCategory(category) {
+	            activeTechCategory = category;
+	            renderTechStackFilter();
+	        }
+
+	        function toggleTechStackFilter(tech) {
+	            const index = filterState.techStacks.indexOf(tech);
+	            if (index >= 0) {
+	                filterState.techStacks.splice(index, 1);
+	            } else {
+	                filterState.techStacks.push(tech);
+	            }
+	            filterState.page = 0;
+	            renderTechStackFilter();
+	            fetchProjects();
+	        }
+
+	        function clearTechStackFilter() {
+	            filterState.techStacks = [];
+	            filterState.page = 0;
+	            renderTechStackFilter();
+	            fetchProjects();
+	        }
+
+	        function initPositionFilter() {
+	            const select = document.getElementById('positionFilterSelect');
+	            if (!select) return;
+	            select.innerHTML = '<option value="">전체</option>' + window.meetballPositionOptions
+	                .map(position => `<option value="${escapeHtml(position)}">${escapeHtml(position)}</option>`)
+	                .join('');
+	        }
+
+	        function renderTechStackFilter() {
+	            const tabs = document.getElementById('techStackTabs');
+	            const options = document.getElementById('techStackFilterOptions');
+	            const summary = document.getElementById('selectedTechStackSummary');
+	            const clearBtn = document.getElementById('techStackClearBtn');
+	            if (!tabs || !options || !summary || !clearBtn) return;
+
+	            tabs.innerHTML = Object.keys(window.meetballTechStackCategories).map(category => {
+	                const active = category === activeTechCategory;
+	                return `<button type="button" onclick="setTechCategory('${escapeHtml(category)}')"
+	                            class="px-4 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-poodle-600 text-white' : 'text-poodle-300 hover:bg-poodle-50 hover:text-poodle-700'}">${escapeHtml(category)}</button>`;
+	            }).join('');
+
+	            const visibleTechs = window.meetballTechStackCategories[activeTechCategory] || window.meetballTechStackOptions;
+	            options.innerHTML = visibleTechs.map(tech => {
+	                const selected = filterState.techStacks.includes(tech);
+	                return `<button type="button" onclick="toggleTechStackFilter('${escapeHtml(tech)}')" class="tech-filter-option">${window.meetballTechStackChipHtml(tech, { selected })}</button>`;
+	            }).join('');
+
+	            summary.innerHTML = filterState.techStacks.map(tech => window.meetballTechStackChipHtml(tech, {
+	                selected: true,
+	                className: 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black'
+	            })).join('');
+	            clearBtn.classList.toggle('hidden', filterState.techStacks.length === 0);
+	        }
 
         function setViewMode(mode) {
             filterState.viewMode = mode === 'list' ? 'list' : 'grid';
@@ -241,10 +308,10 @@
                     size: 6,
                     keyword: filterState.keyword,
                     projectType: filterState.projectType,
-                    progressMethod: filterState.progressMethod,
-                    position: filterState.position,
-                    techStack: filterState.techStack
-                }).toString();
+	                    progressMethod: filterState.progressMethod,
+	                    position: filterState.position,
+	                    techStack: filterState.techStacks.join(',')
+	                }).toString();
 
                 const res = await fetch(`/api/projects?${query}`);
                 if (!res.ok) throw new Error('API fetch error');
@@ -254,6 +321,50 @@
                 renderPagination(data);
             } catch (error) {
                 console.error('Error fetching projects:', error);
+            }
+        }
+
+        async function toggleHomeBookmark(event, projectId) {
+            event?.preventDefault();
+            event?.stopPropagation();
+            if (!projectId) return;
+
+            if (!HOME_LOGGED_IN) {
+                openLoginModal(window.location.pathname + window.location.search);
+                return;
+            }
+
+            try {
+                const res = await window.meetballFetch(`/api/projects/${encodeURIComponent(projectId)}/bookmarks`, { method: 'POST' });
+                if (!res.ok) throw new Error('Bookmark toggle failed');
+                updateHomeBookmark(projectId, await res.json());
+            } catch (error) {
+                console.error('Bookmark toggle error:', error);
+                await meetballAlert('관심 프로젝트 변경에 실패했습니다.', { type: 'error' });
+            }
+        }
+
+        function updateHomeBookmark(projectId, data) {
+            const domProjectId = String(projectId).replace(/[^0-9A-Za-z_-]/g, '');
+            const isBookmarked = Boolean(data.bookmarked ?? data.isBookmarked);
+            const count = Number(data.totalBookmarks ?? data.bookmarkCount ?? 0);
+            const countNode = document.getElementById(`homeBookmarkCount-${domProjectId}`);
+            const icon = document.getElementById(`homeBookmarkIcon-${domProjectId}`);
+            const button = document.getElementById(`homeBookmarkButton-${domProjectId}`);
+
+            if (countNode) countNode.textContent = String(count);
+            if (icon) {
+                icon.classList.toggle('fa-solid', isBookmarked);
+                icon.classList.toggle('fa-regular', !isBookmarked);
+                icon.classList.toggle('text-meatball', isBookmarked);
+            }
+            if (button) {
+                button.classList.toggle('text-meatball', isBookmarked);
+                button.classList.toggle('bg-white', isBookmarked);
+                button.classList.toggle('border-meatball/20', isBookmarked);
+                button.classList.toggle('text-poodle-300', !isBookmarked);
+                button.classList.toggle('bg-poodle-50', !isBookmarked);
+                button.classList.toggle('border-poodle-100', !isBookmarked);
             }
         }
 
@@ -279,17 +390,45 @@
                 const totalRecruit = Number(p.totalRecruitment || 0);
                 const percentage = totalRecruit > 0 ? Math.min(100, Math.max(0, currentRecruit * 100 / totalRecruit)) : 0;
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
-                const projectId = encodeURIComponent(String(p.id ?? ''));
-                const thumbnailUrl = safeUrl(p.thumbnailUrl, 'https://picsum.photos/seed/project/600/400');
+                const rawProjectId = String(p.id ?? '');
+                const projectId = encodeURIComponent(rawProjectId);
+                const domProjectId = rawProjectId.replace(/[^0-9A-Za-z_-]/g, '');
+                const thumbnailUrl = safeUrl(p.thumbnailUrl, '/img/logo.png');
                 const deadlineLabel = escapeHtml(p.deadlineLabel || '-');
                 const projectType = escapeHtml(p.projectType || '');
-                const position = escapeHtml(p.position || '미지정');
+                const position = escapeHtml(formatPositionSummary(p.position));
                 const summary = escapeHtml(p.summary || '');
+                const readCount = Number(p.readCount ?? 0);
+                const bookmarkCount = Number(p.bookmarkCount ?? p.totalBookmarks ?? 0);
+                const isBookmarked = Boolean(p.bookmarked ?? p.isBookmarked);
+                const bookmarkButtonClass = isBookmarked
+                    ? 'bg-white text-meatball border-meatball/20'
+                    : 'bg-poodle-50 text-poodle-300 border-poodle-100';
+                const bookmarkIconClass = isBookmarked ? 'fa-solid text-meatball' : 'fa-regular';
+                const projectMetrics = `
+                    <div class="flex items-center gap-4 text-[10px] font-black text-poodle-300">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>조회 ${readCount}</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="homeBookmarkCount-${domProjectId}">${bookmarkCount}</span>
+                        </span>
+                    </div>`;
+                const bookmarkButton = `
+                    <button type="button" id="homeBookmarkButton-${domProjectId}" onclick="toggleHomeBookmark(event, '${domProjectId}')"
+                            class="inline-flex w-10 h-10 items-center justify-center rounded-xl border ${bookmarkButtonClass} hover:bg-white hover:text-meatball transition-all active:scale-95"
+                            aria-label="찜하기">
+                        <i id="homeBookmarkIcon-${domProjectId}" class="fa-heart ${bookmarkIconClass}"></i>
+                    </button>`;
 
                 // 기술 스택 (Array 처리)
-                const techBadges = (p.techStacks || []).map(tech =>
-                    `<span class="px-2 py-1 bg-poodle-50 text-poodle-300 rounded-md text-[10px] font-black">${escapeHtml(tech)}</span>`
-                ).join('');
+	                const techBadges = (p.techStacks || []).map(tech =>
+	                    window.meetballTechStackChipHtml(tech, {
+	                        className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
+	                    })
+	                ).join('');
 
                 if (filterState.viewMode === 'list') {
                     return `
@@ -309,7 +448,10 @@
                             <h3 class="text-2xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors">${title}</h3>
                             <p class="text-sm text-poodle-400 font-bold leading-relaxed line-clamp-2">${summary}</p>
                         </div>
-                        <div class="flex flex-wrap gap-1.5">${techBadges}</div>
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-1.5">${techBadges}</div>
+                            ${projectMetrics}
+                        </div>
                     </div>
                     <div class="p-6 md:p-7 md:w-56 flex md:flex-col items-center md:items-stretch justify-between gap-5 border-t md:border-t-0 md:border-l border-poodle-50">
                         <div class="w-full">
@@ -321,9 +463,12 @@
                                 <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                             </div>
                         </div>
-                        <a href="/projects/${projectId}" class="shrink-0 inline-flex justify-center py-3.5 px-5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95">
-                            보기 <i class="fa-solid fa-chevron-right ml-1.5"></i>
-                        </a>
+                        <div class="shrink-0 flex items-center gap-2">
+                            ${bookmarkButton}
+                            <a href="/projects/${projectId}" class="inline-flex justify-center py-3.5 px-5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95">
+                                보기 <i class="fa-solid fa-chevron-right ml-1.5"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </article>`;
@@ -338,6 +483,9 @@
                     <div class="absolute top-4 left-4">
                         <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
                     </div>
+                    <div class="absolute top-4 right-4">
+                        ${bookmarkButton}
+                    </div>
                 </div>
 
                 <div class="p-6 flex flex-col flex-grow">
@@ -351,6 +499,9 @@
 
                     <div class="flex flex-wrap gap-1.5 mb-6">
                         ${techBadges}
+                    </div>
+                    <div class="mb-5">
+                        ${projectMetrics}
                     </div>
 
                     <div class="mt-auto pt-4 border-t border-poodle-50">
@@ -370,6 +521,14 @@
                 </div>
             </article>`;
             }).join('');
+        }
+
+        function formatPositionSummary(value) {
+            const positions = String(value || '')
+                .split(',')
+                .map(token => token.split(':')[0].trim())
+                .filter(Boolean);
+            return positions.length ? positions.join(', ') : '미지정';
         }
 
         function renderPagination(pageData) {
@@ -435,11 +594,13 @@
             }
         }
 
-        // 초기에 0페이지 목록 로드
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchRecommendations();
-            fetchProjects(0);
-        });
+	        // 초기에 0페이지 목록 로드
+	        document.addEventListener('DOMContentLoaded', () => {
+	            initPositionFilter();
+	            renderTechStackFilter();
+	            fetchRecommendations();
+	            fetchProjects(0);
+	        });
     </script>
 </body>
 

@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +47,9 @@ public class AttachmentService {
     @Transactional
     public AttachmentResponseDto uploadFile(Long projectId, MultipartFile file) {
         try {
+            if (file == null || file.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attachment file is required.");
+            }
             String originalFilename = file.getOriginalFilename();
             String safeOriginalFilename = StringUtils.cleanPath(originalFilename == null ? "attachment" : originalFilename);
             if (safeOriginalFilename.contains("..")) {
@@ -110,15 +115,48 @@ public class AttachmentService {
 
     @Transactional
     public AttachmentResponseDto uploadLink(Long projectId, String title, String url) {
+        String safeTitle = StringUtils.hasText(title) ? title.trim() : "관련 링크";
+        String safeUrl = validateHttpUrl(url);
         Attachment attachment = Attachment.builder()
                 .projectId(projectId)
-                .originalFileName(title)
-                .linkUrl(url)
+                .originalFileName(safeTitle)
+                .linkUrl(safeUrl)
                 .type("LINK")
                 .build();
         
         Attachment saved = attachmentRepository.save(attachment);
         return new AttachmentResponseDto(saved);
+    }
+
+    @Transactional
+    public void deleteProjectAttachments(Long projectId) {
+        List<Attachment> attachments = attachmentRepository.findByProjectId(projectId);
+        for (Attachment attachment : attachments) {
+            if ("FILE".equals(attachment.getType()) && StringUtils.hasText(attachment.getStoredFilePath())) {
+                try {
+                    Files.deleteIfExists(resolveStoredFilePath(attachment.getStoredFilePath()));
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not delete attachment file: " + attachment.getOriginalFileName(), e);
+                }
+            }
+        }
+        attachmentRepository.deleteAll(attachments);
+    }
+
+    private String validateHttpUrl(String url) {
+        if (!StringUtils.hasText(url)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Link URL is required.");
+        }
+        try {
+            URI uri = new URI(url.trim());
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https"))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only HTTP/HTTPS links are allowed.");
+            }
+            return uri.toString();
+        } catch (URISyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid link URL.", e);
+        }
     }
 
     private Attachment findAttachmentInProject(Long projectId, Long attachmentId) {

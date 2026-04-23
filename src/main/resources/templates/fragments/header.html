@@ -3,13 +3,14 @@
 <head>
 </head>
 <body>
-    <header th:fragment="mainHeader" class="sticky top-0 z-50 bg-poodle-50/90 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
+    <th:block th:fragment="mainHeader">
+    <header class="sticky top-0 z-50 bg-poodle-50/90 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
             <!-- Logo area -->
             <div class="flex items-center gap-12">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
                     <div class="relative">
-                        <img th:src="@{/img/logo.png}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=poodle" alt="Meetball" 
+                        <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
                              class="w-12 h-12 rounded-[1.35rem] object-contain bg-white p-1 shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                         <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-meatball rounded-full border-2 border-white animate-bounce-subtle"></div>
                     </div>
@@ -22,10 +23,14 @@
                         탐색하기
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </a>
-                    <a th:href="${isLoggedIn} ? @{/register} : @{/login(redirect='/register')}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
+                    <a th:if="${isLoggedIn}" th:href="@{/register}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         프로젝트 등록
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </a>
+                    <button th:if="${!isLoggedIn}" type="button" onclick="openLoginModal('/register')" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
+                        프로젝트 등록
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
+                    </button>
                     <a th:if="${isLoggedIn}" th:href="@{/user/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         나의 프로젝트
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
@@ -35,11 +40,11 @@
 
             <!-- Right Actions -->
             <div class="flex items-center gap-6">
-                <a th:if="${!isLoggedIn}" th:href="@{/login}"
+                <button th:if="${!isLoggedIn}" type="button" onclick="openLoginModal('/')"
                    class="inline-flex items-center gap-2 px-5 py-3 bg-poodle-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-poodle-600/15 hover:bg-meatball hover:text-poodle-900 transition-all active:scale-95">
                     <i class="fa-solid fa-right-to-bracket text-[11px]"></i>
                     로그인
-                </a>
+                </button>
 
                 <!-- Notifications (Optional Icon) -->
                 <button th:if="${isLoggedIn}" class="w-10 h-10 flex items-center justify-center text-poodle-300 hover:text-poodle-900 transition-colors relative">
@@ -51,7 +56,7 @@
                 <div th:if="${isLoggedIn}" class="relative group h-full flex items-center">
                     <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-100/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
                         <div class="relative">
-                            <img th:src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + ${currentUser.nickname}" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky" alt="Profile"
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Profile"
                                  class="w-10 h-10 rounded-2xl border-2 border-poodle-50 bg-white shadow-sm group-hover:border-meatball/20 transition-all">
                             <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
@@ -64,7 +69,7 @@
                     <div class="absolute right-0 top-[4.5rem] w-56 bg-poodle-50/95 backdrop-blur-2xl rounded-[1.5rem] shadow-[0_20px_50px_rgba(101,55,40,0.14)] border border-poodle-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-4 z-50 p-2 overflow-hidden">
                         <div class="p-3 mb-2 border-b border-poodle-50">
                             <p class="text-[10px] font-black text-poodle-200 uppercase tracking-widest mb-1 leading-none">Signed in as</p>
-                            <p th:text="${currentUser.email}" class="text-[11px] font-bold text-poodle-600 truncate">user@example.com</p>
+                            <p th:text="${currentUser.email}" class="text-[11px] font-bold text-poodle-600 truncate">-</p>
                         </div>
                         <div class="flex flex-col">
                             <a th:href="@{/user/mypage}"
@@ -84,8 +89,182 @@
         </div>
     </header>
 
+    <!-- Login Modal -->
+    <div id="loginModal" th:if="${!isLoggedIn}" class="fixed inset-0 z-[190] hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeLoginModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
+            <div class="relative w-full max-w-2xl bg-white rounded-[2.25rem] shadow-[0_45px_100px_rgba(0,0,0,0.18)] border border-white overflow-hidden pointer-events-auto animate-modal-up">
+                <button type="button" onclick="closeLoginModal()"
+                        class="absolute top-7 right-7 w-11 h-11 text-black flex items-center justify-center hover:bg-poodle-50 transition-all">
+                    <i class="fa-solid fa-xmark text-3xl"></i>
+                </button>
+
+                <div class="px-10 py-14 md:px-20 md:py-16 text-center space-y-10">
+                    <div class="flex justify-center">
+                        <div class="inline-flex items-center gap-3">
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball" class="w-14 h-14 object-contain">
+                            <span class="text-6xl font-black tracking-tight text-poodle-900">Meetball</span>
+                        </div>
+                    </div>
+                    <div class="space-y-5">
+                        <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight leading-tight">Meetball에 오신 것을 환영합니다!</h2>
+                        <p class="text-xl md:text-2xl font-bold text-zinc-500 leading-relaxed">
+                            스터디와 사이드 프로젝트를 찾는 가장 쉬운 방법!<br>
+                            Meetball에서 함께 할 팀원들을 찾으세요
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div id="g_id_onload"
+                             th:if="${googleLoginEnabled}"
+                             th:attr="data-client_id=${googleClientId}"
+	                             data-context="signin"
+	                             data-ux_mode="popup"
+	                             data-callback="handleGoogleCredentialResponse"
+	                             data-auto_select="false"
+	                             data-auto_prompt="false"></div>
+	                        <div th:if="${googleLoginEnabled}" class="flex justify-center social-login-button social-login-google">
+	                            <div class="g_id_signin"
+	                                 data-type="standard"
+	                                 data-shape="pill"
+	                                 data-theme="outline"
+	                                 data-size="large"
+		                                 data-width="420"
+		                                 data-text="continue_with"
+		                                 data-logo_alignment="right"></div>
+                        </div>
+
+                        <button type="button" disabled
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-black text-white font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
+                            <span class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                                <i class="fa-brands fa-github text-xl"></i>
+                            </span>
+                            <span>Github 로그인 준비중</span>
+                        </button>
+                        <button type="button" disabled
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-[#FEE500] text-black font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
+	                            <span class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center text-black/75">
+                                    <svg role="img" aria-label="Kakao logo" viewBox="0 0 48 48" class="w-7 h-7" fill="currentColor">
+                                        <path d="M24 8C14.06 8 6 14.36 6 22.2c0 5.05 3.35 9.48 8.39 12L12.75 41a1.2 1.2 0 0 0 1.82 1.27l7.46-5.24c.65.06 1.31.09 1.97.09 9.94 0 18-6.36 18-14.2S33.94 8 24 8Z"/>
+                                    </svg>
+                                </span>
+                            <span>Kakao 로그인 준비중</span>
+                        </button>
+                        <button type="button" disabled
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-[#03C75A] text-white font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
+                            <span class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center text-white">
+                                <svg role="img" aria-label="Naver logo" viewBox="0 0 48 48" class="w-6 h-6" fill="currentColor">
+                                    <path d="M29.44 24.64 18.02 8H8v32h10.56V23.36L29.98 40H40V8H29.44v16.64Z"/>
+                                </svg>
+                            </span>
+                            <span>Naver 로그인 준비중</span>
+                        </button>
+
+                        <p id="loginError" class="hidden text-xs font-bold text-red-500 leading-relaxed"></p>
+	                        <div th:unless="${googleLoginEnabled}" class="max-w-[420px] mx-auto p-5 bg-poodle-50 border border-poodle-100 rounded-2xl text-left">
+                            <p class="text-sm font-black text-poodle-800 mb-2">Google 로그인 설정이 필요합니다.</p>
+                            <p class="text-xs font-bold text-poodle-400 leading-relaxed">로컬 또는 배포 환경의 Google OAuth Client ID 설정을 확인해주세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style th:if="${!isLoggedIn}">
+        .social-login-google,
+        .social-login-google > div,
+        .social-login-google iframe {
+            width: 100% !important;
+            max-width: 420px !important;
+        }
+
+        .social-login-google iframe {
+            min-height: 64px !important;
+        }
+    </style>
+
+    <script th:if="${!isLoggedIn}" src="https://accounts.google.com/gsi/client" async defer></script>
+    <script th:if="${!isLoggedIn}" th:inline="javascript">
+        window.meetballLoginRedirect = '/';
+
+        function normalizeLoginRedirect(value) {
+            const raw = String(value || '/').trim();
+            if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/';
+            return raw;
+        }
+
+        window.openLoginModal = function(redirect) {
+            window.meetballLoginRedirect = normalizeLoginRedirect(redirect || window.location.pathname + window.location.search);
+            const modal = document.getElementById('loginModal');
+            if (!modal) return;
+            const errorNode = document.getElementById('loginError');
+            if (errorNode) {
+                errorNode.textContent = '';
+                errorNode.classList.add('hidden');
+            }
+            modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeLoginModal = function() {
+            const modal = document.getElementById('loginModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = 'auto';
+        };
+
+        window.handleGoogleCredentialResponse = async function(response) {
+            const errorNode = document.getElementById('loginError');
+            if (!response?.credential) {
+                if (errorNode) {
+                    errorNode.textContent = 'Google 인증 응답이 비어 있습니다.';
+                    errorNode.classList.remove('hidden');
+                }
+                return;
+            }
+
+            try {
+                const loginResponse = await meetballFetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                if (!loginResponse.ok) {
+                    const message = await loginResponse.text();
+                    throw new Error(message || 'Google 로그인에 실패했습니다.');
+                }
+
+                window.location.href = normalizeLoginRedirect(window.meetballLoginRedirect);
+            } catch (error) {
+                console.error('Google login error:', error);
+                if (errorNode) {
+                    errorNode.textContent = '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.';
+                    errorNode.classList.remove('hidden');
+                }
+                await meetballAlert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요.', { type: 'error' });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('login')) {
+                openLoginModal(params.get('redirect') || '/');
+                params.delete('login');
+                params.delete('redirect');
+                const cleanQuery = params.toString();
+                const cleanUrl = window.location.pathname + (cleanQuery ? `?${cleanQuery}` : '') + window.location.hash;
+                window.history.replaceState(null, '', cleanUrl);
+            }
+        });
+    </script>
+
     <!-- 🐾 Welcome & Profile Setup Modal (First Login Only) -->
-    <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile}" class="fixed inset-0 z-[200] flex items-center justify-center p-6">
+    <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-6">
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md animate-fade-in"></div>
 
@@ -114,21 +293,19 @@
                             placeholder="사용하실 닉네임을 입력하세요">
                     </div>
 
-                    <!-- Job Title -->
+                    <!-- Position -->
                     <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Current Role / Job</label>
-                        <input type="text" name="jobTitle" required
-                            class="w-full px-6 py-4 bg-poodle-50 border border-poodle-100 rounded-2xl text-sm font-black text-poodle-800 focus:bg-white focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all"
-                            placeholder="예시) 백엔드 개발자, UI/UX 디자이너">
+                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Position</label>
+                        <input type="hidden" id="welcomeJobTitle" name="jobTitle" required>
+                        <div id="welcomePositionOptions" class="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto rounded-2xl border border-poodle-100 bg-poodle-50/40 p-4"></div>
                     </div>
 
-                    <!-- Tech Stack -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Stack (Tags)</label>
-                        <input type="text" name="techStack" required
-                            class="w-full px-6 py-4 bg-poodle-50 border border-poodle-100 rounded-2xl text-sm font-black text-poodle-800 focus:bg-white focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all"
-                            placeholder="예시) Java, Spring Boot, Figma">
-                    </div>
+	                    <!-- Tech Stack -->
+	                    <div class="space-y-3">
+	                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Stack (Tags)</label>
+	                        <input type="hidden" id="welcomeTechStack" name="techStack" required>
+	                        <div id="welcomeTechStackOptions" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto rounded-2xl border border-poodle-100 bg-poodle-50/40 p-4"></div>
+	                    </div>
 
                     <div class="pt-6">
                         <button type="submit"
@@ -142,14 +319,78 @@
         </div>
     </div>
 
-    <script th:if="${session.needsProfile}" th:inline="javascript">
-        document.getElementById('welcomeProfileForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.isPublic = true; // 기본값 공개
+	    <script th:if="${session.needsProfile == true}" th:inline="javascript">
+	        let welcomeSelectedPosition = '';
+	        const welcomeSelectedTechStacks = [];
 
-            try {
+	        function renderWelcomePositionOptions() {
+	            const container = document.getElementById('welcomePositionOptions');
+	            const hiddenInput = document.getElementById('welcomeJobTitle');
+	            if (!container || !hiddenInput) return;
+	            hiddenInput.value = welcomeSelectedPosition;
+	            container.innerHTML = window.meetballPositionOptions.map(position => {
+	                const selected = welcomeSelectedPosition === position;
+	                const selectedClass = selected
+	                    ? 'border-meatball bg-meatball text-poodle-900 shadow-sm'
+	                    : 'border-poodle-100 bg-white text-poodle-500 hover:border-meatball hover:text-poodle-900';
+	                return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
+	            }).join('');
+	            container.querySelectorAll('[data-position]').forEach(button => {
+	                button.addEventListener('click', () => selectWelcomePosition(button.dataset.position));
+	            });
+	        }
+
+	        function selectWelcomePosition(position) {
+	            welcomeSelectedPosition = position;
+	            renderWelcomePositionOptions();
+	        }
+
+	        function renderWelcomeTechStackOptions() {
+	            const container = document.getElementById('welcomeTechStackOptions');
+	            const hiddenInput = document.getElementById('welcomeTechStack');
+	            if (!container || !hiddenInput) return;
+	            hiddenInput.value = welcomeSelectedTechStacks.join(', ');
+	            container.innerHTML = window.meetballTechStackOptions.map(tech => {
+	                const selected = welcomeSelectedTechStacks.includes(tech);
+	                return `<button type="button" onclick="toggleWelcomeTechStack('${window.meetballEscapeHtml(tech)}')">${window.meetballTechStackChipHtml(tech, {
+	                    selected,
+	                    className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
+	                })}</button>`;
+	            }).join('');
+	        }
+
+	        function toggleWelcomeTechStack(tech) {
+	            const index = welcomeSelectedTechStacks.indexOf(tech);
+	            if (index >= 0) {
+	                welcomeSelectedTechStacks.splice(index, 1);
+	            } else {
+	                welcomeSelectedTechStacks.push(tech);
+	            }
+	            renderWelcomeTechStackOptions();
+	        }
+
+	        renderWelcomePositionOptions();
+	        renderWelcomeTechStackOptions();
+
+	        document.getElementById('welcomeProfileForm')?.addEventListener('submit', async (e) => {
+	            e.preventDefault();
+	            const formData = new FormData(e.target);
+	            const data = Object.fromEntries(formData.entries());
+	            data.isPublic = true; // 기본값 공개
+	            data.jobTitle = welcomeSelectedPosition;
+	            data.techStack = welcomeSelectedTechStacks.join(', ');
+
+	            if (!data.jobTitle) {
+	                await meetballAlert('포지션을 선택해주세요.');
+	                return;
+	            }
+
+	            if (!data.techStack) {
+	                await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
+	                return;
+	            }
+
+	            try {
                 const response = await meetballFetch('/api/mypage/profile', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -163,13 +404,14 @@
                     window.location.reload();
                 } else {
                     const errorMsg = await response.text();
-                    alert('저장 실패: ' + errorMsg);
+                    await meetballAlert('저장 실패: ' + errorMsg, { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);
-                alert('서버와 통신 중 오류가 발생했습니다.');
+                await meetballAlert('서버와 통신 중 오류가 발생했습니다.', { type: 'error' });
             }
         });
     </script>
+    </th:block>
 </body>
 </html>

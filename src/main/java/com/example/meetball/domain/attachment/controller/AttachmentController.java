@@ -54,6 +54,21 @@ public class AttachmentController {
         return ResponseEntity.status(201).body(responseDto);
     }
 
+    @PostMapping("/links")
+    public ResponseEntity<AttachmentResponseDto> uploadLink(
+            @PathVariable Long projectId,
+            @RequestBody LinkRequest request,
+            @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        requireProjectMember(projectId, userId, "Only project members can add links.");
+
+        AttachmentResponseDto responseDto = attachmentService.uploadLink(projectId, request.title(), request.url());
+        return ResponseEntity.status(201).body(responseDto);
+    }
+
     // 파일 다운로드
     @GetMapping("/{attachmentId}/download")
     public ResponseEntity<Resource> downloadFile(
@@ -87,5 +102,8 @@ public class AttachmentController {
         if (role != ProjectDetailRole.LEADER && role != ProjectDetailRole.MEMBER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, forbiddenMessage);
         }
+    }
+
+    public record LinkRequest(String title, String url) {
     }
 }

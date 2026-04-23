@@ -50,12 +50,13 @@
                                     <span class="w-1 h-1 bg-meatball rounded-full"></span> Type
                                 </label>
                                 <div class="relative">
-                                    <select id="projectType" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
-                                        <option value="">선택하세요</option>
-                                        <option value="사이드 프로젝트">사이드 프로젝트</option>
-                                        <option value="스타트업 창업">스타트업 창업</option>
-                                        <option value="공모전/대회">공모전/대회</option>
-                                        <option value="단순 스터디">단순 스터디</option>
+	                                    <select id="projectType" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
+	                                        <option value="">선택하세요</option>
+	                                        <option value="사이드 프로젝트">사이드 프로젝트</option>
+	                                        <option value="스타트업">스타트업</option>
+	                                        <option value="공모전">공모전</option>
+	                                        <option value="스터디">스터디</option>
+	                                        <option value="기업 연계">기업 연계</option>
                                     </select>
                                     <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-xs"></i>
                                 </div>
@@ -65,11 +66,11 @@
                                     <span class="w-1 h-1 bg-meatball rounded-full"></span> Meeting Mode
                                 </label>
                                 <div class="relative">
-                                    <select id="progressMethod" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
-                                        <option value="">선택하세요</option>
-                                        <option value="온라인 중심">온라인 중심</option>
-                                        <option value="오프라인 중심">오프라인 중심</option>
-                                        <option value="온/오프 혼합">온/오프 혼합</option>
+	                                    <select id="progressMethod" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
+	                                        <option value="">선택하세요</option>
+	                                        <option value="온라인">온라인</option>
+	                                        <option value="오프라인">오프라인</option>
+	                                        <option value="온/오프 혼합">온/오프 혼합</option>
                                     </select>
                                     <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-xs"></i>
                                 </div>
@@ -135,48 +136,22 @@
                             </div>
                             <h2 class="text-3xl font-black text-poodle-900 tracking-tight">포지션 및 기술</h2>
                         </div>
-                        <button class="px-6 py-3 bg-poodle-50 text-meatball rounded-2xl font-black text-xs hover:bg-meatball hover:text-white transition-all flex items-center gap-2 italic uppercase">
-                            <i class="fa-solid fa-plus text-[8px]"></i> Add More
+                        <button type="button" onclick="addPositionRow()"
+                                class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black hover:bg-meatball hover:text-poodle-900 transition-all uppercase tracking-widest text-xs shadow-lg shadow-poodle-600/10 active:scale-95">
+                            ADD
                         </button>
-                    </div>
+	                    </div>
 
                     <div class="space-y-6">
-                        <div class="p-8 bg-poodle-50 border border-poodle-50 rounded-4xl flex flex-col md:flex-row gap-8 items-end md:items-center relative">
-                            <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-                                <div class="space-y-2">
-                                    <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Position Name</span>
-                                    <div class="relative">
-                                        <select id="position" class="w-full bg-white border border-poodle-100 rounded-2xl p-5 font-black text-sm appearance-none outline-none focus:border-meatball">
-                                            <option value="">선택하세요</option>
-                                            <option value="프론트엔드 개발">프론트엔드 개발</option>
-                                            <option value="백엔드 개발">백엔드 개발</option>
-                                            <option value="UI/UX 디자인">UI/UX 디자인</option>
-                                            <option value="기획/PM">기획/PM</option>
-                                            <option value="AI/데이터 엔지니어">AI/데이터 엔지니어</option>
-                                        </select>
-                                        <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-poodle-200 text-[10px] pointer-events-none"></i>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Target Count</span>
-                                    <input type="number" id="recruitmentCount" value="1" class="w-full bg-white border border-poodle-100 rounded-2xl p-5 font-black text-sm text-center focus:border-meatball outline-none">
-                                </div>
-                            </div>
-                            <button class="text-poodle-200 hover:text-red-400 p-2 transition-colors mb-2 md:mb-0"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="p-8 bg-poodle-50 border border-poodle-50 rounded-4xl flex flex-col gap-8 relative">
+                            <div id="positionRows" class="space-y-4"></div>
+                            <input type="hidden" id="recruitmentCount" value="0">
                         </div>
                     </div>
 
                     <div class="pt-10 border-t border-poodle-50 space-y-6">
-                        <label class="text-sm font-black text-poodle-900 ml-1">핵심 기술 스택 (Maximum 10)</label>
-                        <div class="flex gap-4">
-                            <input type="text" id="techStackInput" placeholder="기술 스택을 입력하세요 (예: Spring, Figma)"
-                                class="flex-grow bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-bold focus:bg-white outline-none transition-all placeholder:text-poodle-200"
-                                onkeypress="if(event.key === 'Enter') { event.preventDefault(); addTechStack(); }">
-                            <button type="button" onclick="addTechStack()" class="px-10 bg-poodle-600 text-white rounded-2xl font-black hover:bg-meatball hover:text-poodle-900 transition-all uppercase tracking-widest text-sm shadow-lg shadow-poodle-600/10 active:scale-95">ADD</button>
-                        </div>
-                        <div id="techStackTags" class="flex flex-wrap gap-3 pt-2">
-                            <span class="text-xs font-bold text-poodle-300">추가된 기술 스택이 없습니다.</span>
-                        </div>
+                        <label class="text-sm font-black text-poodle-900 ml-1">핵심 기술 스택</label>
+                        <div id="techStackOptions" class="flex flex-wrap gap-3"></div>
                     </div>
                 </div>
 
@@ -194,39 +169,37 @@
                             <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
                                 <span class="w-1 h-1 bg-meatball rounded-full"></span> Requirements
                             </label>
-                            <input type="text" placeholder="필수 요건 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
+	                            <input type="text" id="requirements" placeholder="필수 요건 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
                         </div>
                         <div class="space-y-4">
                             <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
                                 <span class="w-1 h-1 bg-poodle-200 rounded-full"></span> Preferences
                             </label>
-                            <input type="text" placeholder="우대 사항 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
+	                            <input type="text" id="preferences" placeholder="우대 사항 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
                         </div>
                     </div>
 
                     <div class="pt-8 border-t border-poodle-50 space-y-8">
                         <!-- File Upload -->
-                        <div class="border-3 border-dashed border-poodle-50 rounded-4xl p-16 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-poodle-50/20">
-                            <div class="w-20 h-20 bg-white rounded-3xl shadow-lg border border-poodle-50 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-cloud-upload text-3xl text-meatball"></i>
-                            </div>
-                            <h3 class="text-lg font-black text-poodle-900 mb-2">기획서 및 관련 자료</h3>
-                            <p class="text-xs font-bold text-poodle-300">PDF, JPG, PNG 파일을 드래그하여 올려주세요 (최대 10MB)</p>
-                        </div>
+	                        <div class="border-3 border-dashed border-poodle-50 rounded-4xl p-16 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-poodle-50/20"
+                                 onclick="document.getElementById('planningFile').click()">
+                                <input type="file" id="planningFile" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx" onchange="updatePlanningFileLabel()">
+	                            <div class="w-20 h-20 bg-white rounded-3xl shadow-lg border border-poodle-50 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+	                                <i class="fa-solid fa-cloud-upload text-3xl text-meatball"></i>
+	                            </div>
+	                            <h3 class="text-lg font-black text-poodle-900 mb-2">기획서 및 관련 자료</h3>
+	                            <p id="planningFileLabel" class="text-xs font-bold text-poodle-300">PDF, JPG, PNG 파일을 선택해주세요 (최대 50MB)</p>
+	                        </div>
 
                         <!-- Link Inputs -->
                         <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-black text-poodle-900 ml-1">관련 링크 Registration</label>
-                                <button class="px-5 py-2 bg-poodle-50 text-poodle-400 rounded-xl font-black text-[10px] hover:text-meatball transition-all flex items-center gap-2">
-                                    <i class="fa-solid fa-link text-[8px]"></i> Add Link
-                                </button>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-4 items-center">
-                                <input type="text" placeholder="LINK NAME" class="w-full sm:w-1/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
-                                <input type="url" placeholder="HTTPS://..." class="w-full sm:w-2/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
-                                <button class="p-3 text-poodle-100 hover:text-red-400 transition-colors"><i class="fa-solid fa-circle-minus text-xl"></i></button>
-                            </div>
+	                            <div class="flex items-center justify-between">
+	                                <label class="text-sm font-black text-poodle-900 ml-1">관련 링크 Registration</label>
+	                            </div>
+	                            <div class="flex flex-col sm:flex-row gap-4 items-center">
+	                                <input type="text" id="linkTitle" placeholder="LINK NAME" class="w-full sm:w-1/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
+	                                <input type="url" id="linkUrl" placeholder="HTTPS://..." class="w-full sm:w-2/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
+	                            </div>
                         </div>
                     </div>
                 </div>
@@ -283,93 +256,249 @@
     </main>
 
     <script>
+        const POSITION_OPTIONS = window.meetballPositionOptions;
+        const TECH_STACK_OPTIONS = window.meetballTechStackOptions;
+        const positions = [{ name: '', count: 1 }];
         const techStacks = [];
 
-        function addTechStack() {
-            const input = document.getElementById('techStackInput');
-            const value = input.value.trim();
-            if (!value) return;
-            if (techStacks.length >= 10) {
-                alert('기술 스택은 최대 10개까지 추가할 수 있습니다.');
-                return;
-            }
-            if (!techStacks.some(tech => tech.toLowerCase() === value.toLowerCase())) {
-                techStacks.push(value);
-            }
-            input.value = '';
-            renderTechStacks();
+        async function addPositionRow() {
+            if (!validatePositionRows({ showAlert: true })) return;
+            positions.push({ name: '', count: 1 });
+            renderPositions();
         }
 
-        function removeTechStack(index) {
-            techStacks.splice(index, 1);
-            renderTechStacks();
-        }
-
-        function renderTechStacks() {
-            const container = document.getElementById('techStackTags');
-            if (techStacks.length === 0) {
-                container.innerHTML = '<span class="text-xs font-bold text-poodle-300">추가된 기술 스택이 없습니다.</span>';
+        function updatePositionRow(index, field, value) {
+            if (!positions[index]) return;
+            positions[index][field] = field === 'count' ? Math.max(1, parseInt(value, 10) || 1) : value;
+            if (field === 'count') {
+                document.getElementById('recruitmentCount').value = calculateTotalRecruitment();
                 return;
             }
-            container.innerHTML = techStacks.map((tech, index) => `
-                <span class="px-5 py-2.5 bg-white text-poodle-700 rounded-xl text-xs font-black border border-poodle-100 shadow-sm flex items-center gap-3 group animate-fade-in">
-                    ${window.meetballEscapeHtml(tech)}
-                    <button type="button" onclick="removeTechStack(${index})" class="text-poodle-200 group-hover:text-red-400 transition-colors">
-                        <i class="fa-solid fa-xmark text-[10px]"></i>
-                    </button>
-                </span>
+            renderPositions();
+        }
+
+        function removePositionRow(index) {
+            if (positions.length === 1) {
+                positions[0] = { name: '', count: 1 };
+            } else {
+                positions.splice(index, 1);
+            }
+            renderPositions();
+        }
+
+        function renderPositions() {
+            const container = document.getElementById('positionRows');
+            container.innerHTML = positions.map((position, index) => {
+                const selectedNames = positions
+                    .map((item, itemIndex) => itemIndex === index ? null : item.name)
+                    .filter(Boolean);
+                const options = POSITION_OPTIONS.map(option => {
+                    const disabled = selectedNames.includes(option) ? 'disabled' : '';
+                    const selected = option === position.name ? 'selected' : '';
+                    return `<option value="${window.meetballEscapeHtml(option)}" ${selected} ${disabled}>${window.meetballEscapeHtml(option)}</option>`;
+                }).join('');
+                const removable = positions.length > 1 || position.name;
+                return `
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_10rem_auto] gap-5 w-full items-end p-5 bg-white rounded-3xl border border-poodle-100 shadow-sm animate-fade-in">
+                        <div class="space-y-2">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Position ${index + 1}</span>
+                            <select onchange="updatePositionRow(${index}, 'name', this.value)"
+                                    class="w-full bg-poodle-50 border border-poodle-100 rounded-2xl p-5 font-black text-sm outline-none focus:bg-white focus:border-meatball">
+                                <option value="">포지션 선택</option>
+                                ${options}
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Headcount</span>
+                            <input type="number" value="${position.count}" min="1"
+                                   oninput="updatePositionRow(${index}, 'count', this.value)"
+                                   class="w-full bg-poodle-50 border border-poodle-100 rounded-2xl p-5 font-black text-sm text-center focus:bg-white focus:border-meatball outline-none">
+                        </div>
+                        <button type="button" onclick="removePositionRow(${index})" ${removable ? '' : 'disabled'}
+                                class="w-full md:w-14 h-14 bg-poodle-50 text-poodle-300 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition-all disabled:opacity-40 disabled:hover:bg-poodle-50 disabled:hover:text-poodle-300">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('recruitmentCount').value = calculateTotalRecruitment();
+        }
+
+        function calculateTotalRecruitment() {
+            return positions
+                .filter(position => position.name)
+                .reduce((sum, position) => sum + Math.max(1, Number(position.count) || 1), 0);
+        }
+
+        function validatePositionRows({ showAlert = false } = {}) {
+            const filledRows = positions.filter(position => position.name);
+            const hasPartialRow = positions.some(position => !position.name && Number(position.count || 1) !== 1);
+            const duplicate = filledRows.find((position, index) =>
+                filledRows.findIndex(item => item.name === position.name) !== index
+            );
+            const invalidCount = filledRows.some(position => !Number.isInteger(Number(position.count)) || Number(position.count) < 1);
+            if (filledRows.length === 0 || hasPartialRow) {
+                if (showAlert) meetballAlert('포지션을 선택해주세요.');
+                return false;
+            }
+            if (duplicate) {
+                if (showAlert) meetballAlert('중복된 포지션은 추가할 수 없습니다.');
+                return false;
+            }
+            if (invalidCount) {
+                if (showAlert) meetballAlert('포지션별 인원은 1명 이상이어야 합니다.');
+                return false;
+            }
+            return true;
+        }
+
+        function collectPositionCsv() {
+            return positions
+                .filter(position => position.name)
+                .map(position => `${position.name}:${Math.max(1, Number(position.count) || 1)}`)
+                .join(', ');
+        }
+
+        function toggleTechStack(tech) {
+            const index = techStacks.indexOf(tech);
+            if (index >= 0) {
+                techStacks.splice(index, 1);
+            } else {
+                techStacks.push(tech);
+            }
+            updateTechStackOptionState();
+        }
+
+	        function collectTechStackCsv() {
+	            return techStacks.join(', ');
+	        }
+
+        function renderTechStackOptions() {
+            const container = document.getElementById('techStackOptions');
+            container.innerHTML = TECH_STACK_OPTIONS.map(tech => `
+                <button type="button" data-tech="${window.meetballEscapeHtml(tech)}" onclick="toggleTechStack(this.dataset.tech)"
+                        class="tech-option min-h-[4rem] px-5 py-3 bg-white text-poodle-700 rounded-full text-base font-black border border-poodle-100 hover:border-meatball/40 hover:text-poodle-900 transition-all inline-flex items-center gap-3 shadow-sm">
+                    ${techStackLogoHtml(tech)}
+                    <span>${window.meetballEscapeHtml(tech)}</span>
+                    <i data-check-icon class="fa-solid fa-check hidden text-xs text-meatball"></i>
+                </button>
             `).join('');
+            updateTechStackOptionState();
         }
 
-        function collectTechStackCsv() {
-            const pending = document.getElementById('techStackInput').value.trim();
-            const values = [...techStacks];
-            if (pending && !values.some(tech => tech.toLowerCase() === pending.toLowerCase())) {
-                values.push(pending);
-            }
-            return values.slice(0, 10).join(', ');
+        function techStackLogoHtml(tech, selected = false) {
+            return window.meetballTechStackLogoHtml(tech, selected);
         }
 
-        async function submitProject() {
-            const payload = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                projectType: document.getElementById('projectType').value,
-                progressMethod: document.getElementById('progressMethod').value,
-                position: document.getElementById('position').value,
+        function updateTechStackOptionState() {
+            document.querySelectorAll('.tech-option').forEach(button => {
+                const selected = techStacks.includes(button.dataset.tech);
+                button.classList.toggle('bg-poodle-900', selected);
+                button.classList.toggle('text-white', selected);
+                button.classList.toggle('border-poodle-900', selected);
+                button.classList.toggle('shadow-lg', selected);
+                button.classList.toggle('shadow-poodle-900/15', selected);
+                button.classList.toggle('bg-white', !selected);
+                button.classList.toggle('text-poodle-700', !selected);
+                button.classList.toggle('border-poodle-100', !selected);
+                button.querySelector('[data-check-icon]')?.classList.toggle('hidden', !selected);
+            });
+        }
+
+	        function updatePlanningFileLabel() {
+	            const file = document.getElementById('planningFile').files[0];
+	            document.getElementById('planningFileLabel').innerText = file ? file.name : 'PDF, JPG, PNG 파일을 선택해주세요 (최대 50MB)';
+	        }
+
+	        function buildDescription() {
+	            const description = document.getElementById('description').value.trim();
+	            const requirements = document.getElementById('requirements').value.trim();
+	            const preferences = document.getElementById('preferences').value.trim();
+	            const sections = [description];
+	            if (requirements) sections.push(`[필수 요건]\n${requirements}`);
+	            if (preferences) sections.push(`[우대 사항]\n${preferences}`);
+	            return sections.filter(Boolean).join('\n\n');
+	        }
+
+	        async function uploadOptionalArtifacts(projectId) {
+	            const file = document.getElementById('planningFile').files[0];
+	            if (file) {
+	                const formData = new FormData();
+	                formData.append('file', file);
+	                const fileResponse = await meetballFetch(`/api/projects/${projectId}/attachments`, {
+	                    method: 'POST',
+	                    body: formData
+	                });
+	                if (!fileResponse.ok) {
+	                    throw new Error('file-upload-failed');
+	                }
+	            }
+
+	            const linkTitle = document.getElementById('linkTitle').value.trim();
+	            const linkUrl = document.getElementById('linkUrl').value.trim();
+	            if (linkUrl) {
+	                const linkResponse = await meetballFetch(`/api/projects/${projectId}/attachments/links`, {
+	                    method: 'POST',
+	                    headers: { 'Content-Type': 'application/json' },
+	                    body: JSON.stringify({ title: linkTitle || '관련 링크', url: linkUrl })
+	                });
+	                if (!linkResponse.ok) {
+	                    throw new Error('link-upload-failed');
+	                }
+	            }
+	        }
+
+	        async function submitProject() {
+	            const payload = {
+	                title: document.getElementById('title').value,
+	                description: buildDescription(),
+	                projectType: document.getElementById('projectType').value,
+	                progressMethod: document.getElementById('progressMethod').value,
+                position: collectPositionCsv(),
                 techStackCsv: collectTechStackCsv(),
                 recruitmentCount: parseInt(document.getElementById('recruitmentCount').value, 10),
                 recruitmentStartAt: document.getElementById('recruitmentStartAt').value,
                 recruitmentEndAt: document.getElementById('recruitmentEndAt').value,
                 projectStartAt: document.getElementById('projectStartAt').value,
                 projectEndAt: document.getElementById('projectEndAt').value,
-                closed: false
+                closed: false,
+                completed: false
             };
 
-            if (!payload.title || !payload.projectType || !payload.description) {
-                alert('기본 정보를 모두 입력해주세요!');
-                return;
-            }
+	            if (!payload.title || !payload.projectType || !payload.description) {
+	                await meetballAlert('기본 정보를 모두 입력해주세요!');
+	                return;
+	            }
+	            if (!payload.progressMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 1 || !payload.techStackCsv) {
+	                await meetballAlert('모집 정보를 모두 입력해주세요!');
+	                return;
+	            }
 
-            try {
-                const response = await meetballFetch('/api/projects', {
+	            try {
+	                const response = await meetballFetch('/api/projects', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    alert('성공적으로 프로젝트가 생성되었습니다!');
-                    window.location.href = `/projects/${data.id}`;
+	                if (response.ok) {
+	                    const data = await response.json();
+	                    await uploadOptionalArtifacts(data.id);
+	                    await meetballAlert('성공적으로 프로젝트가 생성되었습니다!');
+	                    window.location.href = `/projects/${data.id}`;
                 } else {
-                    alert('프로젝트 등록에 실패했습니다. (' + response.status + ')');
+                    await meetballAlert('프로젝트 등록에 실패했습니다. (' + response.status + ')', { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);
-                alert('요청 중 오류가 발생했습니다.');
+                await meetballAlert('요청 중 오류가 발생했습니다.', { type: 'error' });
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPositions();
+            renderTechStackOptions();
+        });
     </script>
 </body>
 </html>

@@ -19,4 +19,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 추가된 메서드: 작성자가 해당 프로젝트에 대해 어떤 리뷰라도 남긴 적이 있는지 확인
     boolean existsByProjectAndReviewer(Project project, User reviewer);
+
+    void deleteByProject(Project project);
 }

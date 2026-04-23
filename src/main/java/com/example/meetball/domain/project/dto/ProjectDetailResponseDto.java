@@ -2,62 +2,124 @@ package com.example.meetball.domain.project.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ProjectDetailResponseDto {
 
     private Long id;
     private String title;
+    private String summary;
     private String description;
     private String projectType;
     private String progressMethod;
+    private String position;
+    private Long leaderUserId;
+    private String leaderName;
+    private String leaderRole;
+    private String leaderAvatarUrl;
+    private String thumbnailUrl;
+    private Integer currentRecruitment;
+    private Integer totalRecruitment;
     private Integer recruitmentCount;
     private LocalDate recruitmentStartAt;
     private LocalDate recruitmentEndAt;
     private LocalDate projectStartAt;
     private LocalDate projectEndAt;
     private Boolean closed;
+    private Boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String techStackCsv;
+    private List<String> techStacks;
+    private int readCount;
 
     public ProjectDetailResponseDto(Long id, String title, String description, String projectType,
                                     String progressMethod, Integer recruitmentCount, LocalDate recruitmentStartAt,
                                     LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
                                     Boolean closed, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, title, null, description, projectType, progressMethod, null, null, null, null, null, null,
+                null, null, recruitmentCount, recruitmentStartAt, recruitmentEndAt, projectStartAt,
+                projectEndAt, closed, false, createdAt, updatedAt, null, List.of(), 0);
+    }
+
+    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectType,
+                                    String progressMethod, String position, Long leaderUserId, String leaderName,
+                                    String leaderRole, String leaderAvatarUrl, String thumbnailUrl, Integer currentRecruitment,
+                                    Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
+                                    LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
+                                    Boolean closed, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                    String techStackCsv, List<String> techStacks) {
+        this(id, title, summary, description, projectType, progressMethod, position, leaderUserId, leaderName,
+                leaderRole, leaderAvatarUrl, thumbnailUrl, currentRecruitment, totalRecruitment, recruitmentCount,
+                recruitmentStartAt, recruitmentEndAt, projectStartAt, projectEndAt, closed, completed, createdAt,
+                updatedAt, techStackCsv, techStacks, 0);
+    }
+
+    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectType,
+                                    String progressMethod, String position, Long leaderUserId, String leaderName,
+                                    String leaderRole, String leaderAvatarUrl, String thumbnailUrl, Integer currentRecruitment,
+                                    Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
+                                    LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
+                                    Boolean closed, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                    String techStackCsv, List<String> techStacks, int readCount) {
         this.id = id;
         this.title = title;
+        this.summary = summary;
         this.description = description;
         this.projectType = projectType;
         this.progressMethod = progressMethod;
+        this.position = position;
+        this.leaderUserId = leaderUserId;
+        this.leaderName = leaderName;
+        this.leaderRole = leaderRole;
+        this.leaderAvatarUrl = leaderAvatarUrl;
+        this.thumbnailUrl = thumbnailUrl;
+        this.currentRecruitment = currentRecruitment;
+        this.totalRecruitment = totalRecruitment;
         this.recruitmentCount = recruitmentCount;
         this.recruitmentStartAt = recruitmentStartAt;
         this.recruitmentEndAt = recruitmentEndAt;
         this.projectStartAt = projectStartAt;
         this.projectEndAt = projectEndAt;
         this.closed = closed;
+        this.completed = completed;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.techStackCsv = techStackCsv;
+        this.techStacks = techStacks == null ? List.of() : techStacks;
+        this.readCount = readCount;
     }
 
     public Long getId() { return id; }
     public String getTitle() { return title; }
+    public String getSummary() { return summary; }
     public String getDescription() { return description; }
     public String getProjectType() { return projectType; }
     public String getProgressMethod() { return progressMethod; }
+    public String getPosition() { return position; }
+    public Long getLeaderUserId() { return leaderUserId; }
+    public String getLeaderName() { return leaderName; }
+    public String getLeaderRole() { return leaderRole; }
+    public String getLeaderAvatarUrl() { return leaderAvatarUrl; }
+    public Integer getCurrentRecruitment() { return currentRecruitment; }
+    public Integer getTotalRecruitment() { return totalRecruitment; }
     public Integer getRecruitmentCount() { return recruitmentCount; }
     public LocalDate getRecruitmentStartAt() { return recruitmentStartAt; }
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }
     public LocalDate getProjectStartAt() { return projectStartAt; }
     public LocalDate getProjectEndAt() { return projectEndAt; }
     public Boolean getClosed() { return closed; }
+    public Boolean getCompleted() { return completed; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public String getTechStackCsv() { return techStackCsv; }
 
-    // --- Helper methods for Thymeleaf ---
     public String getThumbnailUrl() {
-        return "https://picsum.photos/seed/" + (id != null ? id : "default") + "/1200/600";
+        return thumbnailUrl;
     }
 
     public String getDeadlineLabel() {
+        if (completed != null && completed) return "완료됨";
         if (closed != null && closed) return "마감됨";
         if (recruitmentEndAt == null) return "진행 중";
         long days = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), recruitmentEndAt);
@@ -72,7 +134,10 @@ public class ProjectDetailResponseDto {
     }
 
     public java.util.List<String> getTechStacks() {
-        // 임시 더미 혹은 기본값 반환. 원래는 Project 엔티티에서 가져와야 함.
-        return java.util.Arrays.asList("Java", "Spring", "MySQL");
+        return techStacks;
+    }
+
+    public int getReadCount() {
+        return readCount;
     }
 }
