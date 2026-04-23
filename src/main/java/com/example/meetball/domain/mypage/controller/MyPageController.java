@@ -4,6 +4,8 @@ import com.example.meetball.domain.projectapplication.dto.ProjectApplicationResp
 import com.example.meetball.domain.bookmarkedproject.dto.BookmarkedProjectResponse;
 import com.example.meetball.domain.mypage.dto.MyPageProfileResponse;
 import com.example.meetball.domain.mypage.service.MyPageService;
+import com.example.meetball.domain.profile.dto.ProfileOnboardingRequest;
+import com.example.meetball.domain.profile.entity.Profile;
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.viewhistory.dto.ViewHistoryProjectResponse;
 import com.example.meetball.domain.review.dto.PeerReviewResponse;
@@ -37,8 +39,30 @@ public class MyPageController {
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId,
             HttpSession session) {
         Long currentProfileId = requireSessionProfile(sessionProfileId);
-        myPageService.updateProfile(currentProfileId, request);
-        session.setAttribute("profileNickname", request.getNickname());
+        try {
+            myPageService.updateProfile(currentProfileId, request);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        }
+        if (request.getNickname() != null && !request.getNickname().isBlank()) {
+            session.setAttribute("profileNickname", request.getNickname());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/onboarding")
+    public ResponseEntity<Void> completeOnboarding(
+            @RequestBody ProfileOnboardingRequest request,
+            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId,
+            HttpSession session) {
+        Long currentProfileId = requireSessionProfile(sessionProfileId);
+        Profile profile;
+        try {
+            profile = myPageService.completeOnboarding(currentProfileId, request);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        }
+        session.setAttribute("profileNickname", profile.getNickname());
         session.removeAttribute("needsProfile");
         return ResponseEntity.ok().build();
     }

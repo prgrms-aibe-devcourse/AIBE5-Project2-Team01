@@ -11,6 +11,7 @@ import com.example.meetball.domain.viewhistory.dto.ViewHistoryProjectResponse;
 import com.example.meetball.domain.viewhistory.service.ViewHistoryService;
 import com.example.meetball.domain.review.dto.PeerReviewResponse;
 import com.example.meetball.domain.review.service.ReviewService;
+import com.example.meetball.domain.profile.dto.ProfileOnboardingRequest;
 import com.example.meetball.domain.profile.dto.ProfileUpdateRequest;
 import com.example.meetball.domain.profile.entity.Profile;
 import com.example.meetball.domain.profile.service.ProfileService;
@@ -48,6 +49,11 @@ public class MyPageService {
     @Transactional
     public void updateProfile(Long profileId, ProfileUpdateRequest request) {
         profileService.updateProfile(profileId, request);
+    }
+
+    @Transactional
+    public Profile completeOnboarding(Long profileId, ProfileOnboardingRequest request) {
+        return profileService.completeOnboarding(profileId, request);
     }
 
     @Transactional(readOnly = true)

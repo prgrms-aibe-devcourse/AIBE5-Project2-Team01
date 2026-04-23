@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -117,17 +117,25 @@ public class Profile {
     }
 
     public void replacePosition(Position position) {
+        replacePosition(position, null);
+    }
+
+    public void replacePosition(Position position, String experienceYears) {
         if (position == null) {
             this.positionSelections.clear();
             return;
         }
 
         this.positionSelections.removeIf(existing -> !Objects.equals(position.getId(), existing.getPositionId()));
-        boolean alreadySelected = this.positionSelections.stream()
-                .anyMatch(existing -> Objects.equals(position.getId(), existing.getPositionId()));
-        if (!alreadySelected) {
-            this.positionSelections.add(new ProfilePosition(this, position));
+        ProfilePosition selectedPosition = this.positionSelections.stream()
+                .filter(existing -> Objects.equals(position.getId(), existing.getPositionId()))
+                .findFirst()
+                .orElse(null);
+        if (selectedPosition == null) {
+            this.positionSelections.add(new ProfilePosition(this, position, experienceYears));
+            return;
         }
+        selectedPosition.updateExperienceYears(experienceYears);
     }
 
     public void replaceTechStacks(List<TechStack> techStacks) {
@@ -164,12 +172,40 @@ public class Profile {
         return account != null ? account.getEmail() : "";
     }
 
+    public String getPhoneNumber() {
+        return account != null ? account.getPhoneNumber() : "";
+    }
+
+    public LocalDate getBirthDate() {
+        return account != null ? account.getBirthDate() : null;
+    }
+
+    public String getGender() {
+        return account != null ? account.getGender() : "";
+    }
+
     public String getJobTitle() {
         return positionSelections.stream()
                 .map(ProfilePosition::getPositionName)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse("");
+    }
+
+    public String getExperienceYears() {
+        return positionSelections.stream()
+                .map(ProfilePosition::getExperienceYears)
+                .filter(Objects::nonNull)
+                .filter(value -> !value.isBlank())
+                .findFirst()
+                .orElse("");
+    }
+
+    public List<String> getTechStackNames() {
+        return techStackSelections.stream()
+                .map(ProfileTechStack::getTechStackName)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public String getTechStack() {
@@ -190,6 +226,16 @@ public class Profile {
         return !PROFILE_STATUS_INCOMPLETE.equals(profileStatus)
                 && nickname != null
                 && !nickname.isBlank()
+                && account != null
+                && account.getPhoneNumber() != null
+                && !account.getPhoneNumber().isBlank()
+                && account.getBirthDate() != null
+                && account.getGender() != null
+                && !account.getGender().isBlank()
+                && organization != null
+                && !organization.isBlank()
+                && getExperienceYears() != null
+                && !getExperienceYears().isBlank()
                 && !positionSelections.isEmpty()
                 && !techStackSelections.isEmpty();
     }
@@ -202,11 +248,43 @@ public class Profile {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void completeOnboarding(
+            String phoneNumber,
+            LocalDate birthDate,
+            String gender,
+            Position position,
+            String experienceYears,
+            String organization,
+            boolean orgVisible,
+            List<TechStack> techStacks
+    ) {
+        if (account != null) {
+            account.updateBasicInfo(phoneNumber, birthDate, gender);
+        }
+        this.organization = sanitizeText(organization, 100);
+        this.orgVisible = orgVisible;
+        this.updatedAt = LocalDateTime.now();
+        replacePosition(position, experienceYears);
+        replaceTechStacks(techStacks);
+        this.profileStatus = PROFILE_STATUS_PUBLIC;
+    }
+
     private static String sanitizeNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {
             return "Meetball_" + System.currentTimeMillis();
         }
         String trimmed = nickname.trim();
         return trimmed.length() <= 30 ? trimmed : trimmed.substring(0, 30);
+    }
+
+    private static String sanitizeText(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
     }
 }

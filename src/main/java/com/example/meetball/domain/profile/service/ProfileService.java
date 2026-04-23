@@ -6,6 +6,7 @@ import com.example.meetball.domain.position.entity.Position;
 import com.example.meetball.domain.techstack.entity.TechStack;
 import com.example.meetball.domain.position.repository.PositionRepository;
 import com.example.meetball.domain.techstack.repository.TechStackRepository;
+import com.example.meetball.domain.profile.dto.ProfileOnboardingRequest;
 import com.example.meetball.domain.profile.dto.ProfileUpdateRequest;
 import com.example.meetball.domain.profile.entity.Profile;
 import com.example.meetball.domain.profile.repository.ProfileRepository;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -67,6 +69,47 @@ public class ProfileService {
                 techStacks,
                 request.isPublic()
         );
+    }
+
+    @Transactional
+    public Profile completeOnboarding(Long profileId, ProfileOnboardingRequest request) {
+        Profile profile = getProfileById(profileId);
+
+        String normalizedPhoneNumber = requireText(request.getPhoneNumber(), "전화번호를 입력해주세요.", 30);
+        if (request.getBirthDate() == null) {
+            throw new IllegalArgumentException("생년월일을 입력해주세요.");
+        }
+        if (request.getBirthDate().isAfter(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("생년월일은 오늘 이후일 수 없습니다.");
+        }
+
+        String normalizedGender = normalizeGender(request.getGender());
+        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getJobTitle());
+        String normalizedExperienceYears = requireText(request.getExperienceYears(), "경력을 선택해주세요.", 255);
+        String normalizedOrganization = requireText(request.getOrganization(), "소속을 입력해주세요.", 100);
+        List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());
+        if (normalizedTechStacks.isEmpty()) {
+            throw new IllegalArgumentException("기술 스택을 1개 이상 선택해주세요.");
+        }
+
+        Position position = positionRepository.findByName(normalizedPosition)
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 포지션입니다: " + normalizedPosition));
+        List<TechStack> techStacks = normalizedTechStacks.stream()
+                .map(techStack -> techStackRepository.findByName(techStack)
+                        .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 기술스택입니다: " + techStack)))
+                .toList();
+
+        profile.completeOnboarding(
+                normalizedPhoneNumber,
+                request.getBirthDate(),
+                normalizedGender,
+                position,
+                normalizedExperienceYears,
+                normalizedOrganization,
+                request.isOrgVisible(),
+                techStacks
+        );
+        return profile;
     }
 
     @Value("${google.client.id:}")
@@ -122,5 +165,25 @@ public class ProfileService {
         int atIndex = email.indexOf('@');
         String prefix = atIndex > 0 ? email.substring(0, atIndex) : email;
         return prefix.isBlank() ? "Meetball_" + System.currentTimeMillis() : prefix;
+    }
+
+    private String requireText(String value, String message, int maxLength) {
+        if (value == null) {
+            throw new IllegalArgumentException(message);
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            throw new IllegalArgumentException(message);
+        }
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
+    }
+
+    private String normalizeGender(String gender) {
+        String normalizedGender = requireText(gender, "성별을 선택해주세요.", 10);
+        Set<String> allowed = Set.of("남성", "여성", "기타", "선택 안 함");
+        if (!allowed.contains(normalizedGender)) {
+            throw new IllegalArgumentException("지원하지 않는 성별 값입니다.");
+        }
+        return normalizedGender;
     }
 }

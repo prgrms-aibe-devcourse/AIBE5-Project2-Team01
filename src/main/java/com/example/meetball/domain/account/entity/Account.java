@@ -80,4 +80,22 @@ public class Account {
         }
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateBasicInfo(String phoneNumber, LocalDate birthDate, String gender) {
+        this.phoneNumber = sanitize(phoneNumber, 30);
+        this.birthDate = birthDate;
+        this.gender = sanitize(gender, 10);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    private String sanitize(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
+    }
 }

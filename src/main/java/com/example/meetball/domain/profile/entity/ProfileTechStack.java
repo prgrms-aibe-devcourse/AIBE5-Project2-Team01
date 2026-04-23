@@ -30,7 +30,7 @@ public class ProfileTechStack {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tech_stack_id", nullable = false)
     private TechStack techStack;
 

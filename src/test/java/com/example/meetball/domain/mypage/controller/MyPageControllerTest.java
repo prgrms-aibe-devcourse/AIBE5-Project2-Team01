@@ -1,5 +1,7 @@
 package com.example.meetball.domain.mypage.controller;
 
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.service.ProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -20,6 +24,9 @@ class MyPageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ProfileService profileService;
 
     private MockHttpSession session(Long profileId) {
         MockHttpSession session = new MockHttpSession();
@@ -115,6 +122,42 @@ class MyPageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.jobTitle").value("백엔드"))
                 .andExpect(jsonPath("$.techStack").value("Java, Spring"));
+    }
+
+    @Test
+    @DisplayName("최초 로그인 온보딩은 account와 profile 정보를 함께 저장한다")
+    void completeOnboardingPersistsAccountAndProfileData() throws Exception {
+        MockHttpSession session = session(3L);
+        session.setAttribute("needsProfile", true);
+
+        mockMvc.perform(put("/api/mypage/onboarding")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "phoneNumber": "010-9876-5432",
+                                  "birthDate": "1998-07-15",
+                                  "gender": "여성",
+                                  "jobTitle": "디자이너",
+                                  "experienceYears": "1~3년",
+                                  "organization": "Meetball Studio",
+                                  "orgVisible": true,
+                                  "techStacks": ["Figma", "Zeplin"]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(request().sessionAttributeDoesNotExist("needsProfile"));
+
+        Profile profile = profileService.getProfileById(3L);
+        assertThat(profile.getPhoneNumber()).isEqualTo("010-9876-5432");
+        assertThat(profile.getBirthDate()).hasToString("1998-07-15");
+        assertThat(profile.getGender()).isEqualTo("여성");
+        assertThat(profile.getJobTitle()).isEqualTo("디자이너");
+        assertThat(profile.getExperienceYears()).isEqualTo("1~3년");
+        assertThat(profile.getOrganization()).isEqualTo("Meetball Studio");
+        assertThat(profile.isOrgVisible()).isTrue();
+        assertThat(profile.getTechStackNames()).containsExactlyInAnyOrder("Figma", "Zeplin");
+        assertThat(profile.isProfileComplete()).isTrue();
     }
 
     @Test

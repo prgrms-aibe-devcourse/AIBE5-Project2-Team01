@@ -31,7 +31,7 @@ public class ProfilePosition {
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "position_id", nullable = false)
     private Position position;
 
@@ -39,8 +39,13 @@ public class ProfilePosition {
     private String experienceYears;
 
     public ProfilePosition(Profile profile, Position position) {
+        this(profile, position, null);
+    }
+
+    public ProfilePosition(Profile profile, Position position, String experienceYears) {
         this.profile = profile;
         this.position = position;
+        this.experienceYears = sanitize(experienceYears);
     }
 
     public String getPositionName() {
@@ -49,5 +54,20 @@ public class ProfilePosition {
 
     public Long getPositionId() {
         return position != null ? position.getId() : null;
+    }
+
+    public void updateExperienceYears(String experienceYears) {
+        this.experienceYears = sanitize(experienceYears);
+    }
+
+    private String sanitize(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() <= 255 ? trimmed : trimmed.substring(0, 255);
     }
 }

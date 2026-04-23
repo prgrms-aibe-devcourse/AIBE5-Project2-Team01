@@ -49,8 +49,8 @@ class AuthViewControllerTest {
     }
 
     @Test
-    @DisplayName("최초 로그인 프로필 모달은 직무 자유 입력 대신 포지션 선택을 렌더링한다")
-    void welcomeProfileModalRendersPositionSelector() throws Exception {
+    @DisplayName("최초 로그인 온보딩 모달은 계정, 프로필, 기술스택 3단계를 렌더링한다")
+    void welcomeProfileModalRendersThreeStepOnboarding() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("profileId", 1L);
         session.setAttribute("needsProfile", true);
@@ -58,12 +58,24 @@ class AuthViewControllerTest {
         mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"welcomeProfileModal\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"1\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"2\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"3\"")))
+                .andExpect(content().string(containsString("계정 정보")))
+                .andExpect(content().string(containsString("프로필")))
+                .andExpect(content().string(containsString("기술 스택")))
+                .andExpect(content().string(containsString("id=\"welcomePhoneNumber\"")))
+                .andExpect(content().string(containsString("id=\"welcomeBirthDate\"")))
+                .andExpect(content().string(containsString("id=\"welcomeGenderOptions\"")))
                 .andExpect(content().string(containsString("id=\"welcomeJobTitle\"")))
                 .andExpect(content().string(containsString("id=\"welcomePositionOptions\"")))
+                .andExpect(content().string(containsString("id=\"welcomeExperienceOptions\"")))
+                .andExpect(content().string(containsString("id=\"welcomeOrganization\"")))
                 .andExpect(content().string(containsString("meetballPositionOptions")))
+                .andExpect(content().string(containsString("/api/mypage/onboarding")))
                 .andExpect(content().string(containsString("포지션을 선택해주세요.")))
-                .andExpect(content().string(not(containsString("Current Role / Job"))))
-                .andExpect(content().string(not(containsString("placeholder=\"예시) 백엔드 개발자, UI/UX 디자이너\""))));
+                .andExpect(content().string(not(containsString("name=\"nickname\""))))
+                .andExpect(content().string(not(containsString("Current Role / Job"))));
     }
 
     @Test
@@ -78,9 +90,11 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("data-text=\"continue_with\"")))
                 .andExpect(content().string(containsString("data-logo_alignment=\"right\"")))
                 .andExpect(content().string(containsString("/api/auth/google")))
+                .andExpect(content().string(containsString("Google 로그인")))
                 .andExpect(content().string(containsString("Github 로그인 준비중")))
                 .andExpect(content().string(containsString("Kakao 로그인 준비중")))
                 .andExpect(content().string(containsString("Naver 로그인 준비중")))
+                .andExpect(content().string(containsString("aria-label=\"Google logo\"")))
                 .andExpect(content().string(containsString("aria-label=\"Kakao logo\"")))
                 .andExpect(content().string(containsString("aria-label=\"Naver logo\"")));
     }
