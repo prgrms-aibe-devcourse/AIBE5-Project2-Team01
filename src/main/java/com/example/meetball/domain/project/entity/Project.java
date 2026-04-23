@@ -8,12 +8,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class Project {
@@ -34,9 +36,6 @@ public class Project {
 
     @Column(name = "project_type", length = 40)
     private String projectType;
-
-    @Column(length = 1000)
-    private String position;
 
     @Column(name = "progress_method")
     private String progressMethod;
@@ -84,9 +83,6 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(length = 1000)
-    private String techStackCsv;
-
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC, id ASC")
     private List<ProjectTechStack> techStackSelections = new ArrayList<>();
@@ -132,16 +128,13 @@ public class Project {
         this.recruitmentDeadline = recruitmentEndAt;
         this.totalRecruitment = recruitmentCount;
         this.currentRecruitment = 0;
-        this.position = "";
         this.leaderName = "Unknown";
         this.leaderRole = "Member";
         this.thumbnailUrl = "";
         this.leaderAvatarUrl = "";
-        this.techStackCsv = "";
         this.summary = description != null && description.length() > 50 ? description.substring(0, 50) : description;
     }
 
-    // --- Constructor from front2 ---
     public Project(
             String title,
             String summary,
@@ -156,13 +149,12 @@ public class Project {
             Integer totalRecruitment,
             LocalDate recruitmentDeadline,
             LocalDate createdDate,
-            String techStackCsv
+            List<String> techStacks
     ) {
         this.title = title;
         this.summary = summary;
         this.description = description;
         this.projectType = projectType;
-        this.position = position;
         this.leaderName = leaderName;
         this.leaderRole = leaderRole;
         this.leaderAvatarUrl = leaderAvatarUrl;
@@ -171,7 +163,6 @@ public class Project {
         this.totalRecruitment = totalRecruitment;
         this.recruitmentDeadline = recruitmentDeadline;
         this.createdDate = createdDate;
-        this.techStackCsv = techStackCsv;
         // Sync fields for safety
         this.recruitmentCount = totalRecruitment;
         this.recruitmentEndAt = recruitmentDeadline;
@@ -180,6 +171,8 @@ public class Project {
         this.closed = false;
         this.completed = false;
         this.progressMethod = "ONLINE"; // default
+        replacePositions(ProjectSelectionCatalog.parsePositionCapacities(position, totalRecruitment));
+        replaceTechStacks(techStacks);
     }
 
     public void update(String title, String description, String projectType, String progressMethod,
@@ -215,12 +208,12 @@ public class Project {
         this.summary = description != null && description.length() > 50 ? description.substring(0, 50) : description;
     }
 
-    public void updateDiscoveryFields(String position, String techStackCsv, String thumbnailUrl) {
+    public void updateDiscoveryFields(String position, List<String> techStacks, String thumbnailUrl) {
         if (position != null) {
-            this.position = position;
+            replacePositions(ProjectSelectionCatalog.parsePositionCapacities(position, null));
         }
-        if (techStackCsv != null) {
-            this.techStackCsv = techStackCsv;
+        if (techStacks != null) {
+            replaceTechStacks(techStacks);
         }
         if (thumbnailUrl != null) {
             this.thumbnailUrl = thumbnailUrl;
@@ -313,7 +306,11 @@ public class Project {
     public String getSummary() { return summary; }
     public String getDescription() { return description; }
     public String getProjectType() { return projectType; }
-    public String getPosition() { return position; }
+    public String getPosition() {
+        return positionSelections.stream()
+                .map(position -> position.getPositionName() + ":" + position.getCapacity())
+                .collect(Collectors.joining(", "));
+    }
     public String getProgressMethod() { return progressMethod; }
     public String getLeaderName() { return leaderName; }
     public void setLeaderName(String leaderName) { this.leaderName = leaderName; }
@@ -334,7 +331,6 @@ public class Project {
     public LocalDate getCreatedDate() { return createdDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public String getTechStackCsv() { return techStackCsv; }
     public List<ProjectTechStack> getTechStackSelections() { return techStackSelections; }
     public List<ProjectPosition> getPositionSelections() { return positionSelections; }
 }

@@ -23,18 +23,16 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // HEAD
     @Column(name = "project_id", insertable = false, updatable = false)
     private Long projectId;
 
     @Column(name = "applicant_name")
     private String applicantName;
-    // 마이페이지 연동: User 엔티티 직접 참조
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 프로젝트 엔티티 직접 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;

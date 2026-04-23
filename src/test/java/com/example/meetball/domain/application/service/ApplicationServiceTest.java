@@ -57,7 +57,7 @@ public class ApplicationServiceTest {
                 .email("applicant" + uid + "@test.com")
                 .nickname("지원자" + uid)
                 .role("USER") // 필수 필드 추가
-                .techStack("Java")
+                .techStacks(List.of("Java"))
                 .isPublic(true)
                 .build());
 
@@ -65,7 +65,7 @@ public class ApplicationServiceTest {
                 .email("leader" + uid + "@test.com")
                 .nickname("팀장명" + uid)
                 .role("MEMBER")
-                .techStack("Java")
+                .techStacks(List.of("Java"))
                 .isPublic(true)
                 .build());
 
@@ -84,7 +84,7 @@ public class ApplicationServiceTest {
                 5,
                 LocalDate.now().plusDays(7),
                 LocalDate.now(),
-                "Java"
+                List.of("Java")
         ));
 
         projectMemberRepository.save(ProjectMember.builder()
@@ -101,7 +101,7 @@ public class ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("프로젝트 지원하기 - 성공 (우리 코드 방식)")
+    @DisplayName("프로젝트 지원하기 - 성공")
     void createApplication_Success() {
         // given
         ApplicationRequestDto request = new ApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "열심히 하겠습니다!");
@@ -190,7 +190,7 @@ public class ApplicationServiceTest {
                 1,
                 LocalDate.now().plusDays(7),
                 LocalDate.now(),
-                "Java"
+                List.of("Java")
         ));
         projectMemberRepository.save(ProjectMember.builder()
                 .project(singleCapacityProject)
@@ -294,7 +294,7 @@ public class ApplicationServiceTest {
         Application rejectedApplication = applicationRepository.findById(app.getId()).orElseThrow();
         assertThat(rejectedApplication.getProjectPosition()).isNull();
 
-        testProject.updateDiscoveryFields("프론트엔드:1", "Java", null);
+        testProject.updateDiscoveryFields("프론트엔드:1", List.of("Java"), null);
         testProject.replacePositions(ProjectSelectionCatalog.parsePositionCapacities("프론트엔드:1", null));
 
         projectRepository.saveAndFlush(testProject);

@@ -352,7 +352,7 @@
             return true;
         }
 
-        function collectPositionCsv() {
+        function collectPositionPayload() {
             return positions
                 .filter(position => position.name)
                 .map(position => `${position.name}:${Math.max(1, Number(position.count) || 1)}`)
@@ -368,10 +368,6 @@
             }
             updateTechStackOptionState();
         }
-
-	        function collectTechStackCsv() {
-	            return techStacks.join(', ');
-	        }
 
         function renderTechStackOptions() {
             const container = document.getElementById('techStackOptions');
@@ -454,8 +450,8 @@
 	                description: buildDescription(),
 	                projectType: document.getElementById('projectType').value,
 	                progressMethod: document.getElementById('progressMethod').value,
-                position: collectPositionCsv(),
-                techStackCsv: collectTechStackCsv(),
+                position: collectPositionPayload(),
+                techStacks: [...techStacks],
                 recruitmentCount: parseInt(document.getElementById('recruitmentCount').value, 10),
                 recruitmentStartAt: document.getElementById('recruitmentStartAt').value,
                 recruitmentEndAt: document.getElementById('recruitmentEndAt').value,
@@ -469,7 +465,7 @@
 	                await meetballAlert('기본 정보를 모두 입력해주세요!');
 	                return;
 	            }
-	            if (!payload.progressMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 1 || !payload.techStackCsv) {
+	            if (!payload.progressMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 1 || payload.techStacks.length === 0) {
 	                await meetballAlert('모집 정보를 모두 입력해주세요!');
 	                return;
 	            }

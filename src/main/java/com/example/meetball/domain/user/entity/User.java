@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -28,10 +29,7 @@ public class User {
 
     private String jobTitle; // 직무 (예: 백엔드 개발자)
 
-    @Column(length = 1000)
-    private String techStack; // 지정 기술 스택 CSV (예: Java, Spring)
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("sortOrder ASC, id ASC")
     private List<UserTechStack> techStackSelections = new ArrayList<>();
 
@@ -42,21 +40,21 @@ public class User {
     private String role; // GUEST, MEMBER, LEADER
 
     @Builder
-    public User(String email, String nickname, String jobTitle, String techStack, boolean isPublic, String role) {
+    public User(String email, String nickname, String jobTitle, List<String> techStacks, boolean isPublic, String role) {
         this.email = email;
         this.nickname = nickname;
         this.jobTitle = jobTitle;
-        this.techStack = techStack;
         this.isPublic = isPublic;
         this.role = role;
+        replaceTechStacks(techStacks);
     }
 
     // 프로필 업데이트 비즈니스 로직
-    public void updateProfile(String nickname, String jobTitle, String techStack, boolean isPublic) {
+    public void updateProfile(String nickname, String jobTitle, List<String> techStacks, boolean isPublic) {
         this.nickname = nickname;
         this.jobTitle = jobTitle;
-        this.techStack = techStack;
         this.isPublic = isPublic;
+        replaceTechStacks(techStacks);
     }
 
     public void replaceTechStacks(List<String> techStacks) {
@@ -86,6 +84,12 @@ public class User {
                 .map(String::trim)
                 .filter(value -> !value.isEmpty())
                 .toList()));
+    }
+
+    public String getTechStack() {
+        return techStackSelections.stream()
+                .map(UserTechStack::getTechStackName)
+                .collect(Collectors.joining(", "));
     }
 
     // 권한 승급 로직 등

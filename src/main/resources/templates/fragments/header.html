@@ -303,7 +303,7 @@
 	                    <!-- Tech Stack -->
 	                    <div class="space-y-3">
 	                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Stack (Tags)</label>
-	                        <input type="hidden" id="welcomeTechStack" name="techStack" required>
+	                        <input type="hidden" id="welcomeTechStack" required>
 	                        <div id="welcomeTechStackOptions" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto rounded-2xl border border-poodle-100 bg-poodle-50/40 p-4"></div>
 	                    </div>
 
@@ -378,14 +378,14 @@
 	            const data = Object.fromEntries(formData.entries());
 	            data.isPublic = true; // 기본값 공개
 	            data.jobTitle = welcomeSelectedPosition;
-	            data.techStack = welcomeSelectedTechStacks.join(', ');
+	            data.techStacks = [...welcomeSelectedTechStacks];
 
 	            if (!data.jobTitle) {
 	                await meetballAlert('포지션을 선택해주세요.');
 	                return;
 	            }
 
-	            if (!data.techStack) {
+	            if (data.techStacks.length === 0) {
 	                await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
 	                return;
 	            }

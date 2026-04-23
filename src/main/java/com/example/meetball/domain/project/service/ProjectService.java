@@ -43,7 +43,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,7 +67,6 @@ public class ProjectService {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    // --- MVC (front2) ---
     public List<ProjectSummaryView> getProjectSummaries() {
         return projectRepository.findAllByOrderByCreatedDateDescIdDesc()
                 .stream()
@@ -88,7 +86,7 @@ public class ProjectService {
                 project.getTitle(),
                 project.getSummary(),
                 displayProjectType(project.getProjectType()),
-                formatPositionCsv(project),
+                formatPositionText(project),
                 project.getLeaderName(),
                 project.getLeaderAvatarUrl(),
                 project.getThumbnailUrl(),
@@ -107,7 +105,7 @@ public class ProjectService {
                 project.getDescription(),
                 displayProjectType(project.getProjectType()),
                 displayProgressMethod(project.getProgressMethod()),
-                formatPositionCsv(project),
+                formatPositionText(project),
                 resolveLeaderUserId(project),
                 project.getLeaderName(),
                 project.getLeaderRole(),
@@ -136,16 +134,6 @@ public class ProjectService {
         return startText + " ~ " + endText;
     }
 
-    private List<String> splitTechStacks(String techStackCsv) {
-        if (techStackCsv == null || techStackCsv.isBlank()) {
-            return List.of();
-        }
-        return Arrays.stream(ProjectSelectionCatalog.normalizeTechStackCsvOrDefault(techStackCsv).split(","))
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .toList();
-    }
-
     private List<String> splitTechStacks(Project project) {
         if (project.getTechStackSelections() != null && !project.getTechStackSelections().isEmpty()) {
             return project.getTechStackSelections().stream()
@@ -153,12 +141,7 @@ public class ProjectService {
                     .filter(Objects::nonNull)
                     .toList();
         }
-        return splitTechStacks(project.getTechStackCsv());
-    }
-
-    private String formatTechStackCsv(Project project) {
-        List<String> techStacks = splitTechStacks(project);
-        return techStacks.isEmpty() ? "" : String.join(", ", techStacks);
+        return List.of();
     }
 
     private List<ProjectSelectionCatalog.PositionCapacity> positionCapacities(Project project) {
@@ -176,18 +159,13 @@ public class ProjectService {
         );
     }
 
-    private String formatPositionCsv(Project project) {
+    private String formatPositionText(Project project) {
         List<ProjectSelectionCatalog.PositionCapacity> positions = positionCapacities(project);
         return positions.isEmpty()
                 ? ""
                 : positions.stream()
                 .map(position -> position.name() + ":" + position.capacity())
                 .collect(Collectors.joining(", "));
-    }
-
-    private void syncSelectionTables(Project project, String normalizedPositions, String normalizedTechStacks) {
-        project.replacePositions(ProjectSelectionCatalog.parsePositionCapacities(normalizedPositions, null));
-        project.replaceTechStacks(splitTechStacks(normalizedTechStacks));
     }
 
     private String applicationPositionName(Application application) {
@@ -249,7 +227,7 @@ public class ProjectService {
                 project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount(),
                 displayProjectType(project.getProjectType()),
                 displayProgressMethod(project.getProgressMethod()),
-                formatPositionCsv(project),
+                formatPositionText(project),
                 splitTechStacks(project),
                 project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt(),
                 formatDeadline(project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
@@ -277,8 +255,6 @@ public class ProjectService {
                 Join<Project, ProjectTechStack> keywordTechJoin = root.join("techStackSelections", JoinType.LEFT);
                 predicates.add(cb.or(
                         cb.like(cb.lower(cb.coalesce(root.get("title"), "")), pattern),
-                        cb.like(cb.lower(cb.coalesce(root.get("position"), "")), pattern),
-                        cb.like(cb.lower(cb.coalesce(root.get("techStackCsv"), "")), pattern),
                         cb.like(cb.lower(cb.coalesce(keywordPositionJoin.get("positionName"), "")), pattern),
                         cb.like(cb.lower(cb.coalesce(keywordTechJoin.get("techStackName"), "")), pattern)
                 ));
@@ -309,50 +285,19 @@ public class ProjectService {
 
             if (position != null && !position.isBlank()) {
                 Join<Project, ProjectPosition> positionJoin = root.join("positionSelections", JoinType.LEFT);
-                predicates.add(cb.or(
-                        cb.equal(positionJoin.get("positionName"), position),
-                        containsPositionToken(cb, root.get("position"), position)
-                ));
+                predicates.add(cb.equal(positionJoin.get("positionName"), position));
             }
 
             if (techStacks != null && !techStacks.isEmpty()) {
                 Join<Project, ProjectTechStack> techJoin = root.join("techStackSelections", JoinType.LEFT);
                 List<Predicate> techPredicates = techStacks.stream()
-                        .map(tech -> cb.or(
-                                cb.equal(techJoin.get("techStackName"), tech),
-                                containsCsvToken(cb, root.get("techStackCsv"), tech)
-                        ))
+                        .map(tech -> cb.equal(techJoin.get("techStackName"), tech))
                         .toList();
                 predicates.add(cb.or(techPredicates.toArray(Predicate[]::new)));
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));
         };
-    }
-
-    private Predicate containsCsvToken(jakarta.persistence.criteria.CriteriaBuilder cb,
-                                       Expression<String> source,
-                                       String token) {
-        Expression<String> normalized = normalizedCsvExpression(cb, source);
-        return cb.like(normalized, "%," + ProjectSelectionCatalog.searchKey(token) + ",%");
-    }
-
-    private Predicate containsPositionToken(jakarta.persistence.criteria.CriteriaBuilder cb,
-                                            Expression<String> source,
-                                            String position) {
-        Expression<String> normalized = normalizedCsvExpression(cb, source);
-        String key = ProjectSelectionCatalog.searchKey(position);
-        return cb.or(
-                cb.like(normalized, "%," + key + ":%"),
-                cb.like(normalized, "%," + key + ",%")
-        );
-    }
-
-    private Expression<String> normalizedCsvExpression(jakarta.persistence.criteria.CriteriaBuilder cb,
-                                                       Expression<String> source) {
-        Expression<String> lower = cb.lower(cb.coalesce(source, ""));
-        Expression<String> noSpaces = cb.function("replace", String.class, lower, cb.literal(" "), cb.literal(""));
-        return cb.concat(cb.concat(cb.literal(","), noSpaces), cb.literal(","));
     }
 
     public ProjectDetailResponseDto getProjectById(Long projectId) {
@@ -371,8 +316,8 @@ public class ProjectService {
         User user = userService.getUserById(userId);
         String leaderNickname = user.getNickname();
 
-        String normalizedPositions = normalizePositionCsv(request.getPosition());
-        String normalizedTechStacks = normalizeTechStackCsv(request.getTechStackCsv());
+        String normalizedPositions = normalizePositionText(request.getPosition());
+        List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
@@ -397,8 +342,6 @@ public class ProjectService {
                 normalizedTechStacks,
                 cleanText(request.getThumbnailUrl())
         );
-        syncSelectionTables(project, normalizedPositions, normalizedTechStacks);
-
         Project savedProject = projectRepository.save(project);
         projectMemberRepository.save(ProjectMember.builder()
                 .project(savedProject)
@@ -424,8 +367,8 @@ public class ProjectService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
         }
 
-        String normalizedPositions = normalizePositionCsv(request.getPosition());
-        String normalizedTechStacks = normalizeTechStackCsv(request.getTechStackCsv());
+        String normalizedPositions = normalizePositionText(request.getPosition());
+        List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
         validatePositionUpdate(project, normalizedPositions);
 
@@ -448,8 +391,6 @@ public class ProjectService {
                 normalizedTechStacks,
                 cleanText(request.getThumbnailUrl())
         );
-        syncSelectionTables(project, normalizedPositions, normalizedTechStacks);
-
         Project updatedProject = projectRepository.save(project);
 
         return toDetailResponse(updatedProject);
@@ -540,9 +481,9 @@ public class ProjectService {
         return trimmed.isEmpty() ? "" : trimmed;
     }
 
-    private String normalizePositionCsv(String value) {
+    private String normalizePositionText(String value) {
         try {
-            return ProjectSelectionCatalog.normalizePositionCsv(value);
+            return ProjectSelectionCatalog.normalizePositionText(value);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
@@ -560,9 +501,9 @@ public class ProjectService {
         }
     }
 
-    private String normalizeTechStackCsv(String value) {
+    private List<String> normalizeTechStacks(List<String> values) {
         try {
-            return ProjectSelectionCatalog.normalizeTechStackCsv(value);
+            return ProjectSelectionCatalog.normalizeTechStackNames(values);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
@@ -636,7 +577,7 @@ public class ProjectService {
                 project.getDescription(),
                 displayProjectType(project.getProjectType()),
                 displayProgressMethod(project.getProgressMethod()),
-                formatPositionCsv(project),
+                formatPositionText(project),
                 resolveLeaderUserId(project),
                 project.getLeaderName(),
                 project.getLeaderRole(),
@@ -653,7 +594,6 @@ public class ProjectService {
                 project.getCompleted(),
                 project.getCreatedAt(),
                 project.getUpdatedAt(),
-                formatTechStackCsv(project),
                 techStacks,
                 projectReadRepository.countByProject(project)
         );

@@ -17,7 +17,7 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script th:inline="javascript">
         tailwind.config = {
             theme: {
                 extend: {
@@ -149,20 +149,20 @@
             }
         };
 
-        window.meetballPositionOptions = [
+        window.meetballPositionOptions = /*[[${meetballPositionOptions}]]*/ [
             '프론트엔드', '백엔드', '풀스택', '디자이너', 'IOS', '안드로이드', '임베디드SW',
             '게임', '서버', '데브옵스', '매니저(PM)', '기획자', '마케터', '사업',
             '데이터/AI', '보안', 'DBA', 'QA', '기타'
         ];
 
-        window.meetballTechStackOptions = [
+        window.meetballTechStackOptions = /*[[${meetballTechStackOptions}]]*/ [
             'JavaScript', 'TypeScript', 'React', 'Vue', 'Nodejs', 'Spring', 'Java', 'Nextjs',
             'Nestjs', 'Express', 'Go', 'C', 'Python', 'Django', 'Swift', 'Kotlin',
             'MySQL', 'MongoDB', 'php', 'GraphQL', 'Firebase', 'ReactNative', 'Unity',
             'Flutter', 'AWS', 'Kubernetes', 'Docker', 'Git', 'Figma', 'Zeplin', 'Jest', 'Svelte'
         ];
 
-        window.meetballTechStackCategories = {
+        window.meetballTechStackCategories = /*[[${meetballTechStackCategories}]]*/ {
             '인기': ['JavaScript', 'TypeScript', 'React', 'Spring', 'Java', 'Nextjs', 'Figma', 'AWS'],
             '프론트엔드': ['JavaScript', 'TypeScript', 'React', 'Vue', 'Nextjs', 'Svelte'],
             '백엔드': ['Nodejs', 'Spring', 'Java', 'Nestjs', 'Express', 'Go', 'Python', 'Django', 'php', 'GraphQL'],
@@ -170,8 +170,11 @@
             '기타': ['MySQL', 'MongoDB', 'Firebase', 'Unity', 'AWS', 'Kubernetes', 'Docker', 'Git', 'Figma', 'Zeplin', 'Jest', 'C'],
             '모두보기': window.meetballTechStackOptions
         };
+        if (!window.meetballTechStackCategories['모두보기']) {
+            window.meetballTechStackCategories['모두보기'] = window.meetballTechStackOptions;
+        }
 
-        window.meetballTechStackMeta = {
+        window.meetballTechStackMeta = /*[[${meetballTechStackMeta}]]*/ {
             JavaScript: { label: 'JS', accent: '#F7DF1E', text: '#2D2D2D', bg: '#FFF8CC' },
             TypeScript: { label: 'TS', accent: '#3178C6', text: '#FFFFFF', bg: '#3178C6' },
             React: { icon: 'fa-brands fa-react', accent: '#61DAFB', text: '#15AABF', bg: '#ECFEFF' },

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,7 +50,7 @@ public class ReviewServiceTest {
 
         Project completedProject = new Project(
                 "리뷰 테스트 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), "Java"
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
         );
         completedProject.update(
                 completedProject.getTitle(),
@@ -117,7 +118,7 @@ public class ReviewServiceTest {
     void addReview_RecruitmentClosedButNotCompleted_Fail() {
         Project recruitmentClosedProject = new Project(
                 "모집만 마감된 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), "Java"
+                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
         );
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),

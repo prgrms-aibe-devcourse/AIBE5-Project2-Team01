@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ApplicationRequestDto {
-    private Long userId;       // 마이페이지 연동용 (우리 코드 방식)
-    private String applicantName; // HEAD 방식
+    private Long userId;
+    private String applicantName;
     private String position;
     private String message;
 
@@ -18,4 +18,3 @@ public class ApplicationRequestDto {
         this.message = message;
     }
 }
-
