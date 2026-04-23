@@ -19,10 +19,6 @@
 
                 <!-- Desktop Menu -->
                 <nav class="hidden lg:flex items-center gap-8">
-                    <a th:href="@{/projects}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
-                        탐색하기
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
-                    </a>
                     <a th:if="${isLoggedIn}" th:href="@{/register}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         프로젝트 등록
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
@@ -31,7 +27,7 @@
                         프로젝트 등록
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </button>
-                    <a th:if="${isLoggedIn}" th:href="@{/user/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
+                    <a th:if="${isLoggedIn}" th:href="@{/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         나의 프로젝트
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </a>
@@ -52,7 +48,7 @@
                     <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-meatball rounded-full"></span>
                 </button>
 
-                <!-- User Profile -->
+                <!-- Current Profile -->
                 <div th:if="${isLoggedIn}" class="relative group h-full flex items-center">
                     <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-100/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
                         <div class="relative">
@@ -61,7 +57,7 @@
                             <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div class="hidden sm:block">
-                            <p th:text="${currentUser.nickname}" class="text-sm font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
+                            <p th:text="${currentProfile.nickname}" class="text-sm font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
                         </div>
                     </div>
 
@@ -69,10 +65,10 @@
                     <div class="absolute right-0 top-[4.5rem] w-56 bg-poodle-50/95 backdrop-blur-2xl rounded-[1.5rem] shadow-[0_20px_50px_rgba(101,55,40,0.14)] border border-poodle-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-4 z-50 p-2 overflow-hidden">
                         <div class="p-3 mb-2 border-b border-poodle-50">
                             <p class="text-[10px] font-black text-poodle-200 uppercase tracking-widest mb-1 leading-none">Signed in as</p>
-                            <p th:text="${currentUser.email}" class="text-[11px] font-bold text-poodle-600 truncate">-</p>
+                            <p th:text="${currentProfile.email}" class="text-[11px] font-bold text-poodle-600 truncate">-</p>
                         </div>
                         <div class="flex flex-col">
-                            <a th:href="@{/user/mypage}"
+                            <a th:href="@{/mypage}"
                                 class="px-4 py-3 text-xs font-black text-poodle-400 hover:bg-poodle-50 hover:text-meatball rounded-xl transition-all flex items-center gap-3">
                                 <i class="fa-solid fa-paw opacity-50"></i> 마이페이지
                             </a>
@@ -288,7 +284,7 @@
                     <!-- Nickname -->
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Nickname</label>
-                        <input type="text" name="nickname" required th:value="${currentUser.nickname}"
+                        <input type="text" name="nickname" required th:value="${currentProfile.nickname}"
                             class="w-full px-6 py-4 bg-poodle-50 border border-poodle-100 rounded-2xl text-sm font-black text-poodle-800 focus:bg-white focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all"
                             placeholder="사용하실 닉네임을 입력하세요">
                     </div>

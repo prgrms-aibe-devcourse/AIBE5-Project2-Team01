@@ -22,22 +22,22 @@ public class PeopleController {
 
     private final PeopleService peopleService;
 
-    @GetMapping("/people/{userId}")
+    @GetMapping("/people/{profileId}")
     public String profilePage(
-            @PathVariable("userId") Long userId,
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @PathVariable("profileId") Long profileId,
+            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId,
         Model model) {
-        if (sessionUserId == null) {
-            return "redirect:/?login=1&redirect=/people/" + userId;
+        if (sessionProfileId == null) {
+            return "redirect:/?login=1&redirect=/people/" + profileId;
         }
-        if (userId.equals(sessionUserId)) {
-            return "redirect:/user/mypage";
+        if (profileId.equals(sessionProfileId)) {
+            return "redirect:/mypage";
         }
 
         try {
-            List<PeopleProjectResponse> projects = peopleService.getProjects(userId, sessionUserId);
+            List<PeopleProjectResponse> projects = peopleService.getProjects(profileId, sessionProfileId);
 
-            model.addAttribute("profile", peopleService.getProfile(userId, sessionUserId));
+            model.addAttribute("profile", peopleService.getProfile(profileId, sessionProfileId));
             model.addAttribute("projects", projects);
             model.addAttribute("leaderProjects", projects.stream()
                     .filter(project -> !project.isCompleted())
@@ -58,27 +58,27 @@ public class PeopleController {
     }
 
     @ResponseBody
-    @GetMapping("/api/people/{userId}/profile")
+    @GetMapping("/api/people/{profileId}/profile")
     public ResponseEntity<PeopleProfileResponse> getProfile(
-            @PathVariable("userId") Long userId,
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        Long viewerId = requireSessionUser(sessionUserId);
-        return ResponseEntity.ok(peopleService.getProfile(userId, viewerId));
+            @PathVariable("profileId") Long profileId,
+            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
+        Long viewerId = requireSignedInProfileId(sessionProfileId);
+        return ResponseEntity.ok(peopleService.getProfile(profileId, viewerId));
     }
 
     @ResponseBody
-    @GetMapping("/api/people/{userId}/projects")
+    @GetMapping("/api/people/{profileId}/projects")
     public ResponseEntity<List<PeopleProjectResponse>> getProjects(
-            @PathVariable("userId") Long userId,
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        Long viewerId = requireSessionUser(sessionUserId);
-        return ResponseEntity.ok(peopleService.getProjects(userId, viewerId));
+            @PathVariable("profileId") Long profileId,
+            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
+        Long viewerId = requireSignedInProfileId(sessionProfileId);
+        return ResponseEntity.ok(peopleService.getProjects(profileId, viewerId));
     }
 
-    private Long requireSessionUser(Long sessionUserId) {
-        if (sessionUserId == null) {
+    private Long requireSignedInProfileId(Long sessionProfileId) {
+        if (sessionProfileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        return sessionUserId;
+        return sessionProfileId;
     }
 }

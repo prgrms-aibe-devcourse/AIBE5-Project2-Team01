@@ -1,19 +1,19 @@
 package com.example.meetball.domain.mypage.service;
 
-import com.example.meetball.domain.application.dto.ApplicationResponseDto;
-import com.example.meetball.domain.application.service.ApplicationService;
-import com.example.meetball.domain.bookmark.dto.BookmarkedProjectResponse;
-import com.example.meetball.domain.bookmark.service.BookmarkService;
+import com.example.meetball.domain.projectapplication.dto.ProjectApplicationResponseDto;
+import com.example.meetball.domain.projectapplication.service.ProjectApplicationService;
+import com.example.meetball.domain.bookmarkedproject.dto.BookmarkedProjectResponse;
+import com.example.meetball.domain.bookmarkedproject.service.BookmarkedProjectService;
 import com.example.meetball.domain.mypage.dto.MyPageProfileResponse;
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.project.service.ProjectService;
-import com.example.meetball.domain.projectread.dto.ReadProjectResponse;
-import com.example.meetball.domain.projectread.service.ProjectReadService;
-import com.example.meetball.domain.review.dto.UserReviewResponse;
+import com.example.meetball.domain.viewhistory.dto.ViewHistoryProjectResponse;
+import com.example.meetball.domain.viewhistory.service.ViewHistoryService;
+import com.example.meetball.domain.review.dto.PeerReviewResponse;
 import com.example.meetball.domain.review.service.ReviewService;
-import com.example.meetball.domain.user.dto.UserProfileUpdateRequest;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.service.UserService;
+import com.example.meetball.domain.profile.dto.ProfileUpdateRequest;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.service.ProfileService;
 import com.example.meetball.global.auth.enums.MyPageAccess;
 import com.example.meetball.global.auth.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
@@ -28,84 +28,84 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPageService {
 
-    private final UserService userService;
+    private final ProfileService profileService;
     private final ProjectService projectService;
-    private final ApplicationService applicationService;
-    private final ProjectReadService projectReadService;
-    private final BookmarkService bookmarkService;
+    private final ProjectApplicationService projectApplicationService;
+    private final ViewHistoryService viewHistoryService;
+    private final BookmarkedProjectService bookmarkedProjectService;
     private final ReviewService reviewService;
     private final AuthorizationService authorizationService;
 
     @Transactional(readOnly = true)
-    public MyPageProfileResponse getMyProfile(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        User user = userService.getUserById(userId);
+    public MyPageProfileResponse getMyProfile(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        Profile profile = profileService.getProfileById(profileId);
 
-        double meetBallIndex = reviewService.calculateMeetBallIndex(user);
-        return MyPageProfileResponse.from(user, meetBallIndex, true);
+        double meetBallIndex = reviewService.calculateMeetBallIndex(profile);
+        return MyPageProfileResponse.from(profile, meetBallIndex, true);
     }
 
     @Transactional
-    public void updateUserProfile(Long userId, UserProfileUpdateRequest request) {
-        userService.updateUserProfile(userId, request);
+    public void updateProfile(Long profileId, ProfileUpdateRequest request) {
+        profileService.updateProfile(profileId, request);
     }
 
     @Transactional(readOnly = true)
-    public List<BookmarkedProjectResponse> getMyBookmarks(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        User user = userService.getUserById(userId);
-        return bookmarkService.getBookmarkedProjects(user);
+    public List<BookmarkedProjectResponse> getMyBookmarks(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        Profile profile = profileService.getProfileById(profileId);
+        return bookmarkedProjectService.getBookmarkedProjects(profile);
     }
 
     @Transactional(readOnly = true)
-    public List<ApplicationResponseDto> getMyApplications(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        return applicationService.getMyApplications(userId);
+    public List<ProjectApplicationResponseDto> getMyApplications(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        return projectApplicationService.getMyApplications(profileId);
     }
 
     @Transactional(readOnly = true)
-    public List<ParticipatedProjectResponse> getMyProjects(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        User user = userService.getUserById(userId);
-        return projectService.getParticipatedProjects(user);
+    public List<ParticipatedProjectResponse> getMyProjects(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        Profile profile = profileService.getProfileById(profileId);
+        return projectService.getParticipatedProjects(profile);
     }
 
     @Transactional(readOnly = true)
-    public List<ParticipatedProjectResponse> getCompletedProjects(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        User user = userService.getUserById(userId);
-        return projectService.getParticipatedProjects(user).stream()
+    public List<ParticipatedProjectResponse> getCompletedProjects(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        Profile profile = profileService.getProfileById(profileId);
+        return projectService.getParticipatedProjects(profile).stream()
                 .filter(ParticipatedProjectResponse::isCompleted)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ReadProjectResponse> getRecentReads(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        User user = userService.getUserById(userId);
-        return projectReadService.getReadHistory(user);
+    public List<ViewHistoryProjectResponse> getRecentReads(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+        Profile profile = profileService.getProfileById(profileId);
+        return viewHistoryService.getReadHistory(profile);
     }
 
     @Transactional(readOnly = true)
-    public List<UserReviewResponse> getMyReviews(Long userId, Long viewerId) {
-        requireOwnerAccess(userId, viewerId);
-        
-        User user = userService.getUserById(userId);
-        return reviewService.getUserReviews(user);
+    public List<PeerReviewResponse> getMyReviews(Long profileId, Long viewerId) {
+        requireOwnerAccess(profileId, viewerId);
+
+        Profile profile = profileService.getProfileById(profileId);
+        return reviewService.getReceivedPeerReviews(profile);
     }
 
     /**
      * 본인 접근 여부를 확인하는 헬퍼 메서드
      */
-    private boolean isOwnerAccess(Long userId, Long viewerId) {
+    private boolean isOwnerAccess(Long profileId, Long viewerId) {
         if (viewerId == null) return false;
-        User user = userService.getUserById(userId);
-        User viewer = userService.getUserById(viewerId);
-        return authorizationService.getMyPageAccess(viewer, user) == MyPageAccess.OWNER;
+        Profile targetProfile = profileService.getProfileById(profileId);
+        Profile viewerProfile = profileService.getProfileById(viewerId);
+        return authorizationService.getMyPageAccess(viewerProfile, targetProfile) == MyPageAccess.OWNER;
     }
 
-    private void requireOwnerAccess(Long userId, Long viewerId) {
-        if (!isOwnerAccess(userId, viewerId)) {
+    private void requireOwnerAccess(Long profileId, Long viewerId) {
+        if (!isOwnerAccess(profileId, viewerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "My page is only available for the signed-in user.");
         }
     }

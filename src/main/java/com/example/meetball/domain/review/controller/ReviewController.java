@@ -29,8 +29,8 @@ public class ReviewController {
     @GetMapping("/teammates")
     public ResponseEntity<List<ReviewTargetResponse>> getTeammates(
             @PathVariable Long projectId,
-            @SessionAttribute(name = "userId", required = false) Long userId) {
-        return ResponseEntity.ok(reviewService.getTeammatesForReview(projectId, requireSessionUser(userId)));
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return ResponseEntity.ok(reviewService.getTeammatesForReview(projectId, requireSignedInProfileId(profileId)));
     }
 
     // 신규 별점 등록
@@ -38,15 +38,15 @@ public class ReviewController {
     public ResponseEntity<Void> addReview(
             @PathVariable Long projectId,
             @Valid @RequestBody ReviewRequestDto requestDto,
-            @SessionAttribute(name = "userId", required = false) Long userId) {
-        reviewService.addReview(projectId, requireSessionUser(userId), requestDto);
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        reviewService.addReview(projectId, requireSignedInProfileId(profileId), requestDto);
         return ResponseEntity.status(201).build();
     }
 
-    private Long requireSessionUser(Long userId) {
-        if (userId == null) {
+    private Long requireSignedInProfileId(Long profileId) {
+        if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        return userId;
+        return profileId;
     }
 }

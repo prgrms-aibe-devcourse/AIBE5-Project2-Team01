@@ -5,8 +5,8 @@ import com.example.meetball.domain.comment.dto.CommentResponseDto;
 import com.example.meetball.domain.comment.service.CommentService;
 import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.repository.ProjectRepository;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.service.UserService;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.service.ProfileService;
 import com.example.meetball.global.auth.enums.ProjectDetailRole;
 import com.example.meetball.global.auth.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class CommentController {
 
     private final CommentService commentService;
     private final ProjectRepository projectRepository;
-    private final UserService userService;
+    private final ProfileService profileService;
     private final AuthorizationService authorizationService;
 
     // 댓글 조회 (페이징 적용: size=10 등으로 한 번에 10개씩 가져옴)
@@ -43,24 +43,24 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> createComment(
             @PathVariable Long projectId,
             @RequestBody CommentRequestDto requestDto,
-            @SessionAttribute(name = "userId", required = false) Long userId) {
-        if (userId == null) {
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
-        User user = userService.getUserById(userId);
-        ProjectDetailRole role = authorizationService.getProjectDetailRole(user, project);
+        Profile profile = profileService.getProfileById(profileId);
+        ProjectDetailRole role = authorizationService.getProjectDetailRole(profile, project);
 
         CommentRequestDto commentData = new CommentRequestDto(
                 projectId, 
-                user.getNickname(),
+                profile.getNickname(),
                 role.name(),
                 requestDto.getContent(), 
                 requestDto.getParentId()
         );
-        return ResponseEntity.ok(commentService.saveComment(commentData, user));
+        return ResponseEntity.ok(commentService.saveComment(commentData, profile));
     }
 
     // 댓글 수정
@@ -69,12 +69,12 @@ public class CommentController {
             @PathVariable Long projectId,
             @PathVariable Long commentId,
             @RequestBody CommentRequestDto requestDto,
-            @SessionAttribute(name = "userId", required = false) Long userId) {
-        if (userId == null) {
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        User user = userService.getUserById(userId);
-        return ResponseEntity.ok(commentService.updateComment(projectId, commentId, requestDto, user));
+        Profile profile = profileService.getProfileById(profileId);
+        return ResponseEntity.ok(commentService.updateComment(projectId, commentId, requestDto, profile));
     }
 
     // 댓글 삭제
@@ -82,12 +82,12 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long projectId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId", required = false) Long userId) {
-        if (userId == null) {
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        User user = userService.getUserById(userId);
-        commentService.deleteComment(projectId, commentId, user);
+        Profile profile = profileService.getProfileById(profileId);
+        commentService.deleteComment(projectId, commentId, profile);
         return ResponseEntity.noContent().build();
     }
 }

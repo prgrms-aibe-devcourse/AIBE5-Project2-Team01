@@ -15,29 +15,31 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
             SELECT DISTINCT p
             FROM Project p
             LEFT JOIN p.positionSelections positionSelection
+            LEFT JOIN positionSelection.position positionValue
             LEFT JOIN p.techStackSelections techStackSelection
+            LEFT JOIN techStackSelection.techStack techStackValue
             WHERE (:keyword IS NULL OR :keyword = ''
                    OR p.title LIKE CONCAT('%', :keyword, '%')
-                   OR positionSelection.positionName LIKE CONCAT('%', :keyword, '%')
-                   OR techStackSelection.techStackName LIKE CONCAT('%', :keyword, '%'))
+                   OR positionValue.name LIKE CONCAT('%', :keyword, '%')
+                   OR techStackValue.name LIKE CONCAT('%', :keyword, '%'))
               AND (:projectType IS NULL OR :projectType = ''
                    OR LOWER(COALESCE(p.projectType, '')) LIKE LOWER(CONCAT('%', :projectType, '%')))
               AND (:progressMethod IS NULL OR :progressMethod = ''
-                   OR LOWER(COALESCE(p.progressMethod, '')) = LOWER(:progressMethod)
+                   OR LOWER(COALESCE(p.workMethod, '')) = LOWER(:progressMethod)
                    OR (:progressMethod = 'ONLINE'
-                       AND (LOWER(COALESCE(p.progressMethod, '')) LIKE '%online%'
-                            OR COALESCE(p.progressMethod, '') LIKE '%온라인%'))
+                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%online%'
+                            OR COALESCE(p.workMethod, '') LIKE '%온라인%'))
                    OR (:progressMethod = 'OFFLINE'
-                       AND (LOWER(COALESCE(p.progressMethod, '')) LIKE '%offline%'
-                            OR COALESCE(p.progressMethod, '') LIKE '%오프라인%'))
+                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%offline%'
+                            OR COALESCE(p.workMethod, '') LIKE '%오프라인%'))
                    OR (:progressMethod = 'HYBRID'
-                       AND (LOWER(COALESCE(p.progressMethod, '')) LIKE '%hybrid%'
-                            OR COALESCE(p.progressMethod, '') LIKE '%혼합%'
-                            OR COALESCE(p.progressMethod, '') LIKE '%온/오프%')))
+                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%hybrid%'
+                            OR COALESCE(p.workMethod, '') LIKE '%혼합%'
+                            OR COALESCE(p.workMethod, '') LIKE '%온/오프%')))
               AND (:position IS NULL OR :position = ''
-                   OR positionSelection.positionName LIKE CONCAT('%', :position, '%'))
+                   OR positionValue.name LIKE CONCAT('%', :position, '%'))
               AND (:techStack IS NULL OR :techStack = ''
-                   OR techStackSelection.techStackName LIKE CONCAT('%', :techStack, '%'))
+                   OR techStackValue.name LIKE CONCAT('%', :techStack, '%'))
             """)
     Page<Project> findProjectsWithFilters(@Param("keyword") String keyword,
                                           @Param("projectType") String projectType,
@@ -46,5 +48,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
                                           @Param("techStack") String techStack,
                                           Pageable pageable);
 
-    List<Project> findAllByOrderByCreatedDateDescIdDesc();
+    List<Project> findAllByOrderByCreatedAtDescIdDesc();
 }

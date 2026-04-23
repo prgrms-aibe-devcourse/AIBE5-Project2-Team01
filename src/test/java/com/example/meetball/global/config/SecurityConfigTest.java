@@ -78,11 +78,11 @@ class SecurityConfigTest {
     @Test
     @DisplayName("마이페이지 공개 항목 API도 로그인 없이 조회할 수 없다")
     void myPagePublicSectionsRequireLogin() throws Exception {
-        mockMvc.perform(get("/api/mypage/profile").param("userId", "1"))
+        mockMvc.perform(get("/api/mypage/profile").param("profileId", "1"))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/mypage/projects").param("userId", "1"))
+        mockMvc.perform(get("/api/mypage/projects").param("profileId", "1"))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/mypage/projects/completed").param("userId", "1"))
+        mockMvc.perform(get("/api/mypage/projects/completed").param("profileId", "1"))
                 .andExpect(status().isForbidden());
     }
 
@@ -112,7 +112,7 @@ class SecurityConfigTest {
     @DisplayName("마이페이지 프로필 수정은 인증 세션과 CSRF 토큰이 있으면 허용된다")
     void myPageProfileUpdateWithCsrfIsAllowed() throws Exception {
         MockHttpSession session = authenticatedSession(1L);
-        MvcResult pageResult = mockMvc.perform(get("/user/mypage").session(session))
+        MvcResult pageResult = mockMvc.perform(get("/mypage").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
         String html = pageResult.getResponse().getContentAsString();
@@ -137,12 +137,12 @@ class SecurityConfigTest {
     }
 
     @Test
-    @DisplayName("세션 userId만 남은 마이페이지 저장 요청도 인증을 복원해 허용한다")
-    void myPageProfileUpdateRestoresAuthenticationFromSessionUserId() throws Exception {
+    @DisplayName("세션 profileId만 남은 마이페이지 저장 요청도 인증을 복원해 허용한다")
+    void myPageProfileUpdateRestoresAuthenticationFromSessionProfileId() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
-        session.setAttribute("userNickname", "초코푸들");
-        MvcResult pageResult = mockMvc.perform(get("/user/mypage").session(session))
+        session.setAttribute("profileId", 1L);
+        session.setAttribute("profileNickname", "초코푸들");
+        MvcResult pageResult = mockMvc.perform(get("/mypage").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
         String html = pageResult.getResponse().getContentAsString();
@@ -166,10 +166,10 @@ class SecurityConfigTest {
                 .andExpect(status().isOk());
     }
 
-    private MockHttpSession authenticatedSession(Long userId) {
+    private MockHttpSession authenticatedSession(Long profileId) {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", userId);
-        session.setAttribute("userNickname", "security-test-user");
+        session.setAttribute("profileId", profileId);
+        session.setAttribute("profileNickname", "security-test-user");
 
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(

@@ -2,8 +2,8 @@ package com.example.meetball.domain.auth.controller;
 
 import com.example.meetball.domain.auth.dto.AuthRequestDto;
 import com.example.meetball.domain.auth.dto.AuthResponseDto;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.service.UserService;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.service.ProfileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthApiController {
 
-    private final UserService userService;
+    private final ProfileService profileService;
 
     @PostMapping("/google")
     public ResponseEntity<AuthResponseDto> loginWithGoogle(@RequestBody AuthRequestDto requestDto, HttpServletRequest request) {
@@ -32,19 +32,20 @@ public class AuthApiController {
         }
 
         try {
-            // Verify Google Token and fetch or create User
-            UserService.GoogleLoginResult loginResult = userService.processGoogleLogin(requestDto.getCredential());
-            User user = loginResult.user();
+            // Verify Google Token and fetch or create Profile
+            ProfileService.GoogleLoginResult loginResult = profileService.processGoogleLogin(requestDto.getCredential());
+            Profile profile = loginResult.profile();
 
             // Initialize Http Session
             HttpSession session = request.getSession(true);
-            session.setAttribute("userId", user.getId());
-            session.setAttribute("userNickname", user.getNickname());
+            session.setAttribute("accountId", profile.getAccountId());
+            session.setAttribute("profileId", profile.getId());
+            session.setAttribute("profileNickname", profile.getNickname());
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(),
+                    profile.getEmail(),
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                    List.of(new SimpleGrantedAuthority("ROLE_" + profile.getRole()))
             );
             securityContext.setAuthentication(authentication);
             SecurityContextHolder.setContext(securityContext);
@@ -56,7 +57,7 @@ public class AuthApiController {
                 session.removeAttribute("needsProfile");
             }
 
-            return ResponseEntity.ok(new AuthResponseDto(user));
+            return ResponseEntity.ok(new AuthResponseDto(profile));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
@@ -65,16 +66,16 @@ public class AuthApiController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AuthResponseDto> getCurrentUser(HttpServletRequest request) {
+    public ResponseEntity<AuthResponseDto> getCurrentProfile(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null || session.getAttribute("profileId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userService.getUserById(userId);
+        Long profileId = (Long) session.getAttribute("profileId");
+        Profile profile = profileService.getProfileById(profileId);
 
-        return ResponseEntity.ok(new AuthResponseDto(user));
+        return ResponseEntity.ok(new AuthResponseDto(profile));
     }
 
     @PostMapping("/logout")

@@ -1,6 +1,18 @@
 package com.example.meetball.domain.comment.entity;
 
-import jakarta.persistence.*;
+import com.example.meetball.domain.profile.entity.Profile;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,60 +22,73 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "project_comment")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "project_id", nullable = false)
     private Long projectId;
 
-    @Column(nullable = false)
-    private String authorNickname;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", nullable = false)
+    private Profile author;
 
-    @Column(name = "author_user_id")
-    private Long authorUserId;
+    @Column(name = "comment_type", nullable = false, length = 20)
+    private String commentType = "COMMENT";
 
-    @Column(nullable = false, length = 1000)
+    @Column(name = "target_scope", nullable = false, length = 20)
+    private String authorRole = "MEMBER";
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted;
+
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // 작성자의 당시 직책 (LEADER, MEMBER, GUEST 등)
-    @Column(nullable = false)
-    private String authorRole;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    // 대댓글을 위한 자기 참조 관계 설정 (부모 댓글)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_comment_id")
     private Comment parent;
 
-    // 대댓글 목록 (자식 댓글들)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 
     @Builder
-    public Comment(Long projectId, String authorNickname, Long authorUserId, String content, Comment parent, String authorRole) {
+    public Comment(Long projectId, Profile author, String authorNickname, Long authorUserId, String content, Comment parent, String authorRole) {
         this.projectId = projectId;
-        this.authorNickname = authorNickname;
-        this.authorUserId = authorUserId;
+        this.author = author;
         this.content = content;
         this.parent = parent;
-        this.authorRole = authorRole;
+        this.authorRole = authorRole == null || authorRole.isBlank() ? "MEMBER" : authorRole;
+        this.commentType = parent == null ? "COMMENT" : "REPLY";
     }
 
     public void updateContent(String content) {
         this.content = content;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Long getAuthorUserId() {
+        return author != null ? author.getId() : null;
+    }
+
+    public String getAuthorNickname() {
+        return author != null ? author.getNickname() : "";
     }
 }

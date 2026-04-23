@@ -1,6 +1,6 @@
 package com.example.meetball.domain.auth.dto;
 
-import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.profile.entity.Profile;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,10 +12,10 @@ public class AuthResponseDto {
     private String nickname;
     private String role;
 
-    public AuthResponseDto(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.nickname = user.getNickname();
-        this.role = user.getRole();
+    public AuthResponseDto(Profile profile) {
+        this.id = profile.getId();
+        this.email = profile.getEmail();
+        this.nickname = profile.getNickname();
+        this.role = profile.getRole();
     }
 }

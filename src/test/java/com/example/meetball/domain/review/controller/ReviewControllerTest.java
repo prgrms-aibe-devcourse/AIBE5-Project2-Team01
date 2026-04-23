@@ -30,9 +30,9 @@ class ReviewControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private MockHttpSession session(Long userId) {
+    private MockHttpSession session(Long profileId) {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", userId);
+        session.setAttribute("profileId", profileId);
         return session;
     }
 
