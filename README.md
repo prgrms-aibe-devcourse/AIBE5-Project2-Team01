@@ -364,6 +364,7 @@ src/main/resources
 | `GOOGLE_CLIENT_ID` | Google 로그인 Client ID. 기본값이 설정되어 있으며, 환경별로 교체할 때만 지정 |
 | `SPRING_JPA_HIBERNATE_DDL_AUTO` | Hibernate DDL 전략 |
 | `SPRING_JPA_SHOW_SQL` | SQL 로그 출력 여부 |
+| `APP_SEED_ENABLED` | 로컬/테스트 검증용 샘플 데이터 생성 여부 |
 
 Google OAuth Client ID는 브라우저에서 공개되는 식별자이므로 기본값을 설정 파일에 포함합니다. Client Secret, DB 비밀번호, Render PostgreSQL 접속 정보 같은 비밀값은 커밋하지 않습니다.
 
@@ -389,11 +390,12 @@ Google 로그인은 기본 Client ID로 동작합니다. 운영 Client ID를 별
 SPRING_PROFILES_ACTIVE=prod
 SPRING_JPA_HIBERNATE_DDL_AUTO=update
 SPRING_JPA_SHOW_SQL=false
+APP_SEED_ENABLED=false
 ```
 
 ### 로컬 H2
 
-로컬 H2는 테스트나 개인 개발 확인 용도입니다. 운영 애플리케이션에는 샘플 데이터 자동 주입 코드가 없습니다.
+로컬 H2는 테스트나 개인 개발 확인 용도입니다. 기본값은 `APP_SEED_ENABLED=true`이며, DB가 비어 있으면 검증용 사용자, 프로젝트, 지원, 댓글, 찜, 조회, 리뷰 데이터가 자동으로 생성됩니다. 운영 Render에서는 `APP_SEED_ENABLED=false`로 비활성화합니다.
 
 macOS, Linux, Git Bash:
 
@@ -408,6 +410,8 @@ $env:SPRING_PROFILES_ACTIVE="local"; .\mvnw.cmd spring-boot:run
 ```
 
 로컬 기본 DB 파일은 `.local/meetballdb`이며 `.local/`은 Git에서 제외됩니다.
+
+로컬 데이터를 완전히 초기화하려면 애플리케이션을 종료한 뒤 `.local/meetballdb` 파일들을 삭제하고 다시 실행합니다. 샘플 데이터 없이 확인하려면 `APP_SEED_ENABLED=false`를 함께 지정합니다.
 
 ---
 

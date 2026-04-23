@@ -45,46 +45,13 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // 0. 테스트용 유저 데이터 생성
-        if (userRepository.count() == 0) {
-            userRepository.save(User.builder()
-                    .email("leader@meetball.com")
-                    .nickname("초코푸들")
-                    .jobTitle("프론트엔드 리더")
-                    .techStack("React, TypeScript")
-                    .isPublic(true)
-                    .role("LEADER")
-                    .build());
+        // 0. 로컬/테스트 검증용 유저 데이터 생성
+        User leader = ensureSeedUser("leader@meetball.com", "초코푸들", "프론트엔드", "React, TypeScript", true, "LEADER");
+        User member = ensureSeedUser("member@meetball.com", "성실한리트리버", "백엔드", "Java, Spring", true, "MEMBER");
+        User guest = ensureSeedUser("guest@meetball.com", "열정고양이", "디자이너", "Figma", false, "GUEST");
+        User dev = ensureSeedUser("dev@meetball.com", "코딩하는비글", "풀스택", "Nextjs, Nodejs", true, "MEMBER");
 
-            userRepository.save(User.builder()
-                    .email("member@meetball.com")
-                    .nickname("성실한리트리버")
-                    .jobTitle("백엔드 개발자")
-                    .techStack("Java, Spring")
-                    .isPublic(true)
-                    .role("MEMBER")
-                    .build());
-
-            userRepository.save(User.builder()
-                    .email("guest@meetball.com")
-                    .nickname("열정고양이")
-                    .jobTitle("UI/UX 디자이너")
-                    .techStack("Figma")
-                    .isPublic(false)
-                    .role("GUEST")
-                    .build());
-            
-            userRepository.save(User.builder()
-                    .email("dev@meetball.com")
-                    .nickname("코딩하는비글")
-                    .jobTitle("풀스택 개발자")
-                    .techStack("Nextjs, Nodejs")
-                    .isPublic(true)
-                    .role("MEMBER")
-                    .build());
-        }
-
-        // 0-1. 테스트용 프로젝트 및 참여 멤버 데이터 생성
+        // 0-1. 로컬/테스트 검증용 프로젝트 및 참여 멤버 데이터 생성
         if (projectRepository.count() == 0) {
             // 프로젝트 1: AI 헬스케어 (모집 중 - 메인 프로젝트)
             Project project1 = projectRepository.save(new Project(
@@ -160,12 +127,6 @@ public class DataInitializer implements CommandLineRunner {
                     "Go, React"
             ));
 
-            // 사용자 연결
-            User leader = userRepository.findByEmail("leader@meetball.com").get();
-            User member = userRepository.findByEmail("member@meetball.com").get();
-            User dev = userRepository.findByEmail("dev@meetball.com").get();
-            User guest = userRepository.findByEmail("guest@meetball.com").get();
-
             // 참여 데이터
             projectMemberRepository.save(ProjectMember.builder().user(leader).project(project1).role("LEADER").build());
             projectMemberRepository.save(ProjectMember.builder().user(member).project(project1).role("MEMBER").build());
@@ -237,5 +198,17 @@ public class DataInitializer implements CommandLineRunner {
                     .parent(c1)
                     .build());
         }
+    }
+
+    private User ensureSeedUser(String email, String nickname, String jobTitle, String techStack, boolean isPublic, String role) {
+        return userRepository.findByEmail(email)
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .email(email)
+                        .nickname(nickname)
+                        .jobTitle(jobTitle)
+                        .techStack(techStack)
+                        .isPublic(isPublic)
+                        .role(role)
+                        .build()));
     }
 }
