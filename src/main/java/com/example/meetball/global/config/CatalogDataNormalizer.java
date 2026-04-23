@@ -4,6 +4,8 @@ import com.example.meetball.domain.application.entity.Application;
 import com.example.meetball.domain.application.repository.ApplicationRepository;
 import com.example.meetball.domain.project.entity.Project;
 import com.example.meetball.domain.project.entity.ProjectPosition;
+import com.example.meetball.domain.project.entity.ProjectMember;
+import com.example.meetball.domain.project.repository.ProjectMemberRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import com.example.meetball.domain.user.entity.User;
@@ -29,6 +31,7 @@ public class CatalogDataNormalizer implements ApplicationRunner {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final ApplicationRepository applicationRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     @Transactional
@@ -40,9 +43,10 @@ public class CatalogDataNormalizer implements ApplicationRunner {
 
     private void normalizeUsers() {
         for (User user : userRepository.findAll()) {
+            String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionNameOrDefault(user.getJobTitle());
             String normalizedTechStack = ProjectSelectionCatalog.normalizeTechStackCsvOrDefault(user.getTechStack());
-            if (!normalizedTechStack.equals(user.getTechStack())) {
-                user.updateProfile(user.getNickname(), user.getJobTitle(), normalizedTechStack, user.isPublic());
+            if (!normalizedPosition.equals(user.getJobTitle()) || !normalizedTechStack.equals(user.getTechStack())) {
+                user.updateProfile(user.getNickname(), normalizedPosition, normalizedTechStack, user.isPublic());
             }
             if (user.getTechStackSelections().isEmpty()) {
                 user.replaceTechStacks(splitTechStacks(normalizedTechStack));
@@ -66,7 +70,24 @@ public class CatalogDataNormalizer implements ApplicationRunner {
             if (project.getTechStackSelections().isEmpty()) {
                 project.replaceTechStacks(splitTechStacks(normalizedTechStacks));
             }
+            ensureLeaderMembership(project);
         }
+    }
+
+    private void ensureLeaderMembership(Project project) {
+        boolean hasLeader = projectMemberRepository.findByProject(project).stream()
+                .anyMatch(projectMember -> "LEADER".equals(projectMember.getRole()));
+        if (hasLeader || project.getLeaderName() == null || project.getLeaderName().isBlank()) {
+            return;
+        }
+
+        userRepository.findByNickname(project.getLeaderName().trim())
+                .filter(user -> !projectMemberRepository.existsByProjectAndUser(project, user))
+                .ifPresent(user -> projectMemberRepository.save(ProjectMember.builder()
+                        .project(project)
+                        .user(user)
+                        .role("LEADER")
+                        .build()));
     }
 
     private void normalizeApplications() {

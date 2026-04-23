@@ -10,6 +10,7 @@ import com.example.meetball.domain.user.entity.User;
 import com.example.meetball.domain.user.entity.UserTechStack;
 import com.example.meetball.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,6 +52,7 @@ public class RecommendationService {
      * @param userId 추천 대상 사용자 ID
      * @return 점수 내림차순으로 정렬된 추천 프로젝트 목록
      */
+    @Transactional(readOnly = true)
     public List<RecommendationResponseDto> recommend(Long userId) {
         // 1. 사용자 조회 (존재하지 않으면 예외)
         User user = userRepository.findById(userId)

@@ -40,4 +40,8 @@ public class ProjectTechStack {
         this.techStackName = techStackName;
         this.sortOrder = sortOrder;
     }
+
+    public void updateSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 }

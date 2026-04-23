@@ -5,6 +5,7 @@ import com.example.meetball.domain.project.dto.ProjectCreateRequestDto;
 import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
 import com.example.meetball.domain.project.dto.ProjectDetailView;
 import com.example.meetball.domain.project.dto.ProjectListResponseDto;
+import com.example.meetball.domain.project.dto.ProjectMemberProfile;
 import com.example.meetball.domain.project.dto.ProjectPositionStatus;
 import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
@@ -23,6 +24,7 @@ import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import com.example.meetball.domain.projectread.repository.ProjectReadRepository;
 import com.example.meetball.domain.review.repository.ReviewRepository;
 import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -64,6 +66,7 @@ public class ProjectService {
     private final CommentRepository commentRepository;
     private final ProjectReadRepository projectReadRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     // --- MVC (front2) ---
     public List<ProjectSummaryView> getProjectSummaries() {
@@ -119,6 +122,7 @@ public class ProjectService {
                 formatPeriod(project.getProjectStartAt(), project.getProjectEndAt()),
                 splitTechStacks(project),
                 buildPositionStatuses(project),
+                buildTeamMembers(project),
                 projectReadRepository.countByProject(project)
         );
     }
@@ -656,13 +660,62 @@ public class ProjectService {
     }
 
     private Long resolveLeaderUserId(Project project) {
-        return projectMemberRepository.findByProject(project).stream()
+        Long leaderUserId = projectMemberRepository.findByProject(project).stream()
                 .filter(projectMember -> "LEADER".equals(projectMember.getRole()))
                 .map(ProjectMember::getUser)
                 .filter(Objects::nonNull)
                 .map(User::getId)
                 .findFirst()
                 .orElse(null);
+        if (leaderUserId != null) {
+            return leaderUserId;
+        }
+        String leaderName = cleanText(project.getLeaderName());
+        if (leaderName == null || leaderName.isEmpty()) {
+            return null;
+        }
+        return userRepository.findByNickname(leaderName)
+                .map(User::getId)
+                .orElse(null);
+    }
+
+    private List<ProjectMemberProfile> buildTeamMembers(Project project) {
+        List<ProjectMemberProfile> members = projectMemberRepository.findByProject(project).stream()
+                .filter(projectMember -> projectMember.getUser() != null)
+                .sorted((left, right) -> roleOrder(left.getRole()) - roleOrder(right.getRole()))
+                .map(projectMember -> new ProjectMemberProfile(
+                        projectMember.getUser().getId(),
+                        projectMember.getUser().getNickname(),
+                        projectMember.getRole(),
+                        projectMember.getUser().getJobTitle()
+                ))
+                .toList();
+        if (!members.isEmpty()) {
+            return members;
+        }
+
+        String leaderName = cleanText(project.getLeaderName());
+        if (leaderName == null || leaderName.isEmpty()) {
+            return List.of();
+        }
+        return userRepository.findByNickname(leaderName)
+                .map(user -> List.of(new ProjectMemberProfile(
+                        user.getId(),
+                        user.getNickname(),
+                        "LEADER",
+                        user.getJobTitle()
+                )))
+                .orElse(List.of());
+    }
+
+    private int roleOrder(String role) {
+        if ("LEADER".equals(role)) {
+            return 0;
+        }
+        if ("MEMBER".equals(role)) {
+            return 1;
+        }
+        return 2;
     }
 
     private String normalizeProjectTypeFilter(String value) {

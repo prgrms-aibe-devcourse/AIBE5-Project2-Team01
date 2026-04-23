@@ -35,10 +35,14 @@ public final class ProjectSelectionCatalog {
     private static final Map<String, String> POSITION_ALIASES = Map.ofEntries(
             Map.entry(key("프론트엔드 개발"), "프론트엔드"),
             Map.entry(key("프론트엔드 개발자"), "프론트엔드"),
+            Map.entry(key("프론트엔드 리더"), "프론트엔드"),
             Map.entry(key("백엔드 개발"), "백엔드"),
             Map.entry(key("백엔드 개발자"), "백엔드"),
+            Map.entry(key("풀스택 개발"), "풀스택"),
+            Map.entry(key("풀스택 개발자"), "풀스택"),
             Map.entry(key("웹 서버"), "서버"),
             Map.entry(key("UI/UX 디자인"), "디자이너"),
+            Map.entry(key("UI/UX 디자이너"), "디자이너"),
             Map.entry(key("iOS"), "IOS"),
             Map.entry(key("기획/PM"), "매니저(PM)"),
             Map.entry(key("프로젝트 매니저"), "매니저(PM)"),
@@ -206,6 +210,18 @@ public final class ProjectSelectionCatalog {
 
     public static String positionName(String value) {
         return parsePositionTokenLenient(value, 1).name();
+    }
+
+    public static String normalizeSinglePositionName(String value) {
+        return parsePositionToken(value, true).name();
+    }
+
+    public static String normalizeSinglePositionNameOrDefault(String value) {
+        try {
+            return normalizeSinglePositionName(value);
+        } catch (IllegalArgumentException exception) {
+            return "기타";
+        }
     }
 
     private static List<String> splitCsv(String value) {

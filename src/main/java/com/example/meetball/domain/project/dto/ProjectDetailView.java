@@ -24,6 +24,7 @@ public record ProjectDetailView(
         String projectPeriodLabel,
         List<String> techStacks,
         List<ProjectPositionStatus> positionStatuses,
+        List<ProjectMemberProfile> teamMembers,
         int readCount
 ) {
 }

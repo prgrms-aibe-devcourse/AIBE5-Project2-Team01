@@ -367,9 +367,25 @@
                                     <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
                                 </div>
                             </div>
-                            <div class="p-4 bg-white border border-poodle-50 rounded-2xl">
+                            <a th:each="member : ${project.teamMembers}"
+                               th:if="${member.role() != 'LEADER'}"
+                               th:href="@{/people/{userId}(userId=${member.userId()})}"
+                               class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl hover:border-meatball/30 hover:bg-poodle-50/30 transition-all group/member">
+                                <div class="relative">
+                                    <img th:src="@{/img/logo.png}" src="/img/logo.png"
+                                         class="w-12 h-12 bg-white rounded-xl shadow-sm border border-poodle-50">
+                                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-poodle-300 text-white rounded-md flex items-center justify-center text-[8px]">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="min-w-0">
+                                    <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 group-hover/member:text-meatball transition-colors truncate">팀원</p>
+                                    <p th:text="${#strings.isEmpty(member.jobTitle()) ? 'Member' : member.jobTitle()}" class="text-[9px] text-poodle-300 font-black uppercase truncate">Member</p>
+                                </div>
+                            </a>
+                            <div th:if="${#lists.size(project.teamMembers) <= 1}" class="p-4 bg-white border border-poodle-50 rounded-2xl">
                                 <p class="text-[11px] text-poodle-300 font-bold leading-relaxed">
-                                    팀원 목록은 지원 승인 후 프로젝트 관리 화면에서 확인할 수 있습니다.
+                                    승인된 팀원이 생기면 이곳에서 프로필로 이동할 수 있습니다.
                                 </p>
                             </div>
                         </div>

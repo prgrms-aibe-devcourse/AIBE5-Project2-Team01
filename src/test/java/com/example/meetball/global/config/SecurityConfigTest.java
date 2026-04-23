@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,6 +105,64 @@ class SecurityConfigTest {
                 .header(csrfHeader, csrfToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("마이페이지 프로필 수정은 인증 세션과 CSRF 토큰이 있으면 허용된다")
+    void myPageProfileUpdateWithCsrfIsAllowed() throws Exception {
+        MockHttpSession session = authenticatedSession(1L);
+        MvcResult pageResult = mockMvc.perform(get("/user/mypage").session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String html = pageResult.getResponse().getContentAsString();
+        String csrfToken = extractMetaContent(html, "_csrf");
+        String csrfHeader = extractMetaContent(html, "_csrf_header");
+        Cookie csrfCookie = pageResult.getResponse().getCookie("XSRF-TOKEN");
+
+        mockMvc.perform(put("/api/mypage/profile")
+                .session(session)
+                .cookie(csrfCookie)
+                .header(csrfHeader, csrfToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "nickname": "초코푸들",
+                          "jobTitle": "백엔드",
+                          "techStack": "Java, Spring",
+                          "isPublic": true
+                        }
+                        """))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("세션 userId만 남은 마이페이지 저장 요청도 인증을 복원해 허용한다")
+    void myPageProfileUpdateRestoresAuthenticationFromSessionUserId() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", 1L);
+        session.setAttribute("userNickname", "초코푸들");
+        MvcResult pageResult = mockMvc.perform(get("/user/mypage").session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        String html = pageResult.getResponse().getContentAsString();
+        String csrfToken = extractMetaContent(html, "_csrf");
+        String csrfHeader = extractMetaContent(html, "_csrf_header");
+        Cookie csrfCookie = pageResult.getResponse().getCookie("XSRF-TOKEN");
+
+        mockMvc.perform(put("/api/mypage/profile")
+                .session(session)
+                .cookie(csrfCookie)
+                .header(csrfHeader, csrfToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "nickname": "초코푸들",
+                          "jobTitle": "백엔드",
+                          "techStack": "Java, Spring",
+                          "isPublic": true
+                        }
+                        """))
                 .andExpect(status().isOk());
     }
 

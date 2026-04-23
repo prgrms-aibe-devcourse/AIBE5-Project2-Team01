@@ -11,7 +11,9 @@ import jakarta.persistence.OrderBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Project {
@@ -226,13 +228,32 @@ public class Project {
     }
 
     public void replaceTechStacks(List<String> techStacks) {
-        this.techStackSelections.clear();
+        List<String> requestedTechStacks = normalizeTechStackNames(techStacks);
+        this.techStackSelections.removeIf(existing -> !requestedTechStacks.contains(existing.getTechStackName()));
+
+        for (int i = 0; i < requestedTechStacks.size(); i++) {
+            String techStackName = requestedTechStacks.get(i);
+            ProjectTechStack existing = this.techStackSelections.stream()
+                    .filter(current -> techStackName.equals(current.getTechStackName()))
+                    .findFirst()
+                    .orElse(null);
+            if (existing == null) {
+                this.techStackSelections.add(new ProjectTechStack(this, techStackName, i));
+            } else {
+                existing.updateSortOrder(i);
+            }
+        }
+    }
+
+    private List<String> normalizeTechStackNames(List<String> techStacks) {
         if (techStacks == null) {
-            return;
+            return List.of();
         }
-        for (int i = 0; i < techStacks.size(); i++) {
-            this.techStackSelections.add(new ProjectTechStack(this, techStacks.get(i), i));
-        }
+        return new ArrayList<>(new LinkedHashSet<>(techStacks.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .toList()));
     }
 
     public void replacePositions(List<com.example.meetball.domain.project.support.ProjectSelectionCatalog.PositionCapacity> positions) {

@@ -128,7 +128,10 @@ class AuthViewControllerTest {
         mockMvc.perform(get("/user/mypage").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"tab-reads\"")))
-                .andExpect(content().string(containsString("id=\"content-reads\"")));
+                .andExpect(content().string(containsString("id=\"content-reads\"")))
+                .andExpect(content().string(containsString("id=\"editPositionOptions\"")))
+                .andExpect(content().string(containsString("renderEditPositionOptions")))
+                .andExpect(content().string(not(containsString("placeholder=\"직무를 입력하세요"))));
     }
 
     @Test
@@ -259,6 +262,7 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("Active Project")))
                 .andExpect(content().string(containsString("id=\"detailReadCount\"")))
                 .andExpect(content().string(containsString("팀 멤버 소개")))
-                .andExpect(content().string(containsString("/people/1")));
+                .andExpect(content().string(containsString("/people/1")))
+                .andExpect(content().string(containsString("/people/2")));
     }
 }

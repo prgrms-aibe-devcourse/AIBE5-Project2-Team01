@@ -45,10 +45,11 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
 
+        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getJobTitle());
         String normalizedTechStack = ProjectSelectionCatalog.normalizeTechStackCsv(request.getTechStack());
         user.updateProfile(
                 request.getNickname(),
-                request.getJobTitle(),
+                normalizedPosition,
                 normalizedTechStack,
                 request.isPublic()
         );
@@ -80,7 +81,7 @@ public class UserService {
                         .email(email)
                         .nickname(name != null ? name : "User_" + System.currentTimeMillis())
                         .role("MEMBER")
-                        .jobTitle("-")
+                        .jobTitle("")
                         .techStack("")
                         .isPublic(true)
                         .build();

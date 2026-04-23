@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -58,13 +60,32 @@ public class User {
     }
 
     public void replaceTechStacks(List<String> techStacks) {
-        this.techStackSelections.clear();
+        List<String> requestedTechStacks = normalizeTechStackNames(techStacks);
+        this.techStackSelections.removeIf(existing -> !requestedTechStacks.contains(existing.getTechStackName()));
+
+        for (int i = 0; i < requestedTechStacks.size(); i++) {
+            String techStackName = requestedTechStacks.get(i);
+            UserTechStack existing = this.techStackSelections.stream()
+                    .filter(current -> techStackName.equals(current.getTechStackName()))
+                    .findFirst()
+                    .orElse(null);
+            if (existing == null) {
+                this.techStackSelections.add(new UserTechStack(this, techStackName, i));
+            } else {
+                existing.updateSortOrder(i);
+            }
+        }
+    }
+
+    private List<String> normalizeTechStackNames(List<String> techStacks) {
         if (techStacks == null) {
-            return;
+            return List.of();
         }
-        for (int i = 0; i < techStacks.size(); i++) {
-            this.techStackSelections.add(new UserTechStack(this, techStacks.get(i), i));
-        }
+        return new ArrayList<>(new LinkedHashSet<>(techStacks.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .toList()));
     }
 
     // 권한 승급 로직 등
