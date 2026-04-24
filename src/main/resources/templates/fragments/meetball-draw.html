@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="meetballDrawModal">
+    <div id="meetballDrawModal" class="fixed inset-0 z-[185] hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md" data-meetball-draw-overlay></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 md:p-6 pointer-events-none">
+            <div class="pointer-events-auto relative flex h-full max-h-[88vh] w-full max-w-[780px] flex-col overflow-hidden rounded-[2.4rem] border border-white bg-white shadow-[0_40px_90px_-22px_rgba(62,39,35,0.28)]">
+                <div class="relative border-b border-poodle-50 px-5 py-5 text-center md:px-7 md:py-6">
+                    <h2 class="text-2xl font-black tracking-tight text-poodle-900 md:text-3xl">밋Ball 뽑기</h2>
+                    <button type="button"
+                            data-meetball-draw-close
+                            class="absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-poodle-100 bg-white text-poodle-500 transition-all hover:border-poodle-200 hover:text-poodle-900 md:right-7">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-hidden px-5 pb-5 pt-5 md:px-7 md:pb-7 md:pt-6">
+                    <section data-meetball-step="input" class="flex h-full min-h-0 flex-col gap-5">
+                        <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/60 p-5 md:p-6">
+                            <div class="flex gap-2">
+                                <input type="text"
+                                       id="meetballDrawNameInput"
+                                       class="w-full rounded-[1.25rem] border border-poodle-100 bg-white px-4 py-4 text-sm font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="후보 이름 입력">
+                                <button type="button"
+                                        id="meetballDrawAddButton"
+                                        class="inline-flex min-w-[64px] items-center justify-center rounded-[1.25rem] bg-poodle-900 px-4 py-4 text-white transition-all hover:bg-meatball">
+                                    <i class="fa-solid fa-plus text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex min-h-0 flex-1 flex-col rounded-[2rem] border border-poodle-100 bg-white p-5 shadow-sm md:p-6">
+                            <div class="mb-4 flex items-center justify-between gap-3">
+                                <p id="meetballDrawCountText" class="text-sm font-black text-poodle-700">0명</p>
+                                <button type="button"
+                                        id="meetballDrawClearButton"
+                                        class="rounded-full border border-poodle-100 px-4 py-2 text-[11px] font-black text-poodle-300 transition-all hover:border-red-100 hover:text-red-400">
+                                    전체 초기화
+                                </button>
+                            </div>
+                            <div id="meetballDrawCandidateList" class="flex-1 overflow-y-auto pr-1"></div>
+                        </div>
+
+                        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+                            <button type="button"
+                                    id="meetballDrawStartFromInput"
+                                    class="w-full rounded-[1.6rem] bg-meatball px-6 py-4 text-base font-black text-white transition-all hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-35 md:w-auto md:min-w-[240px]">
+                                밋Ball 뽑기 시작
+                            </button>
+                        </div>
+                    </section>
+
+                    <section data-meetball-step="draw" class="hidden h-full min-h-0 flex-col">
+                        <div class="flex min-h-0 flex-1 items-center justify-center">
+                            <div id="meetballDrawJar" class="relative w-full max-w-[320px] overflow-hidden rounded-[4rem] border-4 border-white bg-gradient-to-tr from-poodle-50 to-white p-4 shadow-2xl md:max-w-[400px]">
+                                <div class="pointer-events-none absolute inset-0 z-20 rounded-[3.5rem] border-[14px] border-white/35 bg-white/18 backdrop-blur-[2px]"></div>
+                                <div class="pointer-events-none absolute left-1/2 top-8 z-20 h-10 w-44 -translate-x-1/2 rounded-full bg-white/45 blur-xl"></div>
+                                <div class="relative z-10 aspect-[4/5] w-full">
+                                    <canvas id="meetballDrawCanvas" class="h-full w-full"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section data-meetball-step="result" class="hidden h-full min-h-0 items-center justify-center">
+                        <div class="relative w-full max-w-[380px] rounded-[2rem] border border-white bg-white px-6 py-8 text-center shadow-[0_25px_60px_rgba(62,39,35,0.22)] md:px-8 md:py-10">
+                            <button type="button"
+                                    id="meetballDrawResultClose"
+                                    class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-poodle-100 bg-white text-poodle-900 shadow-sm transition-all hover:bg-poodle-50">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                            <div class="relative mb-6 inline-flex animate-bounce">
+                                <img th:src="@{/img/meetball.png}" src="/img/meetball.png" alt="밋볼" class="h-24 w-24 object-contain md:h-28 md:w-28">
+                                <div class="absolute -right-3 -top-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-meatball bg-white shadow-lg">
+                                    <i class="fa-solid fa-crown text-lg text-yellow-400"></i>
+                                </div>
+                            </div>
+                            <div id="meetballDrawWinnerName"
+                                 class="scale-0 rounded-[1.6rem] bg-poodle-900 px-8 py-4 text-center text-3xl font-black text-white shadow-[0_20px_50px_rgba(62,39,35,0.18)] transition-transform duration-500 md:text-4xl">
+                                -
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #meetballDrawCandidateList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #meetballDrawCandidateList::-webkit-scrollbar-thumb {
+            background: rgba(212, 165, 154, 0.6);
+            border-radius: 9999px;
+        }
+
+        @keyframes meetball-draw-shake {
+            0%, 100% { transform: translate(0, 0) rotate(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-2px, -2px) rotate(-0.5deg); }
+            20%, 40%, 60%, 80% { transform: translate(2px, 2px) rotate(0.5deg); }
+        }
+
+        .animate-meetball-draw-shake {
+            animation: meetball-draw-shake 0.2s infinite;
+        }
+    </style>
+
+    <script>
+        (() => {
+            const colors = ['#FF6B35', '#5D4037', '#D4A59A', '#3E2723', '#FF9E7D', '#8D6E63', '#C9923D', '#704D43'];
+            const JAR_PADDING = 32;
+            const MAX_SPEED = 22;
+            const state = {
+                modalOpen: false,
+                currentStep: 'input',
+                candidates: [],
+                balls: [],
+                animationId: null,
+                drawTimerId: null,
+                drawPhase: 'idle',
+                winnerBall: null,
+                needsRebuild: true
+            };
+
+            let refs = {};
+            let ctx = null;
+
+            function escapeHtml(value) {
+                return String(value || '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function initMeetballDraw() {
+                refs = {
+                    modal: document.getElementById('meetballDrawModal'),
+                    overlay: document.querySelector('[data-meetball-draw-overlay]'),
+                    closeButtons: document.querySelectorAll('[data-meetball-draw-close]'),
+                    stepSections: document.querySelectorAll('[data-meetball-step]'),
+                    nameInput: document.getElementById('meetballDrawNameInput'),
+                    addButton: document.getElementById('meetballDrawAddButton'),
+                    candidateList: document.getElementById('meetballDrawCandidateList'),
+                    countText: document.getElementById('meetballDrawCountText'),
+                    clearButton: document.getElementById('meetballDrawClearButton'),
+                    startFromInputButton: document.getElementById('meetballDrawStartFromInput'),
+                    canvas: document.getElementById('meetballDrawCanvas'),
+                    jar: document.getElementById('meetballDrawJar'),
+                    resultCloseButton: document.getElementById('meetballDrawResultClose'),
+                    winnerName: document.getElementById('meetballDrawWinnerName')
+                };
+
+                if (!refs.modal || !refs.canvas) {
+                    return;
+                }
+
+                ctx = refs.canvas.getContext('2d');
+
+                refs.overlay?.addEventListener('click', closeMeetballDrawModal);
+                refs.closeButtons.forEach((button) => button.addEventListener('click', closeMeetballDrawModal));
+                refs.addButton?.addEventListener('click', addCandidateFromInput);
+                refs.nameInput?.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addCandidateFromInput();
+                    }
+                });
+                refs.clearButton?.addEventListener('click', clearAllCandidates);
+                refs.startFromInputButton?.addEventListener('click', beginDrawFromInput);
+                refs.resultCloseButton?.addEventListener('click', closeResultStep);
+                refs.candidateList?.addEventListener('click', handleCandidateListClick);
+                window.addEventListener('resize', () => {
+                    if (state.modalOpen && state.currentStep === 'draw') {
+                        ensureCanvasReady();
+                    }
+                });
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && state.modalOpen) {
+                        closeMeetballDrawModal();
+                    }
+                });
+
+                renderCandidateList();
+                syncStepUi();
+                syncActionButtons();
+            }
+
+            function openMeetballDrawModal() {
+                if (!refs.modal) {
+                    initMeetballDraw();
+                }
+                if (!refs.modal) {
+                    return;
+                }
+
+                state.modalOpen = true;
+                state.currentStep = 'input';
+                refs.modal.classList.remove('hidden');
+                refs.modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                syncStepUi();
+                syncActionButtons();
+                renderCandidateList();
+                setTimeout(() => refs.nameInput?.focus(), 80);
+            }
+
+            function closeMeetballDrawModal() {
+                if (!refs.modal) return;
+                stopDrawTimers();
+                stopAnimationLoop();
+                state.modalOpen = false;
+                state.currentStep = 'input';
+                state.drawPhase = 'idle';
+                state.winnerBall = null;
+                refs.winnerName?.classList.remove('scale-100');
+                resetBallsForIdle();
+                refs.jar?.classList.remove('animate-meetball-draw-shake');
+                refs.modal.classList.add('hidden');
+                refs.modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = 'auto';
+                syncStepUi();
+                syncActionButtons();
+            }
+
+            function addCandidateFromInput() {
+                const rawName = refs.nameInput?.value.trim() || '';
+                if (!rawName) return;
+                state.candidates.push(rawName);
+                state.needsRebuild = true;
+                refs.nameInput.value = '';
+                renderCandidateList();
+                syncActionButtons();
+                refs.nameInput?.focus();
+            }
+
+            function handleCandidateListClick(event) {
+                const removeButton = event.target.closest('[data-remove-candidate-index]');
+                if (!removeButton) return;
+                const index = Number(removeButton.dataset.removeCandidateIndex);
+                if (Number.isNaN(index)) return;
+                state.candidates.splice(index, 1);
+                state.needsRebuild = true;
+                renderCandidateList();
+                syncActionButtons();
+            }
+
+            function clearAllCandidates() {
+                state.candidates = [];
+                state.balls = [];
+                state.winnerBall = null;
+                state.drawPhase = 'idle';
+                state.needsRebuild = true;
+                refs.winnerName?.classList.remove('scale-100');
+                stopDrawTimers();
+                stopAnimationLoop();
+                refs.jar?.classList.remove('animate-meetball-draw-shake');
+                if (ctx && refs.canvas) {
+                    ctx.clearRect(0, 0, refs.canvas.width, refs.canvas.height);
+                }
+                state.currentStep = 'input';
+                renderCandidateList();
+                syncActionButtons();
+                syncStepUi();
+            }
+
+            function renderCandidateList() {
+                if (!refs.candidateList || !refs.countText) return;
+
+                if (state.candidates.length === 0) {
+                    refs.countText.textContent = '0명';
+                    refs.candidateList.innerHTML = `
+                        <div class="flex h-full min-h-[220px] items-center justify-center rounded-[1.5rem] border border-dashed border-poodle-100 bg-poodle-50/60 px-6 text-center text-sm font-bold leading-relaxed text-poodle-300">
+                            후보를 추가해주세요.
+                        </div>
+                    `;
+                    return;
+                }
+
+                refs.countText.textContent = `${state.candidates.length}명`;
+                refs.candidateList.innerHTML = `
+                    <div class="space-y-2">
+                        ${state.candidates.map((candidate, index) => `
+                            <div class="flex items-center justify-between gap-3 rounded-[1.25rem] border border-poodle-100 bg-poodle-50/70 px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-white text-[11px] font-black text-meatball">${index + 1}</span>
+                                    <span class="text-sm font-black text-poodle-800">${escapeHtml(candidate)}</span>
+                                </div>
+                                <button type="button"
+                                        data-remove-candidate-index="${index}"
+                                        class="flex h-8 w-8 items-center justify-center rounded-full border border-poodle-100 bg-white text-poodle-300 transition-all hover:border-red-100 hover:text-red-400">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            function syncStepUi() {
+                refs.stepSections.forEach((section) => {
+                    section.classList.toggle('hidden', section.dataset.meetballStep !== state.currentStep);
+                    section.classList.toggle('flex', section.dataset.meetballStep === state.currentStep);
+                });
+
+                if (state.currentStep === 'draw' && state.modalOpen) {
+                    ensureCanvasReady();
+                    if (state.needsRebuild) {
+                        rebuildBalls();
+                    }
+                    startAnimationLoop();
+                } else {
+                    stopAnimationLoop();
+                }
+            }
+
+            function syncActionButtons() {
+                const hasEnoughCandidates = state.candidates.length >= 2;
+                const drawLocked = state.drawPhase === 'mixing' || state.drawPhase === 'lifting' || state.currentStep === 'result';
+                if (refs.clearButton) refs.clearButton.disabled = state.candidates.length === 0 || drawLocked;
+                if (refs.startFromInputButton) refs.startFromInputButton.disabled = !hasEnoughCandidates;
+            }
+
+            function stopDrawTimers() {
+                if (state.drawTimerId) {
+                    clearTimeout(state.drawTimerId);
+                    state.drawTimerId = null;
+                }
+            }
+
+            function startAnimationLoop() {
+                if (state.animationId) return;
+                const tick = () => {
+                    if (!state.modalOpen || state.currentStep !== 'draw') {
+                        state.animationId = null;
+                        return;
+                    }
+                    renderFrame();
+                    state.animationId = window.requestAnimationFrame(tick);
+                };
+                state.animationId = window.requestAnimationFrame(tick);
+            }
+
+            function stopAnimationLoop() {
+                if (state.animationId) {
+                    window.cancelAnimationFrame(state.animationId);
+                    state.animationId = null;
+                }
+            }
+
+            function ensureCanvasReady() {
+                if (!refs.canvas) return;
+                const container = refs.canvas.parentElement;
+                if (!container) return;
+                const width = Math.max(260, container.clientWidth);
+                const height = Math.max(320, container.clientHeight);
+                refs.canvas.width = width;
+                refs.canvas.height = height;
+                state.balls.forEach((ball) => ball.keepInsideBounds());
+            }
+
+            function getBallRadius() {
+                if (state.candidates.length <= 4) return 44;
+                if (state.candidates.length <= 6) return 40;
+                if (state.candidates.length <= 8) return 36;
+                return 32;
+            }
+
+            function getBounds(radius) {
+                return {
+                    left: JAR_PADDING + radius,
+                    right: refs.canvas.width - JAR_PADDING - radius,
+                    top: JAR_PADDING + radius,
+                    bottom: refs.canvas.height - JAR_PADDING - radius
+                };
+            }
+
+            class Ball {
+                constructor(name, color) {
+                    this.name = name;
+                    this.color = color;
+                    this.radius = getBallRadius();
+                    const bounds = getBounds(this.radius);
+                    this.x = Math.random() * Math.max(1, bounds.right - bounds.left) + bounds.left;
+                    this.y = bounds.top + Math.random() * 30;
+                    this.vx = (Math.random() - 0.5) * 10;
+                    this.vy = 5;
+                    this.gravity = 0.4;
+                    this.friction = 0.8;
+                    this.bounce = 0.7;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.rotationSpeed = (Math.random() - 0.5) * 0.2;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+
+                    const grad = ctx.createRadialGradient(this.x - 10, this.y - 10, 5, this.x, this.y, this.radius);
+                    grad.addColorStop(0, '#ffffff');
+                    grad.addColorStop(0.3, this.color);
+                    grad.addColorStop(1, this.color);
+
+                    ctx.fillStyle = grad;
+                    ctx.shadowColor = this === state.winnerBall && state.drawPhase !== 'idle'
+                        ? 'rgba(255, 107, 53, 0.5)'
+                        : 'rgba(0, 0, 0, 0.1)';
+                    ctx.shadowBlur = this === state.winnerBall && state.drawPhase !== 'idle' ? 20 : 10;
+                    ctx.shadowOffsetY = 5;
+                    ctx.fill();
+
+                    if (this === state.winnerBall && state.drawPhase !== 'idle') {
+                        ctx.lineWidth = 4;
+                        ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+                        ctx.stroke();
+                    }
+
+                    const label = this.name.length > 4 ? this.name.slice(0, 4) : this.name;
+                    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+                    ctx.font = `900 ${Math.max(11, this.radius * 0.42)}px SUIT, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(label, this.x, this.y + 1);
+                    ctx.restore();
+                }
+
+                clampVelocity() {
+                    this.vx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, this.vx));
+                    this.vy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, this.vy));
+                }
+
+                keepInsideBounds() {
+                    const bounds = getBounds(this.radius);
+                    this.x = Math.max(bounds.left, Math.min(bounds.right, this.x));
+                    this.y = Math.max(bounds.top, Math.min(bounds.bottom, this.y));
+                }
+
+                update() {
+                    this.vy += this.gravity;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.angle += this.vx * 0.05 + this.rotationSpeed;
+                    this.clampVelocity();
+
+                    const bounds = getBounds(this.radius);
+                    if (this.x > bounds.right) {
+                        this.x = bounds.right;
+                        this.vx *= -this.bounce;
+                    } else if (this.x < bounds.left) {
+                        this.x = bounds.left;
+                        this.vx *= -this.bounce;
+                    }
+
+                    if (this.y > bounds.bottom) {
+                        this.y = bounds.bottom;
+                        this.vy *= -this.bounce;
+                        this.vx *= this.friction;
+                    } else if (this.y < bounds.top) {
+                        this.y = bounds.top;
+                        this.vy *= -this.bounce;
+                    }
+
+                    this.clampVelocity();
+                }
+            }
+
+            function rebuildBalls() {
+                ensureCanvasReady();
+                state.balls = state.candidates.map((candidate, index) => new Ball(candidate, colors[index % colors.length]));
+                state.needsRebuild = false;
+            }
+
+            function solveCollision(ballA, ballB) {
+                const dx = ballB.x - ballA.x;
+                const dy = ballB.y - ballA.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const minDistance = ballA.radius + ballB.radius;
+
+                if (distance === 0) {
+                    const angle = Math.random() * Math.PI * 2;
+                    ballB.x += Math.cos(angle);
+                    ballB.y += Math.sin(angle);
+                    return;
+                }
+
+                if (distance < minDistance) {
+                    const overlap = minDistance - distance;
+                    const nx = dx / distance;
+                    const ny = dy / distance;
+                    const moveX = (nx * overlap) / 2;
+                    const moveY = (ny * overlap) / 2;
+
+                    ballA.x -= moveX;
+                    ballA.y -= moveY;
+                    ballB.x += moveX;
+                    ballB.y += moveY;
+
+                    const v1n = ballA.vx * nx + ballA.vy * ny;
+                    const v2n = ballB.vx * nx + ballB.vy * ny;
+                    ballA.vx += (v2n - v1n) * nx;
+                    ballA.vy += (v2n - v1n) * ny;
+                    ballB.vx += (v1n - v2n) * nx;
+                    ballB.vy += (v1n - v2n) * ny;
+                }
+            }
+
+            function applyMixingForce() {
+                const centerX = refs.canvas.width / 2;
+                const centerY = refs.canvas.height / 2;
+                state.balls.forEach((ball) => {
+                    const dx = ball.x - centerX;
+                    const dy = ball.y - centerY;
+                    const distance = Math.max(60, Math.hypot(dx, dy));
+                    const tangentX = -dy / distance;
+                    const tangentY = dx / distance;
+                    ball.vx += tangentX * 0.55 + (Math.random() - 0.5) * 0.45;
+                    ball.vy += tangentY * 0.55 + (Math.random() - 0.5) * 0.35 - 0.18;
+                    ball.clampVelocity();
+                });
+            }
+
+            function updateWinnerLift() {
+                if (!state.winnerBall) return;
+                const targetX = refs.canvas.width / 2;
+                const targetY = getBounds(state.winnerBall.radius).top + 26;
+                state.winnerBall.x += (targetX - state.winnerBall.x) * 0.16;
+                state.winnerBall.y += (targetY - state.winnerBall.y) * 0.18;
+                state.winnerBall.angle += 0.25;
+                state.winnerBall.keepInsideBounds();
+            }
+
+            function drawWinnerSpotlight() {
+                if (!state.winnerBall || state.drawPhase === 'idle' || state.drawPhase === 'mixing') return;
+                ctx.save();
+                const gradient = ctx.createLinearGradient(state.winnerBall.x, 0, state.winnerBall.x, state.winnerBall.y + state.winnerBall.radius * 1.5);
+                gradient.addColorStop(0, 'rgba(255,255,255,0.35)');
+                gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(state.winnerBall.x - 36, 0);
+                ctx.lineTo(state.winnerBall.x + 36, 0);
+                ctx.lineTo(state.winnerBall.x + state.winnerBall.radius * 1.2, state.winnerBall.y + state.winnerBall.radius * 1.3);
+                ctx.lineTo(state.winnerBall.x - state.winnerBall.radius * 1.2, state.winnerBall.y + state.winnerBall.radius * 1.3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function renderFrame() {
+                if (!ctx || !refs.canvas) return;
+                ctx.clearRect(0, 0, refs.canvas.width, refs.canvas.height);
+
+                if (state.drawPhase === 'mixing') {
+                    applyMixingForce();
+                }
+
+                const activeBalls = (state.drawPhase === 'lifting' || state.drawPhase === 'result') && state.winnerBall
+                    ? state.balls.filter((ball) => ball !== state.winnerBall)
+                    : state.balls;
+
+                for (let i = 0; i < activeBalls.length; i += 1) {
+                    for (let j = i + 1; j < activeBalls.length; j += 1) {
+                        solveCollision(activeBalls[i], activeBalls[j]);
+                    }
+                }
+
+                activeBalls.forEach((ball) => ball.update());
+
+                if ((state.drawPhase === 'lifting' || state.drawPhase === 'result') && state.winnerBall) {
+                    updateWinnerLift();
+                }
+
+                drawWinnerSpotlight();
+
+                const drawOrder = (state.drawPhase === 'lifting' || state.drawPhase === 'result') && state.winnerBall
+                    ? state.balls.filter((ball) => ball !== state.winnerBall).concat(state.winnerBall)
+                    : state.balls;
+                drawOrder.forEach((ball) => ball.draw());
+            }
+
+            function showResultStep(name) {
+                if (!refs.winnerName) return;
+                refs.winnerName.textContent = name;
+                state.currentStep = 'result';
+                syncStepUi();
+                setTimeout(() => refs.winnerName?.classList.add('scale-100'), 120);
+                syncActionButtons();
+            }
+
+            function resetBallsForIdle() {
+                state.balls.forEach((ball) => {
+                    ball.bounce = 0.7;
+                    ball.vx = (Math.random() - 0.5) * 6;
+                    ball.vy = -4 - Math.random() * 2;
+                    ball.keepInsideBounds();
+                });
+            }
+
+            function beginDrawFromInput() {
+                if (state.candidates.length < 2) return;
+                state.currentStep = 'draw';
+                state.needsRebuild = true;
+                syncStepUi();
+                requestAnimationFrame(() => {
+                    rebuildBalls();
+                    resetBallsForIdle();
+                    runDrawSequence();
+                });
+            }
+
+            function runDrawSequence() {
+                if (state.candidates.length < 2 || state.drawPhase === 'mixing' || state.drawPhase === 'lifting') return;
+                if (state.needsRebuild || state.balls.length !== state.candidates.length) {
+                    rebuildBalls();
+                }
+
+                stopDrawTimers();
+                refs.winnerName?.classList.remove('scale-100');
+                state.winnerBall = null;
+                state.drawPhase = 'mixing';
+                refs.jar?.classList.add('animate-meetball-draw-shake');
+                syncActionButtons();
+
+                state.balls.forEach((ball) => {
+                    ball.bounce = 0.9;
+                    ball.vx = (Math.random() - 0.5) * 18;
+                    ball.vy = -12 - Math.random() * 10;
+                    ball.clampVelocity();
+                });
+
+                state.drawTimerId = window.setTimeout(() => {
+                    const winnerIndex = Math.floor(Math.random() * state.candidates.length);
+                    state.winnerBall = state.balls[winnerIndex];
+                    state.drawPhase = 'lifting';
+                    refs.jar?.classList.remove('animate-meetball-draw-shake');
+
+                    state.balls.forEach((ball) => {
+                        ball.bounce = 0.74;
+                        if (ball !== state.winnerBall) {
+                            ball.vx *= 0.35;
+                            ball.vy *= 0.35;
+                        }
+                    });
+
+                    state.drawTimerId = window.setTimeout(() => {
+                        state.drawPhase = 'result';
+                        showResultStep(state.winnerBall?.name || '-');
+                    }, 1400);
+                }, 2200);
+            }
+
+            function closeResultStep() {
+                stopDrawTimers();
+                refs.winnerName?.classList.remove('scale-100');
+                state.drawPhase = 'idle';
+                state.winnerBall = null;
+                state.currentStep = 'input';
+                state.needsRebuild = true;
+                resetBallsForIdle();
+                syncActionButtons();
+                syncStepUi();
+                setTimeout(() => refs.nameInput?.focus(), 60);
+            }
+
+            window.openMeetballDrawModal = openMeetballDrawModal;
+            window.closeMeetballDrawModal = closeMeetballDrawModal;
+
+            document.addEventListener('DOMContentLoaded', initMeetballDraw);
+        })();
+    </script>
+</th:block>
+</body>
+</html>

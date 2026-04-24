@@ -40,6 +40,6 @@ public class MyPageViewController {
             return "redirect:/?login=1&redirect=/mypage";
         }
 
-        return "mypage/index";
+        return "mypage/mypage";
     }
 }
