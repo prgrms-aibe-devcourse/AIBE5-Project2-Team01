@@ -284,16 +284,26 @@
 
                 <form id="welcomeProfileForm" class="space-y-8">
                     <section data-welcome-step="1" class="space-y-6">
-                        <div class="space-y-3">
-                            <label for="welcomeName" class="block text-[15px] md:text-lg font-black text-poodle-700">
-                                이름을 입력해주세요 <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" id="welcomeName" name="name" required
-                                   th:value="${currentProfile.accountName}"
-                                   class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
-                                   placeholder="이름을 입력해주세요">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-3">
+                                <label for="welcomeName" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    이름을 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="text" id="welcomeName" name="name" required
+                                       th:value="${currentProfile.editableAccountName}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="이름을 입력해주세요">
+                            </div>
+                            <div class="space-y-3">
+                                <label for="welcomeNickname" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    닉네임을 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="text" id="welcomeNickname" name="nickname" required
+                                       th:value="${currentProfile.temporaryNickname ? '' : currentProfile.nickname}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="닉네임을 입력해주세요">
+                            </div>
                         </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="space-y-3">
                                 <label for="welcomePhoneNumber" class="block text-[15px] md:text-lg font-black text-poodle-700">
@@ -395,7 +405,7 @@
             const welcomeStepCopy = {
                 1: {
                     title: '기본 정보를 입력해주세요',
-                    subtitle: '이름, 연락처, 생년월일, 성별을 먼저 입력해 주세요.'
+                    subtitle: '이름, 닉네임, 연락처, 생년월일, 성별을 먼저 입력해 주세요.'
                 },
                 2: {
                     title: '포지션과 경력을 알려주세요',
@@ -408,7 +418,8 @@
             };
             let welcomeCurrentStep = 1;
             const welcomeState = {
-                name: /*[[${currentProfile.accountName}]]*/ '',
+                name: /*[[${currentProfile.editableAccountName}]]*/ '',
+                nickname: /*[[${currentProfile.temporaryNickname ? '' : currentProfile.nickname}]]*/ '',
                 phoneNumber: /*[[${currentProfile.phoneNumber}]]*/ '',
                 birthDate: /*[[${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}]]*/ '',
                 gender: normalizeWelcomeGenderForUi(/*[[${currentProfile.gender}]]*/ ''),
@@ -447,6 +458,7 @@
 
             function syncWelcomeFields() {
                 const nameInput = document.getElementById('welcomeName');
+                const nicknameInput = document.getElementById('welcomeNickname');
                 const phoneNumberInput = document.getElementById('welcomePhoneNumber');
                 const birthDateInput = document.getElementById('welcomeBirthDate');
                 const genderInput = document.getElementById('welcomeGender');
@@ -456,6 +468,7 @@
                 const techStackInput = document.getElementById('welcomeTechStack');
 
                 if (nameInput) nameInput.value = welcomeState.name || '';
+                if (nicknameInput) nicknameInput.value = welcomeState.nickname || '';
                 if (phoneNumberInput) phoneNumberInput.value = formatWelcomePhoneNumber(welcomeState.phoneNumber || '');
                 if (birthDateInput) birthDateInput.value = welcomeState.birthDate || '';
                 if (genderInput) genderInput.value = welcomeState.gender || '';
@@ -604,10 +617,15 @@
             async function validateWelcomeStep(step) {
                 if (step === 1) {
                     welcomeState.name = document.getElementById('welcomeName')?.value.trim() || '';
+                    welcomeState.nickname = document.getElementById('welcomeNickname')?.value.trim() || '';
                     welcomeState.phoneNumber = formatWelcomePhoneNumber(document.getElementById('welcomePhoneNumber')?.value || '');
                     welcomeState.birthDate = document.getElementById('welcomeBirthDate')?.value || '';
                     if (!welcomeState.name) {
                         await meetballAlert('이름을 입력해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.nickname) {
+                        await meetballAlert('닉네임을 입력해주세요.');
                         return false;
                     }
                     if (!welcomeState.phoneNumber) {
@@ -665,6 +683,9 @@
             document.getElementById('welcomeName')?.addEventListener('input', (event) => {
                 welcomeState.name = event.target.value;
             });
+            document.getElementById('welcomeNickname')?.addEventListener('input', (event) => {
+                welcomeState.nickname = event.target.value;
+            });
             document.getElementById('welcomePhoneNumber')?.addEventListener('input', (event) => {
                 const formatted = formatWelcomePhoneNumber(event.target.value);
                 event.target.value = formatted;
@@ -705,6 +726,7 @@
 
                 const payload = {
                     name: document.getElementById('welcomeName')?.value.trim() || '',
+                    nickname: document.getElementById('welcomeNickname')?.value.trim() || '',
                     phoneNumber: formatWelcomePhoneNumber(document.getElementById('welcomePhoneNumber')?.value || ''),
                     birthDate: document.getElementById('welcomeBirthDate')?.value || '',
                     gender: welcomeState.gender,

@@ -1,4 +1,5 @@
 package com.example.meetball.domain.profile.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class ProfileOnboardingRequest {
 
     private String name;
+    private String nickname;
     private String phoneNumber;
     private LocalDate birthDate;
     private String gender;

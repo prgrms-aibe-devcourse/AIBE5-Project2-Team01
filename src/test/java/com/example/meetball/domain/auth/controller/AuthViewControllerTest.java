@@ -65,6 +65,7 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("id=\"welcomeHeadline\"")))
                 .andExpect(content().string(containsString("id=\"welcomeSubtitle\"")))
                 .andExpect(content().string(containsString("id=\"welcomeName\"")))
+                .andExpect(content().string(containsString("id=\"welcomeNickname\"")))
                 .andExpect(content().string(containsString("id=\"welcomePhoneNumber\"")))
                 .andExpect(content().string(containsString("id=\"welcomeBirthDate\"")))
                 .andExpect(content().string(containsString("id=\"welcomeGenderOptions\"")))
@@ -76,7 +77,7 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("meetballPositionOptions")))
                 .andExpect(content().string(containsString("/api/mypage/onboarding")))
                 .andExpect(content().string(containsString("포지션을 선택해주세요.")))
-                .andExpect(content().string(not(containsString("name=\"nickname\""))))
+                .andExpect(content().string(containsString("name=\"nickname\"")))
                 .andExpect(content().string(not(containsString("Current Role / Job"))));
     }
 

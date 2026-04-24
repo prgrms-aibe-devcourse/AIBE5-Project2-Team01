@@ -136,6 +136,7 @@ class MyPageControllerTest {
                         .content("""
                                 {
                                   "name": "열정고양이",
+                                  "nickname": "열정고양이",
                                   "phoneNumber": "010-9876-5432",
                                   "birthDate": "1998-07-15",
                                   "gender": "여자",
@@ -151,6 +152,7 @@ class MyPageControllerTest {
 
         Profile profile = profileService.getProfileById(3L);
         assertThat(profile.getAccount().getName()).isEqualTo("열정고양이");
+        assertThat(profile.getNickname()).isEqualTo("열정고양이");
         assertThat(profile.getPhoneNumber()).isEqualTo("010-9876-5432");
         assertThat(profile.getBirthDate()).hasToString("1998-07-15");
         assertThat(profile.getGender()).isEqualTo("여자");

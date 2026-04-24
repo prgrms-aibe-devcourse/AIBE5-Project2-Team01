@@ -60,24 +60,20 @@ public class Account {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public static Account google(String email, String socialIdentifier, String name) {
+    public static Account google(String email, String socialIdentifier) {
         Account account = new Account();
         account.email = email;
         account.socialProvider = PROVIDER_GOOGLE;
         account.socialIdentifier = socialIdentifier;
-        account.name = name;
         account.accountStatus = STATUS_ACTIVE;
         account.createdAt = LocalDateTime.now();
         return account;
     }
 
-    public void updateGoogleIdentity(String email, String socialIdentifier, String name) {
+    public void updateGoogleIdentity(String email, String socialIdentifier) {
         this.email = email;
         this.socialProvider = PROVIDER_GOOGLE;
         this.socialIdentifier = socialIdentifier;
-        if ((this.name == null || this.name.isBlank()) && name != null && !name.isBlank()) {
-            this.name = name;
-        }
         this.updatedAt = LocalDateTime.now();
     }
 

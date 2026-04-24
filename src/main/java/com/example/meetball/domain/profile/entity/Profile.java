@@ -36,6 +36,7 @@ public class Profile {
     public static final String PROFILE_STATUS_PUBLIC = "PUBLIC";
     public static final String PROFILE_STATUS_PRIVATE = "PRIVATE";
     public static final String PROFILE_STATUS_INCOMPLETE = "INCOMPLETE";
+    private static final String TEMP_NICKNAME_PREFIX = "__temp__";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,7 +90,7 @@ public class Profile {
 
     @Builder
     public Profile(String email, String nickname, boolean isPublic) {
-        this(Account.google(email, buildSeedSocialIdentifier(email, nickname), nickname), nickname, isPublic, true);
+        this(Account.google(email, buildSeedSocialIdentifier(email, nickname)), sanitizeProvidedNickname(nickname), isPublic, true);
     }
 
     private Profile(Account account, String nickname, boolean isPublic, boolean defaultProfile) {
@@ -104,11 +105,14 @@ public class Profile {
         if (email != null && !email.isBlank()) {
             return "seed:" + email;
         }
-        return "seed:" + sanitizeNickname(nickname);
+        return "seed:" + sanitizeProvidedNickname(nickname);
     }
 
     public static Profile defaultProfile(Account account, String nickname, boolean needsProfileCompletion) {
-        Profile profile = new Profile(account, sanitizeNickname(nickname), !needsProfileCompletion, true);
+        String resolvedNickname = (nickname == null || nickname.isBlank())
+                ? createTemporaryNickname(account != null ? account.getSocialIdentifier() : null)
+                : sanitizeProvidedNickname(nickname);
+        Profile profile = new Profile(account, resolvedNickname, !needsProfileCompletion, true);
         if (needsProfileCompletion) {
             profile.profileStatus = PROFILE_STATUS_INCOMPLETE;
         }
@@ -116,7 +120,7 @@ public class Profile {
     }
 
     public void updateProfile(String nickname, Position position, List<TechStack> techStacks, boolean isPublic) {
-        this.nickname = sanitizeNickname(nickname);
+        this.nickname = sanitizeProvidedNickname(nickname);
         this.profileStatus = isPublic ? PROFILE_STATUS_PUBLIC : PROFILE_STATUS_PRIVATE;
         this.updatedAt = LocalDateTime.now();
         replacePosition(position);
@@ -191,6 +195,13 @@ public class Profile {
         return accountName != null && !accountName.isBlank() ? accountName : nickname;
     }
 
+    public String getEditableAccountName() {
+        if (account == null || account.getName() == null) {
+            return "";
+        }
+        return account.getName();
+    }
+
     public LocalDate getBirthDate() {
         return account != null ? account.getBirthDate() : null;
     }
@@ -253,6 +264,10 @@ public class Profile {
                 && !techStackSelections.isEmpty();
     }
 
+    public boolean isTemporaryNickname() {
+        return nickname != null && nickname.startsWith(TEMP_NICKNAME_PREFIX);
+    }
+
     public Long getAccountId() {
         return account != null ? account.getId() : null;
     }
@@ -263,6 +278,7 @@ public class Profile {
 
     public void completeOnboarding(
             String name,
+            String nickname,
             String phoneNumber,
             LocalDate birthDate,
             String gender,
@@ -275,6 +291,7 @@ public class Profile {
         if (account != null) {
             account.updateBasicInfo(name, phoneNumber, birthDate, gender);
         }
+        this.nickname = sanitizeProvidedNickname(nickname);
         this.organization = sanitizeText(organization, 100);
         this.orgVisible = orgVisible;
         this.updatedAt = LocalDateTime.now();
@@ -283,12 +300,21 @@ public class Profile {
         this.profileStatus = PROFILE_STATUS_PUBLIC;
     }
 
-    private static String sanitizeNickname(String nickname) {
+    private static String sanitizeProvidedNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {
-            return "Meetball_" + System.currentTimeMillis();
+            return createTemporaryNickname(null);
         }
         String trimmed = nickname.trim();
         return trimmed.length() <= 30 ? trimmed : trimmed.substring(0, 30);
+    }
+
+    private static String createTemporaryNickname(String seed) {
+        String normalizedSeed = seed == null ? "" : seed.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+        if (normalizedSeed.isBlank()) {
+            normalizedSeed = Long.toString(System.currentTimeMillis(), 36);
+        }
+        String candidate = TEMP_NICKNAME_PREFIX + normalizedSeed;
+        return candidate.length() <= 30 ? candidate : candidate.substring(0, 30);
     }
 
     private static String sanitizeText(String value, int maxLength) {

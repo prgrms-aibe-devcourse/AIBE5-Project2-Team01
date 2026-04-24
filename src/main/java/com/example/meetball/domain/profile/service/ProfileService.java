@@ -48,10 +48,11 @@ public class ProfileService {
     @Transactional
     public void updateProfile(Long profileId, ProfileUpdateRequest request) {
         Profile profile = getProfileById(profileId);
+        String normalizedNickname = requireText(request.getNickname(), "닉네임을 입력해주세요.", 30);
         
         // 닉네임 중복 체크 (기존 닉네임과 다를 경우에만)
-        if (!profile.getNickname().equals(request.getNickname()) &&
-            profileRepository.findByNickname(request.getNickname()).isPresent()) {
+        if (!profile.getNickname().equals(normalizedNickname) &&
+            profileRepository.findByNickname(normalizedNickname).isPresent()) {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
 
@@ -64,7 +65,7 @@ public class ProfileService {
                         .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 기술스택입니다: " + techStack)))
                 .toList();
         profile.updateProfile(
-                request.getNickname(),
+                normalizedNickname,
                 position,
                 techStacks,
                 request.isPublic()
@@ -76,6 +77,12 @@ public class ProfileService {
         Profile profile = getProfileById(profileId);
 
         String normalizedName = requireText(request.getName(), "이름을 입력해주세요.", 30);
+        String normalizedNickname = requireText(request.getNickname(), "닉네임을 입력해주세요.", 30);
+        profileRepository.findByNickname(normalizedNickname)
+                .filter(existing -> !existing.getId().equals(profileId))
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+                });
         String normalizedPhoneNumber = normalizePhoneNumber(request.getPhoneNumber());
         if (request.getBirthDate() == null) {
             throw new IllegalArgumentException("생년월일을 입력해주세요.");
@@ -102,6 +109,7 @@ public class ProfileService {
 
         profile.completeOnboarding(
                 normalizedName,
+                normalizedNickname,
                 normalizedPhoneNumber,
                 request.getBirthDate(),
                 normalizedGender,
@@ -128,7 +136,6 @@ public class ProfileService {
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 String email = payload.getEmail();
-                String name = (String) payload.get("name");
                 String socialIdentifier = payload.getSubject();
 
                 Optional<Profile> existingProfile = profileRepository
@@ -140,14 +147,14 @@ public class ProfileService {
                 if (existingProfile.isPresent()) {
                     Profile profile = existingProfile.get();
                     if (profile.getAccount() != null) {
-                        profile.getAccount().updateGoogleIdentity(email, socialIdentifier, name);
+                        profile.getAccount().updateGoogleIdentity(email, socialIdentifier);
                     }
                     return new GoogleLoginResult(profile, !profile.isProfileComplete());
                 }
 
                 Account account = accountRepository.findByEmail(email)
-                        .orElseGet(() -> accountRepository.save(Account.google(email, socialIdentifier, name)));
-                Profile newProfile = Profile.defaultProfile(account, name != null ? name : emailPrefix(email), true);
+                        .orElseGet(() -> accountRepository.save(Account.google(email, socialIdentifier)));
+                Profile newProfile = Profile.defaultProfile(account, null, true);
                 return new GoogleLoginResult(profileRepository.save(newProfile), true);
             } else {
                 throw new IllegalArgumentException("Invalid ID token.");
@@ -158,15 +165,6 @@ public class ProfileService {
     }
 
     public record GoogleLoginResult(Profile profile, boolean newlyCreated) {
-    }
-
-    private String emailPrefix(String email) {
-        if (email == null || email.isBlank()) {
-            return "Meetball_" + System.currentTimeMillis();
-        }
-        int atIndex = email.indexOf('@');
-        String prefix = atIndex > 0 ? email.substring(0, atIndex) : email;
-        return prefix.isBlank() ? "Meetball_" + System.currentTimeMillis() : prefix;
     }
 
     private String requireText(String value, String message, int maxLength) {
