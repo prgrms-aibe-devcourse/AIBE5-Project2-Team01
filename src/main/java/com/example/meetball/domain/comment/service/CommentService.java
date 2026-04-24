@@ -4,7 +4,7 @@ import com.example.meetball.domain.comment.dto.CommentRequestDto;
 import com.example.meetball.domain.comment.dto.CommentResponseDto;
 import com.example.meetball.domain.comment.entity.Comment;
 import com.example.meetball.domain.comment.repository.CommentRepository;
-import com.example.meetball.domain.user.entity.User;
+import com.example.meetball.domain.profile.entity.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto saveComment(CommentRequestDto requestDto, User author) {
+    public CommentResponseDto saveComment(CommentRequestDto requestDto, Profile author) {
         // 1. 비회원(NONE)은 모든 작성 불가
         if (author == null || "NONE".equals(requestDto.getAuthorRole()) || requestDto.getAuthorRole() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
@@ -48,8 +48,7 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .projectId(requestDto.getProjectId())
-                .authorNickname(requestDto.getAuthorNickname())
-                .authorUserId(author.getId())
+                .author(author)
                 .authorRole(requestDto.getAuthorRole())
                 .content(requestDto.getContent())
                 .parent(parentComment)
@@ -61,24 +60,24 @@ public class CommentService {
 
     // 2. 댓글 수정
     @Transactional
-    public CommentResponseDto updateComment(Long projectId, Long commentId, CommentRequestDto requestDto, User currentUser) {
+    public CommentResponseDto updateComment(Long projectId, Long commentId, CommentRequestDto requestDto, Profile currentProfile) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
 
         verifyProject(comment, projectId);
-        verifyAuthor(comment, currentUser);
+        verifyAuthor(comment, currentProfile);
         comment.updateContent(requestDto.getContent());
         return new CommentResponseDto(comment);
     }
 
     // 2. 댓글 삭제
     @Transactional
-    public void deleteComment(Long projectId, Long commentId, User currentUser) {
+    public void deleteComment(Long projectId, Long commentId, Profile currentProfile) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
 
         verifyProject(comment, projectId);
-        verifyAuthor(comment, currentUser);
+        verifyAuthor(comment, currentProfile);
         commentRepository.delete(comment);
     }
 
@@ -88,19 +87,12 @@ public class CommentService {
         }
     }
 
-    private void verifyAuthor(Comment comment, User currentUser) {
-        if (currentUser == null) {
+    private void verifyAuthor(Comment comment, Profile currentProfile) {
+        if (currentProfile == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        Long authorUserId = comment.getAuthorUserId();
-        if (authorUserId != null) {
-            if (!authorUserId.equals(currentUser.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot modify another user's comment.");
-            }
-            return;
-        }
-        // Existing imported comments may not have authorUserId yet.
-        if (!comment.getAuthorNickname().equals(currentUser.getNickname())) {
+        Long authorProfileId = comment.getAuthorProfileId();
+        if (authorProfileId == null || !authorProfileId.equals(currentProfile.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot modify another user's comment.");
         }
     }

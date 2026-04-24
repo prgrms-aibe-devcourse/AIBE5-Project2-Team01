@@ -25,7 +25,7 @@
                     class="text-sm md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
                     미트볼에서 프로젝트 팀원을 찾아보세요. 따뜻한 매칭 흐름으로 나에게 맞는 팀과 더 빨리 만날 수 있습니다.
                 </p>
-                <a th:href="@{/projects}"
+                <a th:href="@{/#projects}"
                     class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-105 active:scale-95 transition-all">
                     <span class="relative z-10">지금 바로 팀원 찾기</span>
                     <i
@@ -35,7 +35,7 @@
         </section>
 
         <!-- Search & Filter Section -->
-        <section class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <section id="projects" class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
             <div class="meetball-card p-8 rounded-[3rem] space-y-6">
                 <!-- Keyword Search -->
                 <div
@@ -129,7 +129,7 @@
                     <p class="text-[10px] font-black text-meatball uppercase tracking-[0.25em] mb-2">Smart Matching</p>
                     <h2 class="text-2xl font-black text-poodle-900 tracking-tight">나에게 맞는 추천 프로젝트</h2>
                 </div>
-                <a th:href="@{/user/mypage}" class="text-xs font-black text-poodle-300 hover:text-meatball transition-colors">
+                <a th:href="@{/mypage}" class="text-xs font-black text-poodle-300 hover:text-meatball transition-colors">
                     프로필 보러가기 <i class="fa-solid fa-chevron-right ml-1"></i>
                 </a>
             </div>

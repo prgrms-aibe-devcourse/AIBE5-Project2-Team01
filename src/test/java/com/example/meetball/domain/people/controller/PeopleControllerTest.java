@@ -19,9 +19,9 @@ class PeopleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private MockHttpSession session(Long userId) {
+    private MockHttpSession session(Long profileId) {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", userId);
+        session.setAttribute("profileId", profileId);
         return session;
     }
 
@@ -37,7 +37,7 @@ class PeopleControllerTest {
     void memberCanReadPeopleProfileApi() throws Exception {
         mockMvc.perform(get("/api/people/2/profile").session(session(1L)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(2))
+                .andExpect(jsonPath("$.profileId").value(2))
                 .andExpect(jsonPath("$.nickname").value("성실한리트리버"))
                 .andExpect(jsonPath("$.email").doesNotExist());
     }

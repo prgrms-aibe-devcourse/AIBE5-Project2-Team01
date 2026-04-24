@@ -21,8 +21,6 @@
                 <div>
                     <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
                         <h1 class="text-4xl font-black text-poodle-600 tracking-tighter" th:text="${profile.nickname}">닉네임</h1>
-                        <span class="px-3 py-1 bg-white/70 backdrop-blur-md rounded-lg text-[10px] font-black text-poodle-600 uppercase tracking-widest border border-white"
-                              th:text="${profile.role}">MEMBER</span>
                     </div>
                     <div class="flex items-center gap-2 justify-center md:justify-start mb-6 text-poodle-400">
                         <i class="fa-solid fa-star text-meatball"></i>
@@ -39,7 +37,7 @@
 	                    </div>
                 </div>
             </div>
-            <a th:href="@{/projects}"
+            <a th:href="@{/#projects}"
                class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black flex items-center gap-2 shadow-xl shadow-poodle-600/20 transition-all hover:bg-meatball hover:text-poodle-900 group">
                 <i class="fa-solid fa-magnifying-glass group-hover:scale-110 transition-transform"></i> 프로젝트 보기
             </a>
@@ -79,9 +77,9 @@
                             </div>
                         </div>
                         <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Primary Role</label>
+                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Primary Position</label>
                             <div class="font-bold text-poodle-800 bg-poodle-50/30 p-6 rounded-[1.5rem] border-2 border-poodle-50 text-lg">
-                                <span th:text="${#strings.isEmpty(profile.jobTitle) ? '직무 미등록' : profile.jobTitle}">백엔드 개발자</span>
+                                <span th:text="${#strings.isEmpty(profile.position) ? '포지션 미등록' : profile.position}">백엔드 개발자</span>
                             </div>
                         </div>
                     </div>
@@ -143,10 +141,10 @@
                                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                                     <div class="space-y-4 flex-grow">
                                         <div class="flex flex-wrap items-center gap-3">
-                                            <span th:text="${project.closed ? '모집 마감' : '모집 중'}"
-                                                  th:classappend="${project.closed ? ' bg-poodle-600 text-white' : ' bg-meatball/5 text-meatball'}"
+                                            <span th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감' : '모집 중'}"
+                                                  th:classappend="${project.recruitStatus == 'CLOSED' ? ' bg-poodle-600 text-white' : ' bg-meatball/5 text-meatball'}"
                                                   class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span>
-                                            <span th:text="${project.closed ? '프로젝트 진행 중' : (project.dDay == null ? '일정 확인 중' : (project.dDay < 0 ? '마감' : 'D-' + project.dDay))}"
+                                            <span th:text="${project.recruitStatus == 'CLOSED' ? '프로젝트 진행 중' : (project.dDay == null ? '일정 확인 중' : (project.dDay < 0 ? '마감' : 'D-' + project.dDay))}"
                                                   class="text-sm font-black text-poodle-400">D-7</span>
                                         </div>
                                         <h4 class="text-2xl font-black text-poodle-800 group-hover/item:text-meatball transition-colors" th:text="${project.title}">프로젝트명</h4>
@@ -191,9 +189,9 @@
                                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                                     <div class="space-y-4 flex-grow">
                                         <div class="flex flex-wrap items-center gap-3">
-                                            <span th:text="${project.closed ? '모집 마감' : '진행 중'}"
+                                            <span th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감' : '진행 중'}"
                                                   class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span>
-                                            <span th:text="${project.closed ? '프로젝트 진행 중' : (project.dDay == null ? '일정 확인 중' : (project.dDay < 0 ? '마감' : 'D-' + project.dDay))}"
+                                            <span th:text="${project.recruitStatus == 'CLOSED' ? '프로젝트 진행 중' : (project.dDay == null ? '일정 확인 중' : (project.dDay < 0 ? '마감' : 'D-' + project.dDay))}"
                                                   class="text-[11px] font-bold text-poodle-400">D-7</span>
                                         </div>
                                         <h4 class="text-2xl font-black text-poodle-800 group-hover/item:text-meatball transition-colors" th:text="${project.title}">프로젝트명</h4>
@@ -239,7 +237,7 @@
                                     <div class="space-y-3 flex-grow">
                                         <div class="flex flex-wrap items-center gap-3">
                                             <span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">완료</span>
-                                            <span th:text="${project.userRole == 'LEADER' ? '리더로 참여' : '팀원으로 참여'}" class="text-[11px] font-bold text-poodle-400">팀원으로 참여</span>
+                                            <span th:text="${project.participantRole == 'LEADER' ? '리더로 참여' : '팀원으로 참여'}" class="text-[11px] font-bold text-poodle-400">팀원으로 참여</span>
                                         </div>
                                         <h4 class="text-xl font-black text-poodle-800 group-hover/item:text-meatball transition-colors" th:text="${project.title}">프로젝트명</h4>
                                     </div>

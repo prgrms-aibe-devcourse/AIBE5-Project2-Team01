@@ -1,6 +1,6 @@
 package com.example.meetball.global.config;
 
-import com.example.meetball.global.auth.SessionUserAuthenticationFilter;
+import com.example.meetball.global.auth.SessionProfileAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final SessionUserAuthenticationFilter sessionUserAuthenticationFilter;
+    private final SessionProfileAuthenticationFilter sessionProfileAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,7 +31,6 @@ public class SecurityConfig {
                                 "/register",
                                 "/error",
                                 "/mypage",
-                                "/user/mypage",
                                 "/css/**",
                                 "/js/**",
                                 "/img/**",
@@ -44,7 +43,7 @@ public class SecurityConfig {
                                 "/api/projects",
                                 "/api/projects/*",
                                 "/api/projects/*/comments",
-                                "/api/projects/*/attachments",
+                                "/api/projects/*/resources",
                                 "/api/projects/*/bookmarks",
                                 "/api/projects/*/reviews/summary"
                         ).permitAll()
@@ -60,7 +59,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 )
-                .addFilterBefore(sessionUserAuthenticationFilter, AuthorizationFilter.class);
+                .addFilterBefore(sessionProfileAuthenticationFilter, AuthorizationFilter.class);
 
         return http.build();
     }

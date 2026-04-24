@@ -11,10 +11,10 @@ public class PeopleProjectResponse {
 
     private Long projectId;
     private String title;
-    private String userRole;
+    private String participantRole;
     private String status;
-    private boolean closed;
-    private boolean completed;
+    private String recruitStatus;
+    private String progressStatus;
 
     @JsonProperty("dDay")
     private Long dDay;
@@ -23,10 +23,10 @@ public class PeopleProjectResponse {
         return PeopleProjectResponse.builder()
                 .projectId(project.getProjectId())
                 .title(project.getTitle())
-                .userRole(project.getUserRole())
+                .participantRole(project.getParticipantRole())
                 .status(project.getStatus())
-                .closed(project.isClosed())
-                .completed(project.isCompleted())
+                .recruitStatus(project.getRecruitStatus())
+                .progressStatus(project.getProgressStatus())
                 .dDay(project.getDDay())
                 .build();
     }

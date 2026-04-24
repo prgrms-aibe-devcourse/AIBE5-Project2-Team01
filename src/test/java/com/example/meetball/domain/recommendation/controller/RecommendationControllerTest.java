@@ -21,22 +21,22 @@ class RecommendationControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("비로그인 추천 조회는 userId 파라미터가 있어도 실패한다")
+    @DisplayName("비로그인 추천 조회는 profileId 파라미터가 있어도 실패한다")
     void unauthenticatedRecommendationsRejectQueryUserId() throws Exception {
         mockMvc.perform(get("/api/recommendations")
-                .param("userId", "1"))
+                .param("profileId", "1"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("로그인 추천 조회는 세션 사용자 기준으로 성공한다")
-    void authenticatedRecommendationsUseSessionUserId() throws Exception {
+    void authenticatedRecommendationsUseSessionProfileId() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(get("/api/recommendations")
                 .session(session)
-                .param("userId", "2"))
+                .param("profileId", "2"))
                 .andExpect(status().isOk());
     }
 }

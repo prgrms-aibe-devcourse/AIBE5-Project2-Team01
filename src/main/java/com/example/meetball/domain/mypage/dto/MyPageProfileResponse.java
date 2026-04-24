@@ -1,26 +1,25 @@
 package com.example.meetball.domain.mypage.dto;
 
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.entity.UserTechStack;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.entity.ProfileTechStack;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class MyPageProfileResponse {
-    private Long userId;
+    private Long profileId;
     private String nickname;
     private String email;
-    private String jobTitle;
+    private String position;
     private String techStack;
     private boolean isPublic;
-    private String role;
     private double meetBallIndex;
     private boolean isOwner; // 본인 여부 추가
 
     // 편의용 변환 메서드
-    public static MyPageProfileResponse from(User user, double meetBallIndex, boolean isOwner) {
-        String displayEmail = user.getEmail();
+    public static MyPageProfileResponse from(Profile profile, double meetBallIndex, boolean isOwner) {
+        String displayEmail = profile.getEmail();
         
         // 본인이 아닐 경우 이메일 마스킹 (예: abc***@test.com)
         if (!isOwner && displayEmail != null && displayEmail.contains("@")) {
@@ -33,25 +32,24 @@ public class MyPageProfileResponse {
         }
 
         return MyPageProfileResponse.builder()
-                .userId(user.getId())
-                .nickname(user.getNickname())
+                .profileId(profile.getId())
+                .nickname(profile.getNickname())
                 .email(displayEmail)
-                .jobTitle(user.getJobTitle())
-                .techStack(formatTechStacks(user))
-                .isPublic(user.isPublic())
-                .role(user.getRole())
+                .position(profile.getPosition())
+                .techStack(formatTechStacks(profile))
+                .isPublic(profile.isPublic())
                 .meetBallIndex(meetBallIndex)
                 .isOwner(isOwner)
                 .build();
     }
 
-    private static String formatTechStacks(User user) {
-        if (user.getTechStackSelections() != null && !user.getTechStackSelections().isEmpty()) {
-            return user.getTechStackSelections().stream()
-                    .map(UserTechStack::getTechStackName)
+    private static String formatTechStacks(Profile profile) {
+        if (profile.getTechStackSelections() != null && !profile.getTechStackSelections().isEmpty()) {
+            return profile.getTechStackSelections().stream()
+                    .map(ProfileTechStack::getTechStackName)
                     .reduce((left, right) -> left + ", " + right)
                     .orElse("");
         }
-        return user.getTechStack();
+        return profile.getTechStack();
     }
 }

@@ -4,10 +4,8 @@ import com.example.meetball.domain.project.dto.ProjectCreateRequestDto;
 import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
 import com.example.meetball.domain.project.dto.ProjectListResponseDto;
 import com.example.meetball.domain.project.dto.ProjectPageResponseDto;
-import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.project.service.ProjectService;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,32 +30,30 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final com.example.meetball.domain.project.repository.ProjectRepository projectRepository;
-    private final com.example.meetball.domain.user.service.UserService userService;
+    private final com.example.meetball.domain.profile.service.ProfileService profileService;
     private final com.example.meetball.global.auth.service.AuthorizationService authorizationService;
 
     public ProjectController(ProjectService projectService,
                              com.example.meetball.domain.project.repository.ProjectRepository projectRepository,
-                             com.example.meetball.domain.user.service.UserService userService,
+                             com.example.meetball.domain.profile.service.ProfileService profileService,
                              com.example.meetball.global.auth.service.AuthorizationService authorizationService) {
         this.projectService = projectService;
         this.projectRepository = projectRepository;
-        this.userService = userService;
+        this.profileService = profileService;
         this.authorizationService = authorizationService;
     }
 
     @GetMapping("/projects")
-    public String projects(Model model) {
-        List<ProjectSummaryView> projects = projectService.getProjectSummaries();
-        model.addAttribute("projects", projects);
-        model.addAttribute("projectCount", projects.size());
-        return "home/index";
+    public String projects() {
+        return "redirect:/";
     }
 
     @GetMapping("/projects/{id}")
     public String detail(@PathVariable("id") Long id,
-                         @SessionAttribute(name = "userId", required = false) Long userId,
+                         @SessionAttribute(name = "profileId", required = false) Long profileId,
                          Model model) {
         try {
+            projectService.recordProjectView(id, profileId);
             // 1. DTO 추가
             model.addAttribute("project", projectService.getProjectDetail(id));
             model.addAttribute("currentProjectPath", "/projects/" + id);
@@ -66,14 +62,14 @@ public class ProjectController {
             com.example.meetball.domain.project.entity.Project projectEntity = 
                     projectRepository.findById(id).orElse(null);
             
-            com.example.meetball.domain.user.entity.User currentUser = null;
-            if (userId != null) {
-                currentUser = userService.getUserById(userId);
+            com.example.meetball.domain.profile.entity.Profile currentProfile = null;
+            if (profileId != null) {
+                currentProfile = profileService.getProfileById(profileId);
             }
             
             if (projectEntity != null) {
                 com.example.meetball.global.auth.enums.ProjectDetailRole role = 
-                        authorizationService.getProjectDetailRole(currentUser, projectEntity);
+                        authorizationService.getProjectDetailRole(currentProfile, projectEntity);
                 model.addAttribute("role", role.name()); // GUEST, REGULAR_USER, MEMBER, LEADER
             }
             
@@ -84,8 +80,8 @@ public class ProjectController {
     }
 
     @GetMapping("/register")
-    public String register(@SessionAttribute(name = "userId", required = false) Long userId) {
-        if (userId == null) {
+    public String register(@SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
             return "redirect:/?login=1&redirect=/register";
         }
         return "project/register";
@@ -93,17 +89,17 @@ public class ProjectController {
 
     @GetMapping("/projects/{id}/manage")
     public String manage(@PathVariable("id") Long id,
-                         @SessionAttribute(name = "userId", required = false) Long userId,
+                         @SessionAttribute(name = "profileId", required = false) Long profileId,
         Model model) {
-        if (userId == null) {
+        if (profileId == null) {
             return "redirect:/?login=1&redirect=/projects/" + id + "/manage";
         }
 
         com.example.meetball.domain.project.entity.Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + id));
-        com.example.meetball.domain.user.entity.User currentUser = userService.getUserById(userId);
+        com.example.meetball.domain.profile.entity.Profile currentProfile = profileService.getProfileById(profileId);
         com.example.meetball.global.auth.enums.ProjectDetailRole role =
-                authorizationService.getProjectDetailRole(currentUser, project);
+                authorizationService.getProjectDetailRole(currentProfile, project);
         if (role != com.example.meetball.global.auth.enums.ProjectDetailRole.LEADER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can manage the project.");
         }
@@ -124,10 +120,10 @@ public class ProjectController {
             @RequestParam(name = "progressMethod", required = false) String progressMethod,
             @RequestParam(name = "position", required = false) String position,
             @RequestParam(name = "techStack", required = false) String techStack,
-            @SessionAttribute(name = "userId", required = false) Long userId
+            @SessionAttribute(name = "profileId", required = false) Long profileId
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable, userId);
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable, profileId);
         return ProjectPageResponseDto.from(projects);
     }
 
@@ -140,23 +136,23 @@ public class ProjectController {
     @ResponseBody
     @PostMapping("/api/projects")
     public ProjectDetailResponseDto createProject(@RequestBody ProjectCreateRequestDto request,
-                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
-        return projectService.createProject(request, userId);
+                                                  @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectService.createProject(request, profileId);
     }
 
     @ResponseBody
     @PutMapping("/api/projects/{projectId}")
     public ProjectDetailResponseDto updateProject(@PathVariable("projectId") Long projectId,
                                                   @RequestBody ProjectUpdateRequestDto request,
-                                                  @SessionAttribute(name = "userId", required = false) Long userId) {
-        return projectService.updateProject(projectId, request, userId);
+                                                  @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectService.updateProject(projectId, request, profileId);
     }
 
     @ResponseBody
     @DeleteMapping("/api/projects/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId,
-                                              @SessionAttribute(name = "userId", required = false) Long userId) {
-        projectService.deleteProject(projectId, userId);
+                                              @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        projectService.deleteProject(projectId, profileId);
         return ResponseEntity.noContent().build();
     }
 }

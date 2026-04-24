@@ -38,32 +38,47 @@ class AuthViewControllerTest {
 
     @Test
     @DisplayName("로그인 세션이 있으면 홈 헤더에 현재 사용자 정보가 보인다")
-    void loggedInHomeShowsCurrentUserHeader() throws Exception {
+    void loggedInHomeShowsCurrentProfileHeader() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("초코푸들")))
-                .andExpect(content().string(containsString("leader@meetball.com")));
+                .andExpect(content().string(containsString("leader@meetball.local")));
     }
 
     @Test
-    @DisplayName("최초 로그인 프로필 모달은 직무 자유 입력 대신 포지션 선택을 렌더링한다")
-    void welcomeProfileModalRendersPositionSelector() throws Exception {
+    @DisplayName("최초 로그인 온보딩 모달은 계정, 프로필, 기술스택 3단계를 렌더링한다")
+    void welcomeProfileModalRendersThreeStepOnboarding() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
         session.setAttribute("needsProfile", true);
 
         mockMvc.perform(get("/").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"welcomeProfileModal\"")))
-                .andExpect(content().string(containsString("id=\"welcomeJobTitle\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"1\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"2\"")))
+                .andExpect(content().string(containsString("data-welcome-step=\"3\"")))
+                .andExpect(content().string(containsString("id=\"welcomeStepIndicators\"")))
+                .andExpect(content().string(containsString("id=\"welcomeHeadline\"")))
+                .andExpect(content().string(containsString("id=\"welcomeSubtitle\"")))
+                .andExpect(content().string(containsString("id=\"welcomeName\"")))
+                .andExpect(content().string(containsString("id=\"welcomeNickname\"")))
+                .andExpect(content().string(containsString("id=\"welcomePhoneNumber\"")))
+                .andExpect(content().string(containsString("id=\"welcomeBirthDate\"")))
+                .andExpect(content().string(containsString("id=\"welcomeGenderOptions\"")))
+                .andExpect(content().string(containsString("id=\"welcomePosition\"")))
                 .andExpect(content().string(containsString("id=\"welcomePositionOptions\"")))
+                .andExpect(content().string(containsString("id=\"welcomeExperienceOptions\"")))
+                .andExpect(content().string(containsString("id=\"welcomeOrganization\"")))
+                .andExpect(content().string(containsString("id=\"welcomeOrgVisibleOptions\"")))
                 .andExpect(content().string(containsString("meetballPositionOptions")))
+                .andExpect(content().string(containsString("/api/mypage/onboarding")))
                 .andExpect(content().string(containsString("포지션을 선택해주세요.")))
-                .andExpect(content().string(not(containsString("Current Role / Job"))))
-                .andExpect(content().string(not(containsString("placeholder=\"예시) 백엔드 개발자, UI/UX 디자이너\""))));
+                .andExpect(content().string(containsString("name=\"nickname\"")))
+                .andExpect(content().string(not(containsString("Current Role / Job"))));
     }
 
     @Test
@@ -78,6 +93,7 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("data-text=\"continue_with\"")))
                 .andExpect(content().string(containsString("data-logo_alignment=\"right\"")))
                 .andExpect(content().string(containsString("/api/auth/google")))
+                .andExpect(content().string(containsString("class=\"flex justify-center social-login-google\"")))
                 .andExpect(content().string(containsString("Github 로그인 준비중")))
                 .andExpect(content().string(containsString("Kakao 로그인 준비중")))
                 .andExpect(content().string(containsString("Naver 로그인 준비중")))
@@ -95,37 +111,37 @@ class AuthViewControllerTest {
     @Test
     @DisplayName("비로그인 마이페이지 접근은 기본 사용자 대신 로그인 모달로 유도한다")
     void guestMyPageRedirectsToLogin() throws Exception {
-        mockMvc.perform(get("/user/mypage"))
+        mockMvc.perform(get("/mypage"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/?login=1&redirect=/user/mypage"));
+                .andExpect(redirectedUrl("/?login=1&redirect=/mypage"));
     }
 
     @Test
-    @DisplayName("비로그인 타인 마이페이지 접근도 로그인 모달로 유도한다")
-    void guestOtherUserMyPageRedirectsToLogin() throws Exception {
-        mockMvc.perform(get("/user/mypage").param("userId", "1"))
+    @DisplayName("비로그인 마이페이지의 profileId 파라미터는 타인 프로필로 해석하지 않는다")
+    void guestMyPageProfileIdParamStillRedirectsToLogin() throws Exception {
+        mockMvc.perform(get("/mypage").param("profileId", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/?login=1&redirect=/people/1"));
+                .andExpect(redirectedUrl("/?login=1&redirect=/mypage"));
     }
 
     @Test
-    @DisplayName("로그인 사용자가 타인 마이페이지 URL로 접근하면 사람 프로필 페이지로 이동한다")
-    void loggedInOtherUserMyPageRedirectsToPeopleProfile() throws Exception {
+    @DisplayName("로그인 마이페이지는 profileId 파라미터와 무관하게 본인 페이지만 렌더링한다")
+    void loggedInMyPageIgnoresProfileIdParam() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
-        mockMvc.perform(get("/user/mypage").param("userId", "2").session(session))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/people/2"));
+        mockMvc.perform(get("/mypage").param("profileId", "2").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("id=\"profileId\"")));
     }
 
     @Test
     @DisplayName("마이페이지는 읽은 프로젝트를 독립 탭으로 렌더링한다")
     void myPageRendersRecentReadsAsIndependentTab() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
-        mockMvc.perform(get("/user/mypage").session(session))
+        mockMvc.perform(get("/mypage").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"tab-reads\"")))
                 .andExpect(content().string(containsString("id=\"content-reads\"")))
@@ -138,7 +154,7 @@ class AuthViewControllerTest {
     @DisplayName("프로젝트 등록 화면은 여러 포지션 추가 UI를 렌더링한다")
     void registerPageRendersMultiPositionControls() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(get("/register").session(session))
                 .andExpect(status().isOk())
@@ -158,7 +174,7 @@ class AuthViewControllerTest {
     @DisplayName("프로젝트 API는 포지션별 인원을 저장하고 총 모집 인원을 계산한다")
     void createProjectAcceptsMultiplePositions() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(post("/api/projects")
                 .session(session)
@@ -176,8 +192,8 @@ class AuthViewControllerTest {
                           "recruitmentEndAt": "2026-05-23",
                           "projectStartAt": "2026-05-24",
                           "projectEndAt": "2026-06-24",
-                          "closed": false,
-                          "completed": false
+                          "recruitStatus": "OPEN",
+                          "progressStatus": "READY"
                         }
                         """))
                 .andExpect(status().isOk())
@@ -189,7 +205,7 @@ class AuthViewControllerTest {
     @DisplayName("지원자가 있는 포지션은 프로젝트 수정에서 삭제할 수 없다")
     void updateProjectCannotRemovePositionWithApplications() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(put("/api/projects/1")
                 .session(session)
@@ -206,8 +222,8 @@ class AuthViewControllerTest {
                           "recruitmentEndAt": "2026-05-23",
                           "projectStartAt": "2026-05-24",
                           "projectEndAt": "2026-06-24",
-                          "closed": false,
-                          "completed": false
+                          "recruitStatus": "OPEN",
+                          "progressStatus": "READY"
                         }
                         """))
                 .andExpect(status().isConflict());
@@ -225,7 +241,7 @@ class AuthViewControllerTest {
     @DisplayName("로그인 사용자는 사람 프로필 페이지를 조회한다")
     void loggedInPeopleProfileRendersPublicProfile() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+        session.setAttribute("profileId", 1L);
 
         mockMvc.perform(get("/people/2").session(session))
                 .andExpect(status().isOk())
@@ -244,7 +260,7 @@ class AuthViewControllerTest {
     @DisplayName("사람 프로필 페이지는 완료된 프로젝트 이력을 별도 섹션에 표시한다")
     void peopleProfileRendersCompletedProjects() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 2L);
+        session.setAttribute("profileId", 2L);
 
         mockMvc.perform(get("/people/1").session(session))
                 .andExpect(status().isOk())

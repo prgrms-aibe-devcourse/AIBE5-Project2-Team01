@@ -19,10 +19,6 @@
 
                 <!-- Desktop Menu -->
                 <nav class="hidden lg:flex items-center gap-8">
-                    <a th:href="@{/projects}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
-                        탐색하기
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
-                    </a>
                     <a th:if="${isLoggedIn}" th:href="@{/register}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         프로젝트 등록
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
@@ -31,7 +27,7 @@
                         프로젝트 등록
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </button>
-                    <a th:if="${isLoggedIn}" th:href="@{/user/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
+                    <a th:if="${isLoggedIn}" th:href="@{/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
                         나의 프로젝트
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
                     </a>
@@ -52,7 +48,7 @@
                     <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-meatball rounded-full"></span>
                 </button>
 
-                <!-- User Profile -->
+                <!-- Current Profile -->
                 <div th:if="${isLoggedIn}" class="relative group h-full flex items-center">
                     <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-100/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
                         <div class="relative">
@@ -61,7 +57,7 @@
                             <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div class="hidden sm:block">
-                            <p th:text="${currentUser.nickname}" class="text-sm font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
+                            <p th:text="${currentProfile.nickname}" class="text-sm font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
                         </div>
                     </div>
 
@@ -69,10 +65,10 @@
                     <div class="absolute right-0 top-[4.5rem] w-56 bg-poodle-50/95 backdrop-blur-2xl rounded-[1.5rem] shadow-[0_20px_50px_rgba(101,55,40,0.14)] border border-poodle-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-4 z-50 p-2 overflow-hidden">
                         <div class="p-3 mb-2 border-b border-poodle-50">
                             <p class="text-[10px] font-black text-poodle-200 uppercase tracking-widest mb-1 leading-none">Signed in as</p>
-                            <p th:text="${currentUser.email}" class="text-[11px] font-bold text-poodle-600 truncate">-</p>
+                            <p th:text="${currentProfile.email}" class="text-[11px] font-bold text-poodle-600 truncate">-</p>
                         </div>
                         <div class="flex flex-col">
-                            <a th:href="@{/user/mypage}"
+                            <a th:href="@{/mypage}"
                                 class="px-4 py-3 text-xs font-black text-poodle-400 hover:bg-poodle-50 hover:text-meatball rounded-xl transition-all flex items-center gap-3">
                                 <i class="fa-solid fa-paw opacity-50"></i> 마이페이지
                             </a>
@@ -123,27 +119,27 @@
 	                             data-callback="handleGoogleCredentialResponse"
 	                             data-auto_select="false"
 	                             data-auto_prompt="false"></div>
-	                        <div th:if="${googleLoginEnabled}" class="flex justify-center social-login-button social-login-google">
-	                            <div class="g_id_signin"
-	                                 data-type="standard"
-	                                 data-shape="pill"
-	                                 data-theme="outline"
-	                                 data-size="large"
-		                                 data-width="420"
-		                                 data-text="continue_with"
-		                                 data-logo_alignment="right"></div>
+                        <div th:if="${googleLoginEnabled}" class="flex justify-center social-login-google">
+	                        <div class="g_id_signin"
+	                             data-type="standard"
+	                             data-shape="pill"
+	                             data-theme="outline"
+	                             data-size="large"
+		                             data-width="420"
+		                             data-text="continue_with"
+		                             data-logo_alignment="right"></div>
                         </div>
 
                         <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-black text-white font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
-                            <span class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                <i class="fa-brands fa-github text-xl"></i>
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
+                            <span class="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center shadow-sm">
+                                <i class="fa-brands fa-github text-lg"></i>
                             </span>
                             <span>Github 로그인 준비중</span>
                         </button>
                         <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-[#FEE500] text-black font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
-	                            <span class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center text-black/75">
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
+	                            <span class="w-10 h-10 rounded-full bg-[#FEE500] flex items-center justify-center text-black/75 shadow-sm">
                                     <svg role="img" aria-label="Kakao logo" viewBox="0 0 48 48" class="w-7 h-7" fill="currentColor">
                                         <path d="M24 8C14.06 8 6 14.36 6 22.2c0 5.05 3.35 9.48 8.39 12L12.75 41a1.2 1.2 0 0 0 1.82 1.27l7.46-5.24c.65.06 1.31.09 1.97.09 9.94 0 18-6.36 18-14.2S33.94 8 24 8Z"/>
                                     </svg>
@@ -151,8 +147,8 @@
                             <span>Kakao 로그인 준비중</span>
                         </button>
                         <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] bg-[#03C75A] text-white font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed opacity-70">
-                            <span class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center text-white">
+	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
+                            <span class="w-10 h-10 rounded-full bg-[#03C75A] flex items-center justify-center text-white shadow-sm">
                                 <svg role="img" aria-label="Naver logo" viewBox="0 0 48 48" class="w-6 h-6" fill="currentColor">
                                     <path d="M29.44 24.64 18.02 8H8v32h10.56V23.36L29.98 40H40V8H29.44v16.64Z"/>
                                 </svg>
@@ -264,55 +260,139 @@
     </script>
 
     <!-- 🐾 Welcome & Profile Setup Modal (First Login Only) -->
-    <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-6">
-        <!-- Backdrop -->
+    <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
         <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md animate-fade-in"></div>
 
-        <!-- Modal Content -->
-        <div class="relative w-full max-w-lg bg-white rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] border border-white overflow-hidden animate-modal-up">
-            <!-- Header Decoration -->
-            <div class="h-3 bg-gradient-to-r from-meatball via-poodle-400 to-meatball"></div>
+        <div class="relative w-full max-w-4xl rounded-[2.5rem] border border-white bg-white shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] overflow-hidden animate-modal-up">
+            <div class="p-8 md:p-10 lg:p-12">
+                <div id="welcomeStepIndicators" class="mx-auto mb-8 flex max-w-[360px] items-center justify-center">
+                    <div data-step-indicator="1" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#6fd7cf] text-xl font-black text-white shadow-sm">1</div>
+                    <div data-step-line="1" class="mx-3 h-1 flex-1 rounded-full bg-poodle-100"></div>
+                    <div data-step-indicator="2" class="flex h-12 w-12 items-center justify-center rounded-full bg-poodle-100 text-xl font-black text-poodle-300">2</div>
+                    <div data-step-line="2" class="mx-3 h-1 flex-1 rounded-full bg-poodle-100"></div>
+                    <div data-step-indicator="3" class="flex h-12 w-12 items-center justify-center rounded-full bg-poodle-100 text-xl font-black text-poodle-300">3</div>
+                </div>
 
-            <div class="p-10 md:p-12">
-                <div class="flex items-center gap-6 mb-10">
-                    <div class="w-16 h-16 bg-poodle-50 rounded-[1.5rem] flex items-center justify-center text-meatball text-3xl shadow-inner">
-                        <i class="fa-solid fa-face-smile-wink animate-bounce-subtle"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-black text-poodle-900 tracking-tight mb-1">환영합니다!</h2>
-                        <p class="text-sm text-poodle-300 font-bold italic">잠깐! 활동을 위해 프로필을 완성해 주세요.</p>
-                    </div>
+                <div class="mx-auto mb-10 max-w-3xl text-center">
+                    <h2 id="welcomeHeadline" class="text-4xl leading-tight md:text-5xl font-black tracking-tight text-black">
+                        기본 정보를 입력해주세요
+                    </h2>
+                    <p id="welcomeSubtitle" class="mt-4 text-base md:text-lg font-bold text-poodle-300">
+                        활동을 시작하기 전에 필요한 정보만 순서대로 받고 있어요.
+                    </p>
                 </div>
 
                 <form id="welcomeProfileForm" class="space-y-8">
-                    <!-- Nickname -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Nickname</label>
-                        <input type="text" name="nickname" required th:value="${currentUser.nickname}"
-                            class="w-full px-6 py-4 bg-poodle-50 border border-poodle-100 rounded-2xl text-sm font-black text-poodle-800 focus:bg-white focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all"
-                            placeholder="사용하실 닉네임을 입력하세요">
-                    </div>
+                    <section data-welcome-step="1" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-3">
+                                <label for="welcomeName" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    이름을 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="text" id="welcomeName" name="name" required
+                                       th:value="${currentProfile.editableAccountName}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="이름을 입력해주세요">
+                            </div>
+                            <div class="space-y-3">
+                                <label for="welcomeNickname" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    닉네임을 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="text" id="welcomeNickname" name="nickname" required
+                                       th:value="${currentProfile.temporaryNickname ? '' : currentProfile.nickname}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="닉네임을 입력해주세요">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-3">
+                                <label for="welcomePhoneNumber" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    연락처를 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="tel" id="welcomePhoneNumber" name="phoneNumber" required inputmode="numeric" autocomplete="tel-national"
+                                       th:value="${currentProfile.phoneNumber}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       placeholder="010-0000-0000">
+                            </div>
+                            <div class="space-y-3">
+                                <label for="welcomeBirthDate" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    생년월일을 입력해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="date" id="welcomeBirthDate" name="birthDate" required
+                                       th:value="${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15">
+                            </div>
+                        </div>
 
-                    <!-- Position -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Position</label>
-                        <input type="hidden" id="welcomeJobTitle" name="jobTitle" required>
-                        <div id="welcomePositionOptions" class="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto rounded-2xl border border-poodle-100 bg-poodle-50/40 p-4"></div>
-                    </div>
+                        <div class="space-y-3">
+                            <label class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                성별을 선택해주세요 <span class="text-red-400">*</span>
+                            </label>
+                            <input type="hidden" id="welcomeGender" name="gender" required>
+                            <div id="welcomeGenderOptions" class="grid grid-cols-2 gap-4"></div>
+                        </div>
+                    </section>
 
-	                    <!-- Tech Stack -->
-	                    <div class="space-y-3">
-	                        <label class="text-[10px] font-black text-poodle-200 uppercase tracking-[0.2em] ml-1">Stack (Tags)</label>
-	                        <input type="hidden" id="welcomeTechStack" required>
-	                        <div id="welcomeTechStackOptions" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto rounded-2xl border border-poodle-100 bg-poodle-50/40 p-4"></div>
-	                    </div>
+                    <section data-welcome-step="2" class="hidden space-y-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                            <div class="space-y-3">
+                                <label class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    포지션을 선택해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="hidden" id="welcomePosition" name="position" required>
+                                <div id="welcomePositionOptions" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    경력을 선택해주세요 <span class="text-red-400">*</span>
+                                </label>
+                                <input type="hidden" id="welcomeExperienceYears" name="experienceYears" required>
+                                <div id="welcomeExperienceOptions" class="grid grid-cols-2 gap-3 rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
+                            </div>
+                        </div>
 
-                    <div class="pt-6">
-                        <button type="submit"
-                            class="w-full py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
-                            <span>시작하기</span>
-                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        <div class="space-y-3">
+                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <label for="welcomeOrganization" class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                    소속을 입력해주세요
+                                </label>
+                                <div id="welcomeOrgVisibleOptions" class="flex items-center gap-2">
+                                    <button type="button" data-org-visible="true" class="rounded-full border px-4 py-2 text-sm font-black transition-all">공개</button>
+                                    <button type="button" data-org-visible="false" class="rounded-full border px-4 py-2 text-sm font-black transition-all">비공개</button>
+                                </div>
+                            </div>
+                            <input type="text" id="welcomeOrganization" name="organization" required
+                                   th:value="${currentProfile.organization}"
+                                   class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                   placeholder="소속 학교 또는 직장 이름을 입력해주세요">
+                        </div>
+                    </section>
+
+                    <section data-welcome-step="3" class="hidden space-y-6">
+                        <div class="space-y-3">
+                            <label class="block text-[15px] md:text-lg font-black text-poodle-700">
+                                기술스택을 선택해주세요 <span class="text-red-400">*</span>
+                            </label>
+                            <input type="hidden" id="welcomeTechStack" required>
+                            <div id="welcomeTechStackOptions" class="flex max-h-72 flex-wrap gap-3 overflow-y-auto rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
+                        </div>
+                    </section>
+
+                    <div class="flex flex-col gap-3 pt-2 md:flex-row md:items-center md:justify-between">
+                        <button type="button" id="welcomePrevButton"
+                                class="hidden w-full md:w-auto md:min-w-[160px] rounded-[1.5rem] border border-poodle-100 bg-white px-6 py-4 text-base font-black text-poodle-400 transition-all hover:border-poodle-200 hover:text-poodle-700">
+                            이전
                         </button>
+                        <div class="w-full md:w-auto md:min-w-[260px] md:ml-auto">
+                            <button type="button" id="welcomeNextButton"
+                                    class="w-full rounded-[1.8rem] bg-[#6fd7cf] px-8 py-5 text-xl font-black text-white transition-all hover:brightness-95">
+                                다음
+                            </button>
+                            <button type="submit" id="welcomeSubmitButton"
+                                    class="hidden w-full rounded-[1.8rem] bg-[#6fd7cf] px-8 py-5 text-xl font-black text-white transition-all hover:brightness-95">
+                                시작하기
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -320,97 +400,364 @@
     </div>
 
 	    <script th:if="${session.needsProfile == true}" th:inline="javascript">
-	        let welcomeSelectedPosition = '';
-	        const welcomeSelectedTechStacks = [];
+            const welcomeGenderOptions = ['남자', '여자'];
+            const welcomeExperienceOptions = ['신입', '1년 미만', '1~3년', '3~5년', '5년 이상'];
+            const welcomeStepCopy = {
+                1: {
+                    title: '기본 정보를 입력해주세요',
+                    subtitle: '이름, 닉네임, 연락처, 생년월일, 성별을 먼저 입력해 주세요.'
+                },
+                2: {
+                    title: '포지션과 경력을 알려주세요',
+                    subtitle: '활동할 포지션과 소속 공개 여부를 설정해 주세요.'
+                },
+                3: {
+                    title: '기술스택을 선택해주세요',
+                    subtitle: '선택한 기술스택을 기준으로 더 맞는 프로젝트를 추천해드릴게요.'
+                }
+            };
+            let welcomeCurrentStep = 1;
+            const welcomeState = {
+                name: /*[[${currentProfile.editableAccountName}]]*/ '',
+                nickname: /*[[${currentProfile.temporaryNickname ? '' : currentProfile.nickname}]]*/ '',
+                phoneNumber: /*[[${currentProfile.phoneNumber}]]*/ '',
+                birthDate: /*[[${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}]]*/ '',
+                gender: normalizeWelcomeGenderForUi(/*[[${currentProfile.gender}]]*/ ''),
+                position: /*[[${currentProfile.position}]]*/ '',
+                experienceYears: /*[[${currentProfile.experienceYears}]]*/ '',
+                organization: /*[[${currentProfile.organization}]]*/ '',
+                orgVisible: /*[[${currentProfile.orgVisible}]]*/ false,
+                techStacks: /*[[${currentProfile.techStackNames}]]*/ []
+            };
 
-	        function renderWelcomePositionOptions() {
-	            const container = document.getElementById('welcomePositionOptions');
-	            const hiddenInput = document.getElementById('welcomeJobTitle');
-	            if (!container || !hiddenInput) return;
-	            hiddenInput.value = welcomeSelectedPosition;
-	            container.innerHTML = window.meetballPositionOptions.map(position => {
-	                const selected = welcomeSelectedPosition === position;
-	                const selectedClass = selected
-	                    ? 'border-meatball bg-meatball text-poodle-900 shadow-sm'
-	                    : 'border-poodle-100 bg-white text-poodle-500 hover:border-meatball hover:text-poodle-900';
-	                return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
-	            }).join('');
-	            container.querySelectorAll('[data-position]').forEach(button => {
-	                button.addEventListener('click', () => selectWelcomePosition(button.dataset.position));
-	            });
-	        }
+            function normalizeWelcomeGenderForUi(value) {
+                if (!value) return '';
+                if (['남', '남성', '남자', 'male', 'Male', 'M', 'm'].includes(String(value))) {
+                    return '남자';
+                }
+                if (['여', '여성', '여자', 'female', 'Female', 'F', 'f'].includes(String(value))) {
+                    return '여자';
+                }
+                return '';
+            }
 
-	        function selectWelcomePosition(position) {
-	            welcomeSelectedPosition = position;
-	            renderWelcomePositionOptions();
-	        }
+            function formatWelcomePhoneNumber(value) {
+                const digits = String(value || '').replace(/\D/g, '').slice(0, 11);
+                if (!digits) return '';
+                if (digits.startsWith('02')) {
+                    if (digits.length <= 2) return digits;
+                    if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+                    if (digits.length <= 9) return `${digits.slice(0, 2)}-${digits.slice(2, digits.length - 4)}-${digits.slice(-4)}`;
+                    return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6, 10)}`;
+                }
+                if (digits.length <= 3) return digits;
+                if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+                if (digits.length <= 10) return `${digits.slice(0, 3)}-${digits.slice(3, digits.length - 4)}-${digits.slice(-4)}`;
+                return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+            }
 
-	        function renderWelcomeTechStackOptions() {
-	            const container = document.getElementById('welcomeTechStackOptions');
-	            const hiddenInput = document.getElementById('welcomeTechStack');
-	            if (!container || !hiddenInput) return;
-	            hiddenInput.value = welcomeSelectedTechStacks.join(', ');
-	            container.innerHTML = window.meetballTechStackOptions.map(tech => {
-	                const selected = welcomeSelectedTechStacks.includes(tech);
-	                return `<button type="button" onclick="toggleWelcomeTechStack('${window.meetballEscapeHtml(tech)}')">${window.meetballTechStackChipHtml(tech, {
-	                    selected,
-	                    className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
-	                })}</button>`;
-	            }).join('');
-	        }
+            function syncWelcomeFields() {
+                const nameInput = document.getElementById('welcomeName');
+                const nicknameInput = document.getElementById('welcomeNickname');
+                const phoneNumberInput = document.getElementById('welcomePhoneNumber');
+                const birthDateInput = document.getElementById('welcomeBirthDate');
+                const genderInput = document.getElementById('welcomeGender');
+                const positionInput = document.getElementById('welcomePosition');
+                const experienceInput = document.getElementById('welcomeExperienceYears');
+                const organizationInput = document.getElementById('welcomeOrganization');
+                const techStackInput = document.getElementById('welcomeTechStack');
 
-	        function toggleWelcomeTechStack(tech) {
-	            const index = welcomeSelectedTechStacks.indexOf(tech);
-	            if (index >= 0) {
-	                welcomeSelectedTechStacks.splice(index, 1);
-	            } else {
-	                welcomeSelectedTechStacks.push(tech);
-	            }
-	            renderWelcomeTechStackOptions();
-	        }
+                if (nameInput) nameInput.value = welcomeState.name || '';
+                if (nicknameInput) nicknameInput.value = welcomeState.nickname || '';
+                if (phoneNumberInput) phoneNumberInput.value = formatWelcomePhoneNumber(welcomeState.phoneNumber || '');
+                if (birthDateInput) birthDateInput.value = welcomeState.birthDate || '';
+                if (genderInput) genderInput.value = welcomeState.gender || '';
+                if (positionInput) positionInput.value = welcomeState.position || '';
+                if (experienceInput) experienceInput.value = welcomeState.experienceYears || '';
+                if (organizationInput) organizationInput.value = welcomeState.organization || '';
+                if (techStackInput) techStackInput.value = welcomeState.techStacks.join(', ');
+            }
 
-	        renderWelcomePositionOptions();
-	        renderWelcomeTechStackOptions();
+            function renderWelcomeGenderOptions() {
+                const container = document.getElementById('welcomeGenderOptions');
+                if (!container) return;
+                container.innerHTML = welcomeGenderOptions.map(option => {
+                    const selected = welcomeState.gender === option;
+                    const selectedClass = selected
+                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
+                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
+                    return `<button type="button" data-welcome-gender="${window.meetballEscapeHtml(option)}" class="rounded-[1.4rem] border px-4 py-4 text-base font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option)}</button>`;
+                }).join('');
+                container.querySelectorAll('[data-welcome-gender]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        welcomeState.gender = button.dataset.welcomeGender;
+                        syncWelcomeFields();
+                        renderWelcomeGenderOptions();
+                    });
+                });
+            }
 
-	        document.getElementById('welcomeProfileForm')?.addEventListener('submit', async (e) => {
-	            e.preventDefault();
-	            const formData = new FormData(e.target);
-	            const data = Object.fromEntries(formData.entries());
-	            data.isPublic = true; // 기본값 공개
-	            data.jobTitle = welcomeSelectedPosition;
-	            data.techStacks = [...welcomeSelectedTechStacks];
+            function renderWelcomeOrgVisibleOptions() {
+                const container = document.getElementById('welcomeOrgVisibleOptions');
+                if (!container) return;
+                container.innerHTML = ['true', 'false'].map(value => {
+                    const selected = String(welcomeState.orgVisible) === value;
+                    const label = value === 'true' ? '공개' : '비공개';
+                    const className = selected
+                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
+                        : 'border-poodle-100 bg-white text-poodle-400 hover:border-[#6fd7cf] hover:text-poodle-900';
+                    return `<button type="button" data-org-visible="${value}" class="rounded-full border px-4 py-2 text-sm font-black transition-all ${className}">${label}</button>`;
+                }).join('');
+                container.querySelectorAll('[data-org-visible]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        welcomeState.orgVisible = button.dataset.orgVisible === 'true';
+                        renderWelcomeOrgVisibleOptions();
+                    });
+                });
+            }
 
-	            if (!data.jobTitle) {
-	                await meetballAlert('포지션을 선택해주세요.');
-	                return;
-	            }
+            function renderWelcomePositionOptions() {
+                const container = document.getElementById('welcomePositionOptions');
+                if (!container) return;
+                container.innerHTML = window.meetballPositionOptions.map(position => {
+                    const selected = welcomeState.position === position;
+                    const selectedClass = selected
+                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
+                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
+                    return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-[1.2rem] border px-3 py-3 text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
+                }).join('');
+                container.querySelectorAll('[data-position]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        welcomeState.position = button.dataset.position;
+                        syncWelcomeFields();
+                        renderWelcomePositionOptions();
+                    });
+                });
+            }
 
-	            if (data.techStacks.length === 0) {
-	                await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
-	                return;
-	            }
+            function renderWelcomeExperienceOptions() {
+                const container = document.getElementById('welcomeExperienceOptions');
+                if (!container) return;
+                container.innerHTML = welcomeExperienceOptions.map(option => {
+                    const selected = welcomeState.experienceYears === option;
+                    const selectedClass = selected
+                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
+                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
+                    return `<button type="button" data-experience="${window.meetballEscapeHtml(option)}" class="rounded-[1.2rem] border px-3 py-4 text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option)}</button>`;
+                }).join('');
+                container.querySelectorAll('[data-experience]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        welcomeState.experienceYears = button.dataset.experience;
+                        syncWelcomeFields();
+                        renderWelcomeExperienceOptions();
+                    });
+                });
+            }
 
-	            try {
-                const response = await meetballFetch('/api/mypage/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(data)
+            function renderWelcomeTechStackOptions() {
+                const container = document.getElementById('welcomeTechStackOptions');
+                if (!container) return;
+                container.innerHTML = window.meetballTechStackOptions.map(tech => {
+                    const selected = welcomeState.techStacks.includes(tech);
+                    return `<button type="button" data-tech="${window.meetballEscapeHtml(tech)}">${window.meetballTechStackChipHtml(tech, {
+                        selected,
+                        className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
+                    })}</button>`;
+                }).join('');
+                container.querySelectorAll('[data-tech]').forEach(button => {
+                    button.addEventListener('click', () => toggleWelcomeTechStack(button.dataset.tech));
+                });
+                syncWelcomeFields();
+            }
+
+            function toggleWelcomeTechStack(tech) {
+                const index = welcomeState.techStacks.indexOf(tech);
+                if (index >= 0) {
+                    welcomeState.techStacks.splice(index, 1);
+                } else {
+                    welcomeState.techStacks.push(tech);
+                }
+                renderWelcomeTechStackOptions();
+            }
+
+            function updateWelcomeStepUi() {
+                document.querySelectorAll('[data-welcome-step]').forEach(section => {
+                    section.classList.toggle('hidden', Number(section.dataset.welcomeStep) !== welcomeCurrentStep);
                 });
 
-                if (response.ok) {
-                    // 성공 시 모달 닫고 페이지 새로고침
-                    document.getElementById('welcomeProfileModal').style.display = 'none';
-                    window.location.reload();
-                } else {
+                document.querySelectorAll('[data-step-indicator]').forEach(indicator => {
+                    const step = Number(indicator.dataset.stepIndicator);
+                    const completed = step < welcomeCurrentStep;
+                    const active = step === welcomeCurrentStep;
+                    indicator.classList.toggle('bg-[#6fd7cf]', active || completed);
+                    indicator.classList.toggle('text-white', active || completed);
+                    indicator.classList.toggle('bg-poodle-100', !active && !completed);
+                    indicator.classList.toggle('text-poodle-300', !active && !completed);
+                });
+
+                document.querySelectorAll('[data-step-line]').forEach(line => {
+                    const step = Number(line.dataset.stepLine);
+                    const active = step < welcomeCurrentStep;
+                    line.classList.toggle('bg-[#6fd7cf]', active);
+                    line.classList.toggle('bg-poodle-100', !active);
+                });
+
+                const headlineNode = document.getElementById('welcomeHeadline');
+                const subtitleNode = document.getElementById('welcomeSubtitle');
+                const prevButton = document.getElementById('welcomePrevButton');
+                const nextButton = document.getElementById('welcomeNextButton');
+                const submitButton = document.getElementById('welcomeSubmitButton');
+                if (headlineNode) headlineNode.textContent = welcomeStepCopy[welcomeCurrentStep]?.title || '';
+                if (subtitleNode) subtitleNode.textContent = welcomeStepCopy[welcomeCurrentStep]?.subtitle || '';
+                if (prevButton) prevButton.classList.toggle('hidden', welcomeCurrentStep === 1);
+                if (nextButton) nextButton.classList.toggle('hidden', welcomeCurrentStep === 3);
+                if (submitButton) submitButton.classList.toggle('hidden', welcomeCurrentStep !== 3);
+            }
+
+            async function validateWelcomeStep(step) {
+                if (step === 1) {
+                    welcomeState.name = document.getElementById('welcomeName')?.value.trim() || '';
+                    welcomeState.nickname = document.getElementById('welcomeNickname')?.value.trim() || '';
+                    welcomeState.phoneNumber = formatWelcomePhoneNumber(document.getElementById('welcomePhoneNumber')?.value || '');
+                    welcomeState.birthDate = document.getElementById('welcomeBirthDate')?.value || '';
+                    if (!welcomeState.name) {
+                        await meetballAlert('이름을 입력해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.nickname) {
+                        await meetballAlert('닉네임을 입력해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.phoneNumber) {
+                        await meetballAlert('전화번호를 입력해주세요.');
+                        return false;
+                    }
+                    if (welcomeState.phoneNumber.replace(/\D/g, '').length < 9) {
+                        await meetballAlert('전화번호 형식을 다시 확인해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.birthDate) {
+                        await meetballAlert('생년월일을 입력해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.gender) {
+                        await meetballAlert('성별을 선택해주세요.');
+                        return false;
+                    }
+                    return true;
+                }
+
+                if (step === 2) {
+                    welcomeState.organization = document.getElementById('welcomeOrganization')?.value.trim() || '';
+                    if (!welcomeState.position) {
+                        await meetballAlert('포지션을 선택해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.experienceYears) {
+                        await meetballAlert('경력을 선택해주세요.');
+                        return false;
+                    }
+                    if (!welcomeState.organization) {
+                        await meetballAlert('소속을 입력해주세요. 소속이 없다면 무소속으로 입력하시면 됩니다.');
+                        return false;
+                    }
+                    return true;
+                }
+
+                if (step === 3 && welcomeState.techStacks.length === 0) {
+                    await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
+                    return false;
+                }
+
+                return true;
+            }
+
+            syncWelcomeFields();
+            renderWelcomeGenderOptions();
+            renderWelcomeOrgVisibleOptions();
+            renderWelcomePositionOptions();
+            renderWelcomeExperienceOptions();
+            renderWelcomeTechStackOptions();
+            updateWelcomeStepUi();
+
+            document.getElementById('welcomeName')?.addEventListener('input', (event) => {
+                welcomeState.name = event.target.value;
+            });
+            document.getElementById('welcomeNickname')?.addEventListener('input', (event) => {
+                welcomeState.nickname = event.target.value;
+            });
+            document.getElementById('welcomePhoneNumber')?.addEventListener('input', (event) => {
+                const formatted = formatWelcomePhoneNumber(event.target.value);
+                event.target.value = formatted;
+                welcomeState.phoneNumber = formatted;
+            });
+            document.getElementById('welcomeBirthDate')?.addEventListener('change', (event) => {
+                welcomeState.birthDate = event.target.value;
+            });
+            document.getElementById('welcomeOrganization')?.addEventListener('input', (event) => {
+                welcomeState.organization = event.target.value;
+            });
+
+            document.getElementById('welcomePrevButton')?.addEventListener('click', () => {
+                welcomeCurrentStep = Math.max(1, welcomeCurrentStep - 1);
+                updateWelcomeStepUi();
+            });
+
+            document.getElementById('welcomeNextButton')?.addEventListener('click', async () => {
+                const valid = await validateWelcomeStep(welcomeCurrentStep);
+                if (!valid) {
+                    return;
+                }
+                welcomeCurrentStep = Math.min(3, welcomeCurrentStep + 1);
+                updateWelcomeStepUi();
+            });
+
+            document.getElementById('welcomeProfileForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                for (const step of [1, 2, 3]) {
+                    const valid = await validateWelcomeStep(step);
+                    if (!valid) {
+                        welcomeCurrentStep = step;
+                        updateWelcomeStepUi();
+                        return;
+                    }
+                }
+
+                const payload = {
+                    name: document.getElementById('welcomeName')?.value.trim() || '',
+                    nickname: document.getElementById('welcomeNickname')?.value.trim() || '',
+                    phoneNumber: formatWelcomePhoneNumber(document.getElementById('welcomePhoneNumber')?.value || ''),
+                    birthDate: document.getElementById('welcomeBirthDate')?.value || '',
+                    gender: welcomeState.gender,
+                    position: welcomeState.position,
+                    experienceYears: welcomeState.experienceYears,
+                    organization: document.getElementById('welcomeOrganization')?.value.trim() || '',
+                    orgVisible: Boolean(welcomeState.orgVisible),
+                    techStacks: [...welcomeState.techStacks]
+                };
+
+                try {
+                    const response = await meetballFetch('/api/mypage/onboarding', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        document.getElementById('welcomeProfileModal').style.display = 'none';
+                        window.location.reload();
+                        return;
+                    }
+
                     const errorMsg = await response.text();
                     await meetballAlert('저장 실패: ' + errorMsg, { type: 'error' });
+                } catch (err) {
+                    console.error(err);
+                    await meetballAlert('서버와 통신 중 오류가 발생했습니다.', { type: 'error' });
                 }
-            } catch (err) {
-                console.error(err);
-                await meetballAlert('서버와 통신 중 오류가 발생했습니다.', { type: 'error' });
-            }
-        });
+            });
     </script>
     </th:block>
 </body>

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class CommentResponseDto {
     private Long id;
     private Long projectId;
-    private Long authorUserId;
+    private Long authorProfileId;
     private String authorNickname;
     private String authorRole;
     private String content;
@@ -22,7 +22,7 @@ public class CommentResponseDto {
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.projectId = comment.getProjectId();
-        this.authorUserId = comment.getAuthorUserId();
+        this.authorProfileId = comment.getAuthorProfileId();
         this.authorNickname = comment.getAuthorNickname();
         this.authorRole = comment.getAuthorRole();
         this.content = comment.getContent();

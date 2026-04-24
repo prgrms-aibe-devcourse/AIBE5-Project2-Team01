@@ -1,7 +1,7 @@
 package com.example.meetball.domain.people.dto;
 
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.entity.UserTechStack;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.entity.ProfileTechStack;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,33 +9,31 @@ import lombok.Getter;
 @Builder
 public class PeopleProfileResponse {
 
-    private Long userId;
+    private Long profileId;
     private String nickname;
-    private String jobTitle;
+    private String position;
     private String techStack;
     private boolean isPublic;
-    private String role;
     private double meetBallIndex;
 
-    public static PeopleProfileResponse from(User user, double meetBallIndex) {
+    public static PeopleProfileResponse from(Profile profile, double meetBallIndex) {
         return PeopleProfileResponse.builder()
-                .userId(user.getId())
-                .nickname(user.getNickname())
-                .jobTitle(user.getJobTitle())
-                .techStack(formatTechStacks(user))
-                .isPublic(user.isPublic())
-                .role(user.getRole())
+                .profileId(profile.getId())
+                .nickname(profile.getNickname())
+                .position(profile.getPosition())
+                .techStack(formatTechStacks(profile))
+                .isPublic(profile.isPublic())
                 .meetBallIndex(meetBallIndex)
                 .build();
     }
 
-    private static String formatTechStacks(User user) {
-        if (user.getTechStackSelections() != null && !user.getTechStackSelections().isEmpty()) {
-            return user.getTechStackSelections().stream()
-                    .map(UserTechStack::getTechStackName)
+    private static String formatTechStacks(Profile profile) {
+        if (profile.getTechStackSelections() != null && !profile.getTechStackSelections().isEmpty()) {
+            return profile.getTechStackSelections().stream()
+                    .map(ProfileTechStack::getTechStackName)
                     .reduce((left, right) -> left + ", " + right)
                     .orElse("");
         }
-        return user.getTechStack();
+        return profile.getTechStack();
     }
 }

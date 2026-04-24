@@ -421,7 +421,7 @@
 	            if (file) {
 	                const formData = new FormData();
 	                formData.append('file', file);
-	                const fileResponse = await meetballFetch(`/api/projects/${projectId}/attachments`, {
+	                const fileResponse = await meetballFetch(`/api/projects/${projectId}/resources`, {
 	                    method: 'POST',
 	                    body: formData
 	                });
@@ -433,7 +433,7 @@
 	            const linkTitle = document.getElementById('linkTitle').value.trim();
 	            const linkUrl = document.getElementById('linkUrl').value.trim();
 	            if (linkUrl) {
-	                const linkResponse = await meetballFetch(`/api/projects/${projectId}/attachments/links`, {
+	                const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
 	                    method: 'POST',
 	                    headers: { 'Content-Type': 'application/json' },
 	                    body: JSON.stringify({ title: linkTitle || '관련 링크', url: linkUrl })
@@ -457,8 +457,8 @@
                 recruitmentEndAt: document.getElementById('recruitmentEndAt').value,
                 projectStartAt: document.getElementById('projectStartAt').value,
                 projectEndAt: document.getElementById('projectEndAt').value,
-                closed: false,
-                completed: false
+                recruitStatus: 'OPEN',
+                progressStatus: 'READY'
             };
 
 	            if (!payload.title || !payload.projectType || !payload.description) {

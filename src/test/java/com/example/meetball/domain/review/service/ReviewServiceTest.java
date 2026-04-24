@@ -1,12 +1,12 @@
 package com.example.meetball.domain.review.service;
 
 import com.example.meetball.domain.project.entity.Project;
-import com.example.meetball.domain.project.entity.ProjectMember;
-import com.example.meetball.domain.project.repository.ProjectMemberRepository;
+import com.example.meetball.domain.project.entity.ProjectParticipant;
+import com.example.meetball.domain.project.repository.ProjectParticipantRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
 import com.example.meetball.domain.review.dto.ReviewRequestDto;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.repository.UserRepository;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,29 +29,45 @@ public class ReviewServiceTest {
     private ReviewService reviewService;
 
     @Autowired
-    private UserRepository userRepository;
+    private ProfileRepository profileRepository;
 
     @Autowired
     private ProjectRepository projectRepository;
 
     @Autowired
-    private ProjectMemberRepository projectMemberRepository;
+    private ProjectParticipantRepository projectParticipantRepository;
 
-    private User leader;
-    private User member;
-    private User nonParticipant;
+    private Profile leader;
+    private Profile member;
+    private Profile nonParticipant;
     private Project project;
+
+    private Project createProject(String title, LocalDate recruitEndDate) {
+        return new Project(
+                title,
+                "설명",
+                "타입",
+                "ONLINE",
+                5,
+                LocalDate.now().minusDays(10),
+                recruitEndDate,
+                LocalDate.now().minusDays(9),
+                null,
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_READY,
+                LocalDateTime.now().minusDays(10),
+                LocalDateTime.now()
+        );
+    }
 
     @BeforeEach
     void setUp() {
-        leader = userRepository.save(User.builder().email("l@t.com").nickname("리더").role("LEADER").isPublic(true).build());
-        member = userRepository.save(User.builder().email("m@t.com").nickname("멤버").role("MEMBER").isPublic(true).build());
-        nonParticipant = userRepository.save(User.builder().email("n@t.com").nickname("불청객").role("USER").isPublic(true).build());
+        leader = profileRepository.save(Profile.builder().email("l@t.com").nickname("리더").isPublic(true).build());
+        member = profileRepository.save(Profile.builder().email("m@t.com").nickname("멤버").isPublic(true).build());
+        nonParticipant = profileRepository.save(Profile.builder().email("n@t.com").nickname("불청객").isPublic(true).build());
 
-        Project completedProject = new Project(
-                "리뷰 테스트 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
-        );
+        Project completedProject = createProject("리뷰 테스트 프로젝트", LocalDate.now().minusDays(1));
+        completedProject.assignOwner(leader);
         completedProject.update(
                 completedProject.getTitle(),
                 completedProject.getDescription(),
@@ -62,15 +78,15 @@ public class ReviewServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(9),
                 LocalDate.now().minusDays(1),
-                true,
-                true,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_COMPLETED,
                 LocalDateTime.now()
         );
         project = projectRepository.save(completedProject);
 
         // 멤버 관계 설정
-        projectMemberRepository.save(new ProjectMember(leader, project, "LEADER"));
-        projectMemberRepository.save(new ProjectMember(member, project, "MEMBER"));
+        projectParticipantRepository.save(new ProjectParticipant(leader, project, "LEADER"));
+        projectParticipantRepository.save(new ProjectParticipant(member, project, "MEMBER"));
     }
 
     @Test
@@ -116,10 +132,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 등록 실패 - 모집 마감만 된 프로젝트는 완료 프로젝트가 아니다")
     void addReview_RecruitmentClosedButNotCompleted_Fail() {
-        Project recruitmentClosedProject = new Project(
-                "모집만 마감된 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
-        );
+        Project recruitmentClosedProject = createProject("모집만 마감된 프로젝트", LocalDate.now().minusDays(1));
+        recruitmentClosedProject.assignOwner(leader);
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
                 recruitmentClosedProject.getDescription(),
@@ -130,13 +144,13 @@ public class ReviewServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(9),
                 LocalDate.now().minusDays(1),
-                true,
-                false,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_READY,
                 LocalDateTime.now()
         );
         Project savedProject = projectRepository.save(recruitmentClosedProject);
-        projectMemberRepository.save(new ProjectMember(leader, savedProject, "LEADER"));
-        projectMemberRepository.save(new ProjectMember(member, savedProject, "MEMBER"));
+        projectParticipantRepository.save(new ProjectParticipant(leader, savedProject, "LEADER"));
+        projectParticipantRepository.save(new ProjectParticipant(member, savedProject, "MEMBER"));
 
         ReviewRequestDto request = new ReviewRequestDto(5.0, "리더", "모집 마감은 완료가 아님");
 

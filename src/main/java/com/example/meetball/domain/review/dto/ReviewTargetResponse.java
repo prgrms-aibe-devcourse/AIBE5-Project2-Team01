@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ReviewTargetResponse {
-    private Long userId;
+    private Long profileId;
     private String nickname;
-    private String jobTitle;
+    private String position;
 }

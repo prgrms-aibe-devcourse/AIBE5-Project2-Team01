@@ -4,8 +4,8 @@ import com.example.meetball.domain.people.dto.PeopleProfileResponse;
 import com.example.meetball.domain.people.dto.PeopleProjectResponse;
 import com.example.meetball.domain.project.service.ProjectService;
 import com.example.meetball.domain.review.service.ReviewService;
-import com.example.meetball.domain.user.entity.User;
-import com.example.meetball.domain.user.service.UserService;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,22 +16,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PeopleService {
 
-    private final UserService userService;
+    private final ProfileService profileService;
     private final ProjectService projectService;
     private final ReviewService reviewService;
 
     @Transactional(readOnly = true)
-    public PeopleProfileResponse getProfile(Long profileUserId, Long viewerId) {
+    public PeopleProfileResponse getProfile(Long profileId, Long viewerId) {
         requireMemberViewer(viewerId);
-        User profileUser = userService.getUserById(profileUserId);
+        Profile profileUser = profileService.getProfileById(profileId);
         double meetBallIndex = reviewService.calculateMeetBallIndex(profileUser);
         return PeopleProfileResponse.from(profileUser, meetBallIndex);
     }
 
     @Transactional(readOnly = true)
-    public List<PeopleProjectResponse> getProjects(Long profileUserId, Long viewerId) {
+    public List<PeopleProjectResponse> getProjects(Long profileId, Long viewerId) {
         requireMemberViewer(viewerId);
-        User profileUser = userService.getUserById(profileUserId);
+        Profile profileUser = profileService.getProfileById(profileId);
         return projectService.getParticipatedProjects(profileUser).stream()
                 .map(PeopleProjectResponse::from)
                 .toList();
@@ -41,6 +41,6 @@ public class PeopleService {
         if (viewerId == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
-        userService.getUserById(viewerId);
+        profileService.getProfileById(viewerId);
     }
 }
