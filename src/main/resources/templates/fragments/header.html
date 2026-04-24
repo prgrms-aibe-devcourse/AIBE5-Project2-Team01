@@ -19,17 +19,17 @@
         });
     </script>
 
-    <header class="sticky top-0 z-50 bg-white/75 backdrop-blur-xl border-b border-white/30 transition-all shadow-sm">
-        <div class="container mx-auto px-4 h-20 flex items-center justify-between">
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
+        <div class="container mx-auto px-4 h-24 md:h-28 flex items-center justify-between">
             <!-- Logo area -->
             <div class="flex items-center gap-12">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
                     <div class="relative">
                         <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
-                             class="w-12 h-12 rounded-[1.35rem] object-contain bg-white p-1.5 shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
+                             class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                         <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-meatball rounded-full border-2 border-white animate-bounce-subtle"></div>
                     </div>
-                    <span class="text-2xl font-black tracking-tighter text-poodle-600 group-hover:text-meatball transition-colors">Meetball</span>
+                    <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
 
                 <!-- Desktop Menu -->
@@ -53,13 +53,12 @@
             <div class="flex items-center gap-6">
                 <button type="button"
                    onclick="openMeetballDrawModal()"
-                   class="inline-flex items-center gap-2 px-5 py-3 bg-white text-poodle-700 rounded-2xl text-xs font-black border border-poodle-100 shadow-sm hover:border-meatball/30 hover:text-meatball transition-all active:scale-95">
-                    <i class="fa-solid fa-dice text-[11px]"></i>
+                   class="inline-flex items-center gap-3 px-5 py-3 bg-poodle-800 text-white rounded-2xl text-sm font-black border border-transparent shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
+                    <i class="fa-solid fa-dice text-base"></i>
                     밋Ball 뽑기!
                 </button>
                 <button th:if="${!isLoggedIn}" type="button" onclick="openLoginModal('/')"
-                   class="inline-flex items-center gap-2 px-5 py-3 bg-poodle-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-poodle-600/15 hover:bg-meatball hover:text-poodle-900 transition-all active:scale-95">
-                    <i class="fa-solid fa-right-to-bracket text-[11px]"></i>
+                   class="px-6 py-3 bg-poodle-800 text-white rounded-2xl text-sm font-black shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball hover:scale-105 transition-all">
                     로그인
                 </button>
 
@@ -78,7 +77,7 @@
                             <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div class="hidden sm:block">
-                            <p th:text="${currentProfile.nickname}" class="text-sm font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
+                            <p th:text="${currentProfile.nickname}" class="text-base font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
                         </div>
                     </div>
 
