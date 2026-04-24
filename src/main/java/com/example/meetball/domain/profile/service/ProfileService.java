@@ -55,7 +55,7 @@ public class ProfileService {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
 
-        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getJobTitle());
+        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getPosition());
         List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());
         Position position = positionRepository.findByName(normalizedPosition)
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 포지션입니다: " + normalizedPosition));
@@ -85,7 +85,7 @@ public class ProfileService {
         }
 
         String normalizedGender = normalizeGender(request.getGender());
-        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getJobTitle());
+        String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getPosition());
         String normalizedExperienceYears = requireText(request.getExperienceYears(), "경력을 선택해주세요.", 255);
         String normalizedOrganization = requireText(request.getOrganization(), "소속을 입력해주세요.", 100);
         List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());

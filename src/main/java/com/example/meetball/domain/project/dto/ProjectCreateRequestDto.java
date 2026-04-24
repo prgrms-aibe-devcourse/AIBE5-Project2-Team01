@@ -1,5 +1,7 @@
 package com.example.meetball.domain.project.dto;
 
+import com.example.meetball.domain.project.entity.Project;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,25 +19,10 @@ public class ProjectCreateRequestDto {
     private LocalDate recruitmentEndAt;
     private LocalDate projectStartAt;
     private LocalDate projectEndAt;
-    private Boolean closed;
-    private Boolean completed;
+    private String recruitStatus = Project.RECRUIT_STATUS_OPEN;
+    private String progressStatus = Project.PROGRESS_STATUS_READY;
 
     public ProjectCreateRequestDto() {
-    }
-
-    public ProjectCreateRequestDto(String title, String description, String projectType, String progressMethod,
-                                   Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
-                                   LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed) {
-        this.title = title;
-        this.description = description;
-        this.projectType = projectType;
-        this.progressMethod = progressMethod;
-        this.recruitmentCount = recruitmentCount;
-        this.recruitmentStartAt = recruitmentStartAt;
-        this.recruitmentEndAt = recruitmentEndAt;
-        this.projectStartAt = projectStartAt;
-        this.projectEndAt = projectEndAt;
-        this.closed = closed;
     }
 
     public String getTitle() { return title; }
@@ -50,6 +37,6 @@ public class ProjectCreateRequestDto {
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }
     public LocalDate getProjectStartAt() { return projectStartAt; }
     public LocalDate getProjectEndAt() { return projectEndAt; }
-    public Boolean getClosed() { return closed; }
-    public Boolean getCompleted() { return completed; }
+    public String getRecruitStatus() { return recruitStatus; }
+    public String getProgressStatus() { return progressStatus; }
 }

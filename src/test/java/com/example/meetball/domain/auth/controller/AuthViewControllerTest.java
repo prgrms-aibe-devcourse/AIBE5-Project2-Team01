@@ -68,7 +68,7 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("id=\"welcomePhoneNumber\"")))
                 .andExpect(content().string(containsString("id=\"welcomeBirthDate\"")))
                 .andExpect(content().string(containsString("id=\"welcomeGenderOptions\"")))
-                .andExpect(content().string(containsString("id=\"welcomeJobTitle\"")))
+                .andExpect(content().string(containsString("id=\"welcomePosition\"")))
                 .andExpect(content().string(containsString("id=\"welcomePositionOptions\"")))
                 .andExpect(content().string(containsString("id=\"welcomeExperienceOptions\"")))
                 .andExpect(content().string(containsString("id=\"welcomeOrganization\"")))
@@ -191,8 +191,8 @@ class AuthViewControllerTest {
                           "recruitmentEndAt": "2026-05-23",
                           "projectStartAt": "2026-05-24",
                           "projectEndAt": "2026-06-24",
-                          "closed": false,
-                          "completed": false
+                          "recruitStatus": "OPEN",
+                          "progressStatus": "READY"
                         }
                         """))
                 .andExpect(status().isOk())
@@ -221,8 +221,8 @@ class AuthViewControllerTest {
                           "recruitmentEndAt": "2026-05-23",
                           "projectStartAt": "2026-05-24",
                           "projectEndAt": "2026-06-24",
-                          "closed": false,
-                          "completed": false
+                          "recruitStatus": "OPEN",
+                          "progressStatus": "READY"
                         }
                         """))
                 .andExpect(status().isConflict());

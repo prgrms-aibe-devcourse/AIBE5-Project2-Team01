@@ -49,8 +49,6 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .projectId(requestDto.getProjectId())
                 .author(author)
-                .authorNickname(requestDto.getAuthorNickname())
-                .authorUserId(author.getId())
                 .authorRole(requestDto.getAuthorRole())
                 .content(requestDto.getContent())
                 .parent(parentComment)
@@ -93,15 +91,8 @@ public class CommentService {
         if (currentProfile == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
         }
-        Long authorUserId = comment.getAuthorUserId();
-        if (authorUserId != null) {
-            if (!authorUserId.equals(currentProfile.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot modify another user's comment.");
-            }
-            return;
-        }
-        // Existing imported comments may not have authorUserId yet.
-        if (!comment.getAuthorNickname().equals(currentProfile.getNickname())) {
+        Long authorProfileId = comment.getAuthorProfileId();
+        if (authorProfileId == null || !authorProfileId.equals(currentProfile.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot modify another user's comment.");
         }
     }

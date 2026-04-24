@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthApiController {
 
+    private static final String DEFAULT_MEMBER_ROLE = "MEMBER";
     private final ProfileService profileService;
 
     @PostMapping("/google")
@@ -45,7 +46,7 @@ public class AuthApiController {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     profile.getEmail(),
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + profile.getRole()))
+                    List.of(new SimpleGrantedAuthority("ROLE_" + DEFAULT_MEMBER_ROLE))
             );
             securityContext.setAuthentication(authentication);
             SecurityContextHolder.setContext(securityContext);

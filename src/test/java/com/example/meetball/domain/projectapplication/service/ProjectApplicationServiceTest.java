@@ -66,36 +66,17 @@ public class ProjectApplicationServiceTest {
         testUser = profileRepository.save(Profile.builder()
                 .email("applicant" + uid + "@test.com")
                 .nickname("지원자" + uid)
-                .role("USER") // 필수 필드 추가
-                .techStacks(List.of("Java"))
                 .isPublic(true)
                 .build());
 
         leaderUser = profileRepository.save(Profile.builder()
                 .email("leader" + uid + "@test.com")
                 .nickname("팀장명" + uid)
-                .role("MEMBER")
-                .techStacks(List.of("Java"))
                 .isPublic(true)
                 .build());
 
         // 테스트용 프로젝트 생성
-        testProject = saveProjectWithSelections(new Project(
-                "테스트 프로젝트",
-                "요약",
-                "상세 설명",
-                "타입",
-                "백엔드:5",
-                leaderUser.getNickname(),
-                "리더역할",
-                "아바타",
-                "썸네일",
-                0,
-                5,
-                LocalDate.now().plusDays(7),
-                LocalDate.now(),
-                List.of("Java")
-        ));
+        testProject = saveProjectWithSelections(createProject("테스트 프로젝트", 5), "백엔드:5", List.of("Java"));
 
         projectParticipantRepository.save(ProjectParticipant.builder()
                 .project(testProject)
@@ -104,12 +85,33 @@ public class ProjectApplicationServiceTest {
                 .build());
     }
 
-    private Project saveProjectWithSelections(Project project) {
+    private Project createProject(String title, int requiredMember) {
+        return new Project(
+                title,
+                "상세 설명",
+                "타입",
+                "ONLINE",
+                requiredMember,
+                LocalDate.now(),
+                LocalDate.now().plusDays(7),
+                LocalDate.now().plusDays(14),
+                null,
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_READY,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private Project saveProjectWithSelections(Project project, String positions, List<String> techStacks) {
+        if (project.getOwnerProfile() == null) {
+            project.assignOwner(leaderUser);
+        }
         project.replacePositions(
-                ProjectSelectionCatalog.parsePositionCapacities(project.getPosition(), project.getTotalRecruitment()),
+                ProjectSelectionCatalog.parsePositionCapacities(positions, project.getTotalRecruitment()),
                 this::resolvePosition
         );
-        project.replaceTechStacks(resolveTechStacks(List.of("Java")));
+        project.replaceTechStacks(resolveTechStacks(techStacks));
         return projectRepository.save(project);
     }
 
@@ -199,22 +201,7 @@ public class ProjectApplicationServiceTest {
     @Test
     @DisplayName("정원이 1명인 포지션도 첫 승인에는 성공한다")
     void updateApplicationStatus_FirstAcceptedPositionCapacityOne_Success() {
-        Project singleCapacityProject = saveProjectWithSelections(new Project(
-                "단일 포지션 프로젝트",
-                "요약",
-                "상세 설명",
-                "타입",
-                "백엔드:1",
-                leaderUser.getNickname(),
-                "리더역할",
-                "아바타",
-                "썸네일",
-                0,
-                1,
-                LocalDate.now().plusDays(7),
-                LocalDate.now(),
-                List.of("Java")
-        ));
+        Project singleCapacityProject = saveProjectWithSelections(createProject("단일 포지션 프로젝트", 1), "백엔드:1", List.of("Java"));
         projectParticipantRepository.save(ProjectParticipant.builder()
                 .project(singleCapacityProject)
                 .profile(leaderUser)
@@ -356,8 +343,8 @@ public class ProjectApplicationServiceTest {
                 LocalDate.now().plusDays(7),
                 LocalDate.now().plusDays(8),
                 LocalDate.now().plusDays(30),
-                true,
-                true,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_COMPLETED,
                 LocalDateTime.now()
         );
         projectRepository.saveAndFlush(testProject);

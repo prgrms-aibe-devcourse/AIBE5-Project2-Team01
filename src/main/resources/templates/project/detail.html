@@ -368,7 +368,7 @@
                                 </div>
                             </div>
                             <a th:each="member : ${project.teamMembers}"
-                               th:if="${member.role() != 'LEADER'}"
+                               th:if="${member.participantRole() != 'LEADER'}"
                                th:href="@{/people/{profileId}(profileId=${member.profileId()})}"
                                class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl hover:border-meatball/30 hover:bg-poodle-50/30 transition-all group/member">
                                 <div class="relative">
@@ -380,7 +380,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 group-hover/member:text-meatball transition-colors truncate">팀원</p>
-                                    <p th:text="${#strings.isEmpty(member.jobTitle()) ? 'Member' : member.jobTitle()}" class="text-[9px] text-poodle-300 font-black uppercase truncate">Member</p>
+                                    <p th:text="${#strings.isEmpty(member.position()) ? '포지션 미정' : member.position()}" class="text-[9px] text-poodle-300 font-black uppercase truncate">포지션</p>
                                 </div>
                             </a>
                             <div th:if="${#lists.size(project.teamMembers) <= 1}" class="p-4 bg-white border border-poodle-50 rounded-2xl">
@@ -435,8 +435,8 @@
                                 <span th:text="${currentProfile.email}" class="text-[10px] font-bold text-poodle-300 tracking-tight">-</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span th:text="${#strings.isEmpty(currentProfile.jobTitle) ? '프로필 직무 미설정' : currentProfile.jobTitle}"
-                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase">직무</span>
+                                <span th:text="${#strings.isEmpty(currentProfile.position) ? '프로필 포지션 미설정' : currentProfile.position}"
+                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase">포지션</span>
                             </div>
 	                            <div class="flex flex-wrap gap-2" th:with="stacks=${currentProfile.techStack != null ? #strings.arraySplit(currentProfile.techStack, ',') : new String[]{}}">
 	                                <span th:each="stack : ${stacks}"
@@ -485,7 +485,7 @@
                         <h4 class="text-lg font-black text-poodle-900 tracking-tight flex items-center gap-3">
                             <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 메시지
                         </h4>
-                        <textarea id="applyMessage" placeholder="본인의 직무 관련 역량이나 이 프로젝트에 참여하고 싶은 이유를 자유롭게 작성해주세요."
+                        <textarea id="applyMessage" placeholder="본인의 포지션 관련 역량이나 이 프로젝트에 참여하고 싶은 이유를 자유롭게 작성해주세요."
                             class="w-full h-40 p-6 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-[1.5rem] outline-none transition-all font-bold text-poodle-800 text-sm resize-none"></textarea>
                     </div>
 
@@ -493,7 +493,7 @@
                     <div class="p-6 bg-poodle-100/60 rounded-2xl border border-poodle-200 flex items-start gap-4">
                         <i class="fa-solid fa-circle-info text-meatball mt-1"></i>
                         <p class="text-[11px] font-bold text-poodle-600 leading-relaxed">
-                            지원 시 나의 마이페이지 프로필(닉네임, 직무 역량, 링크 등)이 요약되어 팀장님께 공개되는 것에 동의하게 됩니다.
+                            지원 시 나의 마이페이지 프로필(닉네임, 포지션 역량, 링크 등)이 요약되어 팀장님께 공개되는 것에 동의하게 됩니다.
                         </p>
                     </div>
                 </div>
@@ -551,8 +551,7 @@
 
     <script th:inline="javascript">
         const CURRENT_USER = {
-            nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null,
-            role: /*[[${currentProfile != null ? currentProfile.role : 'NONE'}]]*/ 'NONE'
+            nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null
         };
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
@@ -677,9 +676,9 @@
                 container.innerHTML = comments.map(c => {
                     const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
                     const author = escapeHtml(c.authorNickname);
-                    const authorUserId = Number(c.authorUserId);
-                    const authorLink = Number.isFinite(authorUserId)
-                        ? `<a href="/people/${authorUserId}" class="hover:text-meatball transition-colors">${author}</a>`
+                    const authorProfileId = Number(c.authorProfileId);
+                    const authorLink = Number.isFinite(authorProfileId)
+                        ? `<a href="/people/${authorProfileId}" class="hover:text-meatball transition-colors">${author}</a>`
                         : `<span>${author}</span>`;
                     const content = escapeHtml(c.content);
                     const commentId = Number(c.id);

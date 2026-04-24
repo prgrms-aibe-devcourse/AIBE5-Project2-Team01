@@ -39,7 +39,7 @@ public class PeerReview {
     private Profile reviewee;
 
     // 리뷰 내용
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     // 별점 (0.5 ~ 5.0)
@@ -47,7 +47,7 @@ public class PeerReview {
     private int rating;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @Builder

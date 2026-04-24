@@ -45,7 +45,7 @@ class MyPageControllerTest {
                         .session(session(profileId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("초코푸들"))
-                .andExpect(jsonPath("$.role").value("MEMBER"))
+                .andExpect(jsonPath("$.position").exists())
                 .andExpect(jsonPath("$.meetBallIndex").value(36.7))
                 .andDo(print());
     }
@@ -60,7 +60,7 @@ class MyPageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].title").exists())
-                .andExpect(jsonPath("$[0].userRole").exists())
+                .andExpect(jsonPath("$[0].participantRole").exists())
                 .andExpect(jsonPath("$[0].canReview").exists()) // 추가됨: 리뷰 가능 여부 필드 확인
                 .andExpect(jsonPath("$[0].dDay").exists())     // 추가됨: D-Day 필드 확인
                 .andDo(print());
@@ -97,7 +97,7 @@ class MyPageControllerTest {
                         .content("""
                                 {
                                   "nickname": "초코푸들",
-                                  "jobTitle": "백엔드",
+                                  "position": "백엔드",
                                   "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
@@ -110,7 +110,7 @@ class MyPageControllerTest {
                         .content("""
                                 {
                                   "nickname": "초코푸들",
-                                  "jobTitle": "백엔드",
+                                  "position": "백엔드",
                                   "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
@@ -120,7 +120,7 @@ class MyPageControllerTest {
         mockMvc.perform(get("/api/mypage/profile")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.jobTitle").value("백엔드"))
+                .andExpect(jsonPath("$.position").value("백엔드"))
                 .andExpect(jsonPath("$.techStack").value("Java, Spring"));
     }
 
@@ -139,7 +139,7 @@ class MyPageControllerTest {
                                   "phoneNumber": "010-9876-5432",
                                   "birthDate": "1998-07-15",
                                   "gender": "여자",
-                                  "jobTitle": "디자이너",
+                                  "position": "디자이너",
                                   "experienceYears": "1~3년",
                                   "organization": "Meetball Studio",
                                   "orgVisible": true,
@@ -154,7 +154,7 @@ class MyPageControllerTest {
         assertThat(profile.getPhoneNumber()).isEqualTo("010-9876-5432");
         assertThat(profile.getBirthDate()).hasToString("1998-07-15");
         assertThat(profile.getGender()).isEqualTo("여자");
-        assertThat(profile.getJobTitle()).isEqualTo("디자이너");
+        assertThat(profile.getPosition()).isEqualTo("디자이너");
         assertThat(profile.getExperienceYears()).isEqualTo("1~3년");
         assertThat(profile.getOrganization()).isEqualTo("Meetball Studio");
         assertThat(profile.isOrgVisible()).isTrue();

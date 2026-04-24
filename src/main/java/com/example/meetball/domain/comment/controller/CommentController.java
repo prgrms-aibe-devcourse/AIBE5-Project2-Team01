@@ -55,7 +55,6 @@ public class CommentController {
 
         CommentRequestDto commentData = new CommentRequestDto(
                 projectId, 
-                profile.getNickname(),
                 role.name(),
                 requestDto.getContent(), 
                 requestDto.getParentId()

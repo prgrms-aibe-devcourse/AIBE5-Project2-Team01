@@ -46,16 +46,16 @@ public class ProjectApplication {
     @Transient
     private String position;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, columnDefinition = "varchar(20)")
+    @Column(length = 20, columnDefinition = "varchar(20)", nullable = false)
     private ProjectApplicationStatus status;
 
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

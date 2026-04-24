@@ -27,17 +27,17 @@
 	                        <div>
 	                            <span
 	                                class="px-3 py-1 bg-meatball text-poodle-900 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
-                                    th:text="${project.completed ? 'Completed' : (project.closed ? 'Recruitment Closed' : 'Recruiting')}">Recruiting</span>
+                                    th:text="${project.progressStatus == 'COMPLETED' ? 'Completed' : (project.recruitStatus == 'CLOSED' ? 'Recruitment Closed' : 'Recruiting')}">Recruiting</span>
 	                            <h2 class="text-2xl font-black text-poodle-900 leading-tight" th:text="${project.title}">프로젝트명</h2>
 	                        </div>
                     </div>
                     <div class="flex gap-3 w-full sm:w-auto">
                         <button onclick="deleteProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-red-50 border border-red-200 text-red-500 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors">프로젝트 삭제</button>
-	                        <button th:if="${!project.closed}" onclick="closeProject()"
+	                        <button th:if="${project.recruitStatus != 'CLOSED'}" onclick="closeProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/10 hover:bg-meatball hover:text-poodle-900 transition-colors">모집
                             마감</button>
-                            <button th:if="${!project.completed}" onclick="completeProject()"
+                            <button th:if="${project.progressStatus != 'COMPLETED'}" onclick="completeProject()"
                             class="flex-grow sm:flex-grow-0 px-6 py-3 bg-meatball text-poodle-900 rounded-2xl font-black text-sm shadow-xl shadow-meatball/10 hover:bg-poodle-700 hover:text-white transition-colors">프로젝트 완료</button>
                     </div>
                 </div>
@@ -447,10 +447,10 @@
         }
 
         async function closeProject() {
-            if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
+                if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
             await updateProjectStatus(
                 projectData => {
-                    projectData.closed = true;
+                    projectData.recruitStatus = 'CLOSED';
                 },
                 '모집이 마감되었습니다.',
                 '모집 마감 처리에 실패했습니다.'
@@ -461,8 +461,8 @@
             if (!await meetballConfirm('이 프로젝트를 완료 상태로 전환하시겠습니까? 완료 후 팀원 리뷰가 가능해집니다.', { confirmText: '완료 처리', cancelText: '취소' })) return;
             await updateProjectStatus(
                 projectData => {
-                    projectData.closed = true;
-                    projectData.completed = true;
+                    projectData.recruitStatus = 'CLOSED';
+                    projectData.progressStatus = 'COMPLETED';
                 },
                 '프로젝트가 완료 처리되었습니다.',
                 '프로젝트 완료 처리에 실패했습니다.'

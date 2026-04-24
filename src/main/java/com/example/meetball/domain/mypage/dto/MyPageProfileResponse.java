@@ -11,10 +11,9 @@ public class MyPageProfileResponse {
     private Long profileId;
     private String nickname;
     private String email;
-    private String jobTitle;
+    private String position;
     private String techStack;
     private boolean isPublic;
-    private String role;
     private double meetBallIndex;
     private boolean isOwner; // 본인 여부 추가
 
@@ -36,10 +35,9 @@ public class MyPageProfileResponse {
                 .profileId(profile.getId())
                 .nickname(profile.getNickname())
                 .email(displayEmail)
-                .jobTitle(profile.getJobTitle())
+                .position(profile.getPosition())
                 .techStack(formatTechStacks(profile))
                 .isPublic(profile.isPublic())
-                .role(profile.getRole())
                 .meetBallIndex(meetBallIndex)
                 .isOwner(isOwner)
                 .build();

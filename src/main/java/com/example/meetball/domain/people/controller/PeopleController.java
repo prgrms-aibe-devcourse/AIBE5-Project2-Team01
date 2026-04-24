@@ -40,15 +40,15 @@ public class PeopleController {
             model.addAttribute("profile", peopleService.getProfile(profileId, sessionProfileId));
             model.addAttribute("projects", projects);
             model.addAttribute("leaderProjects", projects.stream()
-                    .filter(project -> !project.isCompleted())
-                    .filter(project -> "LEADER".equals(project.getUserRole()))
+                    .filter(project -> !"COMPLETED".equals(project.getProgressStatus()))
+                    .filter(project -> "LEADER".equals(project.getParticipantRole()))
                     .toList());
             model.addAttribute("memberProjects", projects.stream()
-                    .filter(project -> !project.isCompleted())
-                    .filter(project -> "MEMBER".equals(project.getUserRole()))
+                    .filter(project -> !"COMPLETED".equals(project.getProgressStatus()))
+                    .filter(project -> "MEMBER".equals(project.getParticipantRole()))
                     .toList());
             model.addAttribute("completedProjects", projects.stream()
-                    .filter(PeopleProjectResponse::isCompleted)
+                    .filter(project -> "COMPLETED".equals(project.getProgressStatus()))
                     .toList());
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

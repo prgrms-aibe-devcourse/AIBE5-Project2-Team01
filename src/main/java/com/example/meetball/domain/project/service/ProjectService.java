@@ -29,7 +29,6 @@ import com.example.meetball.domain.viewhistory.repository.ViewHistoryRepository;
 import com.example.meetball.domain.review.repository.ProjectReviewRepository;
 import com.example.meetball.domain.review.repository.PeerReviewRepository;
 import com.example.meetball.domain.profile.entity.Profile;
-import com.example.meetball.domain.profile.repository.ProfileRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -71,7 +70,6 @@ public class ProjectService {
     private final CommentRepository commentRepository;
     private final ViewHistoryRepository viewHistoryRepository;
     private final ProfileService profileService;
-    private final ProfileRepository profileRepository;
     private final PositionRepository positionRepository;
     private final TechStackRepository techStackRepository;
 
@@ -161,10 +159,7 @@ public class ProjectService {
                     ))
                     .toList();
         }
-        return ProjectSelectionCatalog.parsePositionCapacities(
-                project.getPosition(),
-                project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount()
-        );
+        return List.of();
     }
 
     private String formatPositionText(Project project) {
@@ -239,8 +234,8 @@ public class ProjectService {
                 splitTechStacks(project),
                 project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt(),
                 formatDeadline(project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
-                project.getClosed(),
-                project.getCompleted(),
+                project.getRecruitStatus(),
+                project.getProgressStatus(),
                 bookmarkedProjectRepository.countByProject(project),
                 project.getViewCount(),
                 viewer != null && bookmarkedProjectRepository.findByProjectAndProfile(project, viewer).isPresent(),
@@ -345,8 +340,6 @@ public class ProjectService {
         }
 
         Profile ownerProfile = profileService.getProfileById(profileId);
-        String leaderNickname = ownerProfile.getNickname();
-
         String normalizedPositions = normalizePositionText(request.getPosition());
         List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
@@ -361,24 +354,19 @@ public class ProjectService {
                 request.getRecruitmentEndAt(),
                 request.getProjectStartAt(),
                 request.getProjectEndAt(),
-                Boolean.TRUE.equals(request.getClosed()),
-                Boolean.TRUE.equals(request.getCompleted()),
+                request.getRecruitStatus(),
+                request.getProgressStatus(),
                 now,
                 now
         );
 
         project.assignOwner(ownerProfile);
-        project.setLeaderName(leaderNickname);
         project.replacePositions(
                 ProjectSelectionCatalog.parsePositionCapacities(normalizedPositions, totalRecruitment),
                 this::resolvePosition
         );
         project.replaceTechStacks(resolveTechStacks(normalizedTechStacks));
-        project.updateDiscoveryFields(
-                normalizedPositions,
-                normalizedTechStacks,
-                cleanText(request.getThumbnailUrl())
-        );
+        project.updateThumbnailUrl(cleanText(request.getThumbnailUrl()));
         Project savedProject = projectRepository.save(project);
         projectParticipantRepository.save(ProjectParticipant.builder()
                 .project(savedProject)
@@ -419,8 +407,8 @@ public class ProjectService {
                 request.getRecruitmentEndAt(),
                 request.getProjectStartAt(),
                 request.getProjectEndAt(),
-                request.getClosed(),
-                request.getCompleted(),
+                request.getRecruitStatus(),
+                request.getProgressStatus(),
                 LocalDateTime.now()
         );
         project.replacePositions(
@@ -428,11 +416,7 @@ public class ProjectService {
                 this::resolvePosition
         );
         project.replaceTechStacks(resolveTechStacks(normalizedTechStacks));
-        project.updateDiscoveryFields(
-                normalizedPositions,
-                normalizedTechStacks,
-                cleanText(request.getThumbnailUrl())
-        );
+        project.updateThumbnailUrl(cleanText(request.getThumbnailUrl()));
         Project updatedProject = projectRepository.save(project);
 
         return toDetailResponse(updatedProject);
@@ -611,12 +595,12 @@ public class ProjectService {
                     return ParticipatedProjectResponse.builder()
                             .projectId(project.getId())
                             .title(project.getTitle())
-                            .userRole(participant.getRole())
+                            .participantRole(participant.getRole())
                             .status(statusLabel)
                             .canReview(canReview)
                             .dDay(dDay)
-                            .closed(Boolean.TRUE.equals(project.getClosed()))
-                            .completed(project.isCompleted())
+                            .recruitStatus(project.getRecruitStatus())
+                            .progressStatus(project.getProgressStatus())
                             .build();
                 })
                 .toList();
@@ -645,8 +629,8 @@ public class ProjectService {
                 project.getRecruitmentEndAt(),
                 project.getProjectStartAt(),
                 project.getProjectEndAt(),
-                Boolean.TRUE.equals(project.getClosed()),
-                project.getCompleted(),
+                project.getRecruitStatus(),
+                project.getProgressStatus(),
                 project.getCreatedAt(),
                 project.getUpdatedAt(),
                 techStacks,
@@ -655,6 +639,9 @@ public class ProjectService {
     }
 
     private Long resolveLeaderProfileId(Project project) {
+        if (project.getOwnerProfile() != null && project.getOwnerProfile().getId() != null) {
+            return project.getOwnerProfile().getId();
+        }
         Long leaderProfileId = projectParticipantRepository.findByProject(project).stream()
                 .filter(participant -> "LEADER".equals(participant.getRole()))
                 .map(ProjectParticipant::getProfile)
@@ -662,16 +649,7 @@ public class ProjectService {
                 .map(Profile::getId)
                 .findFirst()
                 .orElse(null);
-        if (leaderProfileId != null) {
-            return leaderProfileId;
-        }
-        String leaderName = cleanText(project.getLeaderName());
-        if (leaderName == null || leaderName.isEmpty()) {
-            return null;
-        }
-        return profileRepository.findByNickname(leaderName)
-                .map(Profile::getId)
-                .orElse(null);
+        return leaderProfileId;
     }
 
     private List<ProjectParticipantProfile> buildTeamMembers(Project project) {
@@ -682,25 +660,21 @@ public class ProjectService {
                         participant.getProfile().getId(),
                         participant.getProfile().getNickname(),
                         participant.getRole(),
-                        participant.getProfile().getJobTitle()
+                        participant.getProfile().getPosition()
                 ))
                 .toList();
         if (!members.isEmpty()) {
             return members;
         }
-
-        String leaderName = cleanText(project.getLeaderName());
-        if (leaderName == null || leaderName.isEmpty()) {
+        if (project.getOwnerProfile() == null) {
             return List.of();
         }
-        return profileRepository.findByNickname(leaderName)
-                .map(leaderProfile -> List.of(new ProjectParticipantProfile(
-                        leaderProfile.getId(),
-                        leaderProfile.getNickname(),
-                        "LEADER",
-                        leaderProfile.getJobTitle()
-                )))
-                .orElse(List.of());
+        return List.of(new ProjectParticipantProfile(
+                project.getOwnerProfile().getId(),
+                project.getOwnerProfile().getNickname(),
+                "LEADER",
+                project.getOwnerProfile().getPosition()
+        ));
     }
 
     private int roleOrder(String role) {

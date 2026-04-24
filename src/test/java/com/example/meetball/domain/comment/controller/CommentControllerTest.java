@@ -44,7 +44,7 @@ class CommentControllerTest {
     @DisplayName("댓글 작성 성공 테스트")
     void writeComment() throws Exception {
         // given
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "테스트 댓글입니다.", null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "테스트 댓글입니다.", null);
 
         // when & then
         mockMvc.perform(post("/api/projects/1/comments")
@@ -60,7 +60,7 @@ class CommentControllerTest {
     @DisplayName("프로젝트 비멤버 대댓글 작성 시도 실패 테스트")
     void writeReplyAsNonMember() throws Exception {
         // given
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "비멤버 대댓글 시도", 1L);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "비멤버 대댓글 시도", 1L);
 
         // when & then
         mockMvc.perform(post("/api/projects/1/comments")
@@ -75,7 +75,7 @@ class CommentControllerTest {
     void updateOtherUsersCommentFails() throws Exception {
         // given
         Long commentId = createCommentAndReturnId("수정 권한 테스트 댓글");
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "남의 댓글 수정", null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "남의 댓글 수정", null);
 
         // when & then
         mockMvc.perform(put("/api/projects/1/comments/" + commentId)
@@ -98,7 +98,7 @@ class CommentControllerTest {
     }
 
     private Long createCommentAndReturnId(String content) throws Exception {
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, content, null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, content, null);
         MvcResult result = mockMvc.perform(post("/api/projects/1/comments")
                 .session(session(2L))
                 .contentType(MediaType.APPLICATION_JSON)

@@ -10,11 +10,11 @@ import lombok.Getter;
 public class ParticipatedProjectResponse {
     private Long projectId;
     private String title;
-    private String userRole; // LEADER, MEMBER
+    private String participantRole; // LEADER, MEMBER
     private String status;
     private boolean canReview;
-    private boolean closed; // 모집 마감 여부
-    private boolean completed; // 프로젝트 완료 여부
+    private String recruitStatus;
+    private String progressStatus;
     
     @JsonProperty("dDay")
     private Long dDay; // 마감일까지 남은 일수 (모집 중일 때만)
@@ -23,12 +23,12 @@ public class ParticipatedProjectResponse {
         return ParticipatedProjectResponse.builder()
                 .projectId(project.getId())
                 .title(project.getTitle())
-                .userRole(role)
+                .participantRole(role)
                 .status(project.isCompleted() ? "COMPLETED" : "PROCEEDING")
                 .canReview(canReview)
                 .dDay(dDay)
-                .closed(Boolean.TRUE.equals(project.getClosed()))
-                .completed(project.isCompleted())
+                .recruitStatus(project.getRecruitStatus())
+                .progressStatus(project.getProgressStatus())
                 .build();
     }
 }

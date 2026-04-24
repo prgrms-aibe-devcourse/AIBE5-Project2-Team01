@@ -1,5 +1,4 @@
 package com.example.meetball.domain.profile.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ public class ProfileOnboardingRequest {
     private String phoneNumber;
     private LocalDate birthDate;
     private String gender;
-    private String jobTitle;
+    private String position;
     private String experienceYears;
     private String organization;
     private boolean orgVisible;

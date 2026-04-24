@@ -1,5 +1,4 @@
 package com.example.meetball.domain.profile.dto;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProfileUpdateRequest {
     private String nickname;
-    private String jobTitle;
+    private String position;
     private List<String> techStacks = List.of();
     @JsonProperty("isPublic")
     private boolean isPublic;

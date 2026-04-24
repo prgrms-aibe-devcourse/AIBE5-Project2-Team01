@@ -10,12 +10,10 @@ public class AuthResponseDto {
     private Long id;
     private String email;
     private String nickname;
-    private String role;
 
     public AuthResponseDto(Profile profile) {
         this.id = profile.getId();
         this.email = profile.getEmail();
         this.nickname = profile.getNickname();
-        this.role = profile.getRole();
     }
 }

@@ -11,20 +11,18 @@ public class PeopleProfileResponse {
 
     private Long profileId;
     private String nickname;
-    private String jobTitle;
+    private String position;
     private String techStack;
     private boolean isPublic;
-    private String role;
     private double meetBallIndex;
 
     public static PeopleProfileResponse from(Profile profile, double meetBallIndex) {
         return PeopleProfileResponse.builder()
                 .profileId(profile.getId())
                 .nickname(profile.getNickname())
-                .jobTitle(profile.getJobTitle())
+                .position(profile.getPosition())
                 .techStack(formatTechStacks(profile))
                 .isPublic(profile.isPublic())
-                .role(profile.getRole())
                 .meetBallIndex(meetBallIndex)
                 .build();
     }

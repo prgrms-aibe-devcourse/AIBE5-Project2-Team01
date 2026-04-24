@@ -129,7 +129,7 @@ public class ReviewService {
                 .map(memberProfile -> ReviewTargetResponse.builder()
                         .profileId(memberProfile.getId())
                         .nickname(memberProfile.getNickname())
-                        .jobTitle(memberProfile.getJobTitle())
+                        .position(memberProfile.getPosition())
                         .build())
                 .collect(Collectors.toList());
     }

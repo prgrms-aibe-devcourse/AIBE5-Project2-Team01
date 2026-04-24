@@ -1,6 +1,8 @@
 package com.example.meetball.domain.project.repository;
 
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.profile.entity.Profile;
+import com.example.meetball.domain.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,12 +21,40 @@ public class ProjectRepositoryTest {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    private Project saveProject(String title, String projectType) {
+        Profile owner = profileRepository.save(Profile.builder()
+                .email(title.replaceAll("\\s+", "").toLowerCase() + "@test.local")
+                .nickname(title + "리더")
+                .isPublic(true)
+                .build());
+        Project project = new Project(
+                title,
+                "설명",
+                projectType,
+                "ONLINE",
+                5,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(7),
+                LocalDate.now().plusDays(14),
+                null,
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_READY,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now()
+        );
+        project.assignOwner(owner);
+        return projectRepository.save(project);
+    }
+
     @Test
     @DisplayName("프로젝트 필터 검색 - 키워드 테스트")
     void findProjectsWithFilters_Keyword() {
         // given
-        projectRepository.save(new Project("Spring Boot 스터디", "요약", "설명", "사이드", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), List.of("Java")));
-        projectRepository.save(new Project("React 프로젝트", "요약", "설명", "사이드", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), List.of("JavaScript")));
+        saveProject("Spring Boot 스터디", "사이드");
+        saveProject("React 프로젝트", "사이드");
 
         // when
         Page<Project> results = projectRepository.findProjectsWithFilters("Spring", null, null, null, null, PageRequest.of(0, 10));
@@ -38,8 +68,8 @@ public class ProjectRepositoryTest {
     @DisplayName("프로젝트 필터 검색 - 타입 테스트")
     void findProjectsWithFilters_Type() {
         // given
-        projectRepository.save(new Project("스터디", "요약", "설명", "STUDY", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), List.of("Java")));
-        projectRepository.save(new Project("공모전", "요약", "설명", "COMPETITION", "온라인", "팀장", "역할", "아", "썸", 0, 5, LocalDate.now(), LocalDate.now(), List.of("JavaScript")));
+        saveProject("스터디", "STUDY");
+        saveProject("공모전", "COMPETITION");
 
         // when
         Page<Project> results = projectRepository.findProjectsWithFilters(null, "STUDY", null, null, null, PageRequest.of(0, 10));

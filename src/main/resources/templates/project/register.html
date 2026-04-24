@@ -457,8 +457,8 @@
                 recruitmentEndAt: document.getElementById('recruitmentEndAt').value,
                 projectStartAt: document.getElementById('projectStartAt').value,
                 projectEndAt: document.getElementById('projectEndAt').value,
-                closed: false,
-                completed: false
+                recruitStatus: 'OPEN',
+                progressStatus: 'READY'
             };
 
 	            if (!payload.title || !payload.projectType || !payload.description) {

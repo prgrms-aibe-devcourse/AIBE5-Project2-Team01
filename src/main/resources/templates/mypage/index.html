@@ -24,8 +24,6 @@
                 <div>
                     <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
                         <h2 class="text-4xl font-black text-poodle-600 tracking-tighter" th:text="${profile.nickname}">닉네임</h2>
-                        <span class="px-3 py-1 bg-white/70 backdrop-blur-md rounded-lg text-[10px] font-black text-poodle-600 uppercase tracking-widest border border-white"
-                              th:text="${profile.role}">MEMBER</span>
                     </div>
                     <div class="flex items-center gap-2 justify-center md:justify-start mb-6 text-poodle-400">
                         <i class="fa-solid fa-star text-meatball"></i>
@@ -127,9 +125,9 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Primary Role</label>
+                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Primary Position</label>
                             <div class="font-bold text-poodle-800 bg-white p-6 rounded-[1.5rem] border-2 border-poodle-50 text-lg shadow-sm">
-                                <span th:text="${profile.jobTitle}">백엔드 개발자</span>
+                                <span th:text="${profile.position}">백엔드 개발자</span>
                             </div>
                         </div>
                         <div class="space-y-3">
@@ -217,13 +215,13 @@
                             </div>
                         </div>
                         
-                        <div id="closed-projects-container" class="grid grid-cols-1 gap-6 max-h-[400px] overflow-hidden transition-all duration-700 relative">
+                        <div id="completed-projects-container" class="grid grid-cols-1 gap-6 max-h-[400px] overflow-hidden transition-all duration-700 relative">
                             <!-- JS Injected -->
-                            <div id="closed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>
+                            <div id="completed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>
                         </div>
                         
                         <div class="text-center pt-2">
-                            <button onclick="toggleSection('closed-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-poodle-800 transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
+                            <button onclick="toggleSection('completed-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-poodle-800 transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
                                 지난 프로젝트 더 보기 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
@@ -331,8 +329,8 @@
 
                     <!-- Position Input -->
                     <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-300 uppercase tracking-widest ml-1">Primary Role</label>
-                        <input type="hidden" id="editJobTitle" th:value="${profile.jobTitle}">
+                        <label class="text-[10px] font-black text-poodle-300 uppercase tracking-widest ml-1">Primary Position</label>
+                        <input type="hidden" id="editPosition" th:value="${profile.position}">
                         <div id="editPositionOptions" class="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto rounded-[1.5rem] border border-poodle-100 bg-poodle-50/40 p-4"></div>
                     </div>
 
@@ -374,7 +372,7 @@
 
 	<script>
 	    const escapeHtml = window.meetballEscapeHtml;
-	    const initialEditPosition = String(document.getElementById('editJobTitle')?.value || '').trim();
+	    const initialEditPosition = String(document.getElementById('editPosition')?.value || '').trim();
 	    let editSelectedPosition = window.meetballPositionOptions.includes(initialEditPosition) ? initialEditPosition : '';
 	    const editSelectedTechStacks = new Set(String(document.getElementById('editTechStack')?.value || '')
 	        .split(',')
@@ -395,7 +393,7 @@
 
 	    function renderEditPositionOptions() {
 	        const container = document.getElementById('editPositionOptions');
-	        const hiddenInput = document.getElementById('editJobTitle');
+	        const hiddenInput = document.getElementById('editPosition');
 	        if (!container || !hiddenInput) return;
 	        hiddenInput.value = editSelectedPosition;
 	        container.innerHTML = window.meetballPositionOptions.map(position => {
@@ -535,27 +533,27 @@
         if (isExpanded) {
             container.style.maxHeight = btn.innerText.includes('지난') ? '400px' : '500px';
             btn.innerHTML = `${sectionName} 더 보기 <i class="fa-solid fa-chevron-down ml-2"></i>`;
-            const overlay = document.getElementById('closed-overlay');
-            if(overlay && containerId === 'closed-projects-container') overlay.style.opacity = '1';
+            const overlay = document.getElementById('completed-overlay');
+            if(overlay && containerId === 'completed-projects-container') overlay.style.opacity = '1';
         } else {
             container.style.maxHeight = '2000px';
             btn.innerHTML = `접기 <i class="fa-solid fa-chevron-up ml-2"></i>`;
-            const overlay = document.getElementById('closed-overlay');
-            if(overlay && containerId === 'closed-projects-container') overlay.style.opacity = '0';
+            const overlay = document.getElementById('completed-overlay');
+            if(overlay && containerId === 'completed-projects-container') overlay.style.opacity = '0';
         }
     }
 
 	    async function updateProfile() {
         const profileId = document.getElementById('profileId').value;
 	        const nickname = document.getElementById('editNickname').value;
-	        const jobTitle = editSelectedPosition;
+	        const position = editSelectedPosition;
 	        const techStacks = Array.from(editSelectedTechStacks);
 
 	        if (!profileId) {
 	            await meetballAlert('로그인 정보가 없습니다.', { type: 'error' });
 	            return;
 	        }
-	        if (!jobTitle) {
+	        if (!position) {
 	            await meetballAlert('포지션을 선택해주세요.');
 	            return;
 	        }
@@ -572,7 +570,7 @@
                 },
                 body: JSON.stringify({
                     nickname: nickname,
-                    jobTitle: jobTitle,
+                    position: position,
                     techStacks: techStacks,
                     isPublic: true
                 })
@@ -717,7 +715,7 @@
                             <span class="text-xs font-bold text-poodle-300">${escapeHtml(dateStr)} 지원</span>
                         </div>
                         <h5 class="text-xl font-black text-poodle-900 line-clamp-1">${escapeHtml(app.projectTitle || '프로젝트 제목 없음')}</h5>
-                        <p class="text-sm font-bold text-meatball">지원 역할: ${escapeHtml(app.position)}</p>
+                        <p class="text-sm font-bold text-meatball">지원 포지션: ${escapeHtml(app.position)}</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full">
                         ${withdrawButton}
@@ -765,11 +763,11 @@
     function renderParticipatingProjects(projects) {
         const leaderContainer = document.getElementById('leader-projects-container');
         const memberContainer = document.getElementById('member-projects-container');
-        const closedContainer = document.getElementById('closed-projects-container');
+        const completedContainer = document.getElementById('completed-projects-container');
 
-        const leaderProjects = projects.filter(p => !p.completed && p.userRole === 'LEADER');
-        const memberProjects = projects.filter(p => !p.completed && p.userRole === 'MEMBER');
-        const completedProjects = projects.filter(p => p.completed);
+        const leaderProjects = projects.filter(p => p.progressStatus !== 'COMPLETED' && p.participantRole === 'LEADER');
+        const memberProjects = projects.filter(p => p.progressStatus !== 'COMPLETED' && p.participantRole === 'MEMBER');
+        const completedProjects = projects.filter(p => p.progressStatus === 'COMPLETED');
 
         const emptyMessage = `<div class="p-8 text-center text-sm font-bold text-poodle-300">해당하는 프로젝트가 없습니다.</div>`;
 
@@ -780,7 +778,7 @@
                 const projectId = encodeURIComponent(String(p.projectId ?? ''));
                 const dDay = Number(p.dDay || 0);
                 let dDayBadge = '';
-                if (p.closed) dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 마감</span><span class="text-sm font-black text-poodle-400">프로젝트 진행 중</span>`;
+                if (p.recruitStatus === 'CLOSED') dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 마감</span><span class="text-sm font-black text-poodle-400">프로젝트 진행 중</span>`;
                 else if (dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${dDay}</span>`;
                 else dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
                 
@@ -808,7 +806,7 @@
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = encodeURIComponent(String(p.projectId ?? ''));
                 const dDay = Number(p.dDay || 0);
-                let dDayBadge = p.closed
+                let dDayBadge = p.recruitStatus === 'CLOSED'
                     ? `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">모집 마감</span><span class="text-[11px] font-bold text-poodle-400">프로젝트 진행 중</span>`
                     : `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
                 return `
@@ -828,9 +826,9 @@
         }
 
         // Closed
-        if (closedContainer) {
-            const overlayStr = `<div id="closed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>`;
-            closedContainer.innerHTML = completedProjects.length ? completedProjects.map(p => {
+        if (completedContainer) {
+            const overlayStr = `<div id="completed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>`;
+            completedContainer.innerHTML = completedProjects.length ? completedProjects.map(p => {
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = Number(p.projectId);
                 const reviewButton = p.canReview && Number.isFinite(projectId)
@@ -884,7 +882,7 @@
         container.innerHTML = reviews.map(r => {
             const dateStr = new Date(r.createdAt).toLocaleDateString('ko-KR');
             const reviewerNickname = escapeHtml(r.reviewerNickname || '익명');
-            const reviewerJobTitle = escapeHtml(r.reviewerJobTitle || '-');
+            const reviewerPosition = escapeHtml(r.reviewerPosition || '-');
             const projectTitle = escapeHtml(r.projectTitle || '프로젝트');
             const content = escapeHtml(r.content || '');
             let stars = '';
@@ -902,7 +900,7 @@
                             <img src="/img/logo.png" class="w-10 h-10 rounded-xl bg-poodle-50 border-2 border-white shadow-sm" alt="reviewer">
                             <div>
                                 <h6 class="text-sm font-black text-poodle-900">${reviewerNickname}</h6>
-                                <p class="text-[10px] font-bold text-poodle-300">${reviewerJobTitle}</p>
+                                <p class="text-[10px] font-bold text-poodle-300">${reviewerPosition}</p>
                             </div>
                         </div>
                         <div class="flex text-sm">${stars}</div>
@@ -945,8 +943,8 @@
                 targetSelect.innerHTML = '<option value="">평가할 팀원 선택</option>' + 
                     teammates.map(t => {
                         const nickname = escapeHtml(t.nickname || '');
-                        const jobTitle = escapeHtml(t.jobTitle || '역할 미정');
-                        return `<option value="${nickname}">${nickname} (${jobTitle})</option>`;
+                        const position = escapeHtml(t.position || '포지션 미정');
+                        return `<option value="${nickname}">${nickname} (${position})</option>`;
                     }).join('');
             }
         } catch (e) {

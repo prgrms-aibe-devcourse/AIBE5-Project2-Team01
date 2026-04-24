@@ -56,7 +56,7 @@ public class Comment {
     private boolean deleted;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -70,7 +70,7 @@ public class Comment {
     private List<Comment> children = new ArrayList<>();
 
     @Builder
-    public Comment(Long projectId, Profile author, String authorNickname, Long authorUserId, String content, Comment parent, String authorRole) {
+    public Comment(Long projectId, Profile author, String content, Comment parent, String authorRole) {
         this.projectId = projectId;
         this.author = author;
         this.content = content;
@@ -84,7 +84,7 @@ public class Comment {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getAuthorUserId() {
+    public Long getAuthorProfileId() {
         return author != null ? author.getId() : null;
     }
 

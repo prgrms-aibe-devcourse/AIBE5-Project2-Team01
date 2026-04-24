@@ -24,19 +24,19 @@ public class ProjectResource {
     @Column(name = "project_id", nullable = false)
     private Long projectId;
 
-    @Column(name = "original_file_name", nullable = false)
+    @Column(name = "original_file_name", nullable = false, length = 255)
     private String originalFileName;
 
-    @Column(name = "saved_file_name", nullable = false)
+    @Column(name = "saved_file_name", nullable = false, length = 255)
     private String storedFilePath;
 
-    @Column(name = "file_url", nullable = false)
+    @Column(name = "file_url", nullable = false, length = 255)
     private String linkUrl;
 
-    @Column(name = "file_type")
+    @Column(name = "file_type", length = 20)
     private String type;
 
-    @Column(name = "tab_type")
+    @Column(name = "tab_type", nullable = false, length = 20)
     private String tabType;
 
     @Column(name = "file_size")
@@ -46,7 +46,7 @@ public class ProjectResource {
     private int displayOrder;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

@@ -66,10 +66,6 @@ public class ProjectRecruitPosition {
         this.recruitStatus = approvedUser >= this.capacity ? STATUS_CLOSED : STATUS_OPEN;
     }
 
-    public void updateCapacityAndOrder(int capacity, int sortOrder) {
-        updateCapacity(capacity);
-    }
-
     public void incrementApprovedUser() {
         if (approvedUser >= capacity) {
             throw new IllegalStateException("Recruit position is already full.");
@@ -93,9 +89,5 @@ public class ProjectRecruitPosition {
 
     public String getPositionName() {
         return position != null ? position.getName() : "";
-    }
-
-    public int getSortOrder() {
-        return id == null ? 0 : id.intValue();
     }
 }

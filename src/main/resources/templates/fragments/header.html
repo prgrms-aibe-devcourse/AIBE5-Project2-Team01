@@ -329,7 +329,7 @@
                                 <label class="block text-[15px] md:text-lg font-black text-poodle-700">
                                     포지션을 선택해주세요 <span class="text-red-400">*</span>
                                 </label>
-                                <input type="hidden" id="welcomeJobTitle" name="jobTitle" required>
+                                <input type="hidden" id="welcomePosition" name="position" required>
                                 <div id="welcomePositionOptions" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
                             </div>
                             <div class="space-y-3">
@@ -399,7 +399,7 @@
                 },
                 2: {
                     title: '포지션과 경력을 알려주세요',
-                    subtitle: '활동할 역할과 소속 공개 여부를 설정해 주세요.'
+                    subtitle: '활동할 포지션과 소속 공개 여부를 설정해 주세요.'
                 },
                 3: {
                     title: '기술스택을 선택해주세요',
@@ -412,7 +412,7 @@
                 phoneNumber: /*[[${currentProfile.phoneNumber}]]*/ '',
                 birthDate: /*[[${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}]]*/ '',
                 gender: normalizeWelcomeGenderForUi(/*[[${currentProfile.gender}]]*/ ''),
-                jobTitle: /*[[${currentProfile.jobTitle}]]*/ '',
+                position: /*[[${currentProfile.position}]]*/ '',
                 experienceYears: /*[[${currentProfile.experienceYears}]]*/ '',
                 organization: /*[[${currentProfile.organization}]]*/ '',
                 orgVisible: /*[[${currentProfile.orgVisible}]]*/ false,
@@ -450,7 +450,7 @@
                 const phoneNumberInput = document.getElementById('welcomePhoneNumber');
                 const birthDateInput = document.getElementById('welcomeBirthDate');
                 const genderInput = document.getElementById('welcomeGender');
-                const positionInput = document.getElementById('welcomeJobTitle');
+                const positionInput = document.getElementById('welcomePosition');
                 const experienceInput = document.getElementById('welcomeExperienceYears');
                 const organizationInput = document.getElementById('welcomeOrganization');
                 const techStackInput = document.getElementById('welcomeTechStack');
@@ -459,7 +459,7 @@
                 if (phoneNumberInput) phoneNumberInput.value = formatWelcomePhoneNumber(welcomeState.phoneNumber || '');
                 if (birthDateInput) birthDateInput.value = welcomeState.birthDate || '';
                 if (genderInput) genderInput.value = welcomeState.gender || '';
-                if (positionInput) positionInput.value = welcomeState.jobTitle || '';
+                if (positionInput) positionInput.value = welcomeState.position || '';
                 if (experienceInput) experienceInput.value = welcomeState.experienceYears || '';
                 if (organizationInput) organizationInput.value = welcomeState.organization || '';
                 if (techStackInput) techStackInput.value = welcomeState.techStacks.join(', ');
@@ -507,7 +507,7 @@
                 const container = document.getElementById('welcomePositionOptions');
                 if (!container) return;
                 container.innerHTML = window.meetballPositionOptions.map(position => {
-                    const selected = welcomeState.jobTitle === position;
+                    const selected = welcomeState.position === position;
                     const selectedClass = selected
                         ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
                         : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
@@ -515,7 +515,7 @@
                 }).join('');
                 container.querySelectorAll('[data-position]').forEach(button => {
                     button.addEventListener('click', () => {
-                        welcomeState.jobTitle = button.dataset.position;
+                        welcomeState.position = button.dataset.position;
                         syncWelcomeFields();
                         renderWelcomePositionOptions();
                     });
@@ -631,7 +631,7 @@
 
                 if (step === 2) {
                     welcomeState.organization = document.getElementById('welcomeOrganization')?.value.trim() || '';
-                    if (!welcomeState.jobTitle) {
+                    if (!welcomeState.position) {
                         await meetballAlert('포지션을 선택해주세요.');
                         return false;
                     }
@@ -708,7 +708,7 @@
                     phoneNumber: formatWelcomePhoneNumber(document.getElementById('welcomePhoneNumber')?.value || ''),
                     birthDate: document.getElementById('welcomeBirthDate')?.value || '',
                     gender: welcomeState.gender,
-                    jobTitle: welcomeState.jobTitle,
+                    position: welcomeState.position,
                     experienceYears: welcomeState.experienceYears,
                     organization: document.getElementById('welcomeOrganization')?.value.trim() || '',
                     orgVisible: Boolean(welcomeState.orgVisible),

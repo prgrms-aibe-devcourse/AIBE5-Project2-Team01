@@ -35,7 +35,7 @@ public class ViewHistory {
     private Project project;
 
     @LastModifiedDate
-    @Column(name = "viewed_at")
+    @Column(name = "viewed_at", nullable = false)
     private LocalDateTime readAt;
 
     @Builder

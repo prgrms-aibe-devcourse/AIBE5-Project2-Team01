@@ -81,7 +81,7 @@ public class MyPageService {
         requireOwnerAccess(profileId, viewerId);
         Profile profile = profileService.getProfileById(profileId);
         return projectService.getParticipatedProjects(profile).stream()
-                .filter(ParticipatedProjectResponse::isCompleted)
+                .filter(project -> "COMPLETED".equals(project.getProgressStatus()))
                 .toList();
     }
 

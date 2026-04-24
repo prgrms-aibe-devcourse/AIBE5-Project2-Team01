@@ -133,10 +133,7 @@ public class DataInitializer implements CommandLineRunner {
                     Profile profile = Profile.builder()
                             .email(email)
                             .nickname(nickname)
-                            .jobTitle(positionName)
-                            .techStacks(techStackNames)
                             .isPublic(true)
-                            .role("MEMBER")
                             .build();
                     profile.updateProfile(nickname, resolvePosition(positionName), resolveTechStacks(techStackNames), true);
                     return profileRepository.save(profile);
@@ -157,15 +154,15 @@ public class DataInitializer implements CommandLineRunner {
                 completed ? now.minusDays(1) : now.plusDays(14),
                 now.plusDays(21),
                 completed ? now.minusDays(1) : null,
-                completed,
-                completed,
+                completed ? Project.RECRUIT_STATUS_CLOSED : Project.RECRUIT_STATUS_OPEN,
+                completed ? Project.PROGRESS_STATUS_COMPLETED : Project.PROGRESS_STATUS_READY,
                 LocalDateTime.now().minusDays(3),
                 LocalDateTime.now()
         );
         project.assignOwner(owner);
         project.replacePositions(ProjectSelectionCatalog.parsePositionCapacities(positions, requiredMember), this::resolvePosition);
         project.replaceTechStacks(resolveTechStacks(techStacks));
-        project.updateDiscoveryFields(positions, techStacks, "");
+        project.updateThumbnailUrl("");
         Project saved = projectRepository.save(project);
         projectParticipantRepository.save(ProjectParticipant.builder().project(saved).profile(owner).role("LEADER").build());
         return saved;

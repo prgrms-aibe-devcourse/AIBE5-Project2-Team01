@@ -88,8 +88,8 @@ public class Profile {
     private List<ProfilePosition> positionSelections = new ArrayList<>();
 
     @Builder
-    public Profile(String email, String nickname, String jobTitle, List<String> techStacks, boolean isPublic, String role) {
-        this(Account.google(email, "seed:" + email, nickname), nickname, isPublic, true);
+    public Profile(String email, String nickname, boolean isPublic) {
+        this(Account.google(email, buildSeedSocialIdentifier(email, nickname), nickname), nickname, isPublic, true);
     }
 
     private Profile(Account account, String nickname, boolean isPublic, boolean defaultProfile) {
@@ -98,6 +98,13 @@ public class Profile {
         this.defaultProfile = defaultProfile;
         this.profileStatus = isPublic ? PROFILE_STATUS_PUBLIC : PROFILE_STATUS_PRIVATE;
         this.createdAt = LocalDateTime.now();
+    }
+
+    private static String buildSeedSocialIdentifier(String email, String nickname) {
+        if (email != null && !email.isBlank()) {
+            return "seed:" + email;
+        }
+        return "seed:" + sanitizeNickname(nickname);
     }
 
     public static Profile defaultProfile(Account account, String nickname, boolean needsProfileCompletion) {
@@ -192,7 +199,7 @@ public class Profile {
         return account != null ? account.getGender() : "";
     }
 
-    public String getJobTitle() {
+    public String getPosition() {
         return positionSelections.stream()
                 .map(ProfilePosition::getPositionName)
                 .filter(Objects::nonNull)
@@ -220,10 +227,6 @@ public class Profile {
         return techStackSelections.stream()
                 .map(ProfileTechStack::getTechStackName)
                 .collect(Collectors.joining(", "));
-    }
-
-    public String getRole() {
-        return "MEMBER";
     }
 
     public boolean isPublic() {

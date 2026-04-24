@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class PeerReviewResponse {
     private Long reviewId;
     private String reviewerNickname;
-    private String reviewerJobTitle;
+    private String reviewerPosition;
     private String projectTitle;
     private String content;
     private double score;
@@ -21,7 +21,7 @@ public class PeerReviewResponse {
         return PeerReviewResponse.builder()
                 .reviewId(review.getId())
                 .reviewerNickname(review.getReviewer().getNickname())
-                .reviewerJobTitle(review.getReviewer().getJobTitle())
+                .reviewerPosition(review.getReviewer().getPosition())
                 .projectTitle(review.getProject().getTitle())
                 .content(review.getContent())
                 .score(review.getScore())

@@ -8,5 +8,5 @@ import lombok.Getter;
 public class ReviewTargetResponse {
     private Long profileId;
     private String nickname;
-    private String jobTitle;
+    private String position;
 }

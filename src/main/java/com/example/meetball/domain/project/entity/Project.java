@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +40,7 @@ public class Project {
     @Column(name = "project_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_profile_id", nullable = false)
     private Profile ownerProfile;
 
@@ -75,7 +74,7 @@ public class Project {
     @Column(name = "recruit_end_date", nullable = false)
     private LocalDate recruitEndDate;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private LocalDate startDate;
 
     @Column(name = "end_date")
@@ -116,23 +115,12 @@ public class Project {
     @OrderBy("id ASC")
     private List<ProjectRecruitPosition> positionSelections = new ArrayList<>();
 
-    @Transient
-    private String legacyPosition;
-
     protected Project() {
     }
 
     public Project(String title, String description, String projectType, String progressMethod,
                    Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
-                   LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed,
-                   LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this(title, description, projectType, progressMethod, recruitmentCount, recruitmentStartAt, recruitmentEndAt,
-                projectStartAt, projectEndAt, closed, false, createdAt, updatedAt);
-    }
-
-    public Project(String title, String description, String projectType, String progressMethod,
-                   Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
-                   LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, Boolean completed,
+                   LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
@@ -141,72 +129,24 @@ public class Project {
         this.requiredMember = recruitmentCount == null ? 0 : recruitmentCount;
         this.recruitStartDate = recruitmentStartAt != null ? recruitmentStartAt : LocalDate.now();
         this.recruitEndDate = recruitmentEndAt != null ? recruitmentEndAt : this.recruitStartDate.plusDays(14);
-        this.startDate = projectStartAt != null ? projectStartAt : this.recruitEndDate.plusDays(1);
+        this.startDate = projectStartAt;
         this.endDate = projectEndAt;
-        this.recruitStatus = Boolean.TRUE.equals(closed) ? RECRUIT_STATUS_CLOSED : RECRUIT_STATUS_OPEN;
-        this.progressStatus = Boolean.TRUE.equals(completed) ? PROGRESS_STATUS_COMPLETED : PROGRESS_STATUS_READY;
-        if (Boolean.TRUE.equals(completed)) {
+        this.recruitStatus = normalizeRecruitStatus(recruitStatus);
+        this.progressStatus = normalizeProgressStatus(progressStatus);
+        if (PROGRESS_STATUS_COMPLETED.equals(this.progressStatus)) {
             this.recruitStatus = RECRUIT_STATUS_CLOSED;
         }
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
         this.updatedAt = updatedAt;
-        this.ownerProfile = fallbackOwnerProfile();
-    }
-
-    public Project(
-            String title,
-            String summary,
-            String description,
-            String projectType,
-            String position,
-            String leaderName,
-            String leaderRole,
-            String leaderAvatarUrl,
-            String thumbnailUrl,
-            Integer currentRecruitment,
-            Integer totalRecruitment,
-            LocalDate recruitmentDeadline,
-            LocalDate createdDate,
-            List<String> techStacks
-    ) {
-        this(
-                title,
-                description,
-                projectType,
-                "ONLINE",
-                totalRecruitment,
-                createdDate,
-                recruitmentDeadline,
-                createdDate,
-                null,
-                false,
-                false,
-                createdDate != null ? createdDate.atStartOfDay() : LocalDateTime.now(),
-                null
-        );
-        this.thumbnailUrl = thumbnailUrl;
-        this.legacyPosition = position;
     }
 
     public void assignOwner(Profile ownerProfile) {
-        this.ownerProfile = ownerProfile;
-    }
-
-    private Profile fallbackOwnerProfile() {
-        String suffix = Long.toUnsignedString(System.nanoTime(), 36);
-        return Profile.builder()
-                .email("project-owner-" + suffix + "@meetball.local")
-                .nickname("프로젝트소유자" + suffix)
-                .jobTitle("")
-                .techStacks(List.of())
-                .isPublic(true)
-                .role("MEMBER")
-                .build();
+        this.ownerProfile = Objects.requireNonNull(ownerProfile, "ownerProfile");
     }
 
     public void update(String title, String description, String projectType, String progressMethod,
                        Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
-                       LocalDate projectStartAt, LocalDate projectEndAt, Boolean closed, Boolean completed,
+                       LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                        LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
@@ -217,11 +157,11 @@ public class Project {
         this.recruitEndDate = recruitmentEndAt != null ? recruitmentEndAt : this.recruitEndDate;
         this.startDate = projectStartAt != null ? projectStartAt : this.startDate;
         this.endDate = projectEndAt;
-        if (closed != null) {
-            this.recruitStatus = Boolean.TRUE.equals(closed) ? RECRUIT_STATUS_CLOSED : RECRUIT_STATUS_OPEN;
+        if (recruitStatus != null) {
+            this.recruitStatus = normalizeRecruitStatus(recruitStatus);
         }
-        if (completed != null) {
-            this.progressStatus = Boolean.TRUE.equals(completed) ? PROGRESS_STATUS_COMPLETED : PROGRESS_STATUS_READY;
+        if (progressStatus != null) {
+            this.progressStatus = normalizeProgressStatus(progressStatus);
         }
         if (isCompleted()) {
             this.recruitStatus = RECRUIT_STATUS_CLOSED;
@@ -229,10 +169,7 @@ public class Project {
         this.updatedAt = updatedAt;
     }
 
-    public void updateDiscoveryFields(String position, List<String> techStacks, String thumbnailUrl) {
-        if (position != null) {
-            this.legacyPosition = position;
-        }
+    public void updateThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl != null) {
             this.thumbnailUrl = thumbnailUrl;
         }
@@ -260,10 +197,6 @@ public class Project {
                 existing.updateCapacity(position.capacity());
             }
         }
-    }
-
-    public void replacePositions(List<ProjectSelectionCatalog.PositionCapacity> positions) {
-        this.positionSelections.clear();
     }
 
     public void replaceTechStacks(List<TechStack> techStacks) {
@@ -314,6 +247,26 @@ public class Project {
         return capacity != null && capacity > 0 && getCurrentRecruitment() >= capacity;
     }
 
+    private static String normalizeRecruitStatus(String recruitStatus) {
+        if (recruitStatus == null || recruitStatus.isBlank()) {
+            return RECRUIT_STATUS_OPEN;
+        }
+        return RECRUIT_STATUS_CLOSED.equalsIgnoreCase(recruitStatus) ? RECRUIT_STATUS_CLOSED : RECRUIT_STATUS_OPEN;
+    }
+
+    private static String normalizeProgressStatus(String progressStatus) {
+        if (progressStatus == null || progressStatus.isBlank()) {
+            return PROGRESS_STATUS_READY;
+        }
+        if (PROGRESS_STATUS_COMPLETED.equalsIgnoreCase(progressStatus)) {
+            return PROGRESS_STATUS_COMPLETED;
+        }
+        if (PROGRESS_STATUS_IN_PROGRESS.equalsIgnoreCase(progressStatus)) {
+            return PROGRESS_STATUS_IN_PROGRESS;
+        }
+        return PROGRESS_STATUS_READY;
+    }
+
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getSummary() {
@@ -325,14 +278,12 @@ public class Project {
     public String getDescription() { return description; }
     public String getProjectType() { return projectType; }
     public String getPosition() {
-        String positions = positionSelections.stream()
+        return positionSelections.stream()
                 .map(position -> position.getPositionName() + ":" + position.getCapacity())
                 .collect(Collectors.joining(", "));
-        return positions.isBlank() ? (legacyPosition == null ? "" : legacyPosition) : positions;
     }
     public String getProgressMethod() { return workMethod; }
     public String getLeaderName() { return ownerProfile != null ? ownerProfile.getNickname() : ""; }
-    public void setLeaderName(String leaderName) { }
     public String getLeaderRole() { return "LEADER"; }
     public String getLeaderAvatarUrl() { return ownerProfile != null ? ownerProfile.getProfileImage() : ""; }
     public String getThumbnailUrl() { return thumbnailUrl; }
@@ -346,8 +297,8 @@ public class Project {
     public LocalDate getRecruitmentEndAt() { return recruitEndDate; }
     public LocalDate getProjectStartAt() { return startDate; }
     public LocalDate getProjectEndAt() { return endDate; }
-    public Boolean getClosed() { return RECRUIT_STATUS_CLOSED.equals(recruitStatus); }
-    public Boolean getCompleted() { return isCompleted(); }
+    public String getRecruitStatus() { return recruitStatus; }
+    public String getProgressStatus() { return progressStatus; }
     public boolean isCompleted() { return PROGRESS_STATUS_COMPLETED.equals(progressStatus); }
     public LocalDate getCreatedDate() { return createdAt != null ? createdAt.toLocalDate() : null; }
     public LocalDateTime getCreatedAt() { return createdAt; }

@@ -35,15 +35,30 @@ class ProjectServiceTest {
     @InjectMocks
     private ProjectService projectService;
 
+    private Project createProject(String title, LocalDate recruitEndDate) {
+        return new Project(
+                title,
+                "설명",
+                "타입",
+                "ONLINE",
+                5,
+                LocalDate.now().minusDays(1),
+                recruitEndDate,
+                LocalDate.now(),
+                null,
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_READY,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now()
+        );
+    }
+
     @Test
     @DisplayName("오늘이 마감일인 경우 D-Day는 0이어야 한다")
     void calculateDDayZeroTest() {
         // given
         Profile profile = Profile.builder().nickname("테스트유저").build();
-        Project project = new Project(
-                "D-Day 0 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now(), LocalDate.now().minusDays(1), List.of("Java")
-        );
+        Project project = createProject("D-Day 0 테스트", LocalDate.now());
         
         com.example.meetball.domain.project.entity.ProjectParticipant pm = 
             new com.example.meetball.domain.project.entity.ProjectParticipant(profile, project, "MEMBER");
@@ -61,10 +76,7 @@ class ProjectServiceTest {
     @DisplayName("모집 마감과 프로젝트 완료 상태는 참여 프로젝트 응답에서 분리된다")
     void recruitmentClosedAndCompletedAreSeparated() {
         Profile profile = Profile.builder().nickname("테스트유저").build();
-        Project recruitmentClosedProject = new Project(
-                "모집 마감 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), List.of("Java")
-        );
+        Project recruitmentClosedProject = createProject("모집 마감 테스트", LocalDate.now().minusDays(1));
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
                 recruitmentClosedProject.getDescription(),
@@ -75,14 +87,11 @@ class ProjectServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
-                true,
-                false,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_READY,
                 LocalDateTime.now()
         );
-        Project completedProject = new Project(
-                "완료 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(3), List.of("Java")
-        );
+        Project completedProject = createProject("완료 테스트", LocalDate.now().minusDays(1));
         completedProject.update(
                 completedProject.getTitle(),
                 completedProject.getDescription(),
@@ -93,8 +102,8 @@ class ProjectServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(4),
                 LocalDate.now().minusDays(1),
-                true,
-                true,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_COMPLETED,
                 LocalDateTime.now()
         );
         com.example.meetball.domain.project.entity.ProjectParticipant closedMember =
@@ -107,12 +116,12 @@ class ProjectServiceTest {
 
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(profile);
 
-        assertThat(results.get(0).isClosed()).isTrue();
-        assertThat(results.get(0).isCompleted()).isFalse();
+        assertThat(results.get(0).getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
+        assertThat(results.get(0).getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_READY);
         assertThat(results.get(0).isCanReview()).isFalse();
         assertThat(results.get(0).getStatus()).isEqualTo("PROCEEDING");
-        assertThat(results.get(1).isClosed()).isTrue();
-        assertThat(results.get(1).isCompleted()).isTrue();
+        assertThat(results.get(1).getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
+        assertThat(results.get(1).getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_COMPLETED);
         assertThat(results.get(1).isCanReview()).isTrue();
         assertThat(results.get(1).getStatus()).isEqualTo("COMPLETED");
     }
@@ -122,10 +131,7 @@ class ProjectServiceTest {
     void calculateDDayOneTest() {
         // given
         Profile profile = Profile.builder().nickname("테스트유저").build();
-        Project project = new Project(
-                "D-Day 1 테스트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().plusDays(1), LocalDate.now().minusDays(1), List.of("Java")
-        );
+        Project project = createProject("D-Day 1 테스트", LocalDate.now().plusDays(1));
         
         com.example.meetball.domain.project.entity.ProjectParticipant pm = 
             new com.example.meetball.domain.project.entity.ProjectParticipant(profile, project, "MEMBER");

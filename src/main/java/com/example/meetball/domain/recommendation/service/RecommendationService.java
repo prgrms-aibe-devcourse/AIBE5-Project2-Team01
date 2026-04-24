@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
  *
  * 점수 산정 기준:
  *   - 기술스택 일치 1개당 20점 (profile_tech_stack vs project_tech_stack)
- *   - 직무/포지션 유사 시 +30점 (profile_position vs project_recruit_position, 부분 문자열 포함 비교)
+ *   - 프로필 포지션/프로젝트 포지션 유사 시 +30점 (profile_position vs project_recruit_position, 부분 문자열 포함 비교)
  *
- * 추천 대상: 모집 마감(closed)과 프로젝트 완료(completed)가 아닌 프로젝트만 포함
+ * 추천 대상: 모집 상태가 OPEN이고 진행 상태가 COMPLETED가 아닌 프로젝트만 포함
  * 정렬: 점수 내림차순 → 점수가 동일하면 projectId 오름차순
  */
 @Service
@@ -35,8 +35,8 @@ public class RecommendationService {
     // 기술스택 1개 일치당 부여하는 점수
     private static final int TECH_STACK_SCORE_PER_MATCH = 20;
 
-    // 직무/포지션 유사 시 부여하는 추가 점수
-    private static final int JOB_TITLE_MATCH_SCORE = 30;
+    // 프로필 포지션/프로젝트 포지션 유사 시 부여하는 추가 점수
+    private static final int POSITION_MATCH_SCORE = 30;
 
     private final ProjectRepository projectRepository;
     private final ProfileRepository profileRepository;
@@ -60,8 +60,8 @@ public class RecommendationService {
 
         // 2. 모집 중이고 아직 완료되지 않은 프로젝트만 조회
         List<Project> openProjects = projectRepository.findAll().stream()
-                .filter(p -> !Boolean.TRUE.equals(p.getClosed()))
-                .filter(p -> !Boolean.TRUE.equals(p.getCompleted()))
+                .filter(project -> Project.RECRUIT_STATUS_OPEN.equals(project.getRecruitStatus()))
+                .filter(project -> !Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus()))
                 .collect(Collectors.toList());
 
         // 3. 프로필 기술스택을 소문자 집합으로 변환
@@ -80,10 +80,10 @@ public class RecommendationService {
                 reasons.add("보유 기술스택이 " + techMatchCount + "개 일치합니다");
             }
 
-            // 직무/포지션 유사도 점수 계산
-            if (isJobTitleMatched(profile.getJobTitle(), project)) {
-                score += JOB_TITLE_MATCH_SCORE;
-                reasons.add("희망 직무와 모집 포지션이 유사합니다");
+            // 프로필 포지션/프로젝트 포지션 유사도 점수 계산
+            if (isPositionMatched(profile.getPosition(), project)) {
+                score += POSITION_MATCH_SCORE;
+                reasons.add("프로필 포지션과 모집 포지션이 유사합니다");
             }
 
             // 점수가 0이라도 목록에 포함 (프론트엔드에서 필터링 가능)
@@ -154,30 +154,28 @@ public class RecommendationService {
     }
 
     /**
-     * 프로필 직무(jobTitle)와 프로젝트 포지션(position)이 유사한지 판단합니다.
+     * 프로필 포지션과 프로젝트 포지션이 유사한지 판단합니다.
      * 한쪽이 다른 쪽을 부분 문자열로 포함하면 유사하다고 판단합니다. (대소문자 무시)
      *
-     * 예: jobTitle="백엔드 개발자", position="백엔드" → true
-     *     jobTitle="Backend Developer", position="backend" → true
+     * 예: positionName="백엔드 개발자", projectPosition="백엔드" → true
+     *     positionName="Backend Developer", projectPosition="backend" → true
      *
-     * @param jobTitle 프로필 직무 (null 허용)
-     * @param position 프로젝트 모집 포지션 (null 허용)
+     * @param positionName 프로필 포지션 (null 허용)
+     * @param project 프로젝트 모집 포지션을 포함한 프로젝트
      * @return 유사 여부
      */
-    private boolean isJobTitleMatched(String jobTitle, Project project) {
-        if (jobTitle == null || jobTitle.isBlank()) {
+    private boolean isPositionMatched(String positionName, Project project) {
+        if (positionName == null || positionName.isBlank()) {
             return false;
         }
-        String normalizedJob = jobTitle.trim().toLowerCase(Locale.ROOT);
+        String normalizedPosition = positionName.trim().toLowerCase(Locale.ROOT);
         List<String> positions = project.getPositionSelections() != null && !project.getPositionSelections().isEmpty()
                 ? project.getPositionSelections().stream()
                 .map(ProjectRecruitPosition::getPositionName)
                 .toList()
-                : ProjectSelectionCatalog.parsePositionCapacities(project.getPosition(), null).stream()
-                .map(ProjectSelectionCatalog.PositionCapacity::name)
-                .toList();
+                : List.of();
         return positions.stream()
                 .map(value -> value.toLowerCase(Locale.ROOT))
-                .anyMatch(normalizedPos -> normalizedJob.contains(normalizedPos) || normalizedPos.contains(normalizedJob));
+                .anyMatch(normalizedPos -> normalizedPosition.contains(normalizedPos) || normalizedPos.contains(normalizedPosition));
     }
 }

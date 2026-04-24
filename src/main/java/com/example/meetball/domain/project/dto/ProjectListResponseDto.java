@@ -18,8 +18,8 @@ public class ProjectListResponseDto {
     private List<String> techStacks;
     private LocalDate recruitmentEndAt;
     private String dDay;
-    private Boolean closed;
-    private Boolean completed;
+    private String recruitStatus;
+    private String progressStatus;
     private int bookmarkCount;
     private int readCount;
     private boolean bookmarked;
@@ -28,7 +28,7 @@ public class ProjectListResponseDto {
     public ProjectListResponseDto(Long id, String title, String summary, String thumbnailUrl,
                                   Integer currentRecruitment, Integer totalRecruitment, String projectType,
                                   String progressMethod, String position, List<String> techStacks,
-                                  LocalDate recruitmentEndAt, String dDay, Boolean closed, Boolean completed,
+                                  LocalDate recruitmentEndAt, String dDay, String recruitStatus, String progressStatus,
                                   int bookmarkCount, int readCount, boolean bookmarked, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
@@ -42,8 +42,8 @@ public class ProjectListResponseDto {
         this.techStacks = techStacks;
         this.recruitmentEndAt = recruitmentEndAt;
         this.dDay = dDay;
-        this.closed = closed;
-        this.completed = completed;
+        this.recruitStatus = recruitStatus;
+        this.progressStatus = progressStatus;
         this.bookmarkCount = bookmarkCount;
         this.readCount = readCount;
         this.bookmarked = bookmarked;
@@ -63,8 +63,8 @@ public class ProjectListResponseDto {
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }
     public String getDDay() { return dDay; }
     public String getDeadlineLabel() { return dDay; }
-    public Boolean getClosed() { return closed; }
-    public Boolean getCompleted() { return completed; }
+    public String getRecruitStatus() { return recruitStatus; }
+    public String getProgressStatus() { return progressStatus; }
     public int getBookmarkCount() { return bookmarkCount; }
     public int getReadCount() { return readCount; }
     public boolean isBookmarked() { return bookmarked; }

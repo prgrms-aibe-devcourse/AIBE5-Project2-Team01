@@ -49,8 +49,8 @@ public class ProjectApplicationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
 
         // 3. 모집 마감 또는 완료된 프로젝트는 지원 불가 처리
-        if (Boolean.TRUE.equals(project.getClosed()) ||
-            Boolean.TRUE.equals(project.getCompleted()) ||
+        if (Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus()) ||
+            Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus()) ||
             (project.getRecruitmentDeadline() != null && project.getRecruitmentDeadline().isBefore(LocalDate.now())) ||
             (project.getRecruitmentEndAt() != null && project.getRecruitmentEndAt().isBefore(LocalDate.now()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot apply to a closed or past deadline project.");
@@ -278,7 +278,7 @@ public class ProjectApplicationService {
                     .map(position -> new ProjectSelectionCatalog.PositionCapacity(position.getPositionName(), position.getCapacity()))
                     .toList();
         }
-        return ProjectSelectionCatalog.parsePositionCapacities(project.getPosition(), project.getTotalRecruitment());
+        return List.of();
     }
 
     private String applicationPositionName(ProjectApplication application) {

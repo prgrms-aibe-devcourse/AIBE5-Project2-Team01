@@ -46,8 +46,4 @@ public class ProfileTechStack {
     public String getTechStackName() {
         return techStack != null ? techStack.getName() : "";
     }
-
-    public void updateSortOrder(int sortOrder) {
-        // Sort order is no longer stored in the immutable ERD.
-    }
 }

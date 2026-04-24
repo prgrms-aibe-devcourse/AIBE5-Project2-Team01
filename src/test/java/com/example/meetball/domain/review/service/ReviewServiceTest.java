@@ -42,16 +42,32 @@ public class ReviewServiceTest {
     private Profile nonParticipant;
     private Project project;
 
+    private Project createProject(String title, LocalDate recruitEndDate) {
+        return new Project(
+                title,
+                "설명",
+                "타입",
+                "ONLINE",
+                5,
+                LocalDate.now().minusDays(10),
+                recruitEndDate,
+                LocalDate.now().minusDays(9),
+                null,
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_READY,
+                LocalDateTime.now().minusDays(10),
+                LocalDateTime.now()
+        );
+    }
+
     @BeforeEach
     void setUp() {
-        leader = profileRepository.save(Profile.builder().email("l@t.com").nickname("리더").role("LEADER").isPublic(true).build());
-        member = profileRepository.save(Profile.builder().email("m@t.com").nickname("멤버").role("MEMBER").isPublic(true).build());
-        nonParticipant = profileRepository.save(Profile.builder().email("n@t.com").nickname("불청객").role("USER").isPublic(true).build());
+        leader = profileRepository.save(Profile.builder().email("l@t.com").nickname("리더").isPublic(true).build());
+        member = profileRepository.save(Profile.builder().email("m@t.com").nickname("멤버").isPublic(true).build());
+        nonParticipant = profileRepository.save(Profile.builder().email("n@t.com").nickname("불청객").isPublic(true).build());
 
-        Project completedProject = new Project(
-                "리뷰 테스트 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
-        );
+        Project completedProject = createProject("리뷰 테스트 프로젝트", LocalDate.now().minusDays(1));
+        completedProject.assignOwner(leader);
         completedProject.update(
                 completedProject.getTitle(),
                 completedProject.getDescription(),
@@ -62,8 +78,8 @@ public class ReviewServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(9),
                 LocalDate.now().minusDays(1),
-                true,
-                true,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_COMPLETED,
                 LocalDateTime.now()
         );
         project = projectRepository.save(completedProject);
@@ -116,10 +132,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 등록 실패 - 모집 마감만 된 프로젝트는 완료 프로젝트가 아니다")
     void addReview_RecruitmentClosedButNotCompleted_Fail() {
-        Project recruitmentClosedProject = new Project(
-                "모집만 마감된 프로젝트", "요약", "설명", "타입", "포지션", "리더", "역할", "아바타", "썸네일",
-                0, 5, LocalDate.now().minusDays(1), LocalDate.now().minusDays(10), List.of("Java")
-        );
+        Project recruitmentClosedProject = createProject("모집만 마감된 프로젝트", LocalDate.now().minusDays(1));
+        recruitmentClosedProject.assignOwner(leader);
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
                 recruitmentClosedProject.getDescription(),
@@ -130,8 +144,8 @@ public class ReviewServiceTest {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(9),
                 LocalDate.now().minusDays(1),
-                true,
-                false,
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_READY,
                 LocalDateTime.now()
         );
         Project savedProject = projectRepository.save(recruitmentClosedProject);

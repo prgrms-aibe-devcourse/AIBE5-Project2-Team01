@@ -42,7 +42,7 @@ class SecurityConfigTest {
     @DisplayName("세션 기반 쓰기 요청은 CSRF 토큰 없이 거부된다")
     void stateChangingRequestWithoutCsrfIsRejected() throws Exception {
         MockHttpSession session = authenticatedSession(2L);
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "CSRF 없는 댓글", null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "CSRF 없는 댓글", null);
 
         mockMvc.perform(post("/api/projects/1/comments")
                 .session(session)
@@ -64,7 +64,7 @@ class SecurityConfigTest {
     @Test
     @DisplayName("댓글 목록은 게스트가 조회할 수 있지만 작성은 로그인 없이는 차단된다")
     void commentReadIsPublicButWriteRequiresLogin() throws Exception {
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "게스트 댓글", null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "게스트 댓글", null);
 
         mockMvc.perform(get("/api/projects/1/comments"))
                 .andExpect(status().isOk());
@@ -90,7 +90,7 @@ class SecurityConfigTest {
     @DisplayName("인증 세션과 CSRF 토큰이 있는 쓰기 요청은 허용된다")
     void stateChangingRequestWithCsrfIsAllowed() throws Exception {
         MockHttpSession session = authenticatedSession(2L);
-        CommentRequestDto dto = new CommentRequestDto(1L, null, null, "CSRF 포함 댓글", null);
+        CommentRequestDto dto = new CommentRequestDto(1L, null, "CSRF 포함 댓글", null);
         MvcResult pageResult = mockMvc.perform(get("/projects/1").session(session))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -125,10 +125,10 @@ class SecurityConfigTest {
                 .cookie(csrfCookie)
                 .header(csrfHeader, csrfToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .content("""
                         {
                           "nickname": "초코푸들",
-                          "jobTitle": "백엔드",
+                          "position": "백엔드",
                           "techStacks": ["Java", "Spring"],
                           "isPublic": true
                         }
@@ -155,10 +155,10 @@ class SecurityConfigTest {
                 .cookie(csrfCookie)
                 .header(csrfHeader, csrfToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                        .content("""
                         {
                           "nickname": "초코푸들",
-                          "jobTitle": "백엔드",
+                          "position": "백엔드",
                           "techStacks": ["Java", "Spring"],
                           "isPublic": true
                         }

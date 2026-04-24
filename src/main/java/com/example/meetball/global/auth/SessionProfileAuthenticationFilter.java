@@ -1,6 +1,5 @@
 package com.example.meetball.global.auth;
 
-import com.example.meetball.domain.profile.entity.Profile;
 import com.example.meetball.domain.profile.repository.ProfileRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionProfileAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String DEFAULT_MEMBER_ROLE = "MEMBER";
     private final ProfileRepository profileRepository;
 
     @Override
@@ -56,7 +56,7 @@ public class SessionProfileAuthenticationFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     profile.getEmail(),
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + roleOf(profile)))
+                    List.of(new SimpleGrantedAuthority("ROLE_" + DEFAULT_MEMBER_ROLE))
             );
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             securityContext.setAuthentication(authentication);
@@ -86,7 +86,4 @@ public class SessionProfileAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private String roleOf(Profile profile) {
-        return profile.getRole() == null || profile.getRole().isBlank() ? "MEMBER" : profile.getRole();
-    }
 }
