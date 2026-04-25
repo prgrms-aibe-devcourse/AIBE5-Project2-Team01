@@ -12,8 +12,8 @@ public class ProjectListResponseDto {
     private String thumbnailUrl;
     private Integer currentRecruitment;
     private Integer totalRecruitment;
-    private String projectType;
-    private String progressMethod;
+    private String projectPurpose;
+    private String workMethod;
     private String position;
     private List<String> techStacks;
     private LocalDate recruitmentEndAt;
@@ -26,8 +26,8 @@ public class ProjectListResponseDto {
     private LocalDateTime createdAt;
 
     public ProjectListResponseDto(Long id, String title, String summary, String thumbnailUrl,
-                                  Integer currentRecruitment, Integer totalRecruitment, String projectType,
-                                  String progressMethod, String position, List<String> techStacks,
+                                  Integer currentRecruitment, Integer totalRecruitment, String projectPurpose,
+                                  String workMethod, String position, List<String> techStacks,
                                   LocalDate recruitmentEndAt, String dDay, String recruitStatus, String progressStatus,
                                   int bookmarkCount, int readCount, boolean bookmarked, LocalDateTime createdAt) {
         this.id = id;
@@ -36,8 +36,8 @@ public class ProjectListResponseDto {
         this.thumbnailUrl = thumbnailUrl;
         this.currentRecruitment = currentRecruitment;
         this.totalRecruitment = totalRecruitment;
-        this.projectType = projectType;
-        this.progressMethod = progressMethod;
+        this.projectPurpose = projectPurpose;
+        this.workMethod = workMethod;
         this.position = position;
         this.techStacks = techStacks;
         this.recruitmentEndAt = recruitmentEndAt;
@@ -56,8 +56,8 @@ public class ProjectListResponseDto {
     public String getThumbnailUrl() { return thumbnailUrl; }
     public Integer getCurrentRecruitment() { return currentRecruitment; }
     public Integer getTotalRecruitment() { return totalRecruitment; }
-    public String getProjectType() { return projectType; }
-    public String getProgressMethod() { return progressMethod; }
+    public String getProjectPurpose() { return projectPurpose; }
+    public String getWorkMethod() { return workMethod; }
     public String getPosition() { return position; }
     public List<String> getTechStacks() { return techStacks; }
     public LocalDate getRecruitmentEndAt() { return recruitmentEndAt; }

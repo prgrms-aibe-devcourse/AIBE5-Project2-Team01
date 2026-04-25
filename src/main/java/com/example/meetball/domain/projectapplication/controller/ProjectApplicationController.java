@@ -53,6 +53,22 @@ public class ProjectApplicationController {
         return projectApplicationService.withdrawApplication(applicationId, profileId);
     }
 
+    @GetMapping("/api/projects/{projectId}/applications/me")
+    public ResponseEntity<ProjectApplicationResponseDto> getMyApplicationForProject(
+            @PathVariable("projectId") Long projectId,
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        ProjectApplicationResponseDto response = projectApplicationService.getMyApplicationForProject(projectId, profileId);
+        return response == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/api/applications/{applicationId}")
+    public ProjectApplicationResponseDto updateMyApplication(
+            @PathVariable("applicationId") Long applicationId,
+            @RequestBody ProjectApplicationRequestDto request,
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectApplicationService.updateMyApplication(applicationId, request, profileId);
+    }
+
     // =====================================================
     // 팀장용 API
     // =====================================================

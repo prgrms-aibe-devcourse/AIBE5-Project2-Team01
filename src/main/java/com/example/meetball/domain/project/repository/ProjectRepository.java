@@ -22,28 +22,18 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
                    OR p.title LIKE CONCAT('%', :keyword, '%')
                    OR positionValue.name LIKE CONCAT('%', :keyword, '%')
                    OR techStackValue.name LIKE CONCAT('%', :keyword, '%'))
-              AND (:projectType IS NULL OR :projectType = ''
-                   OR LOWER(COALESCE(p.projectType, '')) LIKE LOWER(CONCAT('%', :projectType, '%')))
-              AND (:progressMethod IS NULL OR :progressMethod = ''
-                   OR LOWER(COALESCE(p.workMethod, '')) = LOWER(:progressMethod)
-                   OR (:progressMethod = 'ONLINE'
-                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%online%'
-                            OR COALESCE(p.workMethod, '') LIKE '%온라인%'))
-                   OR (:progressMethod = 'OFFLINE'
-                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%offline%'
-                            OR COALESCE(p.workMethod, '') LIKE '%오프라인%'))
-                   OR (:progressMethod = 'HYBRID'
-                       AND (LOWER(COALESCE(p.workMethod, '')) LIKE '%hybrid%'
-                            OR COALESCE(p.workMethod, '') LIKE '%혼합%'
-                            OR COALESCE(p.workMethod, '') LIKE '%온/오프%')))
+              AND (:projectPurpose IS NULL OR :projectPurpose = ''
+                   OR COALESCE(p.projectPurpose, '') = :projectPurpose)
+              AND (:workMethod IS NULL OR :workMethod = ''
+                   OR COALESCE(p.workMethod, '') = :workMethod)
               AND (:position IS NULL OR :position = ''
                    OR positionValue.name LIKE CONCAT('%', :position, '%'))
               AND (:techStack IS NULL OR :techStack = ''
                    OR techStackValue.name LIKE CONCAT('%', :techStack, '%'))
             """)
     Page<Project> findProjectsWithFilters(@Param("keyword") String keyword,
-                                          @Param("projectType") String projectType,
-                                          @Param("progressMethod") String progressMethod,
+                                          @Param("projectPurpose") String projectPurpose,
+                                          @Param("workMethod") String workMethod,
                                           @Param("position") String position,
                                           @Param("techStack") String techStack,
                                           Pageable pageable);

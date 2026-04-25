@@ -9,8 +9,8 @@ public class ProjectUpdateRequestDto {
 
     private String title;
     private String description;
-    private String projectType;
-    private String progressMethod;
+    private String projectPurpose;
+    private String workMethod;
     private String position;
     private List<String> techStacks = List.of();
     private String thumbnailUrl;
@@ -27,8 +27,8 @@ public class ProjectUpdateRequestDto {
 
     public String getTitle() { return title; }
     public String getDescription() { return description; }
-    public String getProjectType() { return projectType; }
-    public String getProgressMethod() { return progressMethod; }
+    public String getProjectPurpose() { return projectPurpose; }
+    public String getWorkMethod() { return workMethod; }
     public String getPosition() { return position; }
     public List<String> getTechStacks() { return techStacks == null ? List.of() : techStacks; }
     public String getThumbnailUrl() { return thumbnailUrl; }

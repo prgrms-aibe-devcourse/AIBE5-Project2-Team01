@@ -2,54 +2,25 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: commonHead('마이페이지')}"></head>
 
-<body class="text-poodle-900 bg-poodle-50">
+<body class="min-h-screen text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-<div class="meetball-cream-panel py-20 relative overflow-hidden">
-    <img th:src="@{/img/logo.png}" src="/img/logo.png" alt=""
-         class="absolute right-[-4rem] bottom-[-4rem] w-72 md:w-96 object-contain opacity-15 md:opacity-70 pointer-events-none select-none">
+<main class="w-full flex-grow mx-auto max-w-7xl px-4 py-12">
+    <section class="meetball-cream-panel mb-10 rounded-[3rem] px-8 py-16 md:px-12 md:py-20 relative overflow-hidden">
+        <img th:src="@{/img/logo.png}" src="/img/logo.png" alt=""
+             class="absolute right-[-4rem] bottom-[-4rem] w-72 md:w-96 object-contain opacity-15 md:opacity-70 pointer-events-none select-none">
 
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-10">
-            <div class="flex flex-col md:flex-row items-center gap-10 text-center md:text-left">
-                <div class="relative group">
-                    <img th:src="@{/img/logo.png}"
-                         src="/img/logo.png"
-                         class="w-32 h-32 rounded-3xl border-4 border-white shadow-2xl bg-white shadow-poodle-600/15" alt="profile">
-                    <button type="button" onclick="openEditProfileModal()"
-                            class="absolute -bottom-2 -right-2 w-10 h-10 bg-meatball text-poodle-900 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-camera text-sm"></i>
-                    </button>
-                </div>
-                <div>
-                    <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
-                        <h2 class="text-4xl font-black text-poodle-600 tracking-tighter" th:text="${profile.nickname}">닉네임</h2>
-                    </div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start mb-6 text-poodle-400">
-                        <i class="fa-solid fa-star text-meatball"></i>
-                        <span class="font-black text-xl text-poodle-600" th:text="${profile.meetBallIndex}">4.7</span>
-                        <span class="text-xs font-bold opacity-60">/ 5.0 (Peer Index)</span>
-                    </div>
-	                    <div class="flex flex-wrap gap-2.5 max-w-md mx-auto md:mx-0" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
-	                        <span th:each="stack : ${stacks}"
-	                              th:if="${!#strings.isEmpty(#strings.trim(stack))}"
-	                              th:attr="data-tech-chip=${#strings.trim(stack)}"
-	                              th:text="${#strings.trim(stack)}"
-	                              class="px-4 py-2 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">Java</span>
-	                        <span th:if="${profile.techStack == null or profile.techStack == ''}" class="text-poodle-300 italic text-sm font-bold">등록된 기술 스택이 없습니다.</span>
-	                    </div>
-                </div>
+        <div class="relative z-10 flex flex-col gap-4">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 text-[11px] font-black uppercase tracking-[0.24em] text-poodle-400 border border-poodle-100 w-fit">
+                <i class="fa-solid fa-id-badge text-meatball"></i> Meetball account
+            </span>
+            <div class="space-y-3">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight text-poodle-700">개인 정보를 한 곳에서 관리하세요</h1>
+                <p class="text-sm md:text-base font-bold text-poodle-400 max-w-2xl">계정 정보와 프로필 정보를 같은 화면에서 바로 확인하고 수정할 수 있습니다.</p>
             </div>
-            <button type="button" th:if="${isOwner}" onclick="openEditProfileModal()"
-                    class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black flex items-center gap-2 shadow-xl shadow-poodle-600/20 transition-all hover:bg-meatball hover:text-poodle-900 group">
-                <i class="fa-regular fa-pen-to-square group-hover:scale-110 transition-transform"></i> 프로필 수정
-            </button>
-            <input type="hidden" id="hiddenProfileNickname" th:value="${profile.nickname}" />
         </div>
-    </div>
-</div>
+    </section>
 
-<main class="container mx-auto px-4 -mt-10 relative z-20 pb-32">
     <div th:if="${mypageNotice != null}"
          class="mb-8 rounded-3xl border border-poodle-100 bg-white px-8 py-5 text-sm font-bold text-poodle-600 shadow-sm flex items-center gap-4">
         <div class="w-8 h-8 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
@@ -58,13 +29,12 @@
         <span th:text="${mypageNotice}">마이페이지 안내 메시지</span>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div class="lg:col-span-12 space-y-10">
+    <div class="space-y-10">
             <!-- 고도화된 탭 바 (정적 카드 스타일로 변경) -->
             <div class="relative bg-white rounded-[2.5rem] p-2 border border-poodle-50 shadow-[0_20px_50px_rgba(62,39,35,0.08)] inline-flex items-center gap-1 min-w-full md:min-w-fit overflow-x-auto no-scrollbar scroll-smooth">
-                <button type="button" onclick="switchTab('profile')" id="tab-profile"
+                <button type="button" onclick="switchTab('account')" id="tab-account"
                         class="tab-btn active px-10 py-4 bg-poodle-600 rounded-full text-sm font-black text-white shadow-xl shadow-poodle-600/20 transition-all whitespace-nowrap">
-                    <i class="fa-solid fa-user-gear mr-2 opacity-80"></i>프로필 정보
+                    <i class="fa-solid fa-user-gear mr-2 opacity-80"></i>개인 정보
                 </button>
                 <button type="button" onclick="switchTab('participating')" id="tab-participating"
                         class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
@@ -88,62 +58,245 @@
                 </button>
             </div>
 
-            <!-- Profile Content -->
-            <div id="content-profile" class="tab-content section-card space-y-16 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm relative overflow-hidden">
-                <!-- Background Accent -->
+            <!-- Account Content -->
+            <div id="content-account" class="tab-content section-card space-y-14 animate-fade-in bg-white rounded-[3rem] p-8 md:p-12 border border-poodle-50 shadow-sm relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-poodle-50/50 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                <input type="hidden" id="profileId" th:value="${profile.profileId}">
+                <input type="hidden" id="inlineProfilePublic" th:value="${profile.public}">
+                <input type="hidden" id="inlinePositionValue" data-inline-position-current th:data-inline-position-current="${profile.position}" th:value="${profile.position}">
+                <input type="hidden" id="inlineTechStackValue" data-inline-tech-current th:data-inline-tech-current="${profile.techStack}" th:value="${profile.techStack}">
+                <select id="inlineExperienceYears" class="hidden">
+                    <option th:each="year : ${#numbers.sequence(0,10)}"
+                            th:value="${year}"
+                            th:selected="${profile.experienceYears == year.toString()}"
+                            th:text="${year == 10 ? '10년 이상' : year + '년'}">0년</option>
+                </select>
+                <select id="inlineOrgVisible" class="hidden">
+                    <option value="true" th:selected="${profile.orgVisible}">공개</option>
+                    <option value="false" th:selected="${!profile.orgVisible}">비공개</option>
+                </select>
 
-                <div>
-                    <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
-                        <div class="w-10 h-10 bg-poodle-50 rounded-2xl flex items-center justify-center text-meatball">
-                            <i class="fa-solid fa-id-card"></i>
-                        </div>
-                        기본 정보
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Nickname</label>
-                            <div class="font-bold text-poodle-800 bg-poodle-50/30 p-6 rounded-[1.5rem] border-2 border-poodle-50 text-lg transition-all focus-within:border-meatball/20">
-                                <span th:text="${profile.nickname}">김밋볼</span>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Email Address</label>
-                            <div class="font-bold text-poodle-800 bg-poodle-50/30 p-6 rounded-[1.5rem] border-2 border-poodle-50 text-lg">
-                                <span th:text="${profile.email}">-</span>
-                            </div>
-                        </div>
+                <div class="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div class="space-y-2">
+                        <p class="text-xs font-black uppercase tracking-[0.22em] text-poodle-300">My Meetball Account</p>
+                        <h2 class="text-3xl md:text-4xl font-black tracking-tight text-poodle-900">계정과 프로필 정보를 바로 수정할 수 있어요</h2>
+                        <p class="text-sm font-bold text-poodle-400">계정 테이블과 프로필 테이블 기준으로 정보를 나눠서 보여드립니다.</p>
+                    </div>
+                    <div class="flex gap-3 md:self-start">
+                        <button type="button" id="profileEditCancelBtn" onclick="cancelInlineProfileEdit()"
+                                class="hidden px-6 py-3 rounded-2xl border border-poodle-100 bg-white text-sm font-black text-poodle-500 transition-all hover:border-poodle-200 hover:bg-poodle-50 hover:text-poodle-700">
+                            취소
+                        </button>
+                        <button type="button" id="profileEditToggleBtn" th:if="${isOwner}" onclick="startInlineProfileEdit()"
+                                class="px-6 py-3 bg-poodle-600 text-white rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-poodle-600/20 transition-all hover:bg-meatball hover:text-poodle-900">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            <span id="profileEditToggleLabel">개인 정보 수정</span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="pt-16 border-t-2 border-dashed border-poodle-100">
-                    <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
-                        <div class="w-10 h-10 bg-poodle-50 rounded-2xl flex items-center justify-center text-meatball">
-                            <i class="fa-solid fa-brain"></i>
+                <div class="relative z-10 space-y-12">
+                    <section class="space-y-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-poodle-50 rounded-2xl flex items-center justify-center text-meatball">
+                                <i class="fa-solid fa-address-card"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-poodle-900 tracking-tight">계정 정보</h3>
                         </div>
-                        경력 및 기술
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Primary Position</label>
-                            <div class="font-bold text-poodle-800 bg-white p-6 rounded-[1.5rem] border-2 border-poodle-50 text-lg shadow-sm">
-                                <span th:text="${profile.position}">백엔드 개발자</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Social Provider</label>
+                                <div class="mypage-field-card">
+                                    <div class="inline-flex items-center gap-3" th:switch="${profile.socialProvider}">
+                                        <span th:case="'GOOGLE'" class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-white border border-poodle-100 shadow-sm text-[#4285F4]">
+                                            <i class="fa-brands fa-google"></i>
+                                        </span>
+                                        <span th:case="'GITHUB'" class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#181717] text-white shadow-sm">
+                                            <i class="fa-brands fa-github"></i>
+                                        </span>
+                                        <span th:case="'KAKAO'" class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#FEE500] text-[#3C1E1E] shadow-sm font-black text-lg">K</span>
+                                        <span th:case="'NAVER'" class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#03C75A] text-white shadow-sm font-black text-lg">N</span>
+                                        <span th:case="*" class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-white border border-poodle-100 shadow-sm text-poodle-500">
+                                            <i class="fa-solid fa-user-shield"></i>
+                                        </span>
+                                        <span class="font-bold text-poodle-800" th:switch="${profile.socialProvider}">
+                                            <span th:case="'GOOGLE'">구글</span>
+                                            <span th:case="'GITHUB'">깃허브</span>
+                                            <span th:case="'KAKAO'">카카오</span>
+                                            <span th:case="'NAVER'">네이버</span>
+                                            <span th:case="*" th:text="${profile.socialProvider != null && !#strings.isEmpty(profile.socialProvider) ? profile.socialProvider : '-'}">-</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Email Address</label>
+                                <div class="mypage-field-card">
+                                    <span th:text="${profile.email}">-</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Name</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.accountName != null && !#strings.isEmpty(profile.accountName) ? profile.accountName : '-'}">홍길동</span>
+                                    <input id="inlineAccountName" type="text" th:value="${profile.accountName}"
+                                           class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-poodle-800"
+                                           placeholder="이름을 입력하세요">
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Phone Number</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.phoneNumber != null && !#strings.isEmpty(profile.phoneNumber) ? profile.phoneNumber : '-'}">-</span>
+                                    <input id="inlinePhoneNumber" type="text" th:value="${profile.phoneNumber}"
+                                           class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-poodle-800"
+                                           placeholder="010-0000-0000">
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Birth Date</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.birthDate != null ? #temporals.format(profile.birthDate, 'yyyy.MM.dd') : '-'}">-</span>
+                                    <input id="inlineBirthDate" type="date" th:value="${profile.birthDate}"
+                                           class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-poodle-800">
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Gender</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.gender != null && !#strings.isEmpty(profile.gender) ? profile.gender : '-'}">-</span>
+                                    <select id="inlineGender" class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-poodle-800">
+                                        <option value="남자" th:selected="${profile.gender == '남자'}">남자</option>
+                                        <option value="여자" th:selected="${profile.gender == '여자'}">여자</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">Verified Tech Stacks</label>
-	                            <div class="flex flex-wrap gap-2.5 p-1" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
-	                                <span th:each="stack : ${stacks}"
-	                                      th:if="${!#strings.isEmpty(#strings.trim(stack))}"
-	                                      th:attr="data-tech-chip=${#strings.trim(stack)}"
-	                                      th:text="${#strings.trim(stack)}"
-	                                      class="px-5 py-2.5 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">Java</span>
-	                                <span th:if="${profile.techStack == null or profile.techStack == ''}" class="text-poodle-200 italic text-sm font-bold">등록된 기술 스택이 없습니다.</span>
-	                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </section>
 
+                    <section class="space-y-8 pt-14 border-t border-dashed border-poodle-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-poodle-50 rounded-2xl flex items-center justify-center text-meatball">
+                                <i class="fa-solid fa-user-pen"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-poodle-900 tracking-tight">프로필 정보</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Profile Photo</label>
+                                <div class="mypage-field-card min-h-[152px] items-center justify-center bg-poodle-50/30">
+                                    <img th:src="${profile.profileImage != null && !#strings.isEmpty(profile.profileImage) ? profile.profileImage : '/img/logo.png'}"
+                                         src="/img/logo.png"
+                                         class="w-28 h-28 rounded-[2rem] border-4 border-white shadow-xl bg-white shadow-poodle-600/10 object-cover"
+                                         alt="profile photo">
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Nickname</label>
+                                <div class="mypage-field-card min-h-[152px]">
+                                    <span class="profile-readonly text-3xl tracking-tight" th:text="${profile.nickname}">Choi</span>
+                                    <input id="inlineNickname" type="text" th:value="${profile.nickname}"
+                                           class="profile-edit-only hidden w-full bg-transparent outline-none text-2xl font-black text-poodle-800"
+                                           placeholder="닉네임을 입력하세요">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Rating</label>
+                                <div class="mypage-field-card">
+                                    <span class="inline-flex items-center gap-3 rounded-full bg-poodle-50 px-4 py-3 text-sm font-black text-poodle-600 border border-poodle-100">
+                                        <i class="fa-solid fa-star text-meatball"></i>
+                                        <span th:text="${profile.meetBallIndex}">4.7</span>
+                                        <span class="text-poodle-300">/ 5.0</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="space-y-3 relative">
+                                <label class="mypage-field-label">Position</label>
+                                <div class="profile-readonly mypage-field-card">
+                                    <span th:text="${profile.position != null && !#strings.isEmpty(profile.position) ? profile.position : '-'}">백엔드</span>
+                                </div>
+                                <div class="profile-edit-only hidden relative">
+                                    <button type="button" id="inlinePositionTrigger" onclick="toggleInlineDropdown('position')" class="inline-filter-trigger">
+                                        <span id="inlinePositionTriggerText">포지션을 선택해주세요</span>
+                                        <i id="inlinePositionChevron" class="fa-solid fa-chevron-down text-poodle-400 transition-transform"></i>
+                                    </button>
+                                    <div id="inlinePositionDropdown" class="inline-filter-panel hidden">
+                                        <div id="inlinePositionOptions" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-3 relative">
+                                <label class="mypage-field-label">Experience</label>
+                                <div class="profile-readonly mypage-field-card">
+                                    <span th:text="${profile.experienceYears != null && !#strings.isEmpty(profile.experienceYears) ? (profile.experienceYears == '10' ? '10년 이상' : profile.experienceYears + '년') : '-'}">3년</span>
+                                </div>
+                                <div class="profile-edit-only hidden relative">
+                                    <button type="button" id="inlineExperienceTrigger" onclick="toggleInlineDropdown('experience')" class="inline-filter-trigger">
+                                        <span id="inlineExperienceTriggerText">경력을 선택해주세요</span>
+                                        <i id="inlineExperienceChevron" class="fa-solid fa-chevron-down text-poodle-400 transition-transform"></i>
+                                    </button>
+                                    <div id="inlineExperienceDropdown" class="inline-filter-panel hidden">
+                                        <div id="inlineExperienceOptions" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Organization</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.organization != null && !#strings.isEmpty(profile.organization) ? profile.organization : '-'}">Meetball</span>
+                                    <input id="inlineOrganization" type="text" th:value="${profile.organization}"
+                                           class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-poodle-800"
+                                           placeholder="소속을 입력하세요">
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="mypage-field-label">Organization Visibility</label>
+                                <div class="mypage-field-card">
+                                    <span class="profile-readonly" th:text="${profile.orgVisible ? '공개' : '비공개'}">공개</span>
+                                    <div class="profile-edit-only hidden">
+                                        <div id="inlineOrgVisibleToggle" class="inline-flex items-center gap-2 rounded-full border border-poodle-100 bg-poodle-50 p-1">
+                                            <button type="button" data-org-visible="true" onclick="setInlineOrgVisible(true)" class="org-visible-toggle-btn">공개</button>
+                                            <button type="button" data-org-visible="false" onclick="setInlineOrgVisible(false)" class="org-visible-toggle-btn">비공개</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="mypage-field-label">Tech Stacks</label>
+                            <div class="mypage-field-card !items-start">
+                                <div class="profile-readonly flex flex-wrap gap-2.5 p-1" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
+                                    <span th:each="stack : ${stacks}"
+                                          th:if="${!#strings.isEmpty(#strings.trim(stack))}"
+                                          th:attr="data-tech-chip=${#strings.trim(stack)}"
+                                          th:text="${#strings.trim(stack)}"
+                                          class="px-5 py-2.5 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">Java</span>
+                                    <span th:if="${profile.techStack == null or profile.techStack == ''}" class="text-poodle-200 italic text-sm font-bold">등록된 기술 스택이 없습니다.</span>
+                                </div>
+                                <div id="inlineTechStackOptions" class="profile-edit-only hidden flex flex-wrap gap-2 max-h-56 overflow-y-auto rounded-[1.5rem] border border-poodle-100 bg-poodle-50/40 p-4"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="mypage-field-label">Bio</label>
+                            <div class="mypage-field-card !items-start">
+                                <span class="profile-readonly block text-base leading-relaxed whitespace-pre-wrap" th:text="${profile.bio != null && !#strings.isEmpty(profile.bio) ? profile.bio : '-'}">-</span>
+                                <textarea id="inlineBio" rows="4" maxlength="1000"
+                                          class="profile-edit-only hidden w-full bg-transparent outline-none font-bold text-base leading-relaxed text-poodle-800 resize-none"
+                                          placeholder="자기소개를 입력하세요."
+                                          th:text="${profile.bio}"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
 
             <!-- Participating Content (매끄러운 통합 대시보드 스타일) -->
@@ -165,12 +318,12 @@
                             <span class="px-4 py-1.5 bg-meatball/5 text-meatball rounded-full text-[10px] font-black uppercase tracking-widest border border-meatball/10">Leader Section</span>
                         </div>
 
-                        <div id="leader-projects-container" class="grid grid-cols-1 gap-6 max-h-[500px] overflow-hidden transition-all duration-500 relative">
+                        <div id="leader-projects-container" class="project-preview-container grid grid-cols-1 gap-6 transition-all duration-500 relative">
                             <!-- JS Injected -->
                         </div>
                         
                         <div class="text-center pt-2">
-                            <button onclick="toggleSection('leader-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-meatball transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
+                            <button id="leader-projects-toggle" data-label="리딩 팀" onclick="toggleSection('leader-projects-container', this)" class="hidden text-poodle-300 font-black text-[11px] hover:text-meatball transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
                                 리딩 팀 더 보기 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
@@ -190,12 +343,12 @@
                             </div>
                         </div>
 
-                        <div id="member-projects-container" class="grid grid-cols-1 gap-6 max-h-[500px] overflow-hidden transition-all duration-500 relative">
+                        <div id="member-projects-container" class="project-preview-container grid grid-cols-1 gap-6 transition-all duration-500 relative">
                             <!-- JS Injected -->
                         </div>
 
                         <div class="text-center pt-2">
-                            <button onclick="toggleSection('member-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-meatball transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
+                            <button id="member-projects-toggle" data-label="참여 팀" onclick="toggleSection('member-projects-container', this)" class="hidden text-poodle-300 font-black text-[11px] hover:text-meatball transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
                                 참여 팀 더 보기 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
@@ -215,13 +368,12 @@
                             </div>
                         </div>
                         
-                        <div id="completed-projects-container" class="grid grid-cols-1 gap-6 max-h-[400px] overflow-hidden transition-all duration-700 relative">
+                        <div id="completed-projects-container" class="project-preview-container grid grid-cols-1 gap-6 transition-all duration-700 relative">
                             <!-- JS Injected -->
-                            <div id="completed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>
                         </div>
                         
                         <div class="text-center pt-2">
-                            <button onclick="toggleSection('completed-projects-container', this)" class="text-poodle-300 font-black text-[11px] hover:text-poodle-800 transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
+                            <button id="completed-projects-toggle" data-label="지난 프로젝트" onclick="toggleSection('completed-projects-container', this)" class="hidden text-poodle-300 font-black text-[11px] hover:text-poodle-800 transition-colors flex items-center gap-2 mx-auto decoration-2 underline-offset-4 hover:underline">
                                 지난 프로젝트 더 보기 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
@@ -291,150 +443,140 @@
     </div>
 </main>
 
-<!-- 🐾 Profile Edit Modal -->
-<div id="editProfileModal" class="fixed inset-0 z-[100] hidden">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity" onclick="closeEditProfileModal()"></div>
-    
-    <!-- Modal Container -->
-    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
-        <div class="bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(62,39,35,0.2)] overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
-            <!-- Modal Header -->
-            <div class="relative p-10 pb-6 border-b border-poodle-50 text-center">
-                <button onclick="closeEditProfileModal()" class="absolute top-10 right-10 w-10 h-10 bg-poodle-50 text-poodle-300 rounded-full flex items-center justify-center hover:bg-poodle-100 hover:text-poodle-600 transition-all">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="inline-flex w-16 h-16 bg-meatball/10 text-meatball rounded-2xl items-center justify-center mb-4">
-                    <i class="fa-solid fa-user-pen text-2xl"></i>
-                </div>
-                <h2 class="text-3xl font-black text-poodle-900 tracking-tight">프로필 수정</h2>
-                <p class="text-sm font-bold text-poodle-300 mt-2">나를 가장 잘 나타내는 정보를 입력해 주세요.</p>
-            </div>
-
-            <div class="p-10 space-y-8 max-h-[60vh] overflow-y-auto no-scrollbar">
-                <!-- Avatar Preview (Simple) -->
-                <div class="flex flex-col items-center gap-4">
-                    <img th:src="@{/img/logo.png}" class="w-24 h-24 rounded-3xl border-4 border-poodle-50 bg-poodle-50/50 shadow-sm">
-                    <button class="text-xs font-black text-meatball hover:underline decoration-2 underline-offset-4">아바타 랜덤 변경</button>
-                </div>
-
-                <div class="space-y-6">
-                    <!-- Nickname Input -->
-                    <div class="space-y-3">
-                        <input type="hidden" id="profileId" th:value="${profile.profileId}">
-                        <label class="text-[10px] font-black text-poodle-300 uppercase tracking-widest ml-1">Nickname</label>
-                        <input type="text" id="editNickname" th:value="${profile.nickname}" placeholder="닉네임을 입력하세요" 
-                            class="w-full p-6 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-[1.5rem] outline-none transition-all font-bold text-poodle-800">
-                    </div>
-
-                    <!-- Position Input -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black text-poodle-300 uppercase tracking-widest ml-1">Primary Position</label>
-                        <input type="hidden" id="editPosition" th:value="${profile.position}">
-                        <div id="editPositionOptions" class="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto rounded-[1.5rem] border border-poodle-100 bg-poodle-50/40 p-4"></div>
-                    </div>
-
-	                    <!-- Tech Stack Input -->
-	                    <div class="space-y-3">
-	                        <label class="text-[10px] font-black text-poodle-300 uppercase tracking-widest ml-1">Verified Tech Stacks</label>
-	                        <input type="hidden" id="editTechStack" th:value="${profile.techStack}">
-	                        <div id="editTechStackOptions" class="flex flex-wrap gap-2 max-h-56 overflow-y-auto rounded-[1.5rem] border border-poodle-100 bg-poodle-50/40 p-4"></div>
-	                    </div>
-
-                    <!-- Email (Read-only for aesthetic) -->
-                    <div class="p-6 bg-poodle-50/30 border border-poodle-50 rounded-[1.5rem] flex items-center justify-between opacity-60">
-                        <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest">Email</span>
-                        <span th:text="${profile.email}" class="text-sm font-bold text-poodle-400">-</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="p-10 pt-0 flex gap-4">
-                <button type="button" onclick="closeEditProfileModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 hover:text-poodle-600 transition-all">
-                    취소
-                </button>
-                <button type="button" onclick="updateProfile()" class="flex-[2] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                    수정 완료하기
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
 <style>
     /* 🎨 MyPage Premium UI Expansion */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .project-preview-container.project-preview-collapsed {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .project-preview-container.project-preview-collapsed::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 140px;
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0));
+        pointer-events: none;
+    }
+
+    .project-preview-container.project-preview-collapsed .project-preview-card:nth-child(3) {
+        opacity: 0.45;
+        filter: saturate(0.8);
+        pointer-events: none;
+    }
 </style>
 
 	<script>
 	    const escapeHtml = window.meetballEscapeHtml;
-	    const initialEditPosition = String(document.getElementById('editPosition')?.value || '').trim();
-	    let editSelectedPosition = window.meetballPositionOptions.includes(initialEditPosition) ? initialEditPosition : '';
-	    const editSelectedTechStacks = new Set(String(document.getElementById('editTechStack')?.value || '')
-	        .split(',')
-	        .map(value => value.trim())
-	        .filter(Boolean));
+	    const initialInlineProfileState = {
+	        accountName: String(document.getElementById('inlineAccountName')?.value || '').trim(),
+	        nickname: String(document.getElementById('inlineNickname')?.value || '').trim(),
+	        phoneNumber: String(document.getElementById('inlinePhoneNumber')?.value || '').trim(),
+	        birthDate: String(document.getElementById('inlineBirthDate')?.value || '').trim(),
+	        gender: String(document.getElementById('inlineGender')?.value || '').trim(),
+	        organization: String(document.getElementById('inlineOrganization')?.value || '').trim(),
+	        orgVisible: String(document.getElementById('inlineOrgVisible')?.value || 'false') === 'true',
+	        bio: String(document.getElementById('inlineBio')?.value || '').trim(),
+	        position: String(document.querySelector('#content-account [data-inline-position-current]')?.dataset.inlinePositionCurrent || '').trim(),
+	        experienceYears: String(document.getElementById('inlineExperienceYears')?.value || '').trim(),
+	        techStacks: String(document.querySelector('#content-account [data-inline-tech-current]')?.dataset.inlineTechCurrent || '')
+	            .split(',')
+	            .map(value => value.trim())
+	            .filter(Boolean)
+	    };
+	    let profileEditMode = false;
+	    let editSelectedPosition = window.meetballPositionOptions.includes(initialInlineProfileState.position) ? initialInlineProfileState.position : '';
+	    const editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
 
-	    function openEditProfileModal() {
-	        renderEditPositionOptions();
-	        renderEditTechStackOptions();
-	        document.getElementById('editProfileModal').classList.remove('hidden');
-	        document.body.style.overflow = 'hidden';
+	    function setInlineProfileEditMode(enabled) {
+	        profileEditMode = enabled;
+	        document.querySelectorAll('#content-account .profile-readonly').forEach(node => {
+	            node.classList.toggle('hidden', enabled);
+	        });
+	        document.querySelectorAll('#content-account .profile-edit-only').forEach(node => {
+	            node.classList.toggle('hidden', !enabled);
+	        });
+	        document.getElementById('profileEditCancelBtn')?.classList.toggle('hidden', !enabled);
+	        const toggleBtn = document.getElementById('profileEditToggleBtn');
+	        const toggleLabel = document.getElementById('profileEditToggleLabel');
+	        if (toggleBtn && toggleLabel) {
+	            toggleBtn.onclick = enabled ? saveInlineProfile : startInlineProfileEdit;
+	            toggleLabel.textContent = enabled ? '저장하기' : '개인 정보 수정';
+	        }
 	    }
 
-    function closeEditProfileModal() {
-	        document.getElementById('editProfileModal').classList.add('hidden');
-	        document.body.style.overflow = 'auto';
-	    }
-
-	    function renderEditPositionOptions() {
-	        const container = document.getElementById('editPositionOptions');
-	        const hiddenInput = document.getElementById('editPosition');
-	        if (!container || !hiddenInput) return;
-	        hiddenInput.value = editSelectedPosition;
+	    function renderInlinePositionOptions() {
+	        const container = document.getElementById('inlinePositionOptions');
+	        if (!container) return;
 	        container.innerHTML = window.meetballPositionOptions.map(position => {
 	            const selected = editSelectedPosition === position;
 	            const selectedClass = selected
 	                ? 'border-meatball bg-meatball text-poodle-900 shadow-sm'
 	                : 'border-poodle-100 bg-white text-poodle-500 hover:border-meatball hover:text-poodle-900';
-	            return `<button type="button" data-position="${escapeHtml(position)}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${escapeHtml(position)}</button>`;
+	            return `<button type="button" data-inline-position="${escapeHtml(position)}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${escapeHtml(position)}</button>`;
 	        }).join('');
-	        container.querySelectorAll('[data-position]').forEach(button => {
+	        container.querySelectorAll('[data-inline-position]').forEach(button => {
 	            button.addEventListener('click', () => {
-	                editSelectedPosition = button.dataset.position;
-	                renderEditPositionOptions();
+	                editSelectedPosition = button.dataset.inlinePosition;
+	                renderInlinePositionOptions();
 	            });
 	        });
 	    }
 
-	    function renderEditTechStackOptions() {
-	        const container = document.getElementById('editTechStackOptions');
-	        const hiddenInput = document.getElementById('editTechStack');
-	        if (!container || !hiddenInput) return;
-	        hiddenInput.value = Array.from(editSelectedTechStacks).join(', ');
+	    function renderInlineTechStackOptions() {
+	        const container = document.getElementById('inlineTechStackOptions');
+	        if (!container) return;
 	        container.innerHTML = window.meetballTechStackOptions.map(tech => {
 	            const selected = editSelectedTechStacks.has(tech);
-	            return `<button type="button" onclick="toggleEditTechStack('${escapeHtml(tech)}')">${window.meetballTechStackChipHtml(tech, {
+	            return `<button type="button" onclick="toggleInlineTechStack('${escapeHtml(tech)}')">${window.meetballTechStackChipHtml(tech, {
 	                selected,
 	                className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
 	            })}</button>`;
 	        }).join('');
 	    }
 
-	    function toggleEditTechStack(tech) {
+	    function toggleInlineTechStack(tech) {
 	        if (editSelectedTechStacks.has(tech)) {
 	            editSelectedTechStacks.delete(tech);
 	        } else {
 	            editSelectedTechStacks.add(tech);
 	        }
-	        renderEditTechStackOptions();
+	        renderInlineTechStackOptions();
+	    }
+
+	    function startInlineProfileEdit() {
+	        renderInlinePositionOptions();
+	        renderInlineTechStackOptions();
+	        setInlineProfileEditMode(true);
+	    }
+
+	    function cancelInlineProfileEdit() {
+	        document.getElementById('inlineAccountName').value = initialInlineProfileState.accountName;
+	        document.getElementById('inlineNickname').value = initialInlineProfileState.nickname;
+	        document.getElementById('inlinePhoneNumber').value = initialInlineProfileState.phoneNumber;
+	        document.getElementById('inlineBirthDate').value = initialInlineProfileState.birthDate;
+	        document.getElementById('inlineGender').value = initialInlineProfileState.gender || '남자';
+	        document.getElementById('inlineOrganization').value = initialInlineProfileState.organization;
+	        document.getElementById('inlineOrgVisible').value = initialInlineProfileState.orgVisible ? 'true' : 'false';
+	        document.getElementById('inlineBio').value = initialInlineProfileState.bio;
+	        document.getElementById('inlineExperienceYears').value = initialInlineProfileState.experienceYears || '0';
+	        editSelectedPosition = initialInlineProfileState.position;
+	        editSelectedTechStacks.clear();
+	        initialInlineProfileState.techStacks.forEach(stack => editSelectedTechStacks.add(stack));
+	        renderInlinePositionOptions();
+	        renderInlineTechStackOptions();
+	        setInlineProfileEditMode(false);
 	    }
 
     function switchTab(tabName) {
+        const normalizedTabName = tabName === 'profile' ? 'account' : tabName;
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.add('hidden');
             content.classList.remove('animate-fade-in');
@@ -447,13 +589,13 @@
             if(icon) icon.classList.add('opacity-50');
         });
         
-        const targetContent = document.getElementById('content-' + tabName);
+        const targetContent = document.getElementById('content-' + normalizedTabName);
         if (targetContent) {
             targetContent.classList.remove('hidden');
             setTimeout(() => targetContent.classList.add('animate-fade-in'), 10);
         }
         
-        const activeBtn = document.getElementById('tab-' + tabName);
+        const activeBtn = document.getElementById('tab-' + normalizedTabName);
         if (activeBtn) {
             activeBtn.classList.add('active', 'bg-poodle-600', 'text-white', 'shadow-xl', 'shadow-poodle-600/20');
             activeBtn.classList.remove('text-poodle-400');
@@ -461,16 +603,20 @@
             if(icon) icon.classList.remove('opacity-50');
         }
 
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', normalizedTabName);
+        window.history.replaceState({}, '', url);
+
         // 탭 변경 시 데이터 로드
-        if (tabName === 'wishlist') {
+        if (normalizedTabName === 'wishlist') {
             loadBookmarks();
-        } else if (tabName === 'applied') {
+        } else if (normalizedTabName === 'applied') {
             loadApplications();
-        } else if (tabName === 'participating') {
+        } else if (normalizedTabName === 'participating') {
             loadParticipatingProjects();
-        } else if (tabName === 'reads') {
+        } else if (normalizedTabName === 'reads') {
             loadRecentReads();
-        } else if (tabName === 'reviews') {
+        } else if (normalizedTabName === 'reviews') {
             loadReviews();
         }
     }
@@ -524,30 +670,67 @@
         }).join('');
     }
 
+    function updateProjectPreviewToggle(btn, collapsed) {
+        const label = btn.dataset.label || '프로젝트';
+        btn.innerHTML = collapsed
+            ? `${label} 더 보기 <i class="fa-solid fa-chevron-down ml-2"></i>`
+            : `접기 <i class="fa-solid fa-chevron-up ml-2"></i>`;
+    }
+
+    function configureProjectPreview(containerId, toggleButtonId) {
+        const container = document.getElementById(containerId);
+        const toggleBtn = document.getElementById(toggleButtonId);
+        if (!container || !toggleBtn) return;
+
+        const cards = Array.from(container.querySelectorAll('.project-preview-card'));
+        if (cards.length <= 2) {
+            container.classList.remove('project-preview-collapsed');
+            container.style.maxHeight = 'none';
+            toggleBtn.classList.add('hidden');
+            return;
+        }
+
+        const gapValue = parseFloat(getComputedStyle(container).rowGap || getComputedStyle(container).gap || '24');
+        const previewHeight = Math.round(cards[2].offsetHeight * 0.45);
+        const collapsedHeight = cards[0].offsetHeight + cards[1].offsetHeight + (gapValue * 2) + previewHeight;
+        container.dataset.collapsedHeight = String(collapsedHeight);
+        container.classList.add('project-preview-collapsed');
+        container.style.maxHeight = `${collapsedHeight}px`;
+        toggleBtn.classList.remove('hidden');
+        updateProjectPreviewToggle(toggleBtn, true);
+    }
+
     function toggleSection(containerId, btn) {
         const container = document.getElementById(containerId);
-        const isExpanded = container.style.maxHeight === 'none' || container.style.maxHeight === '2000px';
-        const sectionName = btn.innerText.includes('리딩') ? '리딩 팀' : 
-                            btn.innerText.includes('참여') ? '참여 팀' : '지난 프로젝트';
+        if (!container) return;
 
-        if (isExpanded) {
-            container.style.maxHeight = btn.innerText.includes('지난') ? '400px' : '500px';
-            btn.innerHTML = `${sectionName} 더 보기 <i class="fa-solid fa-chevron-down ml-2"></i>`;
-            const overlay = document.getElementById('completed-overlay');
-            if(overlay && containerId === 'completed-projects-container') overlay.style.opacity = '1';
+        const isCollapsed = container.classList.contains('project-preview-collapsed');
+        if (isCollapsed) {
+            container.classList.remove('project-preview-collapsed');
+            container.style.maxHeight = 'none';
+            updateProjectPreviewToggle(btn, false);
         } else {
-            container.style.maxHeight = '2000px';
-            btn.innerHTML = `접기 <i class="fa-solid fa-chevron-up ml-2"></i>`;
-            const overlay = document.getElementById('completed-overlay');
-            if(overlay && containerId === 'completed-projects-container') overlay.style.opacity = '0';
+            const collapsedHeight = container.dataset.collapsedHeight || '480';
+            container.classList.add('project-preview-collapsed');
+            container.style.maxHeight = `${collapsedHeight}px`;
+            updateProjectPreviewToggle(btn, true);
         }
     }
 
-	    async function updateProfile() {
+    async function saveInlineProfile() {
         const profileId = document.getElementById('profileId').value;
-	        const nickname = document.getElementById('editNickname').value;
+	        const accountName = document.getElementById('inlineAccountName').value;
+	        const nickname = document.getElementById('inlineNickname').value;
+	        const phoneNumber = document.getElementById('inlinePhoneNumber').value;
+	        const birthDate = document.getElementById('inlineBirthDate').value;
+		const gender = document.getElementById('inlineGender').value;
+	        const organization = document.getElementById('inlineOrganization').value;
+	        const orgVisible = String(document.getElementById('inlineOrgVisible')?.value || 'false') === 'true';
+	        const bio = document.getElementById('inlineBio').value;
+	        const experienceYears = document.getElementById('inlineExperienceYears').value;
 	        const position = editSelectedPosition;
 	        const techStacks = Array.from(editSelectedTechStacks);
+            const isPublic = String(document.getElementById('inlineProfilePublic')?.value || 'true') === 'true';
 
 	        if (!profileId) {
 	            await meetballAlert('로그인 정보가 없습니다.', { type: 'error' });
@@ -563,25 +746,33 @@
 	        }
 
         try {
-            const response = await meetballFetch('/api/mypage/profile', {
+            const response = await meetballFetch('/api/mypage/account', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    nickname: nickname,
-                    position: position,
-                    techStacks: techStacks,
-                    isPublic: true
+                    name: accountName,
+                    nickname,
+                    phoneNumber,
+                    birthDate,
+                    gender,
+                    position,
+                    experienceYears,
+                    organization,
+                    orgVisible,
+                    techStacks,
+                    bio,
+                    isPublic
                 })
             });
 
             if (response.ok) {
-                await meetballAlert('프로필 정보가 성공적으로 수정되었습니다.');
+                await meetballAlert('개인 정보가 성공적으로 수정되었습니다.');
                 location.reload();
             } else {
                 const errorText = await response.text();
-                await meetballAlert('프로필 수정 실패: ' + (errorText || response.status), { type: 'error' });
+                await meetballAlert('개인 정보 수정 실패: ' + (errorText || response.status), { type: 'error' });
             }
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -630,19 +821,41 @@
 	                .join('') : '';
             const projectId = encodeURIComponent(String(bm.projectId ?? ''));
             return `
-            <a href="/projects/${projectId}" class="group block p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-red-200 hover:shadow-xl transition-all shadow-sm">
+            <div role="button" tabindex="0" onclick="goToProjectDetail(${projectId})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToProjectDetail(${projectId});}" class="group block p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-red-200 hover:shadow-xl transition-all shadow-sm cursor-pointer">
                 <div class="flex items-start justify-between mb-6">
                     <h5 class="text-xl font-black text-poodle-900 group-hover:text-red-500 transition-colors line-clamp-2 leading-tight">${escapeHtml(bm.title)}</h5>
-                    <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
+                    <button type="button" onclick="toggleWishlistBookmark(${projectId}, event)"
+                        class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 hover:bg-red-500 hover:text-white transition-all shadow-sm">
                         <i class="fa-solid fa-heart"></i>
-                    </div>
+                    </button>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     ${stacks}
                 </div>
-            </a>
+            </div>
             `;
         }).join('');
+    }
+
+    function goToProjectDetail(projectId) {
+        window.location.href = `/projects/${encodeURIComponent(String(projectId ?? ''))}`;
+    }
+
+    async function toggleWishlistBookmark(projectId, event) {
+        event?.stopPropagation?.();
+        event?.preventDefault?.();
+        try {
+            const response = await meetballFetch(`/api/projects/${encodeURIComponent(String(projectId))}/bookmarks`, {
+                method: 'POST'
+            });
+            if (!response.ok) {
+                throw new Error('북마크 해제 실패');
+            }
+            await loadBookmarks();
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('관심 프로젝트 변경에 실패했습니다.', { type: 'error' });
+        }
     }
 
     async function loadApplications() {
@@ -705,6 +918,9 @@
             const withdrawButton = app.status === 'PENDING'
                 ? `<button onclick="withdrawApplication(${Number(app.id)})" class="px-6 py-3 bg-poodle-50 text-red-400 rounded-2xl text-xs font-black hover:bg-red-50 transition-all text-center whitespace-nowrap md:w-auto w-full">지원 철회</button>`
                 : '';
+            const editButton = app.status === 'PENDING'
+                ? `<button onclick="openApplicationEditModal(${Number(app.id)}, ${Number(app.projectId)}, '${encodeURIComponent(app.position || '')}', '${encodeURIComponent(app.message || '')}')" class="px-6 py-3 bg-white border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap md:w-auto w-full">지원서 수정</button>`
+                : '';
 
             return `
             <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-blue-200 transition-all shadow-sm">
@@ -719,7 +935,8 @@
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full">
                         ${withdrawButton}
-                        <a href="/projects/${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap md:w-auto w-full">상세 보기</a>
+                        ${editButton}
+                        <a href="/projects/${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap md:w-auto w-full">프로젝트 상세보기</a>
                     </div>
                 </div>
                 ${app.message ? `<div class="mt-6 p-4 bg-poodle-50/50 rounded-2xl border border-poodle-50 text-sm font-medium text-poodle-600 italic">"${escapeHtml(app.message)}"</div>` : ''}
@@ -783,7 +1000,7 @@
                 else dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
                 
                 return `
-                <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] shadow-sm hover:border-meatball/30 hover:shadow-xl transition-all group/item">
+                <div class="project-preview-card p-8 bg-white border border-poodle-50 rounded-[2.5rem] shadow-sm hover:border-meatball/30 hover:shadow-xl transition-all group/item">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="space-y-4 flex-grow">
                             <div class="flex items-center gap-3">
@@ -792,12 +1009,13 @@
                             <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
                         </div>
                         <div class="flex gap-3 w-full md:w-auto">
-                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all text-center">지원자 관리</a>
+                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all text-center">프로젝트 관리</a>
                         </div>
                     </div>
                 </div>
                 `;
             }).join('') : emptyMessage;
+            configureProjectPreview('leader-projects-container', 'leader-projects-toggle');
         }
 
         // Member
@@ -810,7 +1028,7 @@
                     ? `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">모집 마감</span><span class="text-[11px] font-bold text-poodle-400">프로젝트 진행 중</span>`
                     : `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
                 return `
-                <div class="p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">
+                <div class="project-preview-card p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="space-y-4 flex-grow">
                             <div class="flex items-center gap-3">
@@ -823,28 +1041,35 @@
                 </div>
                 `;
             }).join('') : emptyMessage;
+            configureProjectPreview('member-projects-container', 'member-projects-toggle');
         }
 
         // Closed
         if (completedContainer) {
-            const overlayStr = `<div id="completed-overlay" class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-poodle-50/20 to-transparent pointer-events-none transition-opacity"></div>`;
             completedContainer.innerHTML = completedProjects.length ? completedProjects.map(p => {
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = Number(p.projectId);
-                const reviewButton = p.canReview && Number.isFinite(projectId)
-                    ? `<button onclick="openReviewModal(${projectId})" class="flex-1 md:flex-none px-6 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all">팀원 리뷰</button>`
+                const projectReviewButton = Number.isFinite(projectId)
+                    ? `<button onclick="openReviewModal(${projectId}, 'project')" ${p.canProjectReview ? '' : 'disabled'}
+                        class="flex-1 md:flex-none px-6 py-4 rounded-2xl font-black text-xs transition-all ${p.canProjectReview ? 'bg-poodle-600 text-white hover:bg-meatball hover:text-poodle-900' : 'bg-poodle-100 text-poodle-400 cursor-not-allowed'}">프로젝트 리뷰${p.canProjectReview ? ' 작성' : ' 완료'}</button>`
+                    : '';
+                const peerReviewButton = Number.isFinite(projectId)
+                    ? `<button onclick="openReviewModal(${projectId}, 'peer')" ${p.canPeerReview ? '' : 'disabled'}
+                        class="flex-1 md:flex-none px-6 py-4 rounded-2xl font-black text-xs transition-all ${p.canPeerReview ? 'border border-poodle-200 bg-white text-poodle-700 hover:border-meatball hover:text-meatball' : 'bg-poodle-50 text-poodle-300 cursor-not-allowed border border-poodle-100'}">피어 리뷰${p.canPeerReview ? ' 작성' : ' 완료'}</button>`
                     : '';
                 return `
-                <div class="p-8 bg-white/60 border border-poodle-50 rounded-[2.5rem] opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                <div class="project-preview-card p-8 bg-white/60 border border-poodle-50 rounded-[2.5rem] opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <h5 class="text-xl font-black text-poodle-800 flex-grow">${title}</h5>
                         <div class="flex gap-3 w-full md:w-auto">
-                            ${reviewButton}
+                            ${projectReviewButton}
+                            ${peerReviewButton}
                         </div>
                     </div>
                 </div>
                 `;
-            }).join('') + overlayStr : emptyMessage + overlayStr;
+            }).join('') : emptyMessage;
+            configureProjectPreview('completed-projects-container', 'completed-projects-toggle');
         }
     }
 
@@ -920,10 +1145,15 @@
     // Review Modal Script
     // ===================================
     let targetProjectIdForReview = null;
+    let reviewMode = 'peer';
 
-    async function openReviewModal(projectId) {
+    async function openReviewModal(projectId, mode) {
         targetProjectIdForReview = projectId;
+        reviewMode = mode || 'peer';
         const targetSelect = document.getElementById('reviewTargetSelect');
+        const targetWrapper = document.getElementById('reviewTargetWrapper');
+        const titleNode = document.getElementById('reviewModalTitle');
+        const subtitleNode = document.getElementById('reviewModalSubtitle');
         targetSelect.innerHTML = '<option value="">불러오는 중...</option>';
         
         document.getElementById('reviewScore').value = "5";
@@ -931,6 +1161,18 @@
         
         document.getElementById('reviewModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+
+        if (reviewMode === 'project') {
+            titleNode.textContent = '프로젝트 리뷰 작성';
+            subtitleNode.textContent = '프로젝트 전반에 대한 후기를 남겨주세요.';
+            targetWrapper.classList.add('hidden');
+            targetSelect.innerHTML = '<option value="">프로젝트 리뷰</option>';
+            return;
+        }
+
+        titleNode.textContent = '피어 리뷰 작성';
+        subtitleNode.textContent = '함께한 팀원에게 따뜻한 후기를 남겨주세요.';
+        targetWrapper.classList.remove('hidden');
 
         try {
             const res = await fetch(`/api/projects/${projectId}/reviews/teammates`);
@@ -962,11 +1204,11 @@
     async function submitReview() {
         if (!targetProjectIdForReview) return;
         
-        const targetProfileNickname = document.getElementById('reviewTargetSelect').value;
+        const targetProfileNickname = reviewMode === 'peer' ? document.getElementById('reviewTargetSelect').value : '';
         const score = parseFloat(document.getElementById('reviewScore').value);
         const content = document.getElementById('reviewContent').value;
 
-        if (!targetProfileNickname) {
+        if (reviewMode === 'peer' && !targetProfileNickname) {
             await meetballAlert('평가할 팀원을 선택해주세요.');
             return;
         }
@@ -978,6 +1220,13 @@
         };
 
         try {
+            if (reviewMode === 'peer') {
+                const confirmed = await meetballConfirm(
+                    '피어 리뷰는 제출 후 다시 열어보거나 수정할 수 없습니다. 이대로 제출할까요?',
+                    { confirmText: '제출', cancelText: '취소' }
+                );
+                if (!confirmed) return;
+            }
             const res = await meetballFetch(`/api/projects/${targetProjectIdForReview}/reviews`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -997,6 +1246,98 @@
             await meetballAlert('오류가 발생했습니다.', { type: 'error' });
         }
     }
+
+    let editingApplicationId = null;
+    let editingApplicationProjectId = null;
+
+    async function openApplicationEditModal(applicationId, projectId, currentPosition, currentMessage) {
+        editingApplicationId = applicationId;
+        editingApplicationProjectId = projectId;
+        const modal = document.getElementById('applicationEditModal');
+        const title = document.getElementById('applicationEditProjectTitle');
+        const options = document.getElementById('applicationEditPositionOptions');
+        const messageInput = document.getElementById('applicationEditMessage');
+        const decodedCurrentPosition = decodeURIComponent(currentPosition || '');
+        const decodedCurrentMessage = decodeURIComponent(currentMessage || '');
+        title.textContent = '지원서 수정';
+        options.innerHTML = '<p class="text-sm font-bold text-poodle-300">포지션을 불러오는 중입니다...</p>';
+        messageInput.value = decodedCurrentMessage;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}`);
+            if (!response.ok) throw new Error('프로젝트 상세 조회 실패');
+            const project = await response.json();
+            title.textContent = project.title || '지원서 수정';
+            const statuses = Array.isArray(project.positionStatuses) ? project.positionStatuses : [];
+            const availableStatuses = statuses.filter(status => !status.full || status.name === decodedCurrentPosition);
+            options.innerHTML = availableStatuses.length
+                ? availableStatuses.map(status => `
+                    <button type="button" onclick="selectApplicationEditPosition('${escapeHtml(status.name).replace(/'/g, "\\'")}')"
+                        class="application-edit-position-btn ${status.name === decodedCurrentPosition ? 'selected' : ''}"
+                        data-position="${escapeHtml(status.name)}">
+                        <span>${escapeHtml(status.name)}</span>
+                        <span class="application-edit-position-count">${escapeHtml(String(status.current))}/${escapeHtml(String(status.capacity))}</span>
+                    </button>
+                `).join('')
+                : '<p class="text-sm font-bold text-poodle-300">선택 가능한 포지션이 없습니다.</p>';
+        } catch (error) {
+            console.error(error);
+            options.innerHTML = '<p class="text-sm font-bold text-red-400">포지션을 불러오지 못했습니다.</p>';
+        }
+    }
+
+    function closeApplicationEditModal() {
+        document.getElementById('applicationEditModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        editingApplicationId = null;
+        editingApplicationProjectId = null;
+    }
+
+    function selectApplicationEditPosition(position) {
+        document.querySelectorAll('.application-edit-position-btn').forEach(button => {
+            button.classList.toggle('selected', button.dataset.position === position);
+        });
+    }
+
+    async function submitApplicationEdit() {
+        if (!editingApplicationId || !editingApplicationProjectId) return;
+        const selected = document.querySelector('.application-edit-position-btn.selected');
+        const position = selected?.dataset.position;
+        const message = document.getElementById('applicationEditMessage').value.trim();
+        if (!position) {
+            await meetballAlert('지원 포지션을 선택해주세요.');
+            return;
+        }
+        if (!message) {
+            await meetballAlert('지원 메시지를 입력해주세요.');
+            return;
+        }
+        try {
+            const response = await meetballFetch(`/api/applications/${editingApplicationId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ position, message })
+            });
+            if (response.ok) {
+                await meetballAlert('지원서가 수정되었습니다.');
+                closeApplicationEditModal();
+                loadApplications();
+            } else {
+                const errorText = await response.text();
+                await meetballAlert('지원서 수정 실패: ' + (errorText || response.status), { type: 'error' });
+            }
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('지원서 수정 중 오류가 발생했습니다.', { type: 'error' });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialTab = new URLSearchParams(window.location.search).get('tab') || 'account';
+        switchTab(initialTab);
+    });
 </script>
 
 <!-- Review Modal HTML -->
@@ -1005,12 +1346,12 @@
     <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
         <div class="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
             <div class="p-10 border-b border-poodle-50">
-                <h2 class="text-3xl font-black text-poodle-900">팀원 리뷰 작성</h2>
-                <p class="text-sm font-bold text-poodle-400 mt-2">함께한 팀원에게 따뜻한 후기를 남겨주세요.</p>
+                <h2 id="reviewModalTitle" class="text-3xl font-black text-poodle-900">팀원 리뷰 작성</h2>
+                <p id="reviewModalSubtitle" class="text-sm font-bold text-poodle-400 mt-2">함께한 팀원에게 따뜻한 후기를 남겨주세요.</p>
             </div>
             
             <div class="p-10 space-y-8">
-                <div class="space-y-3">
+                <div id="reviewTargetWrapper" class="space-y-3">
                     <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
                         <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> Target Teammate
                     </label>
@@ -1041,5 +1382,74 @@
         </div>
     </div>
 </div>
+
+<div id="applicationEditModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity" onclick="closeApplicationEditModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
+            <div class="p-10 border-b border-poodle-50">
+                <h2 class="text-3xl font-black text-poodle-900">지원서 수정</h2>
+                <p id="applicationEditProjectTitle" class="text-sm font-bold text-poodle-400 mt-2">프로젝트 정보를 불러오는 중입니다.</p>
+            </div>
+            <div class="p-10 space-y-8">
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 포지션
+                    </label>
+                    <div id="applicationEditPositionOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 메시지
+                    </label>
+                    <textarea id="applicationEditMessage" maxlength="300"
+                        class="w-full h-32 p-5 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-2xl font-bold text-poodle-800 text-sm outline-none transition-all resize-none"
+                        placeholder="지원 메시지를 입력해주세요."></textarea>
+                </div>
+            </div>
+            <div class="p-10 pt-0 flex gap-4">
+                <button onclick="closeApplicationEditModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 transition-all">취소</button>
+                <button onclick="submitApplicationEdit()" class="flex-[1.5] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">저장하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .application-edit-position-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 3.5rem;
+        border-radius: 1.25rem;
+        border: 1px solid rgba(223, 215, 210, 1);
+        background: rgba(249, 245, 243, 0.8);
+        color: #6d4c41;
+        font-size: 0.875rem;
+        font-weight: 800;
+        transition: all 0.2s ease;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .application-edit-position-btn:hover {
+        border-color: rgba(255, 107, 53, 0.35);
+        color: #ff6b35;
+        background: #fff;
+    }
+
+    .application-edit-position-btn.selected {
+        background: #4e342e;
+        color: #fff;
+        border-color: #4e342e;
+        box-shadow: 0 12px 24px -10px rgba(78, 52, 46, 0.35);
+    }
+
+    .application-edit-position-count {
+        font-size: 0.75rem;
+        font-weight: 900;
+        opacity: 0.7;
+    }
+</style>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.example.meetball.domain.project.service;
 
 import com.example.meetball.domain.project.dto.ParticipatedProjectResponse;
 import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.projectapplication.repository.ProjectApplicationRepository;
 import com.example.meetball.domain.project.repository.ProjectParticipantRepository;
 import com.example.meetball.domain.review.repository.ProjectReviewRepository;
 import com.example.meetball.domain.review.repository.PeerReviewRepository;
@@ -32,6 +33,9 @@ class ProjectServiceTest {
     @Mock
     private ProjectReviewRepository projectReviewRepository;
 
+    @Mock
+    private ProjectApplicationRepository projectApplicationRepository;
+
     @InjectMocks
     private ProjectService projectService;
 
@@ -39,8 +43,8 @@ class ProjectServiceTest {
         return new Project(
                 title,
                 "설명",
-                "타입",
-                "ONLINE",
+                "프로젝트",
+                "온라인",
                 5,
                 LocalDate.now().minusDays(1),
                 recruitEndDate,
@@ -64,6 +68,7 @@ class ProjectServiceTest {
             new com.example.meetball.domain.project.entity.ProjectParticipant(profile, project, "MEMBER");
         
         when(projectParticipantRepository.findByProfile(profile)).thenReturn(List.of(pm));
+        when(projectApplicationRepository.findAllByProjectAndProfile(project, profile)).thenReturn(List.of());
 
         // when
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(profile);
@@ -80,8 +85,8 @@ class ProjectServiceTest {
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
                 recruitmentClosedProject.getDescription(),
-                recruitmentClosedProject.getProjectType(),
-                recruitmentClosedProject.getProgressMethod(),
+                recruitmentClosedProject.getProjectPurpose(),
+                recruitmentClosedProject.getWorkMethod(),
                 recruitmentClosedProject.getRecruitmentCount(),
                 LocalDate.now().minusDays(5),
                 LocalDate.now().minusDays(1),
@@ -95,8 +100,8 @@ class ProjectServiceTest {
         completedProject.update(
                 completedProject.getTitle(),
                 completedProject.getDescription(),
-                completedProject.getProjectType(),
-                completedProject.getProgressMethod(),
+                completedProject.getProjectPurpose(),
+                completedProject.getWorkMethod(),
                 completedProject.getRecruitmentCount(),
                 LocalDate.now().minusDays(5),
                 LocalDate.now().minusDays(1),
@@ -113,17 +118,27 @@ class ProjectServiceTest {
 
         when(projectParticipantRepository.findByProfile(profile)).thenReturn(List.of(closedMember, completedMember));
         when(projectReviewRepository.existsByProjectAndReviewer(completedProject, profile)).thenReturn(false);
+        when(projectApplicationRepository.findAllByProjectAndProfile(recruitmentClosedProject, profile)).thenReturn(List.of());
+        when(projectApplicationRepository.findAllByProjectAndProfile(completedProject, profile)).thenReturn(List.of());
 
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(profile);
+        ParticipatedProjectResponse recruitClosed = results.stream()
+                .filter(response -> "모집 마감 테스트".equals(response.getTitle()))
+                .findFirst()
+                .orElseThrow();
+        ParticipatedProjectResponse completed = results.stream()
+                .filter(response -> "완료 테스트".equals(response.getTitle()))
+                .findFirst()
+                .orElseThrow();
 
-        assertThat(results.get(0).getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
-        assertThat(results.get(0).getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_READY);
-        assertThat(results.get(0).isCanReview()).isFalse();
-        assertThat(results.get(0).getStatus()).isEqualTo("PROCEEDING");
-        assertThat(results.get(1).getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
-        assertThat(results.get(1).getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_COMPLETED);
-        assertThat(results.get(1).isCanReview()).isTrue();
-        assertThat(results.get(1).getStatus()).isEqualTo("COMPLETED");
+        assertThat(recruitClosed.getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
+        assertThat(recruitClosed.getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_READY);
+        assertThat(recruitClosed.isCanReview()).isFalse();
+        assertThat(recruitClosed.getStatus()).isEqualTo("PROCEEDING");
+        assertThat(completed.getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
+        assertThat(completed.getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_COMPLETED);
+        assertThat(completed.isCanReview()).isTrue();
+        assertThat(completed.getStatus()).isEqualTo("COMPLETED");
     }
 
     @Test
@@ -137,6 +152,7 @@ class ProjectServiceTest {
             new com.example.meetball.domain.project.entity.ProjectParticipant(profile, project, "MEMBER");
         
         when(projectParticipantRepository.findByProfile(profile)).thenReturn(List.of(pm));
+        when(projectApplicationRepository.findAllByProjectAndProfile(project, profile)).thenReturn(List.of());
 
         // when
         List<ParticipatedProjectResponse> results = projectService.getParticipatedProjects(profile);

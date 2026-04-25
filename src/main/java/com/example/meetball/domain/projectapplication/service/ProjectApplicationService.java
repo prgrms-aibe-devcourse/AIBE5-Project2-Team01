@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +65,7 @@ public class ProjectApplicationService {
         if (projectParticipantRepository.existsByProjectAndProfile(project, applicantProfile)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Project members cannot apply to their own project.");
         }
-        if (project.isRecruitmentFull()) {
+        if (isProjectRecruitmentFull(project)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recruitment count is already full.");
         }
 
@@ -94,9 +95,26 @@ public class ProjectApplicationService {
     public List<ProjectApplicationResponseDto> getMyApplications(Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found with id: " + profileId));
-        return projectApplicationRepository.findByProfile(profile).stream()
+        return projectApplicationRepository.findByProfileOrderByCreatedAtDesc(profile).stream()
                 .map(ProjectApplicationResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public ProjectApplicationResponseDto getMyApplicationForProject(Long projectId, Long profileId) {
+        if (profileId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        Profile applicantProfile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required."));
+
+        return projectApplicationRepository.findAllByProjectAndProfile(project, applicantProfile).stream()
+                .filter(application -> application.getStatus() == null || !application.getStatus().isHiddenFromManagement())
+                .max(Comparator.comparing(ProjectApplication::getCreatedAt))
+                .map(ProjectApplicationResponseDto::new)
+                .orElse(null);
     }
 
     public List<ProjectApplicationResponseDto> getApplicationsByProjectId(Long projectId, Long profileId) {
@@ -203,6 +221,37 @@ public class ProjectApplicationService {
     }
 
     @Transactional
+    public ProjectApplicationResponseDto updateMyApplication(Long applicationId, ProjectApplicationRequestDto request, Long profileId) {
+        ProjectApplication application = projectApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ProjectApplication not found with id: " + applicationId));
+
+        if (profileId == null || application.getProfile() == null || !profileId.equals(application.getProfile().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the applicant can update this application.");
+        }
+
+        if (application.getStatus() != ProjectApplicationStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only pending applications can be edited.");
+        }
+
+        Project project = application.getProject();
+        if (project == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found.");
+        }
+
+        if (Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())
+                || Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus())
+                || (project.getRecruitmentDeadline() != null && project.getRecruitmentDeadline().isBefore(LocalDate.now()))
+                || (project.getRecruitmentEndAt() != null && project.getRecruitmentEndAt().isBefore(LocalDate.now()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot edit an application for a closed or past deadline project.");
+        }
+
+        ResolvedPosition selectedPosition = validatePositionCapacity(project, request.getPosition(), application.getId());
+        String message = request.getMessage() == null ? "" : request.getMessage().trim();
+        application.updateSubmission(selectedPosition.name(), selectedPosition.entity(), message);
+        return new ProjectApplicationResponseDto(projectApplicationRepository.save(application));
+    }
+
+    @Transactional
     public ProjectApplicationResponseDto removeApplication(Long applicationId, Long profileId) {
         ProjectApplication application = projectApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ProjectApplication not found with id: " + applicationId));
@@ -260,10 +309,9 @@ public class ProjectApplicationService {
                 .findFirst()
                 .orElse(null);
 
-        long acceptedCount = projectApplicationRepository.findByProject(project).stream()
-                .filter(application -> excludedApplicationId == null || !excludedApplicationId.equals(application.getId()))
-                .filter(application -> target.name().equals(applicationPositionName(application)))
-                .filter(application -> application.getStatus() != null && application.getStatus().isAccepted())
+        long acceptedCount = projectParticipantRepository.findByProject(project).stream()
+                .map(this::participantPositionName)
+                .filter(target.name()::equals)
                 .count();
 
         if (acceptedCount >= target.capacity()) {
@@ -287,6 +335,35 @@ public class ProjectApplicationService {
             return position.getPositionName();
         }
         return ProjectSelectionCatalog.positionName(application.getPosition());
+    }
+
+    private String participantPositionName(ProjectParticipant participant) {
+        if (participant == null) {
+            return null;
+        }
+        ProjectRecruitPosition recruitPosition = participant.getRecruitPosition();
+        if (recruitPosition != null && recruitPosition.getPositionName() != null && !recruitPosition.getPositionName().isBlank()) {
+            return recruitPosition.getPositionName();
+        }
+        Profile profile = participant.getProfile();
+        String rawPosition = profile != null ? profile.getPosition() : null;
+        if (rawPosition == null || rawPosition.isBlank()) {
+            return null;
+        }
+        try {
+            return ProjectSelectionCatalog.positionName(rawPosition);
+        } catch (IllegalArgumentException ignored) {
+            return rawPosition.trim();
+        }
+    }
+
+    private boolean isProjectRecruitmentFull(Project project) {
+        int currentRecruitment = (int) projectParticipantRepository.findByProject(project).stream()
+                .map(this::participantPositionName)
+                .filter(positionName -> positionName != null && !positionName.isBlank())
+                .count();
+        Integer totalRecruitment = project.getTotalRecruitment();
+        return totalRecruitment != null && totalRecruitment > 0 && currentRecruitment >= totalRecruitment;
     }
 
     private ProjectApplicationStatus parseStatus(ProjectApplicationStatusUpdateRequestDto request) {

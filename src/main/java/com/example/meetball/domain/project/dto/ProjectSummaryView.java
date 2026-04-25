@@ -6,7 +6,7 @@ public record ProjectSummaryView(
         Long id,
         String title,
         String summary,
-        String projectType,
+        String projectPurpose,
         String position,
         String leaderName,
         String leaderAvatarUrl,

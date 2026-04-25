@@ -6,9 +6,11 @@ import com.example.meetball.domain.project.dto.ProjectDetailResponseDto;
 import com.example.meetball.domain.project.dto.ProjectDetailView;
 import com.example.meetball.domain.project.dto.ProjectListResponseDto;
 import com.example.meetball.domain.project.dto.ProjectParticipantProfile;
+import com.example.meetball.domain.project.dto.ProjectPositionEditConstraint;
 import com.example.meetball.domain.project.dto.ProjectRecruitPositionStatus;
 import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
+import com.example.meetball.domain.bookmarkedproject.entity.BookmarkedProject;
 import com.example.meetball.domain.projectapplication.entity.ProjectApplication;
 import com.example.meetball.domain.projectapplication.repository.ProjectApplicationRepository;
 import com.example.meetball.domain.projectresource.service.ProjectResourceService;
@@ -24,6 +26,7 @@ import com.example.meetball.domain.project.entity.ProjectRecruitPosition;
 import com.example.meetball.domain.project.entity.ProjectTechStack;
 import com.example.meetball.domain.project.repository.ProjectParticipantRepository;
 import com.example.meetball.domain.project.repository.ProjectRepository;
+import com.example.meetball.domain.project.support.ProjectOptionCatalog;
 import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import com.example.meetball.domain.viewhistory.repository.ViewHistoryRepository;
 import com.example.meetball.domain.review.repository.ProjectReviewRepository;
@@ -47,6 +50,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -87,46 +91,53 @@ public class ProjectService {
     }
 
     private ProjectSummaryView toSummaryView(Project project) {
+        List<ProjectParticipant> participants = projectParticipantRepository.findByProject(project);
+        int currentRecruitment = calculateCurrentRecruitment(project, participants);
         return new ProjectSummaryView(
                 project.getId(),
                 project.getTitle(),
                 project.getSummary(),
-                displayProjectType(project.getProjectType()),
+                displayProjectPurpose(project.getProjectPurpose()),
                 formatPositionText(project),
                 project.getLeaderName(),
                 project.getLeaderAvatarUrl(),
                 project.getThumbnailUrl(),
-                valueOrZero(project.getCurrentRecruitment()),
+                currentRecruitment,
                 valueOrZero(project.getTotalRecruitment()),
-                formatDeadline(project.getRecruitmentDeadline()),
+                formatRecruitmentDeadline(project, project.getRecruitmentDeadline()),
                 splitTechStacks(project)
         );
     }
 
     private ProjectDetailView toDetailView(Project project) {
+        List<ProjectParticipant> participants = projectParticipantRepository.findByProject(project);
+        int currentRecruitment = calculateCurrentRecruitment(project, participants);
         return new ProjectDetailView(
                 project.getId(),
                 project.getTitle(),
                 project.getSummary(),
                 project.getDescription(),
-                displayProjectType(project.getProjectType()),
-                displayProgressMethod(project.getProgressMethod()),
+                displayProjectPurpose(project.getProjectPurpose()),
+                displayWorkMethod(project.getWorkMethod()),
                 formatPositionText(project),
-                resolveLeaderProfileId(project),
+                resolveLeaderProfileId(project, participants),
                 project.getLeaderName(),
                 project.getLeaderRole(),
+                resolveLeaderPosition(project, participants),
                 project.getLeaderAvatarUrl(),
                 project.getThumbnailUrl(),
-                valueOrZero(project.getCurrentRecruitment()),
+                currentRecruitment,
                 valueOrZero(project.getTotalRecruitment()),
-                calculateProgressPercent(project.getCurrentRecruitment(), project.getTotalRecruitment()),
-                formatDeadline(project.getRecruitmentDeadline()),
+                calculateProgressPercent(currentRecruitment, project.getTotalRecruitment()),
+                formatRecruitmentDeadline(project, project.getRecruitmentDeadline()),
+                project.getRecruitStatus(),
+                project.getProgressStatus(),
                 project.getCreatedDate() != null ? project.getCreatedDate().format(DATE_FORMATTER) : "",
                 formatPeriod(project.getRecruitmentStartAt(), project.getRecruitmentEndAt() != null ? project.getRecruitmentEndAt() : project.getRecruitmentDeadline()),
                 formatPeriod(project.getProjectStartAt(), project.getProjectEndAt()),
                 splitTechStacks(project),
-                buildPositionStatuses(project),
-                buildTeamMembers(project),
+                buildPositionStatuses(project, participants),
+                buildTeamMembers(project, participants),
                 project.getViewCount()
         );
     }
@@ -190,6 +201,16 @@ public class ProjectService {
         return "D-" + days;
     }
 
+    private String formatRecruitmentDeadline(Project project, LocalDate deadline) {
+        if (project != null && Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus())) {
+            return "완료";
+        }
+        if (project != null && Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())) {
+            return "마감";
+        }
+        return formatDeadline(deadline);
+    }
+
     private int calculateProgressPercent(Integer currentRecruitment, Integer totalRecruitment) {
         int current = valueOrZero(currentRecruitment);
         int total = valueOrZero(totalRecruitment);
@@ -203,37 +224,38 @@ public class ProjectService {
         return value == null ? 0 : value;
     }
 
-    public Page<ProjectListResponseDto> getProjects(String keyword, String projectType,
-                                                    String progressMethod, String position,
-                                                    String techStack, Pageable pageable,
+    public Page<ProjectListResponseDto> getProjects(String keyword, String projectPurpose,
+                                                    String position, String techStack,
+                                                    boolean bookmarkedOnly, Pageable pageable,
                                                     Long viewerId) {
+        Profile viewer = viewerId != null ? profileService.getProfileById(viewerId) : null;
         String normalizedPosition = normalizePositionFilter(position);
         List<String> normalizedTechStacks = normalizeTechStackFilterList(techStack);
         Page<Project> projects = projectRepository.findAll(
                 buildProjectFilterSpec(
                         cleanText(keyword),
-                        normalizeProjectTypeFilter(projectType),
-                        normalizeProgressMethod(progressMethod),
+                        normalizeProjectPurposeFilter(projectPurpose),
                         normalizedPosition,
-                        normalizedTechStacks
+                        normalizedTechStacks,
+                        bookmarkedOnly,
+                        viewer
                 ),
                 pageable
         );
-        Profile viewer = viewerId != null ? profileService.getProfileById(viewerId) : null;
 
         return projects.map(project -> new ProjectListResponseDto(
                 project.getId(),
                 project.getTitle(),
                 project.getSummary(),
                 project.getThumbnailUrl(),
-                valueOrZero(project.getCurrentRecruitment()),
+                calculateCurrentRecruitment(project, projectParticipantRepository.findByProject(project)),
                 project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount(),
-                displayProjectType(project.getProjectType()),
-                displayProgressMethod(project.getProgressMethod()),
+                displayProjectPurpose(project.getProjectPurpose()),
+                displayWorkMethod(project.getWorkMethod()),
                 formatPositionText(project),
                 splitTechStacks(project),
                 project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt(),
-                formatDeadline(project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
+                formatRecruitmentDeadline(project, project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
                 project.getRecruitStatus(),
                 project.getProgressStatus(),
                 bookmarkedProjectRepository.countByProject(project),
@@ -243,9 +265,9 @@ public class ProjectService {
         ));
     }
 
-    private Specification<Project> buildProjectFilterSpec(String keyword, String projectType,
-                                                          String progressMethod, String position,
-                                                          List<String> techStacks) {
+    private Specification<Project> buildProjectFilterSpec(String keyword, String projectPurpose,
+                                                          String position, List<String> techStacks,
+                                                          boolean bookmarkedOnly, Profile viewer) {
         return (root, query, cb) -> {
             if (query != null) {
                 query.distinct(true);
@@ -254,38 +276,18 @@ public class ProjectService {
 
             if (keyword != null && !keyword.isBlank()) {
                 String pattern = "%" + keyword.toLowerCase(Locale.ROOT) + "%";
-                Join<Project, ProjectRecruitPosition> keywordPositionJoin = root.join("positionSelections", JoinType.LEFT);
-                Join<ProjectRecruitPosition, Position> keywordPositionValueJoin = keywordPositionJoin.join("position", JoinType.LEFT);
-                Join<Project, ProjectTechStack> keywordTechJoin = root.join("techStackSelections", JoinType.LEFT);
-                Join<ProjectTechStack, TechStack> keywordTechStackValueJoin = keywordTechJoin.join("techStack", JoinType.LEFT);
                 predicates.add(cb.or(
                         cb.like(cb.lower(cb.coalesce(root.get("title"), "")), pattern),
-                        cb.like(cb.lower(cb.coalesce(keywordPositionValueJoin.get("name"), "")), pattern),
-                        cb.like(cb.lower(cb.coalesce(keywordTechStackValueJoin.get("name"), "")), pattern)
+                        cb.like(cb.lower(cb.coalesce(root.get("description"), "")), pattern)
                 ));
             }
 
-            if (projectType != null && !projectType.isBlank()) {
-                predicates.add(cb.like(
-                        cb.lower(cb.coalesce(root.get("projectType"), "")),
-                        "%" + projectType.toLowerCase(Locale.ROOT) + "%"
-                ));
-            }
-
-            if (progressMethod != null && !progressMethod.isBlank()) {
-                String progress = progressMethod.toLowerCase(Locale.ROOT);
-                Expression<String> storedProgress = cb.lower(cb.coalesce(root.get("workMethod"), ""));
-                predicates.add(cb.or(
-                        cb.equal(storedProgress, progress),
-                        cb.and(cb.equal(cb.literal(progressMethod), "ONLINE"),
-                                cb.or(cb.like(storedProgress, "%online%"), cb.like(cb.coalesce(root.get("workMethod"), ""), "%온라인%"))),
-                        cb.and(cb.equal(cb.literal(progressMethod), "OFFLINE"),
-                                cb.or(cb.like(storedProgress, "%offline%"), cb.like(cb.coalesce(root.get("workMethod"), ""), "%오프라인%"))),
-                        cb.and(cb.equal(cb.literal(progressMethod), "HYBRID"),
-                                cb.or(cb.like(storedProgress, "%hybrid%"),
-                                        cb.like(cb.coalesce(root.get("workMethod"), ""), "%혼합%"),
-                                        cb.like(cb.coalesce(root.get("workMethod"), ""), "%온/오프%")))
-                ));
+            if (projectPurpose != null && !projectPurpose.isBlank()) {
+                Expression<String> storedPurpose = cb.lower(cb.coalesce(root.get("projectPurpose"), ""));
+                List<Predicate> purposePredicates = ProjectOptionCatalog.projectPurposeSearchTokens(projectPurpose).stream()
+                        .map(token -> cb.like(storedPurpose, "%" + token.toLowerCase(Locale.ROOT) + "%"))
+                        .toList();
+                predicates.add(cb.or(purposePredicates.toArray(Predicate[]::new)));
             }
 
             if (position != null && !position.isBlank()) {
@@ -303,6 +305,18 @@ public class ProjectService {
                 predicates.add(cb.or(techPredicates.toArray(Predicate[]::new)));
             }
 
+            if (bookmarkedOnly) {
+                if (viewer == null) {
+                    predicates.add(cb.disjunction());
+                } else {
+                    var subquery = query.subquery(Long.class);
+                    var bookmarkedRoot = subquery.from(BookmarkedProject.class);
+                    subquery.select(bookmarkedRoot.get("project").get("id"));
+                    subquery.where(cb.equal(bookmarkedRoot.get("profile").get("id"), viewer.getId()));
+                    predicates.add(root.get("id").in(subquery));
+                }
+            }
+
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
@@ -312,6 +326,12 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
 
         return toDetailResponse(project);
+    }
+
+    public List<ProjectPositionEditConstraint> getProjectPositionEditConstraints(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        return buildPositionEditConstraints(project);
     }
 
     @Transactional
@@ -343,12 +363,14 @@ public class ProjectService {
         String normalizedPositions = normalizePositionText(request.getPosition());
         List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
+        validateMinimumRecruitment(totalRecruitment);
+        validateLeaderPositionIncluded(ownerProfile, normalizedPositions);
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
                 request.getTitle(),
                 request.getDescription(),
-                normalizeProjectTypeForStorage(request.getProjectType()),
-                normalizeProgressMethod(request.getProgressMethod()),
+                normalizeProjectPurposeForStorage(request.getProjectPurpose()),
+                normalizeWorkMethod(request.getWorkMethod()),
                 totalRecruitment,
                 request.getRecruitmentStartAt(),
                 request.getRecruitmentEndAt(),
@@ -395,13 +417,23 @@ public class ProjectService {
         String normalizedPositions = normalizePositionText(request.getPosition());
         List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
-        validatePositionUpdate(project, normalizedPositions);
+        String currentPositionText = formatPositionText(project);
+        boolean positionsChanged = !Objects.equals(currentPositionText, normalizedPositions);
+        if (positionsChanged) {
+            validateMinimumRecruitment(totalRecruitment);
+            validateLeaderPositionIncluded(project.getOwnerProfile(), normalizedPositions);
+            validatePositionUpdate(project, normalizedPositions);
+        }
+        if (Project.PROGRESS_STATUS_COMPLETED.equalsIgnoreCase(request.getProgressStatus())
+                && !Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "프로젝트 완료는 모집 마감 이후에만 가능합니다.");
+        }
 
         project.update(
                 request.getTitle(),
                 request.getDescription(),
-                normalizeProjectTypeForStorage(request.getProjectType()),
-                normalizeProgressMethod(request.getProgressMethod()),
+                normalizeProjectPurposeForStorage(request.getProjectPurpose()),
+                normalizeWorkMethod(request.getWorkMethod()),
                 totalRecruitment,
                 request.getRecruitmentStartAt(),
                 request.getRecruitmentEndAt(),
@@ -423,11 +455,15 @@ public class ProjectService {
     }
 
     private void validatePositionUpdate(Project project, String normalizedPositions) {
-        List<ProjectApplication> applications = projectApplicationRepository.findByProject(project);
-        if (applications.isEmpty()) {
-            return;
+        String currentPositionText = formatPositionText(project);
+        if (Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())
+                && !Objects.equals(currentPositionText, normalizedPositions)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "모집 마감 후에는 포지션을 추가, 수정, 삭제할 수 없습니다. 모집 마감 철회 후 다시 시도해주세요."
+            );
         }
-
+        List<ProjectApplication> applications = projectApplicationRepository.findByProject(project);
         Map<String, Integer> nextCapacities = ProjectSelectionCatalog.parsePositionCapacities(normalizedPositions, null)
                 .stream()
                 .collect(Collectors.toMap(
@@ -442,29 +478,70 @@ public class ProjectService {
                         this::applicationPositionName,
                         Collectors.counting()
                 ));
-        for (String position : applicationCounts.keySet()) {
-            if (!nextCapacities.containsKey(position)) {
+        Map<String, ProjectRecruitPosition> currentPositions = project.getPositionSelections().stream()
+                .collect(Collectors.toMap(
+                        ProjectRecruitPosition::getPositionName,
+                        recruitPosition -> recruitPosition,
+                        (left, right) -> left,
+                        java.util.LinkedHashMap::new
+                ));
+
+        for (Map.Entry<String, ProjectRecruitPosition> entry : currentPositions.entrySet()) {
+            String position = entry.getKey();
+            ProjectRecruitPosition recruitPosition = entry.getValue();
+            Integer nextCapacity = nextCapacities.get(position);
+            boolean full = isRecruitPositionLocked(recruitPosition);
+            long blockingCount = applicationCounts.getOrDefault(position, 0L);
+
+            if (full) {
+                if (nextCapacity == null) {
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "모집이 완료된 포지션은 삭제할 수 없습니다: " + position
+                    );
+                }
+                if (nextCapacity != recruitPosition.getCapacity()) {
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "모집이 완료된 포지션은 수정할 수 없습니다: " + position
+                    );
+                }
+                continue;
+            }
+
+            if (blockingCount > 0 && nextCapacity == null) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
-                        "Cannot remove a position with existing applications: " + position
+                        "지원자가 있는 포지션은 삭제할 수 없습니다: " + position
+                );
+            }
+            if (blockingCount > 0 && nextCapacity != null && blockingCount > nextCapacity) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "지원 인원보다 적게 모집 인원을 줄일 수 없습니다: " + position
                 );
             }
         }
+    }
 
-        Map<String, Long> acceptedCounts = applications.stream()
-                .filter(application -> application.getStatus() != null && application.getStatus().isAccepted())
-                .collect(Collectors.groupingBy(
-                        this::applicationPositionName,
-                        Collectors.counting()
-                ));
-        for (Map.Entry<String, Long> entry : acceptedCounts.entrySet()) {
-            int nextCapacity = nextCapacities.getOrDefault(entry.getKey(), 0);
-            if (entry.getValue() > nextCapacity) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Cannot reduce position capacity below accepted applicants: " + entry.getKey()
-                );
-            }
+    private void validateMinimumRecruitment(int totalRecruitment) {
+        if (totalRecruitment < 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로젝트 모집 인원은 최소 2명 이상이어야 합니다.");
+        }
+    }
+
+    private void validateLeaderPositionIncluded(Profile ownerProfile, String normalizedPositions) {
+        if (ownerProfile == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로젝트 팀장 정보를 확인할 수 없습니다.");
+        }
+        String leaderPosition = normalizeProjectPosition(ownerProfile.getPosition());
+        if (leaderPosition == null || leaderPosition.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로젝트를 등록하려면 먼저 팀장 포지션을 설정해주세요.");
+        }
+        boolean included = ProjectSelectionCatalog.parsePositionCapacities(normalizedPositions, null).stream()
+                .anyMatch(position -> leaderPosition.equals(position.name()));
+        if (!included) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "팀장의 포지션은 모집 포지션에 반드시 포함되어야 합니다.");
         }
     }
 
@@ -560,11 +637,41 @@ public class ProjectService {
         }
     }
 
-    private List<ProjectRecruitPositionStatus> buildPositionStatuses(Project project) {
+    private List<ProjectRecruitPositionStatus> buildPositionStatuses(Project project, List<ProjectParticipant> participants) {
         List<ProjectSelectionCatalog.PositionCapacity> capacities = positionCapacities(project);
         if (capacities.isEmpty()) {
             return List.of();
         }
+        Map<String, Long> participantCounts = participants.stream()
+                .map(this::participantPositionName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(
+                        java.util.function.Function.identity(),
+                        Collectors.counting()
+                ));
+
+        return capacities.stream()
+                .map(position -> {
+                    int current = participantCounts.getOrDefault(position.name(), 0L).intValue();
+                    int capacity = position.capacity();
+                    return new ProjectRecruitPositionStatus(position.name(), current, capacity, current >= capacity);
+                })
+                .toList();
+    }
+
+    private int calculateCurrentRecruitment(Project project, List<ProjectParticipant> participants) {
+        return buildPositionStatuses(project, participants).stream()
+                .mapToInt(ProjectRecruitPositionStatus::current)
+                .sum();
+    }
+
+    private List<ProjectPositionEditConstraint> buildPositionEditConstraints(Project project) {
+        Map<String, Long> blockingCounts = projectApplicationRepository.findByProject(project).stream()
+                .filter(application -> application.getStatus() != null && application.getStatus().blocksPositionRemoval())
+                .collect(Collectors.groupingBy(
+                        this::applicationPositionName,
+                        Collectors.counting()
+                ));
         Map<String, Long> acceptedCounts = projectApplicationRepository.findByProject(project).stream()
                 .filter(application -> application.getStatus() != null && application.getStatus().isAccepted())
                 .collect(Collectors.groupingBy(
@@ -572,57 +679,115 @@ public class ProjectService {
                         Collectors.counting()
                 ));
 
-        return capacities.stream()
+        return project.getPositionSelections().stream()
                 .map(position -> {
-                    int current = acceptedCounts.getOrDefault(position.name(), 0L).intValue();
-                    int capacity = position.capacity();
-                    return new ProjectRecruitPositionStatus(position.name(), current, capacity, current >= capacity);
+                    String positionName = position.getPositionName();
+                    int appliedCount = blockingCounts.getOrDefault(positionName, 0L).intValue();
+                    int acceptedCount = acceptedCounts.getOrDefault(positionName, 0L).intValue();
+                    boolean full = isRecruitPositionLocked(position);
+                    boolean nameLocked = full || appliedCount > 0;
+                    boolean capacityLocked = full;
+                    boolean deleteLocked = full || appliedCount > 0;
+                    int minimumCapacity = appliedCount;
+                    String message = full
+                            ? "모집이 완료된 포지션은 수정 및 삭제가 불가합니다."
+                            : appliedCount > 0
+                            ? "지원자가 있는 포지션은 이름 변경/삭제가 불가하며, 인원은 지원 인원 이상으로만 유지할 수 있습니다."
+                            : "";
+                    return new ProjectPositionEditConstraint(
+                            positionName,
+                            appliedCount,
+                            acceptedCount,
+                            position.getCapacity(),
+                            minimumCapacity,
+                            full,
+                            nameLocked,
+                            capacityLocked,
+                            deleteLocked,
+                            message
+                    );
                 })
                 .toList();
+    }
+
+    private boolean isRecruitPositionLocked(ProjectRecruitPosition recruitPosition) {
+        return ProjectRecruitPosition.STATUS_CLOSED.equalsIgnoreCase(recruitPosition.getRecruitStatus())
+                || recruitPosition.getApprovedUser() >= recruitPosition.getCapacity();
     }
 
     public List<ParticipatedProjectResponse> getParticipatedProjects(Profile profile) {
         return projectParticipantRepository.findByProfile(profile).stream()
                 .map(participant -> {
                     Project project = participant.getProject();
-                    boolean canReview = project.isCompleted()
-                            && !projectReviewRepository.existsByProjectAndReviewer(project, profile)
-                            && "MEMBER".equals(participant.getRole());
+                    boolean canProjectReview = project.isCompleted()
+                            && "MEMBER".equals(participant.getRole())
+                            && !projectReviewRepository.existsByProjectAndReviewer(project, profile);
+                    boolean canPeerReview = project.isCompleted()
+                            && "MEMBER".equals(participant.getRole())
+                            && projectParticipantRepository.findByProject(project).stream()
+                            .map(ProjectParticipant::getProfile)
+                            .filter(Objects::nonNull)
+                            .filter(memberProfile -> !Objects.equals(memberProfile.getId(), profile.getId()))
+                            .count() > 0
+                            && peerReviewRepository.countByProjectAndReviewer(project, profile) == 0;
                     Long dDay = project.getRecruitmentDeadline() != null
                             ? ChronoUnit.DAYS.between(LocalDate.now(), project.getRecruitmentDeadline())
                             : null;
                     String statusLabel = project.isCompleted() ? "COMPLETED" : "PROCEEDING";
+                    LocalDateTime appliedAt = projectApplicationRepository.findAllByProjectAndProfile(project, profile).stream()
+                            .map(ProjectApplication::getCreatedAt)
+                            .filter(Objects::nonNull)
+                            .max(LocalDateTime::compareTo)
+                            .orElse(null);
                     return ParticipatedProjectResponse.builder()
                             .projectId(project.getId())
                             .title(project.getTitle())
                             .participantRole(participant.getRole())
                             .status(statusLabel)
-                            .canReview(canReview)
+                            .canReview(canProjectReview || canPeerReview)
+                            .canProjectReview(canProjectReview)
+                            .canPeerReview(canPeerReview)
                             .dDay(dDay)
                             .recruitStatus(project.getRecruitStatus())
                             .progressStatus(project.getProgressStatus())
+                            .createdAt(project.getCreatedAt())
+                            .appliedAt(appliedAt)
+                            .projectEndAt(project.getProjectEndAt())
                             .build();
                 })
+                .sorted(Comparator
+                        .comparing((ParticipatedProjectResponse response) -> {
+                            if ("COMPLETED".equals(response.getProgressStatus())) {
+                                return response.getProjectEndAt() != null ? response.getProjectEndAt().atStartOfDay() : LocalDateTime.MIN;
+                            }
+                            if ("LEADER".equals(response.getParticipantRole())) {
+                                return response.getCreatedAt() != null ? response.getCreatedAt() : LocalDateTime.MIN;
+                            }
+                            return response.getAppliedAt() != null ? response.getAppliedAt() : LocalDateTime.MIN;
+                        })
+                        .reversed())
                 .toList();
     }
 
     private ProjectDetailResponseDto toDetailResponse(Project project) {
+        List<ProjectParticipant> participants = projectParticipantRepository.findByProject(project);
         List<String> techStacks = splitTechStacks(project);
         Integer totalRecruitment = project.getTotalRecruitment() != null ? project.getTotalRecruitment() : project.getRecruitmentCount();
+        int currentRecruitment = calculateCurrentRecruitment(project, participants);
         return new ProjectDetailResponseDto(
                 project.getId(),
                 project.getTitle(),
                 project.getSummary(),
                 project.getDescription(),
-                displayProjectType(project.getProjectType()),
-                displayProgressMethod(project.getProgressMethod()),
+                displayProjectPurpose(project.getProjectPurpose()),
+                displayWorkMethod(project.getWorkMethod()),
                 formatPositionText(project),
                 resolveLeaderProfileId(project),
                 project.getLeaderName(),
                 project.getLeaderRole(),
                 project.getLeaderAvatarUrl(),
                 project.getThumbnailUrl(),
-                valueOrZero(project.getCurrentRecruitment()),
+                currentRecruitment,
                 totalRecruitment,
                 project.getRecruitmentCount(),
                 project.getRecruitmentStartAt(),
@@ -634,15 +799,20 @@ public class ProjectService {
                 project.getCreatedAt(),
                 project.getUpdatedAt(),
                 techStacks,
+                buildPositionStatuses(project, participants),
                 project.getViewCount()
         );
     }
 
     private Long resolveLeaderProfileId(Project project) {
+        return resolveLeaderProfileId(project, projectParticipantRepository.findByProject(project));
+    }
+
+    private Long resolveLeaderProfileId(Project project, List<ProjectParticipant> participants) {
         if (project.getOwnerProfile() != null && project.getOwnerProfile().getId() != null) {
             return project.getOwnerProfile().getId();
         }
-        Long leaderProfileId = projectParticipantRepository.findByProject(project).stream()
+        Long leaderProfileId = participants.stream()
                 .filter(participant -> "LEADER".equals(participant.getRole()))
                 .map(ProjectParticipant::getProfile)
                 .filter(Objects::nonNull)
@@ -652,15 +822,31 @@ public class ProjectService {
         return leaderProfileId;
     }
 
-    private List<ProjectParticipantProfile> buildTeamMembers(Project project) {
-        List<ProjectParticipantProfile> members = projectParticipantRepository.findByProject(project).stream()
+    private String resolveLeaderPosition(Project project, List<ProjectParticipant> participants) {
+        String leaderPosition = participants.stream()
+                .filter(participant -> "LEADER".equals(participant.getRole()))
+                .map(this::participantPositionName)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        if (leaderPosition != null) {
+            return leaderPosition;
+        }
+        if (project.getOwnerProfile() == null) {
+            return "";
+        }
+        return normalizeProjectPosition(project.getOwnerProfile().getPosition());
+    }
+
+    private List<ProjectParticipantProfile> buildTeamMembers(Project project, List<ProjectParticipant> participants) {
+        List<ProjectParticipantProfile> members = participants.stream()
                 .filter(participant -> participant.getProfile() != null)
                 .sorted((left, right) -> roleOrder(left.getRole()) - roleOrder(right.getRole()))
                 .map(participant -> new ProjectParticipantProfile(
                         participant.getProfile().getId(),
                         participant.getProfile().getNickname(),
                         participant.getRole(),
-                        participant.getProfile().getPosition()
+                        fallbackPosition(participantPositionName(participant), participant.getProfile().getPosition())
                 ))
                 .toList();
         if (!members.isEmpty()) {
@@ -673,8 +859,37 @@ public class ProjectService {
                 project.getOwnerProfile().getId(),
                 project.getOwnerProfile().getNickname(),
                 "LEADER",
-                project.getOwnerProfile().getPosition()
+                normalizeProjectPosition(project.getOwnerProfile().getPosition())
         ));
+    }
+
+    private String participantPositionName(ProjectParticipant participant) {
+        if (participant == null) {
+            return null;
+        }
+        ProjectRecruitPosition recruitPosition = participant.getRecruitPosition();
+        if (recruitPosition != null && recruitPosition.getPositionName() != null && !recruitPosition.getPositionName().isBlank()) {
+            return recruitPosition.getPositionName();
+        }
+        return normalizeProjectPosition(participant.getProfile() != null ? participant.getProfile().getPosition() : null);
+    }
+
+    private String normalizeProjectPosition(String positionName) {
+        if (positionName == null || positionName.isBlank()) {
+            return null;
+        }
+        try {
+            return ProjectSelectionCatalog.positionName(positionName);
+        } catch (IllegalArgumentException exception) {
+            return positionName;
+        }
+    }
+
+    private String fallbackPosition(String primary, String fallback) {
+        if (primary != null && !primary.isBlank()) {
+            return primary;
+        }
+        return normalizeProjectPosition(fallback);
     }
 
     private int roleOrder(String role) {
@@ -687,86 +902,47 @@ public class ProjectService {
         return 2;
     }
 
-    private String normalizeProjectTypeFilter(String value) {
+    private String normalizeProjectPurposeFilter(String value) {
         String cleaned = cleanText(value);
         if (cleaned == null || cleaned.isEmpty()) {
             return cleaned;
         }
-        if (cleaned.contains("사이드")) {
-            return "사이드";
+        try {
+            return ProjectOptionCatalog.normalizeProjectPurpose(cleaned);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
-        if (cleaned.contains("스타트업")) {
-            return "스타트업";
-        }
-        if (cleaned.contains("공모전") || cleaned.equalsIgnoreCase("COMPETITION")) {
-            return "공모전";
-        }
-        if (cleaned.contains("스터디") || cleaned.equalsIgnoreCase("STUDY")) {
-            return cleaned.equalsIgnoreCase("STUDY") ? "STUDY" : "스터디";
-        }
-        if (cleaned.contains("기업")) {
-            return "기업";
-        }
-        return cleaned;
     }
 
-    private String normalizeProjectTypeForStorage(String value) {
+    private String normalizeProjectPurposeForStorage(String value) {
         String cleaned = cleanText(value);
         if (cleaned == null || cleaned.isEmpty()) {
             return cleaned;
         }
-        if (cleaned.contains("사이드")) {
-            return "사이드 프로젝트";
+        try {
+            return ProjectOptionCatalog.normalizeProjectPurpose(cleaned);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
-        if (cleaned.contains("스타트업")) {
-            return "스타트업";
-        }
-        if (cleaned.contains("공모전") || cleaned.equalsIgnoreCase("COMPETITION")) {
-            return "공모전";
-        }
-        if (cleaned.contains("스터디") || cleaned.equalsIgnoreCase("STUDY")) {
-            return "스터디";
-        }
-        if (cleaned.contains("기업")) {
-            return "기업 연계";
-        }
-        return cleaned;
     }
 
-    private String displayProjectType(String value) {
-        String normalized = normalizeProjectTypeForStorage(value);
-        return normalized == null ? "" : normalized;
+    private String displayProjectPurpose(String value) {
+        return ProjectOptionCatalog.displayProjectPurpose(value);
     }
 
-    private String normalizeProgressMethod(String value) {
+    private String normalizeWorkMethod(String value) {
         String cleaned = cleanText(value);
         if (cleaned == null || cleaned.isEmpty()) {
             return cleaned;
         }
-        String lower = cleaned.toLowerCase();
-        if (cleaned.contains("혼합") || cleaned.contains("온/오프") || lower.contains("hybrid")) {
-            return "HYBRID";
+        try {
+            return ProjectOptionCatalog.normalizeWorkMethod(cleaned);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
-        if (cleaned.contains("오프라인") || lower.contains("offline")) {
-            return "OFFLINE";
-        }
-        if (cleaned.contains("온라인") || lower.contains("online")) {
-            return "ONLINE";
-        }
-        return cleaned;
     }
 
-    private String displayProgressMethod(String value) {
-        String normalized = normalizeProgressMethod(value);
-        if ("ONLINE".equals(normalized)) {
-            return "온라인";
-        }
-        if ("OFFLINE".equals(normalized)) {
-            return "오프라인";
-        }
-        if ("HYBRID".equals(normalized)) {
-            return "온/오프 혼합";
-        }
-        return normalized == null ? "" : normalized;
+    private String displayWorkMethod(String value) {
+        return ProjectOptionCatalog.displayWorkMethod(value);
     }
 }

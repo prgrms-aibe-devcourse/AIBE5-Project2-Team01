@@ -89,8 +89,8 @@ public class ProjectApplicationServiceTest {
         return new Project(
                 title,
                 "상세 설명",
-                "타입",
-                "ONLINE",
+                "프로젝트",
+                "온라인",
                 requiredMember,
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),
@@ -319,9 +319,20 @@ public class ProjectApplicationServiceTest {
     @DisplayName("모집 인원이 가득 찬 프로젝트에는 지원할 수 없다")
     void createApplication_RecruitmentFull_Fail() {
         for (int i = 0; i < 5; i++) {
-            testProject.incrementCurrentRecruitment();
+            Profile occupiedMember = Profile.builder()
+                    .email("occupied" + i + "@test.com")
+                    .nickname("참여자" + i)
+                    .isPublic(true)
+                    .build();
+            occupiedMember.replacePosition(resolvePosition("백엔드"));
+            occupiedMember = profileRepository.save(occupiedMember);
+            projectParticipantRepository.save(ProjectParticipant.builder()
+                    .project(testProject)
+                    .profile(occupiedMember)
+                    .role("MEMBER")
+                    .build());
         }
-        projectRepository.saveAndFlush(testProject);
+        projectParticipantRepository.flush();
 
         ProjectApplicationRequestDto request = new ProjectApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "메시지");
 
@@ -336,8 +347,8 @@ public class ProjectApplicationServiceTest {
         testProject.update(
                 testProject.getTitle(),
                 testProject.getDescription(),
-                testProject.getProjectType(),
-                testProject.getProgressMethod(),
+                testProject.getProjectPurpose(),
+                testProject.getWorkMethod(),
                 testProject.getRecruitmentCount(),
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),

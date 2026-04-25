@@ -6,162 +6,134 @@
 <body class="text-poodle-900 flex flex-col min-h-screen">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-    <main class="flex-grow container mx-auto px-4 py-12 animate-fade-in-up">
+    <main class="w-full flex-grow mx-auto max-w-7xl px-4 py-12 animate-fade-in-up">
         <!-- Hero Section (Slim Version) -->
         <section
-            class="mb-12 relative min-h-[27rem] bg-gradient-to-br from-poodle-700 via-poodle-600 to-poodle-900 rounded-[3rem] px-8 md:px-14 py-12 md:py-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.18)] border border-white/10 flex items-center">
-            <div class="absolute top-0 right-0 w-[24rem] h-[24rem] bg-white/5 rounded-full blur-[90px] -translate-y-1/3 translate-x-1/4 pointer-events-none"></div>
-            <div class="absolute bottom-0 left-0 w-[18rem] h-[18rem] bg-meatball/15 rounded-full blur-[90px] translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
-            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball logo"
-                 class="absolute right-[-4rem] md:right-6 bottom-[-3rem] w-[19rem] md:w-[27rem] max-w-none object-contain opacity-20 md:opacity-100 pointer-events-none select-none">
+            class="mb-12 relative min-h-[26rem] bg-poodle-100 rounded-[3rem] px-8 md:px-14 py-12 md:py-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.12)] border border-white/80 flex items-center">
+            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball mascot"
+                 class="absolute right-[-5rem] md:right-8 bottom-[-3rem] w-[20rem] md:w-[28rem] max-w-none object-contain opacity-20 md:opacity-95 pointer-events-none select-none">
 
             <div class="relative z-10 max-w-2xl">
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full border border-white text-poodle-600 text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
                     <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
                 </div>
-                <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-5 leading-tight">
-                    사이드 프로젝트 팀원을<br>구하는 가장 똑똑한 방법
+                <h1 class="text-4xl md:text-6xl font-black text-poodle-600 tracking-tighter mb-5 leading-tight">
+                    같이 할 사람,<br>여기서 만나요
                 </h1>
                 <p
-                    class="text-sm md:text-base text-poodle-100 font-bold mb-8 max-w-lg leading-relaxed opacity-90">
-                    밋볼이와 함께, 프로젝트를 더 빠르게 만나보세요!
+                    class="text-sm md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
+                    밋볼에서 프로젝트 팀원을 찾아보세요. 따뜻한 매칭 흐름으로 나에게 맞는 팀과 더 빨리 만날 수 있습니다.
                 </p>
                 <a th:href="@{/#projects}"
-                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-meatball text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-meatball/20 hover:scale-105 active:scale-95 transition-all border border-white/10">
-                    <span class="relative z-10">지금 바로 팀원 찾기</span>
+                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-white hover:scale-105 active:scale-95 transition-all">
+                    <span class="relative z-10">밋볼이와 AI로 프로젝트 찾기!</span>
                     <i
                         class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
-                    <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.4s]"></span>
                 </a>
             </div>
         </section>
 
         <!-- Search & Filter Section -->
-        <section id="projects" class="mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
-            <div class="meetball-card p-8 rounded-[3rem] space-y-6">
-                <!-- Keyword Search -->
-                <div
-                    class="flex items-center bg-poodle-50/50 rounded-2xl p-2 border border-poodle-100 focus-within:border-meatball/30 focus-within:bg-white transition-all">
-                    <div class="px-4 text-poodle-300"><i class="fa-solid fa-magnifying-glass"></i></div>
-                    <input type="text" id="keywordInput" placeholder="관심 있는 프로젝트명이나 기술 스택을 검색해보세요!"
-                        class="w-full bg-transparent border-none outline-none text-poodle-800 font-bold placeholder-poodle-300 text-sm py-2"
-                        onkeypress="if(event.key === 'Enter') fetchProjects()">
-                    <button onclick="fetchProjects()"
-                        class="px-6 py-3 bg-poodle-600 text-white rounded-xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all">검색</button>
-                </div>
-
-                <div class="h-px bg-poodle-50/50 w-full"></div>
-
-                <!-- Filters -->
-                <div class="flex flex-col gap-6">
-                    <!-- Project Type -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="flex flex-wrap gap-3 items-center">
-                            <span
-                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Type</span>
-                            <button onclick="setFilter('projectType', '')" data-value=""
-                                class="filter-btn type-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
-                            <button onclick="setFilter('projectType', '사이드 프로젝트')" data-value="사이드 프로젝트"
-                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">사이드
-                                프로젝트</button>
-                            <button onclick="setFilter('projectType', '스타트업')" data-value="스타트업"
-                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">스타트업</button>
-                            <button onclick="setFilter('projectType', '공모전')" data-value="공모전"
-                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">공모전</button>
-                            <button onclick="setFilter('projectType', '기업 연계')" data-value="기업 연계"
-                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">기업 연계</button>
-                            <button onclick="setFilter('projectType', '스터디')" data-value="스터디"
-                                class="filter-btn type-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">스터디</button>
+        <section id="projects" class="relative z-20 mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="meetball-card relative z-20 rounded-[3rem] border border-white/80 px-6 py-6 shadow-[0_25px_70px_rgba(101,55,40,0.12)] md:px-8 md:py-8">
+                <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(9rem,0.72fr)_minmax(9rem,0.72fr)_minmax(12rem,0.95fr)_minmax(14rem,1.15fr)_minmax(10rem,0.82fr)_auto]">
+                    <div class="relative z-30">
+                        <button type="button" id="projectPurposeDropdownBtn" onclick="toggleProjectPurposeDropdown()"
+                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                            <span id="projectPurposeSelectedText">목적</span>
+                            <i id="projectPurposeDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                        </button>
+                        <div id="projectPurposeDropdownMenu"
+                             class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
+                            <div class="mb-4 flex justify-center md:hidden">
+                                <span class="h-1.5 w-12 rounded-full bg-poodle-100"></span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3" id="projectPurposeOptionsList">
+                                <button type="button" data-project-purpose-option="" onclick="setProjectPurposeFilter('')"
+                                        class="rounded-2xl bg-poodle-50 px-4 py-4 text-sm font-black text-poodle-600 transition-all hover:bg-poodle-100">
+                                    전체
+                                </button>
+                                <button th:each="option : ${meetballProjectPurposeOptions}"
+                                        type="button"
+                                        th:attr="data-project-purpose-option=${option.code}"
+                                        onclick="setProjectPurposeFilter(this.dataset.projectPurposeOption)"
+                                        class="rounded-2xl bg-poodle-50 px-4 py-4 text-sm font-black text-poodle-600 transition-all hover:bg-poodle-100"
+                                        th:text="${option.label}">
+                                    프로젝트
+                                </button>
+                            </div>
                         </div>
-                        <!-- Progress Method -->
-                        <div class="flex flex-wrap gap-3 items-center">
-                            <span
-                                class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16">Method</span>
-                            <button onclick="setFilter('progressMethod', '')" data-value=""
-                                class="filter-btn method-filter active px-4 py-1.5 rounded-xl bg-poodle-600 text-white text-[11px] font-black transition-all">전체</button>
-                            <button onclick="setFilter('progressMethod', '온라인')" data-value="온라인"
-                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">온라인</button>
-                            <button onclick="setFilter('progressMethod', '오프라인')" data-value="오프라인"
-                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">오프라인</button>
-                            <button onclick="setFilter('progressMethod', '온/오프 혼합')" data-value="온/오프 혼합"
-                                class="filter-btn method-filter px-4 py-1.5 rounded-xl border border-poodle-50 text-poodle-400 text-[11px] font-black hover:bg-poodle-50 transition-all">혼합</button>
+                    </div>
+
+                    <div class="relative z-30">
+                        <button type="button" id="roleDropdownBtn" onclick="toggleRoleDropdown()"
+                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                            <span id="roleSelectedText">포지션</span>
+                            <i id="roleDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                        </button>
+                        <div id="roleDropdownMenu"
+                             class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
+                            <div class="mb-4 flex justify-center md:hidden">
+                                <span class="h-1.5 w-12 rounded-full bg-poodle-100"></span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 md:grid-cols-2" id="roleOptionsList"></div>
                         </div>
-	                        <!-- Position -->
-	                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
-	                            <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Role</span>
-	                            <div class="relative flex-grow">
-	                                <select id="positionFilterSelect" onchange="setPositionFilter(this.value)"
-	                                        class="w-full bg-poodle-50/50 border border-poodle-100 rounded-xl px-4 py-3 text-xs font-black text-poodle-700 outline-none focus:bg-white focus:border-meatball/30 appearance-none">
-	                                    <option value="">전체</option>
-	                                </select>
-	                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-[10px]"></i>
-	                            </div>
-	                        </div>
-	                        <!-- Tech Stack -->
-	                        <div class="space-y-3 lg:col-span-2">
-	                            <div class="flex flex-wrap items-center gap-3">
-	                                <span class="text-[11px] font-black text-poodle-200 uppercase tracking-widest italic w-16 shrink-0">Tech</span>
-	                                <button type="button" onclick="toggleTechStackPanel()"
-	                                        class="inline-flex items-center gap-3 px-5 py-3 bg-white border border-poodle-100 rounded-xl text-xs font-black text-poodle-600 hover:border-meatball/30 hover:text-meatball transition-all">
-	                                    <i class="fa-solid fa-layer-group text-[10px]"></i>
-	                                    기술 스택
-	                                    <i class="fa-solid fa-chevron-down text-[10px] text-poodle-200"></i>
-	                                </button>
-	                                <button id="techStackClearBtn" type="button" onclick="clearTechStackFilter()"
-	                                        class="hidden inline-flex items-center gap-2 px-4 py-3 bg-poodle-50 text-poodle-500 border border-poodle-100 rounded-xl text-xs font-black hover:bg-white hover:text-red-400 transition-all">
-	                                    <i class="fa-solid fa-rotate-left text-[10px]"></i>
-	                                    초기화
-	                                </button>
-	                                <div id="selectedTechStackSummary" class="flex flex-wrap gap-2"></div>
-	                            </div>
-	                            <div id="techStackPanel" class="hidden rounded-[2rem] border border-poodle-100 bg-white p-6 shadow-sm space-y-5">
-	                                <div id="techStackTabs" class="flex flex-wrap gap-2 border-b border-poodle-50 pb-4"></div>
-	                                <div id="techStackFilterOptions" class="flex flex-wrap gap-3"></div>
-	                            </div>
-	                        </div>
+                    </div>
+
+                    <div class="relative z-30">
+                        <button type="button" id="techStackMainBtn" onclick="toggleTechStackPanel()"
+                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                            <span id="techStackSelectedText">기술스택</span>
+                            <i id="techStackPanelIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                        </button>
+                        <div id="techStackPanel"
+                             class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-3 md:max-h-[28rem] md:w-[min(48rem,calc(100vw-6rem))]">
+                            <div class="mb-4 flex justify-center md:hidden">
+                                <span class="h-1.5 w-12 rounded-full bg-poodle-100"></span>
+                            </div>
+                            <div class="flex flex-col gap-4 border-b border-poodle-50 pb-5 lg:flex-row lg:items-start lg:justify-between">
+                                <div id="techStackTabs" class="flex flex-wrap gap-3"></div>
+                                <div class="flex justify-end shrink-0 lg:min-w-[7.75rem]">
+                                    <button id="techStackClearBtn" type="button" onclick="clearTechStackFilter(event)"
+                                            class="invisible pointer-events-none opacity-0 inline-flex items-center gap-2 rounded-[1.1rem] border border-poodle-100 bg-white px-4 py-2.5 text-sm font-black text-poodle-500 transition-all hover:text-red-400">
+                                        <i class="fa-solid fa-rotate-left text-xs"></i>
+                                        초기화
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="techStackFilterOptions" class="mt-5 flex flex-wrap gap-4"></div>
+                        </div>
+                    </div>
+
+                    <label class="flex items-center gap-3 rounded-[1.35rem] border border-poodle-100 bg-white px-4 py-4 shadow-sm transition-all focus-within:border-meatball/30 focus-within:shadow-lg">
+                        <i class="fa-solid fa-magnifying-glass text-2xl text-poodle-200"></i>
+                        <input type="text" id="keywordInput" placeholder="제목 또는 설명 검색"
+                               class="w-full border-none bg-transparent text-base font-black text-poodle-700 placeholder:text-poodle-200 focus:outline-none">
+                    </label>
+
+                    <button type="button" id="bookmarkedFilterBtn" onclick="toggleBookmarkedOnly()"
+                            class="inline-flex h-full min-h-[4rem] items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-poodle-50 px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/20 hover:bg-white hover:text-meatball">
+                        관심 프로젝트
+                    </button>
+
+                    <div class="hidden items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-white p-1 shadow-sm md:flex">
+                        <button type="button" id="btn-grid" onclick="setViewMode('grid')"
+                                class="view-btn active inline-flex h-12 w-14 items-center justify-center rounded-[1rem] bg-poodle-600 text-white transition-all">
+                            <i class="fa-solid fa-table-cells-large text-2xl"></i>
+                        </button>
+                        <button type="button" id="btn-list" onclick="setViewMode('list')"
+                                class="view-btn inline-flex h-12 w-14 items-center justify-center rounded-[1rem] text-poodle-300 transition-all hover:text-meatball">
+                            <i class="fa-solid fa-list text-2xl"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Personalized Recommendations -->
-        <section th:if="${isLoggedIn}" id="recommendationSection" class="mb-16 hidden animate-fade-in-up">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <p class="text-[10px] font-black text-meatball uppercase tracking-[0.25em] mb-2">Smart Matching</p>
-                    <h2 class="text-2xl font-black text-poodle-900 tracking-tight">나에게 맞는 추천 프로젝트</h2>
-                </div>
-                <a th:href="@{/mypage}" class="text-xs font-black text-poodle-300 hover:text-meatball transition-colors">
-                    프로필 보러가기 <i class="fa-solid fa-chevron-right ml-1"></i>
-                </a>
-            </div>
-            <div id="recommendationContainer" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div class="p-8 bg-white rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">추천을 불러오는 중...</div>
             </div>
         </section>
 
         <!-- Project List (Slim Cards) -->
         <section class="mb-24 animate-fade-in-up" style="animation-delay: 0.4s;">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-3xl font-black text-poodle-900 tracking-tight">모집 중인 프로젝트</h2>
-                <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-2 p-1 bg-white border border-poodle-50 rounded-2xl shadow-sm">
-                        <button type="button" id="btn-grid" onclick="setViewMode('grid')"
-                            class="view-btn active w-11 h-11 rounded-xl bg-poodle-600 text-white transition-all">
-                            <i class="fa-solid fa-table-cells-large text-xs"></i>
-                        </button>
-                        <button type="button" id="btn-list" onclick="setViewMode('list')"
-                            class="view-btn w-11 h-11 rounded-xl text-poodle-300 hover:text-meatball transition-all">
-                            <i class="fa-solid fa-list text-xs"></i>
-                        </button>
-                    </div>
-                    <a th:href="@{/register}"
-                        class="px-6 py-4 bg-poodle-600 text-white rounded-2xl text-xs font-black shadow-xl shadow-poodle-600/10 hover:bg-meatball hover:text-poodle-900 transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-plus text-[10px]"></i> 프로젝트 등록
-                    </a>
-                </div>
-            </div>
+            <p id="projectCountSummary" class="sr-only">최신등록순으로 프로젝트를 불러오는 중입니다.</p>
 
             <!-- Project Container (Dynamic via JS) -->
             <div id="projectContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -180,114 +152,311 @@
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
         const HOME_LOGGED_IN = Boolean(/*[[${isLoggedIn}]]*/ false);
+        const HOME_PAGE_SIZE = 6;
+        const MOBILE_MEDIA_QUERY = window.matchMedia('(max-width: 767px)');
 
-	        let filterState = {
-	            keyword: '',
-	            projectType: '',
-	            progressMethod: '',
-	            position: '',
-	            techStacks: [],
-	            viewMode: 'grid',
-	            page: 0
-	        };
-	        let activeTechCategory = '인기';
+        let filterState = {
+            keyword: '',
+            projectPurpose: '',
+            bookmarkedOnly: false,
+            position: '',
+            techStacks: [],
+            viewMode: 'grid',
+            page: 0
+        };
+        let activeTechCategory = '모두보기';
+        let searchDebounceTimer = null;
+        let activeFetchToken = 0;
+        let currentProjects = [];
+        let currentPageData = null;
 
-        function setFilter(type, value) {
-            filterState[type] = value;
-            filterState.page = 0; // 필터 시 1페이지로 리셋
-
-            // UI 버튼 활성화 토글 로직
-            const parent = document.querySelectorAll(`.${type}-filter`);
-            if (parent.length > 0) {
-                parent.forEach(btn => {
-                    btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-900', 'text-white');
-                    btn.classList.add('border', 'border-poodle-50', 'text-poodle-400');
-                });
-	                // 선택된 버튼 처리
-                const activeBtn = Array.from(parent).find(b => {
-                    return b.dataset.value === value || (value === '' && b.innerText === '전체') || b.innerText === value;
-                });
-                if (activeBtn) {
-                    activeBtn.classList.add('active', 'bg-poodle-600', 'text-white');
-                    activeBtn.classList.remove('border', 'border-poodle-50', 'text-poodle-400');
-                }
+        function normalizeViewMode(mode) {
+            if (MOBILE_MEDIA_QUERY.matches) {
+                return 'grid';
             }
-
-            fetchProjects();
+            return mode === 'list' ? 'list' : 'grid';
         }
 
-	        function setPositionFilter(value) {
-	            filterState.position = value;
-	            filterState.page = 0;
-	            fetchProjects();
-	        }
+        function buildFilterUrl(state = filterState) {
+            const params = new URLSearchParams();
+            if (state.keyword) params.set('keyword', state.keyword);
+            if (state.projectPurpose) params.set('projectPurpose', state.projectPurpose);
+            if (state.bookmarkedOnly) params.set('bookmarkedOnly', 'true');
+            if (state.position) params.set('position', state.position);
+            if (state.techStacks.length) params.set('techStack', state.techStacks.join(','));
+            const normalizedViewMode = normalizeViewMode(state.viewMode);
+            if (normalizedViewMode === 'list') params.set('view', 'list');
+            if (state.page > 0) params.set('page', String(state.page));
+            const queryString = params.toString();
+            return queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+        }
 
-	        function toggleTechStackPanel() {
-	            document.getElementById('techStackPanel')?.classList.toggle('hidden');
-	        }
+        function syncUrlWithFilterState() {
+            window.history.replaceState({}, '', buildFilterUrl());
+        }
 
-	        function setTechCategory(category) {
-	            activeTechCategory = category;
-	            renderTechStackFilter();
-	        }
+        function hydrateFilterStateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            filterState.keyword = params.get('keyword') || '';
+            filterState.projectPurpose = params.get('projectPurpose') || '';
+            filterState.bookmarkedOnly = HOME_LOGGED_IN && params.get('bookmarkedOnly') === 'true';
+            filterState.position = params.get('position') || '';
+            filterState.techStacks = (params.get('techStack') || '')
+                .split(',')
+                .map(value => value.trim())
+                .filter(Boolean);
+            filterState.viewMode = normalizeViewMode(params.get('view') || 'grid');
+            filterState.page = Math.max(Number(params.get('page') || 0) || 0, 0);
 
-	        function toggleTechStackFilter(tech) {
-	            const index = filterState.techStacks.indexOf(tech);
-	            if (index >= 0) {
-	                filterState.techStacks.splice(index, 1);
-	            } else {
-	                filterState.techStacks.push(tech);
-	            }
-	            filterState.page = 0;
-	            renderTechStackFilter();
-	            fetchProjects();
-	        }
+            const keywordInput = document.getElementById('keywordInput');
+            if (keywordInput) {
+                keywordInput.value = filterState.keyword;
+            }
+        }
 
-	        function clearTechStackFilter() {
-	            filterState.techStacks = [];
-	            filterState.page = 0;
-	            renderTechStackFilter();
-	            fetchProjects();
-	        }
+        function syncBookmarkedButton() {
+            const button = document.getElementById('bookmarkedFilterBtn');
+            if (!button) return;
+            const isActive = filterState.bookmarkedOnly;
+            button.classList.toggle('bg-poodle-600', isActive);
+            button.classList.toggle('text-white', isActive);
+            button.classList.toggle('border-transparent', isActive);
+            button.classList.toggle('shadow-lg', isActive);
+            button.classList.toggle('shadow-poodle-600/15', isActive);
+            button.classList.toggle('hover:bg-meatball', isActive);
+            button.classList.toggle('hover:text-white', isActive);
 
-	        function initPositionFilter() {
-	            const select = document.getElementById('positionFilterSelect');
-	            if (!select) return;
-	            select.innerHTML = '<option value="">전체</option>' + window.meetballPositionOptions
-	                .map(position => `<option value="${escapeHtml(position)}">${escapeHtml(position)}</option>`)
-	                .join('');
-	        }
+            button.classList.toggle('bg-poodle-50', !isActive);
+            button.classList.toggle('text-poodle-600', !isActive);
+            button.classList.toggle('border-poodle-100', !isActive);
+            button.classList.toggle('shadow-sm', !isActive);
+            button.classList.toggle('hover:border-meatball/20', !isActive);
+            button.classList.toggle('hover:bg-white', !isActive);
+            button.classList.toggle('hover:text-meatball', !isActive);
+        }
 
-	        function renderTechStackFilter() {
-	            const tabs = document.getElementById('techStackTabs');
-	            const options = document.getElementById('techStackFilterOptions');
-	            const summary = document.getElementById('selectedTechStackSummary');
-	            const clearBtn = document.getElementById('techStackClearBtn');
-	            if (!tabs || !options || !summary || !clearBtn) return;
+        function updateProjectPurposeButtonLabel() {
+            const selectedText = document.getElementById('projectPurposeSelectedText');
+            if (!selectedText) return;
+            if (!filterState.projectPurpose) {
+                selectedText.textContent = '목적';
+                return;
+            }
+            const activeButton = Array.from(document.querySelectorAll('[data-project-purpose-option]'))
+                .find(button => button.dataset.projectPurposeOption === filterState.projectPurpose);
+            selectedText.textContent = activeButton?.textContent?.trim() || '목적';
+        }
 
-	            tabs.innerHTML = Object.keys(window.meetballTechStackCategories).map(category => {
-	                const active = category === activeTechCategory;
-	                return `<button type="button" onclick="setTechCategory('${escapeHtml(category)}')"
-	                            class="px-4 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-poodle-600 text-white' : 'text-poodle-300 hover:bg-poodle-50 hover:text-poodle-700'}">${escapeHtml(category)}</button>`;
-	            }).join('');
+        function updatePositionButtonLabel() {
+            const selectedText = document.getElementById('roleSelectedText');
+            if (selectedText) {
+                selectedText.textContent = filterState.position || '포지션';
+            }
+        }
 
-	            const visibleTechs = window.meetballTechStackCategories[activeTechCategory] || window.meetballTechStackOptions;
-	            options.innerHTML = visibleTechs.map(tech => {
-	                const selected = filterState.techStacks.includes(tech);
-	                return `<button type="button" onclick="toggleTechStackFilter('${escapeHtml(tech)}')" class="tech-filter-option">${window.meetballTechStackChipHtml(tech, { selected })}</button>`;
-	            }).join('');
+        function updateTechStackButtonLabel() {
+            const selectedText = document.getElementById('techStackSelectedText');
+            if (!selectedText) return;
+            if (filterState.techStacks.length === 0) {
+                selectedText.textContent = '기술스택';
+                return;
+            }
+            if (filterState.techStacks.length === 1) {
+                selectedText.textContent = filterState.techStacks[0];
+                return;
+            }
+            selectedText.textContent = `${filterState.techStacks[0]} 외 ${filterState.techStacks.length - 1}`;
+        }
 
-	            summary.innerHTML = filterState.techStacks.map(tech => window.meetballTechStackChipHtml(tech, {
-	                selected: true,
-	                className: 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black'
-	            })).join('');
-	            clearBtn.classList.toggle('hidden', filterState.techStacks.length === 0);
-	        }
+        function setProjectPurposeFilter(value, { skipFetch = false } = {}) {
+            filterState.projectPurpose = value;
+            filterState.page = 0;
+            const purposeOptions = document.querySelectorAll('[data-project-purpose-option]');
+            purposeOptions.forEach(button => {
+                const isActive = button.dataset.projectPurposeOption === value || (value === '' && button.dataset.projectPurposeOption === '');
+                button.classList.toggle('bg-poodle-600', isActive);
+                button.classList.toggle('text-white', isActive);
+                button.classList.toggle('shadow-lg', isActive);
+                button.classList.toggle('shadow-poodle-600/10', isActive);
+                button.classList.toggle('bg-poodle-50', !isActive);
+                button.classList.toggle('text-poodle-600', !isActive);
+            });
+            updateProjectPurposeButtonLabel();
+            closeProjectPurposeDropdown();
+            if (!skipFetch) {
+                fetchProjects(0);
+            }
+        }
+
+        function toggleProjectPurposeDropdown() {
+            const menu = document.getElementById('projectPurposeDropdownMenu');
+            const icon = document.getElementById('projectPurposeDropdownIcon');
+            if (!menu) return;
+            const nextOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            icon?.classList.toggle('rotate-180', nextOpen);
+        }
+
+        function closeProjectPurposeDropdown() {
+            document.getElementById('projectPurposeDropdownMenu')?.classList.add('hidden');
+            document.getElementById('projectPurposeDropdownIcon')?.classList.remove('rotate-180');
+        }
+
+        function toggleBookmarkedOnly() {
+            if (!HOME_LOGGED_IN) {
+                const targetUrl = buildFilterUrl({ ...filterState, bookmarkedOnly: true, page: 0 });
+                openLoginRequiredModal(targetUrl);
+                return;
+            }
+            filterState.bookmarkedOnly = !filterState.bookmarkedOnly;
+            filterState.page = 0;
+            syncBookmarkedButton();
+            fetchProjects(0);
+        }
+
+        function handleKeywordInput() {
+            filterState.keyword = document.getElementById('keywordInput')?.value.trim() || '';
+            filterState.page = 0;
+            window.clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = window.setTimeout(() => fetchProjects(0), 250);
+        }
+
+        function setPositionFilter(value, { skipFetch = false } = {}) {
+            filterState.position = value;
+            filterState.page = 0;
+            const roleOptions = document.querySelectorAll('[data-role-option]');
+            roleOptions.forEach(button => {
+                const isActive = button.dataset.roleOption === value || (value === '' && button.dataset.roleOption === '');
+                button.classList.toggle('bg-poodle-600', isActive);
+                button.classList.toggle('text-white', isActive);
+                button.classList.toggle('shadow-lg', isActive);
+                button.classList.toggle('shadow-poodle-600/10', isActive);
+                button.classList.toggle('bg-poodle-50', !isActive);
+                button.classList.toggle('text-poodle-600', !isActive);
+            });
+            updatePositionButtonLabel();
+            closeRoleDropdown();
+            if (!skipFetch) {
+                fetchProjects(0);
+            }
+        }
+
+        function toggleTechStackPanel() {
+            const panel = document.getElementById('techStackPanel');
+            const icon = document.getElementById('techStackPanelIcon');
+            if (!panel) return;
+            const nextOpen = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden');
+            icon?.classList.toggle('rotate-180', nextOpen);
+        }
+
+        function toggleRoleDropdown() {
+            const menu = document.getElementById('roleDropdownMenu');
+            const icon = document.getElementById('roleDropdownIcon');
+            if (!menu) return;
+            const nextOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            icon?.classList.toggle('rotate-180', nextOpen);
+        }
+
+        function closeRoleDropdown() {
+            document.getElementById('roleDropdownMenu')?.classList.add('hidden');
+            document.getElementById('roleDropdownIcon')?.classList.remove('rotate-180');
+        }
+
+        function closeTechStackPanel() {
+            document.getElementById('techStackPanel')?.classList.add('hidden');
+            document.getElementById('techStackPanelIcon')?.classList.remove('rotate-180');
+        }
+
+        function setTechCategory(event, category) {
+            event?.preventDefault();
+            event?.stopPropagation();
+            activeTechCategory = category;
+            renderTechStackFilter();
+        }
+
+        function toggleTechStackFilter(event, tech) {
+            event?.preventDefault();
+            event?.stopPropagation();
+            const index = filterState.techStacks.indexOf(tech);
+            if (index >= 0) {
+                filterState.techStacks.splice(index, 1);
+            } else {
+                filterState.techStacks.push(tech);
+            }
+            filterState.page = 0;
+            renderTechStackFilter();
+            updateTechStackButtonLabel();
+            fetchProjects(0);
+        }
+
+        function clearTechStackFilter(event) {
+            event?.preventDefault();
+            event?.stopPropagation();
+            filterState.techStacks = [];
+            filterState.page = 0;
+            renderTechStackFilter();
+            updateTechStackButtonLabel();
+            fetchProjects(0);
+        }
+
+        function initPositionFilter() {
+            const list = document.getElementById('roleOptionsList');
+            if (!list) return;
+            list.innerHTML = [
+                `<button type="button" data-role-option="" onclick="setPositionFilter('')" class="rounded-2xl bg-poodle-600 px-4 py-4 text-sm font-black text-white shadow-lg shadow-poodle-600/10 transition-all">전체</button>`,
+                ...window.meetballPositionOptions.map(position => `
+                    <button type="button" data-role-option="${escapeHtml(position)}" onclick="setPositionFilter('${escapeHtml(position)}')" class="rounded-2xl bg-poodle-50 px-4 py-4 text-sm font-black text-poodle-600 transition-all hover:bg-poodle-100">
+                        ${escapeHtml(position)}
+                    </button>
+                `)
+            ].join('');
+            setPositionFilter(filterState.position, { skipFetch: true });
+        }
+
+        function initProjectPurposeFilter() {
+            setProjectPurposeFilter(filterState.projectPurpose, { skipFetch: true });
+        }
+
+        function renderTechStackFilter() {
+            const tabs = document.getElementById('techStackTabs');
+            const options = document.getElementById('techStackFilterOptions');
+            const clearBtn = document.getElementById('techStackClearBtn');
+            if (!tabs || !options || !clearBtn) return;
+
+            const orderedCategories = ['모두보기', '인기', '프론트엔드', '백엔드', '모바일', '기타']
+                .filter(category => Object.prototype.hasOwnProperty.call(window.meetballTechStackCategories, category));
+
+            tabs.innerHTML = orderedCategories.map(category => {
+                const active = category === activeTechCategory;
+                return `<button type="button" onclick="setTechCategory(event, '${escapeHtml(category)}')"
+                                class="rounded-[1.2rem] px-5 py-3 text-sm font-black transition-all ${active ? 'bg-poodle-600 text-white shadow-lg shadow-poodle-600/10' : 'text-poodle-400 hover:bg-poodle-50 hover:text-poodle-700'}">${escapeHtml(category)}</button>`;
+            }).join('');
+
+            const visibleTechs = window.meetballTechStackCategories[activeTechCategory] || window.meetballTechStackOptions;
+            options.innerHTML = visibleTechs.map(tech => {
+                const selected = filterState.techStacks.includes(tech);
+                return `<button type="button" onclick="toggleTechStackFilter(event, '${escapeHtml(tech)}')" class="tech-filter-option">${window.meetballTechStackChipHtml(tech, { selected })}</button>`;
+            }).join('');
+
+            const hasSelectedTechStacks = filterState.techStacks.length > 0;
+            clearBtn.classList.toggle('invisible', !hasSelectedTechStacks);
+            clearBtn.classList.toggle('opacity-0', !hasSelectedTechStacks);
+            clearBtn.classList.toggle('pointer-events-none', !hasSelectedTechStacks);
+        }
 
         function setViewMode(mode) {
-            filterState.viewMode = mode === 'list' ? 'list' : 'grid';
+            filterState.viewMode = normalizeViewMode(mode);
+            updateViewButtons();
+            renderProjects(currentProjects);
+            syncUrlWithFilterState();
+        }
+
+        function updateViewButtons() {
+            filterState.viewMode = normalizeViewMode(filterState.viewMode);
             document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-900', 'text-white');
+                btn.classList.remove('active', 'bg-poodle-600', 'text-white');
                 btn.classList.add('text-poodle-300');
             });
             const activeBtn = document.getElementById(filterState.viewMode === 'grid' ? 'btn-grid' : 'btn-list');
@@ -295,32 +464,33 @@
                 activeBtn.classList.add('active', 'bg-poodle-600', 'text-white');
                 activeBtn.classList.remove('text-poodle-300');
             }
-            fetchProjects(filterState.page);
         }
 
-        async function fetchProjects(page = 0) {
+        async function fetchProjects(page = filterState.page) {
             filterState.page = page;
+            filterState.viewMode = normalizeViewMode(filterState.viewMode);
+            syncUrlWithFilterState();
 
-            // 검색어 반영
-            const keywordInput = document.getElementById('keywordInput').value;
-            filterState.keyword = keywordInput;
-
+            const requestToken = ++activeFetchToken;
             try {
                 const query = new URLSearchParams({
-                    page: filterState.page,
-                    size: 6,
+                    page: String(filterState.page),
+                    size: String(HOME_PAGE_SIZE),
                     keyword: filterState.keyword,
-                    projectType: filterState.projectType,
-	                    progressMethod: filterState.progressMethod,
-	                    position: filterState.position,
-	                    techStack: filterState.techStacks.join(',')
-	                }).toString();
+                    projectPurpose: filterState.projectPurpose,
+                    position: filterState.position,
+                    techStack: filterState.techStacks.join(','),
+                    bookmarkedOnly: String(filterState.bookmarkedOnly)
+                }).toString();
 
                 const res = await fetch(`/api/projects?${query}`);
                 if (!res.ok) throw new Error('API fetch error');
                 const data = await res.json();
+                if (requestToken !== activeFetchToken) return;
 
-                renderProjects(data.content);
+                currentProjects = data.content || [];
+                currentPageData = data;
+                renderProjects(currentProjects);
                 renderPagination(data);
             } catch (error) {
                 console.error('Error fetching projects:', error);
@@ -333,7 +503,7 @@
             if (!projectId) return;
 
             if (!HOME_LOGGED_IN) {
-                openLoginModal(window.location.pathname + window.location.search);
+                openLoginRequiredModal(window.location.pathname + window.location.search);
                 return;
             }
 
@@ -373,6 +543,15 @@
 
         function renderProjects(projects) {
             const container = document.getElementById('projectContainer');
+            const countSummary = document.getElementById('projectCountSummary');
+            const totalElements = Number(currentPageData?.totalElements ?? projects?.length ?? 0);
+            if (countSummary) {
+                countSummary.textContent = totalElements > 0
+                    ? `최신등록순 · ${totalElements.toLocaleString('ko-KR')}개의 프로젝트`
+                    : filterState.bookmarkedOnly
+                        ? '관심 프로젝트 조건에 맞는 결과가 없습니다.'
+                        : '조건에 맞는 프로젝트가 없습니다.';
+            }
             if (!projects || projects.length === 0) {
                 container.className = 'block';
                 container.innerHTML = `
@@ -384,9 +563,11 @@
                         <div class="absolute inset-0 bg-poodle-100/30 rounded-full blur-3xl -z-10"></div>
                     </div>
                     <div class="space-y-2">
-                        <h3 class="text-xl font-black text-poodle-900 tracking-tight">아직 조건에 맞는 프로젝트가 없어요.</h3>
+                        <h3 class="text-xl font-black text-poodle-900 tracking-tight">${filterState.bookmarkedOnly ? '관심 프로젝트가 아직 없어요.' : '아직 조건에 맞는 프로젝트가 없어요.'}</h3>
                         <p class="text-xs font-bold text-poodle-300 leading-relaxed">
-                            조건에 맞는 프로젝트를 찾지 못했습니다.<br>새로운 프로젝트를 직접 만들어볼까요?
+                            ${filterState.bookmarkedOnly
+                                ? '관심 프로젝트로 담은 프로젝트가 없거나 조건과 함께 맞는 결과가 없습니다.<br>프로젝트를 둘러보고 하트를 눌러 담아보세요.'
+                                : '조건에 맞는 프로젝트를 찾지 못했습니다.<br>새로운 프로젝트를 직접 만들어볼까요?'}
                         </p>
                     </div>
                     <div class="mt-8">
@@ -411,7 +592,7 @@
                 const domProjectId = rawProjectId.replace(/[^0-9A-Za-z_-]/g, '');
                 const thumbnailUrl = safeUrl(p.thumbnailUrl, '/img/meetball.png');
                 const deadlineLabel = escapeHtml(p.deadlineLabel || '-');
-                const projectType = escapeHtml(p.projectType || '');
+                const projectPurpose = escapeHtml(p.projectPurpose || '');
                 const position = escapeHtml(formatPositionSummary(p.position));
                 const summary = escapeHtml(p.summary || '');
                 const readCount = Number(p.readCount ?? 0);
@@ -425,7 +606,7 @@
                     <div class="flex items-center gap-4 text-[10px] font-black text-poodle-300">
                         <span class="inline-flex items-center gap-1.5">
                             <i class="fa-regular fa-eye"></i>
-                            <span>조회 ${readCount}</span>
+                            <span>${readCount}</span>
                         </span>
                         <span class="inline-flex items-center gap-1.5">
                             <i class="fa-regular fa-heart"></i>
@@ -458,7 +639,7 @@
                     <div class="p-6 md:p-7 flex flex-col justify-between gap-5">
                         <div>
                             <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectType}</span>
+                                <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectPurpose}</span>
                                 <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${position}</span>
                             </div>
                             <h3 class="text-2xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors">${title}</h3>
@@ -506,7 +687,7 @@
 
                 <div class="p-6 flex flex-col flex-grow">
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectType}</span>
+                        <span class="px-2.5 py-1 bg-poodle-50 text-poodle-700 rounded-lg text-[9px] font-black border border-poodle-100 uppercase italic">${projectPurpose}</span>
                         <span class="px-2.5 py-1 bg-meatball/5 text-meatball rounded-lg text-[9px] font-black border border-meatball/10 uppercase italic">${position}</span>
                     </div>
 
@@ -574,49 +755,43 @@
             wrap.innerHTML = html;
         }
 
-        async function fetchRecommendations() {
-            const section = document.getElementById('recommendationSection');
-            const container = document.getElementById('recommendationContainer');
-            if (!section || !container) return;
-
-            try {
-                const res = await fetch('/api/recommendations');
-                if (!res.ok) return;
-                const recommendations = await res.json();
-                if (!recommendations || recommendations.length === 0) return;
-
-                section.classList.remove('hidden');
-                container.innerHTML = recommendations.slice(0, 3).map(item => {
-                    const projectId = encodeURIComponent(String(item.projectId ?? ''));
-                    const title = escapeHtml(item.title || '추천 프로젝트');
-                    const score = Number(item.score || 0);
-                    const reasons = (item.reasons || []).slice(0, 2).map(reason =>
-                        `<span class="px-3 py-1 bg-poodle-50 text-poodle-500 rounded-lg text-[10px] font-black">${escapeHtml(reason)}</span>`
-                    ).join('');
-
-                    return `
-                        <a href="/projects/${projectId}" class="group p-7 bg-white border border-poodle-50 rounded-[2rem] shadow-sm hover:border-meatball/20 hover:shadow-xl transition-all">
-                            <div class="flex items-center justify-between mb-5">
-                                <span class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black">MATCH ${score}</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-poodle-200 group-hover:text-meatball transition-colors"></i>
-                            </div>
-                            <h3 class="text-lg font-black text-poodle-900 leading-snug mb-4 group-hover:text-meatball transition-colors">${title}</h3>
-                            <div class="flex flex-wrap gap-2">${reasons}</div>
-                        </a>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Recommendation fetch error:', error);
+        function handleViewportChange() {
+            filterState.viewMode = normalizeViewMode(filterState.viewMode);
+            updateViewButtons();
+            if (currentProjects.length > 0) {
+                renderProjects(currentProjects);
             }
         }
 
-	        // 초기에 0페이지 목록 로드
-	        document.addEventListener('DOMContentLoaded', () => {
-	            initPositionFilter();
-	            renderTechStackFilter();
-	            fetchRecommendations();
-	            fetchProjects(0);
-	        });
+        document.addEventListener('DOMContentLoaded', () => {
+            hydrateFilterStateFromUrl();
+            initProjectPurposeFilter();
+            initPositionFilter();
+            renderTechStackFilter();
+            updateProjectPurposeButtonLabel();
+            updateTechStackButtonLabel();
+            syncBookmarkedButton();
+            updateViewButtons();
+
+            const keywordInput = document.getElementById('keywordInput');
+            keywordInput?.addEventListener('input', handleKeywordInput);
+
+            fetchProjects(filterState.page);
+        });
+
+        MOBILE_MEDIA_QUERY.addEventListener('change', handleViewportChange);
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('#projectPurposeDropdownBtn') && !event.target.closest('#projectPurposeDropdownMenu')) {
+                closeProjectPurposeDropdown();
+            }
+            if (!event.target.closest('#roleDropdownBtn') && !event.target.closest('#roleDropdownMenu')) {
+                closeRoleDropdown();
+            }
+            if (!event.target.closest('#techStackMainBtn') && !event.target.closest('#techStackPanel')) {
+                closeTechStackPanel();
+            }
+        });
     </script>
 </body>
 

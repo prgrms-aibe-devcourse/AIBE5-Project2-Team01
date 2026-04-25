@@ -26,14 +26,14 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    @GetMapping("/profile")
+    @GetMapping({"/account", "/profile"})
     public ResponseEntity<MyPageProfileResponse> getMyProfile(
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
         Long currentProfileId = requireSessionProfile(sessionProfileId);
         return ResponseEntity.ok(myPageService.getMyProfile(currentProfileId, currentProfileId));
     }
 
-    @PutMapping("/profile")
+    @PutMapping({"/account", "/profile"})
     public ResponseEntity<Void> updateProfile(
             @RequestBody ProfileUpdateRequest request,
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId,

@@ -94,6 +94,13 @@ public class ProjectApplication {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateSubmission(String position, ProjectRecruitPosition recruitPosition, String message) {
+        this.position = position;
+        this.recruitPosition = recruitPosition;
+        this.message = message;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public String getApplicantName() {
         if (applicantName != null && !applicantName.isBlank()) {
             return applicantName;

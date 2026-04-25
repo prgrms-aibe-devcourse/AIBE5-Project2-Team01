@@ -54,7 +54,7 @@ public class BookmarkedProjectService {
 
     @Transactional(readOnly = true)
     public List<BookmarkedProjectResponse> getBookmarkedProjects(Profile profile) {
-        return bookmarkedProjectRepository.findByProfile(profile).stream()
+        return bookmarkedProjectRepository.findByProfileOrderByCreatedAtDesc(profile).stream()
                 .map(BookmarkedProjectResponse::from)
                 .collect(Collectors.toList());
     }

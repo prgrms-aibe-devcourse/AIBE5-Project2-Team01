@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: commonHead('프로젝트 등록')}"></head>
+<head th:replace="~{fragments/head :: commonHead(${pageTitle})}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-    <main class="container mx-auto px-4 py-16 max-w-7xl">
-        <!-- Premium Page Header -->
+    <main class="w-full mx-auto max-w-7xl px-4 py-16">
         <div class="relative meetball-cream-panel rounded-5xl p-16 mb-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.12)]">
             <img th:src="@{/img/logo.png}" src="/img/logo.png" alt=""
                  class="absolute right-[-4rem] bottom-[-3rem] w-72 md:w-96 object-contain opacity-20 md:opacity-80 pointer-events-none select-none">
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div>
-                    <h1 class="text-4xl md:text-5xl font-black text-poodle-600 mb-6 tracking-tighter">새로운 여정을 <br>시작해볼까요?</h1>
-                    <p class="text-poodle-500 font-bold text-lg max-w-2xl leading-relaxed">밋볼이와 함께 최고의 팀을 꾸려보세요. <br>상상하던 아이디어가 곧 현실이 될 거예요.</p>
+                    <h1 th:text="${editMode} ? '프로젝트를 다시 다듬어볼까요?' : '새로운 여정을 시작해볼까요?'"
+                        class="text-4xl md:text-5xl font-black text-poodle-600 mb-6 tracking-tighter">새로운 여정을 <br>시작해볼까요?</h1>
+                    <p th:text="${editMode} ? '상태는 그대로 유지하고, 필요한 정보만 안전하게 업데이트할 수 있어요.' : '밋볼이와 함께 최고의 팀을 꾸려보세요. 상상하던 아이디어가 곧 현실이 될 거예요.'"
+                       class="text-poodle-500 font-bold text-lg max-w-2xl leading-relaxed">밋볼이와 함께 최고의 팀을 꾸려보세요. <br>상상하던 아이디어가 곧 현실이 될 거예요.</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="px-8 py-4 bg-white/80 backdrop-blur-md rounded-2xl border border-white text-poodle-600 font-black text-sm">
-                        <i class="fa-solid fa-wand-magic-sparkles text-meatball mr-2"></i> Sparking Ideas
+                        <i class="fa-solid fa-wand-magic-sparkles text-meatball mr-2"></i>
+                        <span th:text="${editMode} ? 'Project Update' : 'Sparking Ideas'">Sparking Ideas</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            <!-- Main Form Section -->
             <div class="lg:col-span-8 space-y-12">
-                
-                <!-- Section: Basic Information -->
                 <div class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm space-y-10">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
@@ -35,44 +34,83 @@
                         </div>
                         <h2 class="text-3xl font-black text-poodle-900 tracking-tight">기본 정보</h2>
                     </div>
-                    
+
                     <div class="space-y-8">
                         <div class="space-y-3">
                             <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
                                 <span class="w-1 h-1 bg-meatball rounded-full"></span> Project Title
                             </label>
-                            <input type="text" id="title" placeholder="예: AI 기반 커뮤니티 건강관리 앱 프로젝트" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-bold text-lg focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 outline-none transition-all placeholder:text-poodle-200">
+                            <input type="text" id="title" placeholder="예: AI 기반 커뮤니티 건강관리 앱 프로젝트"
+                                   class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-bold text-lg focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 outline-none transition-all placeholder:text-poodle-200">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-3">
                                 <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> Type
+                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> Purpose
                                 </label>
-                                <div class="relative">
-	                                    <select id="projectType" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
-	                                        <option value="">선택하세요</option>
-	                                        <option value="사이드 프로젝트">사이드 프로젝트</option>
-	                                        <option value="스타트업">스타트업</option>
-	                                        <option value="공모전">공모전</option>
-	                                        <option value="스터디">스터디</option>
-	                                        <option value="기업 연계">기업 연계</option>
-                                    </select>
-                                    <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-xs"></i>
+                                <div class="relative group">
+                                    <input type="hidden" id="projectPurpose" value="">
+                                    <button type="button" id="projectPurposeBtn" onclick="toggleDropdown('projectPurposeDropdown', event)"
+                                            class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black text-left outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700 flex items-center justify-between group-hover:border-poodle-100">
+                                        <span id="projectPurposeText" class="text-poodle-200 font-bold">선택하세요</span>
+                                        <i class="fa-solid fa-chevron-down text-poodle-200 text-xs transition-transform duration-300"></i>
+                                    </button>
+                                    <div id="projectPurposeDropdown" class="hidden absolute top-full left-0 right-0 mt-3 z-50 bg-white border border-poodle-50 rounded-[1.5rem] shadow-2xl p-3 animate-modal-up">
+                                        <div class="grid grid-cols-1 gap-1">
+                                            <button type="button"
+                                                    th:each="projectPurposeOption : ${meetballProjectPurposeOptions}"
+                                                    onclick="selectDropdown('projectPurpose', this.dataset.value, event)"
+                                                    th:attr="data-value=${projectPurposeOption.code}"
+                                                    class="p-4 text-left rounded-xl hover:bg-poodle-50 font-black text-sm text-poodle-700 transition-all"
+                                                    th:text="${projectPurposeOption.label}">프로젝트</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="space-y-3">
                                 <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
                                     <span class="w-1 h-1 bg-meatball rounded-full"></span> Meeting Mode
                                 </label>
-                                <div class="relative">
-	                                    <select id="progressMethod" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black appearance-none outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700">
-	                                        <option value="">선택하세요</option>
-	                                        <option value="온라인">온라인</option>
-	                                        <option value="오프라인">오프라인</option>
-	                                        <option value="온/오프 혼합">온/오프 혼합</option>
-                                    </select>
-                                    <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-poodle-200 pointer-events-none text-xs"></i>
+                                <div class="relative group">
+                                    <input type="hidden" id="workMethod" value="">
+                                    <button type="button" id="workMethodBtn" onclick="toggleDropdown('workMethodDropdown', event)"
+                                            class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-black text-left outline-none focus:bg-white focus:border-meatball transition-all text-poodle-700 flex items-center justify-between group-hover:border-poodle-100">
+                                        <span id="workMethodText" class="text-poodle-200 font-bold">선택하세요</span>
+                                        <i class="fa-solid fa-chevron-down text-poodle-200 text-xs transition-transform duration-300"></i>
+                                    </button>
+                                    <div id="workMethodDropdown" class="hidden absolute top-full left-0 right-0 mt-3 z-50 bg-white border border-poodle-50 rounded-[1.5rem] shadow-2xl p-3 animate-modal-up">
+                                        <div class="grid grid-cols-1 gap-1">
+                                            <button type="button"
+                                                    th:each="workMethodOption : ${meetballWorkMethodOptions}"
+                                                    onclick="selectDropdown('workMethod', this.dataset.value, event)"
+                                                    th:attr="data-value=${workMethodOption.code}"
+                                                    class="p-4 text-left rounded-xl hover:bg-poodle-50 font-black text-sm text-poodle-700 transition-all"
+                                                    th:text="${workMethodOption.label}">온라인</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4">
+                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Thumbnail Image
+                            </label>
+                            <div class="flex flex-col items-center justify-center border-3 border-dashed border-poodle-50 rounded-4xl p-8 bg-poodle-50/20 group hover:border-meatball transition-all">
+                                <div id="thumbPreviewWrap" class="w-full max-w-md aspect-video rounded-3xl overflow-hidden bg-white shadow-lg mb-6 border border-poodle-100 flex items-center justify-center relative">
+                                    <img id="thumbPreview" src="" class="hidden w-full h-full object-cover" alt="thumbnail preview">
+                                    <div id="thumbPlaceholder" class="flex flex-col items-center gap-3 text-poodle-200">
+                                        <i class="fa-solid fa-mountain-sun text-5xl"></i>
+                                        <p class="text-xs font-black italic">대표 이미지 URL을 입력하면 미리보기가 표시됩니다</p>
+                                    </div>
+                                </div>
+                                <div class="w-full max-w-xl flex flex-col sm:flex-row gap-3">
+                                    <input type="url" id="thumbnailUrl" placeholder="대표 이미지 URL을 입력해주세요"
+                                           oninput="previewThumbnailUrl(this.value)"
+                                           class="flex-1 bg-white border border-poodle-100 rounded-2xl px-5 py-4 font-black text-sm text-poodle-700 outline-none focus:border-meatball focus:ring-4 focus:ring-meatball/5 placeholder:text-poodle-200">
+                                    <button type="button" onclick="resetThumbnailPreview()"
+                                            class="px-6 py-4 bg-white border border-poodle-100 text-poodle-900 rounded-2xl text-sm font-black hover:bg-meatball hover:text-white transition-all shadow-sm">기본 로고</button>
                                 </div>
                             </div>
                         </div>
@@ -81,53 +119,89 @@
                             <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
                                 <span class="w-1 h-1 bg-meatball rounded-full"></span> Description
                             </label>
-                            <textarea id="description" placeholder="프로젝트의 목적, 팀원에게 바라는 점 등을 자유롭게 작성해주세요." class="w-full h-80 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed"></textarea>
+                            <textarea id="description"
+                                      class="w-full h-80 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed">[필수 요건]
+
+[우대 사항]
+</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section: Timeframes -->
-                <div class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+                <div class="bg-white rounded-5xl p-6 border border-poodle-50 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-10 bg-meatball/5 rounded-[2.5rem] border border-meatball/10 space-y-8">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-meatball shadow-sm">
                                 <i class="fa-solid fa-calendar-alt text-xl"></i>
                             </div>
-                            <h2 class="text-2xl font-black text-poodle-900 tracking-tight">팀원 모집 기간</h2>
-                        </div>
-                        <div class="flex flex-col gap-4">
-                            <div class="space-y-2">
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Start Date</span>
-                                <input type="date" id="recruitmentStartAt" class="w-full bg-poodle-50 border border-poodle-50 rounded-xl p-5 font-black text-poodle-700 focus:bg-white focus:border-meatball outline-none transition-all">
+                            <div>
+                                <h2 class="text-xl font-black text-poodle-900 tracking-tight">팀원 모집 기간</h2>
+                                <p class="text-[10px] font-bold text-meatball/60 uppercase tracking-tighter">Recruitment Window</p>
                             </div>
-                            <div class="space-y-2">
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">End Date</span>
-                                <input type="date" id="recruitmentEndAt" class="w-full bg-poodle-50 border border-poodle-50 rounded-xl p-5 font-black text-poodle-700 focus:bg-white focus:border-meatball outline-none transition-all">
+                        </div>
+                        <div class="flex flex-col gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Start Date</span>
+                                    <button type="button" onclick="quickDate('recruitmentStartAt', 0)"
+                                            class="text-[9px] font-black text-meatball bg-white border border-meatball/20 px-3 py-1 rounded-full hover:bg-meatball hover:text-white transition-all shadow-sm">TODAY</button>
+                                </div>
+                                <input type="date" id="recruitmentStartAt" onchange="syncDateMin('recruitmentStartAt', 'recruitmentEndAt')"
+                                       class="w-full bg-white border border-meatball/10 rounded-2xl p-5 font-black text-poodle-700 focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all shadow-sm">
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">End Date</span>
+                                    <div class="flex gap-2">
+                                        <button type="button" onclick="quickDate('recruitmentEndAt', 7)"
+                                                class="text-[9px] font-black text-meatball bg-white border border-meatball/20 px-3 py-1 rounded-full hover:bg-meatball hover:text-white transition-all shadow-sm">+1W</button>
+                                        <button type="button" onclick="quickDate('recruitmentEndAt', 14)"
+                                                class="text-[9px] font-black text-meatball bg-white border border-meatball/20 px-3 py-1 rounded-full hover:bg-meatball hover:text-white transition-all shadow-sm">+2W</button>
+                                    </div>
+                                </div>
+                                <input type="date" id="recruitmentEndAt" onchange="syncDateMin('recruitmentEndAt', 'projectStartAt')"
+                                       class="w-full bg-white border border-meatball/10 rounded-2xl p-5 font-black text-poodle-700 focus:border-meatball focus:ring-4 focus:ring-meatball/5 outline-none transition-all shadow-sm">
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+
+                    <div class="p-10 bg-poodle-50 rounded-[2.5rem] border border-poodle-100 space-y-8">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-poodle-400 shadow-sm">
                                 <i class="fa-solid fa-hourglass-half text-xl"></i>
                             </div>
-                            <h2 class="text-2xl font-black text-poodle-900 tracking-tight">프로젝트 기간</h2>
-                        </div>
-                        <div class="flex flex-col gap-4">
-                            <div class="space-y-2">
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Launch Date</span>
-                                <input type="date" id="projectStartAt" class="w-full bg-poodle-50 border border-poodle-50 rounded-xl p-5 font-black text-poodle-700 focus:bg-white focus:border-meatball outline-none transition-all">
+                            <div>
+                                <h2 class="text-xl font-black text-poodle-900 tracking-tight">프로젝트 기간</h2>
+                                <p class="text-[10px] font-bold text-poodle-400 uppercase tracking-tighter">Project Timeline</p>
                             </div>
-                            <div class="space-y-2">
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Wrap-up</span>
-                                <input type="date" id="projectEndAt" class="w-full bg-poodle-50 border border-poodle-50 rounded-xl p-5 font-black text-poodle-700 focus:bg-white focus:border-meatball outline-none transition-all">
+                        </div>
+                        <div class="flex flex-col gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Launch Date</span>
+                                    <button type="button" onclick="quickDate('projectStartAt', 1)"
+                                            class="text-[9px] font-black text-poodle-500 bg-white border border-poodle-200 px-3 py-1 rounded-full hover:bg-poodle-600 hover:text-white transition-all shadow-sm">NEXT DAY</button>
+                                </div>
+                                <input type="date" id="projectStartAt" onchange="syncDateMin('projectStartAt', 'projectEndAt')"
+                                       class="w-full bg-white border border-poodle-100 rounded-2xl p-5 font-black text-poodle-700 focus:border-poodle-400 focus:ring-4 focus:ring-poodle-100 outline-none transition-all shadow-sm">
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Wrap-up</span>
+                                    <div class="flex gap-2">
+                                        <button type="button" onclick="quickDate('projectEndAt', 30)"
+                                                class="text-[9px] font-black text-poodle-500 bg-white border border-poodle-200 px-3 py-1 rounded-full hover:bg-poodle-600 hover:text-white transition-all shadow-sm">+1M</button>
+                                        <button type="button" onclick="quickDate('projectEndAt', 90)"
+                                                class="text-[9px] font-black text-poodle-500 bg-white border border-poodle-200 px-3 py-1 rounded-full hover:bg-poodle-600 hover:text-white transition-all shadow-sm">+3M</button>
+                                    </div>
+                                </div>
+                                <input type="date" id="projectEndAt"
+                                       class="w-full bg-white border border-poodle-100 rounded-2xl p-5 font-black text-poodle-700 focus:border-poodle-400 focus:ring-4 focus:ring-poodle-100 outline-none transition-all shadow-sm">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section: Recruitment Details -->
                 <div class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm space-y-12">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-4">
@@ -136,118 +210,177 @@
                             </div>
                             <h2 class="text-3xl font-black text-poodle-900 tracking-tight">포지션 및 기술</h2>
                         </div>
-                        <button type="button" onclick="addPositionRow()"
-                                class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black hover:bg-meatball hover:text-poodle-900 transition-all uppercase tracking-widest text-xs shadow-lg shadow-poodle-600/10 active:scale-95">
+                        <button type="button" id="addPositionRowBtn" onclick="addPositionRow()"
+                                class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black hover:bg-meatball hover:text-white transition-all uppercase tracking-widest text-xs shadow-lg shadow-poodle-600/10 active:scale-95">
                             ADD
                         </button>
-	                    </div>
+                    </div>
 
-                    <div class="space-y-6">
-                        <div class="p-8 bg-poodle-50 border border-poodle-50 rounded-4xl flex flex-col gap-8 relative">
-                            <div id="positionRows" class="space-y-4"></div>
-                            <input type="hidden" id="recruitmentCount" value="0">
+                        <div th:if="${editMode}" class="p-6 bg-meatball/5 border border-meatball/10 rounded-3xl space-y-3">
+                            <div class="flex items-center gap-3 text-meatball">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <p class="text-sm font-black">수정 제한 안내</p>
+                            </div>
+                            <ul class="space-y-2 text-xs font-bold text-poodle-500 leading-relaxed">
+                                <li>• 모집 상태와 프로젝트 상태 변경은 프로젝트 관리 페이지에서만 가능합니다.</li>
+                                <li>• 모집이 완료된 포지션은 수정 및 삭제가 불가합니다.</li>
+                                <li>• 지원자가 있는 포지션은 이름 변경/삭제가 불가하며, 인원은 지원 인원 이상으로만 유지할 수 있습니다.</li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="p-8 bg-poodle-50 border border-poodle-50 rounded-4xl flex flex-col gap-8 relative">
+                                <div id="positionRows" class="space-y-4"></div>
+                                <input type="hidden" id="recruitmentCount" value="0">
                         </div>
                     </div>
 
-                    <div class="pt-10 border-t border-poodle-50 space-y-6">
-                        <label class="text-sm font-black text-poodle-900 ml-1">핵심 기술 스택</label>
+                    <div class="pt-10 border-t border-poodle-50 space-y-8">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 px-1">
+                            <label class="text-sm font-black text-poodle-900">핵심 기술 스택</label>
+                            <div id="techCategoryTabs" class="flex flex-wrap gap-2"></div>
+                        </div>
                         <div id="techStackOptions" class="flex flex-wrap gap-3"></div>
                     </div>
                 </div>
 
-                <!-- Section: Conditions & Files -->
-                <div class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm space-y-12">
+                <div th:if="${!editMode}" class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm space-y-12">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
                             <i class="fa-solid fa-paperclip text-xl"></i>
                         </div>
-                        <h2 class="text-3xl font-black text-poodle-900 tracking-tight">상세 조건 및 첨부</h2>
+                        <h2 class="text-3xl font-black text-poodle-900 tracking-tight">첨부 및 링크</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-12">
                         <div class="space-y-4">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Requirements
-                            </label>
-	                            <input type="text" id="requirements" placeholder="필수 요건 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
-                        </div>
-                        <div class="space-y-4">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-poodle-200 rounded-full"></span> Preferences
-                            </label>
-	                            <input type="text" id="preferences" placeholder="우대 사항 입력" class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-5 font-bold text-sm focus:bg-white outline-none transition-all placeholder:text-poodle-200">
-                        </div>
-                    </div>
-
-                    <div class="pt-8 border-t border-poodle-50 space-y-8">
-                        <!-- File Upload -->
-	                        <div class="border-3 border-dashed border-poodle-50 rounded-4xl p-16 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-poodle-50/20"
+                            <label class="text-sm font-black text-poodle-900 ml-1">첨부 파일 업로드</label>
+                            <div id="fileUploadContainer"
+                                 class="border-3 border-dashed border-poodle-50 rounded-4xl p-10 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-poodle-50/20"
                                  onclick="document.getElementById('planningFile').click()">
                                 <input type="file" id="planningFile" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx" onchange="updatePlanningFileLabel()">
-	                            <div class="w-20 h-20 bg-white rounded-3xl shadow-lg border border-poodle-50 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-	                                <i class="fa-solid fa-cloud-upload text-3xl text-meatball"></i>
-	                            </div>
-	                            <h3 class="text-lg font-black text-poodle-900 mb-2">기획서 및 관련 자료</h3>
-	                            <p id="planningFileLabel" class="text-xs font-bold text-poodle-300">PDF, JPG, PNG 파일을 선택해주세요 (최대 50MB)</p>
-	                        </div>
 
-                        <!-- Link Inputs -->
+                                <div id="fileDefaultState">
+                                    <div class="w-14 h-14 bg-white rounded-2xl shadow-lg border border-poodle-50 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-cloud-upload text-2xl text-meatball"></i>
+                                    </div>
+                                    <h3 class="text-md font-black text-poodle-900 mb-1">기획서 또는 관련 자료 선택</h3>
+                                    <p class="text-[10px] font-bold text-poodle-300">PDF, JPG, PNG, DOC (최대 50MB)</p>
+                                </div>
+
+                                <div id="fileSelectedState" class="hidden animate-scale-in">
+                                    <div class="flex flex-col gap-4">
+                                        <div class="flex items-center justify-between px-2">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-2 h-2 bg-meatball rounded-full"></span>
+                                                <span class="text-xs font-black text-poodle-900">선택된 파일</span>
+                                            </div>
+                                            <button type="button" onclick="clearPlanningFile(event)"
+                                                    class="text-[10px] font-black text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest">Remove</button>
+                                        </div>
+                                        <div id="fileListContainer" class="flex flex-wrap justify-center gap-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="space-y-6">
-	                            <div class="flex items-center justify-between">
-	                                <label class="text-sm font-black text-poodle-900 ml-1">관련 링크 Registration</label>
-	                            </div>
-	                            <div class="flex flex-col sm:flex-row gap-4 items-center">
-	                                <input type="text" id="linkTitle" placeholder="LINK NAME" class="w-full sm:w-1/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
-	                                <input type="url" id="linkUrl" placeholder="HTTPS://..." class="w-full sm:w-2/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white outline-none placeholder:text-poodle-200">
-	                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-black text-poodle-900 ml-1">관련 링크 등록</label>
+                                <button type="button" onclick="addLinkChip()"
+                                        class="text-[10px] font-black text-meatball bg-meatball/10 px-4 py-2 rounded-xl hover:bg-meatball hover:text-white transition-all uppercase tracking-widest italic">Add Link</button>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                                <input type="text" id="linkTitle" placeholder="링크 이름 (예: 포트폴리오)"
+                                       class="w-full sm:w-1/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white focus:border-meatball outline-none placeholder:text-poodle-200 transition-all">
+                                <input type="url" id="linkUrl" placeholder="https://..."
+                                       class="w-full sm:w-2/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white focus:border-meatball outline-none placeholder:text-poodle-200 transition-all">
+                            </div>
+
+                            <div id="linksContainer" class="flex flex-wrap gap-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${editMode}" class="bg-white rounded-5xl p-12 border border-poodle-50 shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball shrink-0">
+                            <i class="fa-solid fa-folder-open text-xl"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h2 class="text-2xl font-black text-poodle-900 tracking-tight">자료와 링크는 관리 페이지에서 수정</h2>
+                            <p class="text-sm font-bold text-poodle-500 leading-relaxed">
+                                프로젝트 수정에서는 기본 정보와 모집 정보만 안전하게 바꿀 수 있어요.
+                                첨부 파일과 링크는 프로젝트 관리 페이지에서 이어서 관리해주세요.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Sidebar -->
-            <div class="lg:col-span-4 space-y-10">
-                <!-- Registration Flow -->
-                <div class="bg-white rounded-5xl border border-poodle-50 p-12 shadow-sm sticky top-24">
-                    <h3 class="text-2xl font-black text-poodle-900 mb-10 tracking-tight flex items-center gap-3">
-                        <i class="fa-solid fa-rocket text-meatball"></i> 등록 체크리스트
-                    </h3>
-                    
+            <div class="lg:col-span-4 space-y-12 h-fit mb-20 sticky top-28 transition-all duration-500">
+                <div class="bg-white rounded-5xl border border-poodle-50 p-12 shadow-[0_20px_50px_rgba(101,55,40,0.06)]">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-2xl font-black text-poodle-900 tracking-tight flex items-center gap-3">
+                            <i class="fa-solid fa-rocket text-meatball animate-bounce"></i>
+                            <span th:text="${editMode} ? '수정 체크' : '등록 체크'">등록 체크</span>
+                        </h3>
+                        <div class="text-[10px] font-black text-meatball bg-meatball/10 px-3 py-1 rounded-full"><span id="progressPercent">0</span>%</div>
+                    </div>
+
+                    <div class="w-full h-2 bg-poodle-50 rounded-full mb-10 overflow-hidden">
+                        <div id="progressBar" class="h-full bg-meatball transition-all duration-1000 ease-out fill-mode-forwards" style="width: 0%"></div>
+                    </div>
+
                     <div class="space-y-8 mb-12">
-                        <div class="flex items-center justify-between group">
-                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">Type Defined</span>
-                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg"></i>
+                        <div id="check-type" class="flex items-center justify-between group">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">기본 정보 설정</span>
+                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg transition-all"></i>
                         </div>
-                        <div class="flex items-center justify-between group">
-                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">Positions Set</span>
-                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg"></i>
+                        <div id="check-content" class="flex items-center justify-between group">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">상세 내용 작성</span>
+                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg transition-all"></i>
                         </div>
-                        <div class="flex items-center justify-between group">
-                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">Launch Dates</span>
-                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg"></i>
+                        <div id="check-dates" class="flex items-center justify-between group">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">기간 설정</span>
+                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg transition-all"></i>
+                        </div>
+                        <div id="check-positions" class="flex items-center justify-between group">
+                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic group-hover:text-poodle-900 transition-colors">포지션 설정</span>
+                            <i class="fa-solid fa-circle-check text-poodle-100 text-lg transition-all"></i>
                         </div>
                     </div>
 
                     <div class="space-y-4 pt-10 border-t border-poodle-50">
-                        <button onclick="submitProject()" class="w-full py-6 bg-poodle-600 text-white rounded-2xl font-black text-lg shadow-2xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-4">
-                            프로젝트 시작하기 <i class="fa-solid fa-arrow-right-to-bracket text-sm"></i>
+                        <button onclick="submitProject()"
+                                class="w-full py-6 bg-poodle-600 text-white rounded-2xl font-black text-lg shadow-2xl shadow-poodle-600/20 hover:bg-meatball hover:text-white hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-4">
+                            <span th:text="${editMode} ? '프로젝트 수정하기' : '프로젝트 시작하기'">프로젝트 시작하기</span>
+                            <i class="fa-solid fa-arrow-right-to-bracket text-sm"></i>
                         </button>
-                        <button onclick="history.back()" class="w-full py-5 text-poodle-300 rounded-2xl font-black hover:text-poodle-900 transition-all text-sm uppercase tracking-widest">
+                        <button th:if="${editMode}" th:onclick="|window.location.href='/projects/${projectId}/manage'|"
+                                class="w-full py-5 text-poodle-300 rounded-2xl font-black hover:text-poodle-900 transition-all text-sm uppercase tracking-widest">
+                            관리 페이지로 돌아가기
+                        </button>
+                        <button th:unless="${editMode}" onclick="history.back()"
+                                class="w-full py-5 text-poodle-300 rounded-2xl font-black hover:text-poodle-900 transition-all text-sm uppercase tracking-widest">
                             Cancel & Exit
                         </button>
                     </div>
 
-                    <!-- Poodle Tip -->
                     <div class="mt-12 p-10 bg-poodle-50 rounded-4xl relative overflow-hidden group">
                         <div class="absolute -bottom-6 -right-6 text-poodle-100 text-8xl opacity-30 group-hover:rotate-12 transition-transform duration-500">
                             <i class="fa-solid fa-dog animate-tail-wag"></i>
                         </div>
                         <h4 class="text-sm font-black text-poodle-700 mb-6 flex items-center gap-3">
-                            <span class="w-2 h-2 bg-meatball rounded-full"></span> Poodle's Advice
+                            <span class="w-2 h-2 bg-meatball rounded-full"></span>
+                            <span th:text="${editMode} ? '수정 가이드' : '밋볼 팁'">밋볼 팁</span>
                         </h4>
                         <ul class="space-y-4 relative z-10">
-                            <li class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 구체적인 기획안이 있을수록 인기가 많아요!</li>
-                            <li class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 팀 활동의 분위기를 잘 어필해보세요.</li>
+                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 구체적인 기획안이 있을수록 인기가 많아요.</li>
+                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 팀 활동의 분위기를 잘 어필해보세요.</li>
+                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 상태 변경은 프로젝트 관리 페이지에서만 진행해주세요.</li>
+                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 포지션별 잠금 조건을 확인하고 수정하면 저장 실패를 줄일 수 있어요.</li>
                         </ul>
                     </div>
                 </div>
@@ -255,73 +388,470 @@
         </div>
     </main>
 
+    <script th:inline="javascript">
+        window.projectFormConfig = {
+            editMode: /*[[${editMode}]]*/ false,
+            projectId: /*[[${projectId}]]*/ null,
+            editProject: /*[[${editProject}]]*/ null,
+            positionEditConstraints: /*[[${positionEditConstraints}]]*/ [],
+            ownerPosition: /*[[${currentProfile != null ? currentProfile.position : ''}]]*/ ''
+        };
+    </script>
+
     <script>
         const POSITION_OPTIONS = window.meetballPositionOptions;
         const TECH_STACK_OPTIONS = window.meetballTechStackOptions;
         const positions = [{ name: '', count: 1 }];
         const techStacks = [];
+        let activeTechCategory = '인기';
+        let registeredLink = null;
+        const projectFormConfig = window.projectFormConfig || {};
+        const editMode = Boolean(projectFormConfig.editMode);
+        const editProject = projectFormConfig.editProject || null;
+        const positionEditConstraints = Array.isArray(projectFormConfig.positionEditConstraints) ? projectFormConfig.positionEditConstraints : [];
+        const positionConstraintMap = new Map(positionEditConstraints.map(constraint => [constraint.name, constraint]));
+        let currentRecruitStatus = editProject?.recruitStatus || 'OPEN';
+        let currentProgressStatus = editProject?.progressStatus || 'READY';
+
+        function isRecruitmentLockedForEdit() {
+            return editMode && currentRecruitStatus === 'CLOSED';
+        }
+
+        async function notifyRecruitmentLocked() {
+            await meetballAlert('모집 마감 후에는 포지션을 추가, 수정, 삭제할 수 없습니다. 모집 마감 철회 후 다시 시도해주세요.');
+        }
+
+        function syncDateMin(sourceId, targetId) {
+            const source = document.getElementById(sourceId);
+            const target = document.getElementById(targetId);
+            if (source?.value && target) {
+                target.min = source.value;
+                if (target.value && target.value < source.value) {
+                    target.value = source.value;
+                }
+            }
+            updateChecklist();
+        }
+
+        function quickDate(id, days) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let base = new Date();
+
+            if (id === 'projectStartAt') {
+                const recruitmentEnd = document.getElementById('recruitmentEndAt')?.value;
+                if (recruitmentEnd) base = new Date(recruitmentEnd);
+            } else if (id.includes('End') || id.includes('project')) {
+                const recruitmentStart = document.getElementById('recruitmentStartAt')?.value;
+                if (recruitmentStart) base = new Date(recruitmentStart);
+            }
+
+            const date = new Date(base);
+            date.setDate(date.getDate() + days);
+            el.value = date.toISOString().split('T')[0];
+
+            const relationships = {
+                recruitmentStartAt: 'recruitmentEndAt',
+                recruitmentEndAt: 'projectStartAt',
+                projectStartAt: 'projectEndAt'
+            };
+            if (relationships[id]) syncDateMin(id, relationships[id]);
+            updateChecklist();
+        }
+
+        function previewThumbnailUrl(value) {
+            const preview = document.getElementById('thumbPreview');
+            const placeholder = document.getElementById('thumbPlaceholder');
+            if (!preview || !placeholder) return;
+
+            const safePreviewUrl = window.meetballSafeUrl(value, '');
+            if (!safePreviewUrl) {
+                preview.classList.add('hidden');
+                preview.src = '';
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            preview.src = safePreviewUrl;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+
+        function resetThumbnailPreview() {
+            const input = document.getElementById('thumbnailUrl');
+            if (input) input.value = '';
+            previewThumbnailUrl('');
+        }
+
+        function addLinkChip() {
+            const titleInput = document.getElementById('linkTitle');
+            const urlInput = document.getElementById('linkUrl');
+            if (!urlInput?.value.trim()) {
+                meetballAlert('URL을 입력해주세요.');
+                return;
+            }
+
+            let normalizedUrl = urlInput.value.trim();
+            if (normalizedUrl && !/^https?:\/\//i.test(normalizedUrl)) {
+                normalizedUrl = 'https://' + normalizedUrl;
+            }
+
+            registeredLink = {
+                title: titleInput.value.trim() || '관련 링크',
+                url: normalizedUrl
+            };
+
+            renderLinks();
+            titleInput.value = '';
+            urlInput.value = '';
+        }
+
+        function removeLink() {
+            registeredLink = null;
+            renderLinks();
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            if (!container) return;
+            if (!registeredLink) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="animate-scale-in flex items-center gap-3 bg-white border border-meatball/20 px-5 py-3 rounded-2xl shadow-lg shadow-meatball/5">
+                    <div class="w-8 h-8 bg-meatball/10 rounded-xl flex items-center justify-center text-meatball">
+                        <i class="fa-solid fa-link text-sm"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-black text-poodle-900">${window.meetballEscapeHtml(registeredLink.title)}</span>
+                        <span class="text-[10px] font-bold text-poodle-300 truncate max-w-[180px]">${window.meetballEscapeHtml(registeredLink.url)}</span>
+                    </div>
+                    <button type="button" onclick="removeLink()" class="ml-2 text-poodle-200 hover:text-red-400 transition-colors">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function parsePositionPayload(value) {
+            if (!value || !value.trim()) return [];
+            return value.split(',')
+                .map(token => token.trim())
+                .filter(Boolean)
+                .map(token => {
+                    const [name, rawCount] = token.split(':').map(part => part.trim());
+                    return {
+                        name: name || '',
+                        count: Math.max(1, Number(rawCount) || 1)
+                    };
+                });
+        }
+
+        function setDropdownValue(id, value) {
+            const input = document.getElementById(id);
+            const text = document.getElementById(id + 'Text');
+            const dropdown = document.getElementById(id + 'Dropdown');
+            const options = dropdown ? Array.from(dropdown.querySelectorAll('[data-value]')) : [];
+            const matched = options.find(option => option.dataset.value === value || option.textContent.trim() === value);
+            const resolvedValue = matched ? matched.dataset.value : (value || '');
+            const resolvedLabel = matched ? matched.textContent.trim() : (value || '선택하세요');
+            if (input) input.value = resolvedValue;
+            if (text) {
+                text.innerText = resolvedLabel;
+                text.classList.toggle('text-poodle-200', !resolvedValue);
+                text.classList.toggle('text-poodle-900', !!resolvedValue);
+            }
+        }
+
+        function getPositionConstraint(positionName) {
+            return positionName ? positionConstraintMap.get(positionName) || null : null;
+        }
+
+        function applyEditProject() {
+            if (!editMode || !editProject) return;
+
+            document.getElementById('title').value = editProject.title || '';
+            document.getElementById('description').value = (editProject.description || '').trim() || DESCRIPTION_TEMPLATE;
+            document.getElementById('thumbnailUrl').value = editProject.thumbnailUrl || '';
+            document.getElementById('recruitmentStartAt').value = editProject.recruitmentStartAt || '';
+            document.getElementById('recruitmentEndAt').value = editProject.recruitmentEndAt || '';
+            document.getElementById('projectStartAt').value = editProject.projectStartAt || '';
+            document.getElementById('projectEndAt').value = editProject.projectEndAt || '';
+            setDropdownValue('projectPurpose', editProject.projectPurpose || '');
+            setDropdownValue('workMethod', editProject.workMethod || '');
+
+            const initialPositions = parsePositionPayload(editProject.position);
+            positions.splice(0, positions.length, ...(initialPositions.length > 0 ? initialPositions : [{ name: '', count: 1 }]));
+
+            techStacks.splice(0, techStacks.length, ...(Array.isArray(editProject.techStacks) ? editProject.techStacks : []));
+            currentRecruitStatus = editProject.recruitStatus || currentRecruitStatus;
+            currentProgressStatus = editProject.progressStatus || currentProgressStatus;
+            syncDateMin('recruitmentStartAt', 'recruitmentEndAt');
+            syncDateMin('recruitmentEndAt', 'projectStartAt');
+            syncDateMin('projectStartAt', 'projectEndAt');
+        }
+
+        function updateChecklist() {
+            const hasPurpose = !!document.getElementById('projectPurpose')?.value;
+            const hasMethod = !!document.getElementById('workMethod')?.value;
+            const typeDone = hasPurpose && hasMethod;
+
+            const hasPositions = positions.some(p => p.name);
+            const hasTech = techStacks.length > 0;
+            const positionsDone = hasPositions && hasTech;
+
+            const rStart = document.getElementById('recruitmentStartAt')?.value;
+            const rEnd = document.getElementById('recruitmentEndAt')?.value;
+            const pStart = document.getElementById('projectStartAt')?.value;
+            const pEnd = document.getElementById('projectEndAt')?.value;
+            const datesDone = !!(rStart && rEnd && pStart && pEnd);
+
+            const hasTitle = !!document.getElementById('title')?.value.trim();
+            const hasDesc = hasMeaningfulDescription();
+            const contentDone = hasTitle && hasDesc;
+
+            const items = [
+                { id: 'check-type', done: typeDone },
+                { id: 'check-content', done: contentDone },
+                { id: 'check-dates', done: datesDone },
+                { id: 'check-positions', done: positionsDone }
+            ];
+
+            let completed = 0;
+            items.forEach(item => {
+                const el = document.getElementById(item.id);
+                if (!el) return;
+                const icon = el.querySelector('i');
+                const label = el.querySelector('span');
+                if (item.done) {
+                    icon?.classList.replace('text-poodle-100', 'text-meatball');
+                    label?.classList.replace('text-poodle-300', 'text-poodle-900');
+                    completed++;
+                } else {
+                    icon?.classList.replace('text-meatball', 'text-poodle-100');
+                    label?.classList.replace('text-poodle-900', 'text-poodle-300');
+                }
+            });
+
+            const percent = Math.round((completed / items.length) * 100);
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            if (progressBar) progressBar.style.width = percent + '%';
+            if (progressPercent) progressPercent.innerText = String(percent);
+        }
+
+        function toggleDropdown(id, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            if (id.startsWith('posDropdown-') && isRecruitmentLockedForEdit()) {
+                notifyRecruitmentLocked();
+                return;
+            }
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isHidden = el.classList.contains('hidden');
+
+            document.querySelectorAll('[id$="Dropdown"], [id^="posDropdown-"]').forEach(dropdown => {
+                dropdown.classList.add('hidden');
+                const row = dropdown.closest('.relative');
+                if (row) row.style.zIndex = '';
+                const btn = dropdown.previousElementSibling;
+                const icon = btn?.querySelector('.fa-chevron-down');
+                if (icon) icon.classList.remove('rotate-180');
+            });
+
+            if (isHidden) {
+                el.classList.remove('hidden');
+                const row = el.closest('.relative');
+                if (row) row.style.zIndex = '100';
+                const btn = el.previousElementSibling;
+                const icon = btn?.querySelector('.fa-chevron-down');
+                if (icon) icon.classList.add('rotate-180');
+            }
+        }
+
+        function selectDropdown(id, value, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            if (id.startsWith('pos-')) {
+                const index = Number(id.split('-')[1]);
+                updatePositionRow(index, 'name', value);
+                const dropdown = document.getElementById(`posDropdown-${index}`);
+                dropdown?.classList.add('hidden');
+                const button = dropdown?.previousElementSibling;
+                button?.querySelector('.fa-chevron-down')?.classList.remove('rotate-180');
+                updateChecklist();
+                return;
+            }
+
+            const input = document.getElementById(id);
+            const text = document.getElementById(id + 'Text');
+            const dropdown = document.getElementById(id + 'Dropdown');
+            const button = document.getElementById(id + 'Btn');
+            const label = event?.currentTarget?.textContent?.trim() || value;
+            if (input) input.value = value;
+            if (text) {
+                text.innerText = label;
+                text.classList.remove('text-poodle-200');
+                text.classList.add('text-poodle-900');
+            }
+            dropdown?.classList.add('hidden');
+            const section = dropdown?.closest('.relative');
+            if (section) section.style.zIndex = '';
+            button?.querySelector('.fa-chevron-down')?.classList.remove('rotate-180');
+            updateChecklist();
+        }
 
         async function addPositionRow() {
+            if (isRecruitmentLockedForEdit()) {
+                await notifyRecruitmentLocked();
+                return;
+            }
             if (!validatePositionRows({ showAlert: true })) return;
             positions.push({ name: '', count: 1 });
             renderPositions();
         }
 
-        function updatePositionRow(index, field, value) {
+        async function updatePositionRow(index, field, value) {
             if (!positions[index]) return;
-            positions[index][field] = field === 'count' ? Math.max(1, parseInt(value, 10) || 1) : value;
-            if (field === 'count') {
-                document.getElementById('recruitmentCount').value = calculateTotalRecruitment();
+            if (isRecruitmentLockedForEdit()) {
+                await notifyRecruitmentLocked();
                 return;
             }
+            const constraint = getPositionConstraint(positions[index].name);
+
+            if (field === 'count') {
+                if (constraint?.capacityLocked) {
+                    await meetballAlert(constraint.message || '이 포지션은 모집 완료되어 인원을 수정할 수 없습니다.');
+                    return;
+                }
+                const current = parseInt(positions[index].count || 1, 10);
+                const minimumCount = constraint?.minimumCapacity || 1;
+                positions[index].count = Math.max(minimumCount, current + Number(value));
+                document.getElementById(`pos-count-${index}`).innerText = String(positions[index].count);
+                document.getElementById('recruitmentCount').value = String(calculateTotalRecruitment());
+                updateChecklist();
+                return;
+            }
+
+            if (field === 'name' && constraint?.nameLocked) {
+                await meetballAlert(constraint.message || '이 포지션은 이름을 변경할 수 없습니다.');
+                return;
+            }
+            positions[index][field] = value;
             renderPositions();
         }
 
-        function removePositionRow(index) {
+        async function removePositionRow(index) {
+            if (isRecruitmentLockedForEdit()) {
+                await notifyRecruitmentLocked();
+                return;
+            }
+            const constraint = getPositionConstraint(positions[index]?.name);
+            if (constraint?.deleteLocked) {
+                await meetballAlert(constraint.message || '이 포지션은 삭제할 수 없습니다.');
+                return;
+            }
             if (positions.length === 1) {
                 positions[0] = { name: '', count: 1 };
             } else {
                 positions.splice(index, 1);
             }
             renderPositions();
+            updateChecklist();
         }
 
         function renderPositions() {
             const container = document.getElementById('positionRows');
+            if (!container) return;
+            const addButton = document.getElementById('addPositionRowBtn');
+            const recruitLocked = isRecruitmentLockedForEdit();
+
             container.innerHTML = positions.map((position, index) => {
-                const selectedNames = positions
-                    .map((item, itemIndex) => itemIndex === index ? null : item.name)
-                    .filter(Boolean);
+                const constraint = getPositionConstraint(position.name);
+                const selectedNames = positions.map((item, itemIndex) => itemIndex === index ? null : item.name).filter(Boolean);
                 const options = POSITION_OPTIONS.map(option => {
-                    const disabled = selectedNames.includes(option) ? 'disabled' : '';
-                    const selected = option === position.name ? 'selected' : '';
-                    return `<option value="${window.meetballEscapeHtml(option)}" ${selected} ${disabled}>${window.meetballEscapeHtml(option)}</option>`;
+                    const disabled = selectedNames.includes(option);
+                    const selected = option === position.name;
+                    return `
+                        <button type="button"
+                                onclick="selectDropdown('pos-${index}', '${window.meetballEscapeHtml(option)}', event)"
+                                ${disabled ? 'disabled' : ''}
+                                class="p-4 text-left rounded-xl hover:bg-poodle-50 font-black text-sm transition-all cursor-pointer ${selected ? 'bg-meatball/10 text-meatball' : 'text-poodle-700'} ${disabled ? 'opacity-30 cursor-not-allowed' : ''}">
+                            ${window.meetballEscapeHtml(option)}
+                        </button>
+                    `;
                 }).join('');
-                const removable = positions.length > 1 || position.name;
+                const minimumCount = constraint?.minimumCapacity || 1;
+                const nameLocked = Boolean(constraint?.nameLocked);
+                const capacityLocked = Boolean(constraint?.capacityLocked);
+                const deleteLocked = Boolean(constraint?.deleteLocked);
+                const removable = (positions.length > 1 || position.name) && !deleteLocked && !recruitLocked;
+                const helperBadges = constraint ? `
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <span class="px-3 py-1 rounded-full bg-poodle-50 text-poodle-500 text-[10px] font-black">지원 ${constraint.appliedCount}명</span>
+                        <span class="px-3 py-1 rounded-full bg-poodle-50 text-poodle-500 text-[10px] font-black">승인 ${constraint.acceptedCount}명</span>
+                        <span class="px-3 py-1 rounded-full bg-poodle-50 text-poodle-500 text-[10px] font-black">정원 ${constraint.capacity}명</span>
+                        ${constraint.full ? '<span class="px-3 py-1 rounded-full bg-red-50 text-red-500 text-[10px] font-black">모집 완료</span>' : ''}
+                        ${constraint.minimumCapacity > 0 && !constraint.full ? `<span class="px-3 py-1 rounded-full bg-meatball/10 text-meatball text-[10px] font-black">최소 ${constraint.minimumCapacity}명 유지</span>` : ''}
+                    </div>
+                    ${constraint.message ? `<p class="mt-3 text-[11px] font-bold ${constraint.full ? 'text-red-400' : 'text-poodle-400'} leading-relaxed">${window.meetballEscapeHtml(constraint.message)}</p>` : ''}
+                ` : '';
+
                 return `
-                    <div class="grid grid-cols-1 md:grid-cols-[1fr_10rem_auto] gap-5 w-full items-end p-5 bg-white rounded-3xl border border-poodle-100 shadow-sm animate-fade-in">
-                        <div class="space-y-2">
-                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Position ${index + 1}</span>
-                            <select onchange="updatePositionRow(${index}, 'name', this.value)"
-                                    class="w-full bg-poodle-50 border border-poodle-100 rounded-2xl p-5 font-black text-sm outline-none focus:bg-white focus:border-meatball">
-                                <option value="">포지션 선택</option>
-                                ${options}
-                            </select>
+                    <div class="group/row flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-[2.5rem] border border-poodle-100 shadow-[0_10px_40px_rgba(101,55,40,0.04)] hover:shadow-xl hover:border-meatball/20 transition-all duration-500 animate-fade-in relative">
+                        <div class="flex-grow space-y-2 relative w-full">
+                            <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Position ${index + 1}</span>
+                            <button type="button" onclick="toggleDropdown('posDropdown-${index}', event)"
+                                    ${(nameLocked || recruitLocked) ? 'disabled' : ''}
+                                    class="w-full bg-poodle-50/50 border border-poodle-100 rounded-2xl p-5 font-black text-sm text-left flex items-center justify-between outline-none hover:bg-white hover:border-meatball transition-all group/btn disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-poodle-50/50 disabled:hover:border-poodle-100">
+                                <span class="${position.name ? 'text-poodle-900' : 'text-poodle-300 font-bold'}">${window.meetballEscapeHtml(position.name || '어떤 포지션을 찾으시나요?')}</span>
+                                <i class="fa-solid fa-chevron-down text-poodle-200 text-xs transition-transform group-hover/btn:text-meatball"></i>
+                            </button>
+                            <div id="posDropdown-${index}" class="hidden absolute top-full left-0 right-0 mt-2 z-50 bg-white border border-poodle-50 rounded-[2rem] shadow-2xl p-3 animate-modal-up max-h-[16rem] overflow-y-auto no-scrollbar">
+                                <div class="grid grid-cols-1 gap-1">${options}</div>
+                            </div>
+                            ${helperBadges}
                         </div>
-                        <div class="space-y-2">
-                            <span class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Headcount</span>
-                            <input type="number" value="${position.count}" min="1"
-                                   oninput="updatePositionRow(${index}, 'count', this.value)"
-                                   class="w-full bg-poodle-50 border border-poodle-100 rounded-2xl p-5 font-black text-sm text-center focus:bg-white focus:border-meatball outline-none">
+
+                        <div class="shrink-0 space-y-2 w-full md:w-auto">
+                            <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Headcount</span>
+                            <div class="flex items-center bg-poodle-50 border border-poodle-100 rounded-2xl p-1 w-full md:w-36 justify-between">
+                                <button type="button" onclick="updatePositionRow(${index}, 'count', -1)"
+                                        ${(recruitLocked || capacityLocked || Number(position.count) <= minimumCount) ? 'disabled' : ''}
+                                        class="w-10 h-10 rounded-xl bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-poodle-300 disabled:hover:border-poodle-100">
+                                    <i class="fa-solid fa-minus text-[10px]"></i>
+                                </button>
+                                <span id="pos-count-${index}" class="font-black text-poodle-900 text-lg">${position.count}</span>
+                                <button type="button" onclick="updatePositionRow(${index}, 'count', 1)"
+                                        ${(recruitLocked || capacityLocked) ? 'disabled' : ''}
+                                        class="w-10 h-10 rounded-xl bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-poodle-300 disabled:hover:border-poodle-100">
+                                    <i class="fa-solid fa-plus text-[10px]"></i>
+                                </button>
+                            </div>
                         </div>
+
                         <button type="button" onclick="removePositionRow(${index})" ${removable ? '' : 'disabled'}
-                                class="w-full md:w-14 h-14 bg-poodle-50 text-poodle-300 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition-all disabled:opacity-40 disabled:hover:bg-poodle-50 disabled:hover:text-poodle-300">
-                            <i class="fa-solid fa-xmark"></i>
+                                class="w-full md:w-16 h-16 bg-poodle-50 text-poodle-200 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition-all active:scale-90 group-hover/row:text-poodle-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-poodle-50 disabled:hover:text-poodle-200">
+                            <i class="fa-solid fa-trash-can text-lg"></i>
                         </button>
                     </div>
                 `;
             }).join('');
-            document.getElementById('recruitmentCount').value = calculateTotalRecruitment();
+
+            document.getElementById('recruitmentCount').value = String(calculateTotalRecruitment());
+            if (addButton) {
+                addButton.disabled = recruitLocked;
+                addButton.classList.toggle('opacity-40', recruitLocked);
+                addButton.classList.toggle('cursor-not-allowed', recruitLocked);
+            }
         }
 
         function calculateTotalRecruitment() {
@@ -333,10 +863,9 @@
         function validatePositionRows({ showAlert = false } = {}) {
             const filledRows = positions.filter(position => position.name);
             const hasPartialRow = positions.some(position => !position.name && Number(position.count || 1) !== 1);
-            const duplicate = filledRows.find((position, index) =>
-                filledRows.findIndex(item => item.name === position.name) !== index
-            );
+            const duplicate = filledRows.find((position, index) => filledRows.findIndex(item => item.name === position.name) !== index);
             const invalidCount = filledRows.some(position => !Number.isInteger(Number(position.count)) || Number(position.count) < 1);
+
             if (filledRows.length === 0 || hasPartialRow) {
                 if (showAlert) meetballAlert('포지션을 선택해주세요.');
                 return false;
@@ -367,23 +896,39 @@
                 techStacks.push(tech);
             }
             updateTechStackOptionState();
+            updateChecklist();
+        }
+
+        function setTechCategory(category) {
+            activeTechCategory = category;
+            renderTechStackOptions();
         }
 
         function renderTechStackOptions() {
+            const tabs = document.getElementById('techCategoryTabs');
             const container = document.getElementById('techStackOptions');
-            container.innerHTML = TECH_STACK_OPTIONS.map(tech => `
+            if (!tabs || !container) return;
+
+            const categories = window.meetballTechStackCategories;
+            tabs.innerHTML = Object.keys(categories).map(category => {
+                const active = category === activeTechCategory;
+                return `<button type="button" onclick="setTechCategory('${window.meetballEscapeHtml(category)}')"
+                                class="px-4 py-2 rounded-xl text-[10px] font-black transition-all ${active ? 'bg-poodle-600 text-white shadow-lg shadow-poodle-600/20' : 'bg-poodle-50 text-poodle-400 hover:bg-poodle-100 hover:text-poodle-700'} uppercase tracking-widest italic">
+                            ${window.meetballEscapeHtml(category)}
+                        </button>`;
+            }).join('');
+
+            const visibleTechs = categories[activeTechCategory] || TECH_STACK_OPTIONS;
+            container.innerHTML = visibleTechs.map(tech => `
                 <button type="button" data-tech="${window.meetballEscapeHtml(tech)}" onclick="toggleTechStack(this.dataset.tech)"
-                        class="tech-option min-h-[4rem] px-5 py-3 bg-white text-poodle-700 rounded-full text-base font-black border border-poodle-100 hover:border-meatball/40 hover:text-poodle-900 transition-all inline-flex items-center gap-3 shadow-sm">
-                    ${techStackLogoHtml(tech)}
-                    <span>${window.meetballEscapeHtml(tech)}</span>
-                    <i data-check-icon class="fa-solid fa-check hidden text-xs text-meatball"></i>
+                        class="tech-option group relative min-h-[4rem] px-5 py-3 bg-white text-poodle-700 rounded-full text-base font-black border border-poodle-100 hover:border-meatball/40 transition-all inline-flex items-center gap-3 shadow-sm overflow-hidden">
+                    <div class="absolute inset-0 bg-meatball/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    ${window.meetballTechStackLogoHtml(tech)}
+                    <span class="relative z-10 whitespace-nowrap">${window.meetballEscapeHtml(tech)}</span>
                 </button>
             `).join('');
-            updateTechStackOptionState();
-        }
 
-        function techStackLogoHtml(tech, selected = false) {
-            return window.meetballTechStackLogoHtml(tech, selected);
+            updateTechStackOptionState();
         }
 
         function updateTechStackOptionState() {
@@ -392,64 +937,104 @@
                 button.classList.toggle('bg-poodle-900', selected);
                 button.classList.toggle('text-white', selected);
                 button.classList.toggle('border-poodle-900', selected);
-                button.classList.toggle('shadow-lg', selected);
-                button.classList.toggle('shadow-poodle-900/15', selected);
+                button.classList.toggle('shadow-xl', selected);
+                button.classList.toggle('shadow-poodle-900/20', selected);
                 button.classList.toggle('bg-white', !selected);
                 button.classList.toggle('text-poodle-700', !selected);
                 button.classList.toggle('border-poodle-100', !selected);
-                button.querySelector('[data-check-icon]')?.classList.toggle('hidden', !selected);
             });
         }
 
-	        function updatePlanningFileLabel() {
-	            const file = document.getElementById('planningFile').files[0];
-	            document.getElementById('planningFileLabel').innerText = file ? file.name : 'PDF, JPG, PNG 파일을 선택해주세요 (최대 50MB)';
-	        }
+        function updatePlanningFileLabel() {
+            const input = document.getElementById('planningFile');
+            const files = input?.files;
+            const defaultState = document.getElementById('fileDefaultState');
+            const selectedState = document.getElementById('fileSelectedState');
+            const container = document.getElementById('fileListContainer');
+            if (!defaultState || !selectedState || !container) return;
 
-	        function buildDescription() {
-	            const description = document.getElementById('description').value.trim();
-	            const requirements = document.getElementById('requirements').value.trim();
-	            const preferences = document.getElementById('preferences').value.trim();
-	            const sections = [description];
-	            if (requirements) sections.push(`[필수 요건]\n${requirements}`);
-	            if (preferences) sections.push(`[우대 사항]\n${preferences}`);
-	            return sections.filter(Boolean).join('\n\n');
-	        }
+            if (files && files.length > 0) {
+                defaultState.classList.add('hidden');
+                selectedState.classList.remove('hidden');
+                container.innerHTML = Array.from(files).map(file => `
+                    <div class="animate-scale-in flex items-center gap-3 bg-white border border-poodle-50 px-4 py-3 rounded-2xl shadow-md border-b-4 border-b-meatball/5">
+                        <div class="w-8 h-8 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+                            <i class="fa-solid fa-file-invoice text-sm"></i>
+                        </div>
+                        <div class="flex flex-col text-left">
+                            <p class="text-xs font-black text-poodle-900 truncate max-w-[160px]">${window.meetballEscapeHtml(file.name)}</p>
+                            <p class="text-[9px] font-bold text-poodle-300">${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                defaultState.classList.remove('hidden');
+                selectedState.classList.add('hidden');
+                container.innerHTML = '';
+            }
+        }
 
-	        async function uploadOptionalArtifacts(projectId) {
-	            const file = document.getElementById('planningFile').files[0];
-	            if (file) {
-	                const formData = new FormData();
-	                formData.append('file', file);
-	                const fileResponse = await meetballFetch(`/api/projects/${projectId}/resources`, {
-	                    method: 'POST',
-	                    body: formData
-	                });
-	                if (!fileResponse.ok) {
-	                    throw new Error('file-upload-failed');
-	                }
-	            }
+        function clearPlanningFile(event) {
+            event.stopPropagation();
+            const input = document.getElementById('planningFile');
+            if (input) input.value = '';
+            updatePlanningFileLabel();
+        }
 
-	            const linkTitle = document.getElementById('linkTitle').value.trim();
-	            const linkUrl = document.getElementById('linkUrl').value.trim();
-	            if (linkUrl) {
-	                const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
-	                    method: 'POST',
-	                    headers: { 'Content-Type': 'application/json' },
-	                    body: JSON.stringify({ title: linkTitle || '관련 링크', url: linkUrl })
-	                });
-	                if (!linkResponse.ok) {
-	                    throw new Error('link-upload-failed');
-	                }
-	            }
-	        }
+        const DESCRIPTION_TEMPLATE = `[필수 요건]\n\n[우대 사항]\n`;
 
-	        async function submitProject() {
-	            const payload = {
-	                title: document.getElementById('title').value,
-	                description: buildDescription(),
-	                projectType: document.getElementById('projectType').value,
-	                progressMethod: document.getElementById('progressMethod').value,
+        function buildDescription() {
+            return document.getElementById('description').value.trim();
+        }
+
+        function hasMeaningfulDescription() {
+            const description = buildDescription();
+            const normalized = description
+                .replace(/\[필수 요건\]/g, '')
+                .replace(/\[우대 사항\]/g, '')
+                .replace(/\s/g, '');
+            return normalized.length > 0;
+        }
+
+        async function uploadOptionalArtifacts(projectId) {
+            const file = document.getElementById('planningFile')?.files?.[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const fileResponse = await meetballFetch(`/api/projects/${projectId}/resources`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!fileResponse.ok) throw new Error('file-upload-failed');
+            }
+
+            if (registeredLink?.url) {
+                const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: registeredLink.title || '관련 링크',
+                        url: registeredLink.url
+                    })
+                });
+                if (!linkResponse.ok) throw new Error('link-upload-failed');
+            }
+        }
+
+        async function submitProject() {
+            const rawThumbnailUrl = document.getElementById('thumbnailUrl').value.trim();
+            const thumbnailUrl = window.meetballSafeUrl(rawThumbnailUrl, '');
+            if (rawThumbnailUrl && !thumbnailUrl) {
+                await meetballAlert('대표 이미지 URL 형식을 확인해주세요.', { type: 'error' });
+                return;
+            }
+
+            const payload = {
+                title: document.getElementById('title').value,
+                description: buildDescription(),
+                projectPurpose: document.getElementById('projectPurpose').value,
+                workMethod: document.getElementById('workMethod').value,
+                thumbnailUrl,
                 position: collectPositionPayload(),
                 techStacks: [...techStacks],
                 recruitmentCount: parseInt(document.getElementById('recruitmentCount').value, 10),
@@ -457,43 +1042,105 @@
                 recruitmentEndAt: document.getElementById('recruitmentEndAt').value,
                 projectStartAt: document.getElementById('projectStartAt').value,
                 projectEndAt: document.getElementById('projectEndAt').value,
-                recruitStatus: 'OPEN',
-                progressStatus: 'READY'
+                recruitStatus: editMode ? currentRecruitStatus : 'OPEN',
+                progressStatus: editMode ? currentProgressStatus : 'READY'
             };
 
-	            if (!payload.title || !payload.projectType || !payload.description) {
-	                await meetballAlert('기본 정보를 모두 입력해주세요!');
-	                return;
-	            }
-	            if (!payload.progressMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 1 || payload.techStacks.length === 0) {
-	                await meetballAlert('모집 정보를 모두 입력해주세요!');
-	                return;
-	            }
+            if (!payload.title || !payload.projectPurpose || !hasMeaningfulDescription()) {
+                await meetballAlert('기본 정보를 모두 입력해주세요!');
+                return;
+            }
+            if (!payload.workMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 2 || payload.techStacks.length === 0) {
+                if (!payload.position) {
+                    await meetballAlert('포지션을 선택해주세요!');
+                    return;
+                }
+                if (!payload.recruitmentCount || payload.recruitmentCount < 2) {
+                    await meetballAlert('프로젝트 모집 인원은 최소 2명 이상이어야 합니다.');
+                    return;
+                }
+                await meetballAlert('모집 정보를 모두 입력해주세요!');
+                return;
+            }
 
-	            try {
-	                const response = await meetballFetch('/api/projects', {
-                    method: 'POST',
+            const ownerPosition = String(projectFormConfig.ownerPosition || '').trim();
+            const selectedPositionNames = positions.filter(position => position.name).map(position => position.name);
+            if (ownerPosition && !selectedPositionNames.includes(ownerPosition)) {
+                await meetballAlert('팀장의 포지션은 모집 포지션에 반드시 포함되어야 합니다.');
+                return;
+            }
+
+            try {
+                const endpoint = editMode ? `/api/projects/${projectFormConfig.projectId}` : '/api/projects';
+                const response = await meetballFetch(endpoint, {
+                    method: editMode ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-	                if (response.ok) {
-	                    const data = await response.json();
-	                    await uploadOptionalArtifacts(data.id);
-	                    await meetballAlert('성공적으로 프로젝트가 생성되었습니다!');
-	                    window.location.href = `/projects/${data.id}`;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!editMode) {
+                        await uploadOptionalArtifacts(data.id);
+                    }
+                    await meetballAlert(editMode ? '프로젝트가 수정되었습니다!' : '성공적으로 프로젝트가 생성되었습니다!');
+                    window.location.href = editMode ? `/projects/${data.id}/manage` : `/projects/${data.id}`;
                 } else {
-                    await meetballAlert('프로젝트 등록에 실패했습니다. (' + response.status + ')', { type: 'error' });
+                    let message = editMode ? `프로젝트 수정에 실패했습니다. (${response.status})` : `프로젝트 등록에 실패했습니다. (${response.status})`;
+                    try {
+                        const errorBody = await response.text();
+                        if (errorBody && errorBody.trim()) {
+                            const normalizedError = errorBody.trim();
+                            if (normalizedError.includes('모집이 완료된 포지션은 수정 및 삭제가 불가합니다') || normalizedError.includes('모집이 완료된 포지션은')) {
+                                message = normalizedError;
+                            } else if (normalizedError.includes('지원자가 있는 포지션은')) {
+                                message = normalizedError;
+                            } else if (normalizedError.includes('지원 인원보다 적게 모집 인원을 줄일 수 없습니다')) {
+                                message = normalizedError;
+                            } else {
+                                message = normalizedError;
+                            }
+                        }
+                    } catch (_) {
+                        // noop
+                    }
+                    await meetballAlert(message, { type: 'error' });
                 }
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                console.error(error);
                 await meetballAlert('요청 중 오류가 발생했습니다.', { type: 'error' });
             }
         }
 
+        document.addEventListener('input', event => {
+            if (event.target.closest('input') || event.target.closest('textarea')) {
+                updateChecklist();
+            }
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.relative')) {
+                document.querySelectorAll('[id$="Dropdown"], [id^="posDropdown-"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                    const row = dropdown.closest('.relative');
+                    if (row) row.style.zIndex = '';
+                    const button = dropdown.previousElementSibling;
+                    button?.querySelector('.fa-chevron-down')?.classList.remove('rotate-180');
+                });
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
+            applyEditProject();
+            const description = document.getElementById('description');
+            if (description && !description.value.trim()) {
+                description.value = DESCRIPTION_TEMPLATE;
+            }
             renderPositions();
             renderTechStackOptions();
+            updatePlanningFileLabel();
+            previewThumbnailUrl(document.getElementById('thumbnailUrl')?.value || '');
+            updateChecklist();
         });
     </script>
 </body>

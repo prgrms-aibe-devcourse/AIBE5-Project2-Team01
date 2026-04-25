@@ -1,6 +1,7 @@
 package com.example.meetball.domain.project.entity;
 
 import com.example.meetball.domain.position.entity.Position;
+import com.example.meetball.domain.project.support.ProjectOptionCatalog;
 import com.example.meetball.domain.techstack.entity.TechStack;
 import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
 import com.example.meetball.domain.profile.entity.Profile;
@@ -20,7 +21,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,10 +53,7 @@ public class Project {
     @Column(name = "thumbnail_url", length = 255)
     private String thumbnailUrl;
 
-    @Column(name = "project_type", nullable = false, length = 30)
-    private String projectType;
-
-    @Column(name = "project_purpose", length = 30)
+    @Column(name = "project_purpose", nullable = false, length = 30)
     private String projectPurpose;
 
     @Column(name = "work_method", nullable = false, length = 30)
@@ -118,14 +115,14 @@ public class Project {
     protected Project() {
     }
 
-    public Project(String title, String description, String projectType, String progressMethod,
+    public Project(String title, String description, String projectPurpose, String workMethod,
                    Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                    LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
-        this.projectType = projectType == null || projectType.isBlank() ? "사이드 프로젝트" : projectType;
-        this.workMethod = progressMethod == null || progressMethod.isBlank() ? "ONLINE" : progressMethod;
+        this.projectPurpose = normalizeProjectPurpose(projectPurpose);
+        this.workMethod = normalizeWorkMethod(workMethod);
         this.requiredMember = recruitmentCount == null ? 0 : recruitmentCount;
         this.recruitStartDate = recruitmentStartAt != null ? recruitmentStartAt : LocalDate.now();
         this.recruitEndDate = recruitmentEndAt != null ? recruitmentEndAt : this.recruitStartDate.plusDays(14);
@@ -144,14 +141,18 @@ public class Project {
         this.ownerProfile = Objects.requireNonNull(ownerProfile, "ownerProfile");
     }
 
-    public void update(String title, String description, String projectType, String progressMethod,
+    public void update(String title, String description, String projectPurpose, String workMethod,
                        Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                        LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                        LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
-        this.projectType = projectType == null || projectType.isBlank() ? this.projectType : projectType;
-        this.workMethod = progressMethod == null || progressMethod.isBlank() ? this.workMethod : progressMethod;
+        this.projectPurpose = projectPurpose == null || projectPurpose.isBlank()
+                ? this.projectPurpose
+                : normalizeProjectPurpose(projectPurpose);
+        this.workMethod = workMethod == null || workMethod.isBlank()
+                ? this.workMethod
+                : normalizeWorkMethod(workMethod);
         this.requiredMember = recruitmentCount == null ? this.requiredMember : recruitmentCount;
         this.recruitStartDate = recruitmentStartAt != null ? recruitmentStartAt : this.recruitStartDate;
         this.recruitEndDate = recruitmentEndAt != null ? recruitmentEndAt : this.recruitEndDate;
@@ -167,6 +168,20 @@ public class Project {
             this.recruitStatus = RECRUIT_STATUS_CLOSED;
         }
         this.updatedAt = updatedAt;
+    }
+
+    private String normalizeProjectPurpose(String value) {
+        if (value == null || value.isBlank()) {
+            return ProjectOptionCatalog.defaultProjectPurpose();
+        }
+        return ProjectOptionCatalog.normalizeProjectPurpose(value);
+    }
+
+    private String normalizeWorkMethod(String value) {
+        if (value == null || value.isBlank()) {
+            return ProjectOptionCatalog.defaultWorkMethod();
+        }
+        return ProjectOptionCatalog.normalizeWorkMethod(value);
     }
 
     public void updateThumbnailUrl(String thumbnailUrl) {
@@ -276,13 +291,13 @@ public class Project {
         return description.length() > 50 ? description.substring(0, 50) : description;
     }
     public String getDescription() { return description; }
-    public String getProjectType() { return projectType; }
+    public String getProjectPurpose() { return projectPurpose; }
     public String getPosition() {
         return positionSelections.stream()
                 .map(position -> position.getPositionName() + ":" + position.getCapacity())
                 .collect(Collectors.joining(", "));
     }
-    public String getProgressMethod() { return workMethod; }
+    public String getWorkMethod() { return workMethod; }
     public String getLeaderName() { return ownerProfile != null ? ownerProfile.getNickname() : ""; }
     public String getLeaderRole() { return "LEADER"; }
     public String getLeaderAvatarUrl() { return ownerProfile != null ? ownerProfile.getProfileImage() : ""; }

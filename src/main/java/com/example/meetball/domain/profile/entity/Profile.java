@@ -119,11 +119,23 @@ public class Profile {
         return profile;
     }
 
-    public void updateProfile(String nickname, Position position, List<TechStack> techStacks, boolean isPublic) {
+    public void updateProfile(
+            String nickname,
+            String organization,
+            boolean orgVisible,
+            String bio,
+            Position position,
+            String experienceYears,
+            List<TechStack> techStacks,
+            boolean isPublic
+    ) {
         this.nickname = sanitizeProvidedNickname(nickname);
+        this.organization = sanitizeText(organization, 100);
+        this.orgVisible = orgVisible;
+        this.bio = sanitizeText(bio, 1000);
         this.profileStatus = isPublic ? PROFILE_STATUS_PUBLIC : PROFILE_STATUS_PRIVATE;
         this.updatedAt = LocalDateTime.now();
-        replacePosition(position);
+        replacePosition(position, experienceYears);
         replaceTechStacks(techStacks);
     }
 
@@ -256,8 +268,6 @@ public class Profile {
                 && account.getBirthDate() != null
                 && account.getGender() != null
                 && !account.getGender().isBlank()
-                && organization != null
-                && !organization.isBlank()
                 && getExperienceYears() != null
                 && !getExperienceYears().isBlank()
                 && !positionSelections.isEmpty()

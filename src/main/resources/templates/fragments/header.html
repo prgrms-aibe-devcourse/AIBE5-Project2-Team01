@@ -20,63 +20,45 @@
     </script>
 
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
-        <div class="container mx-auto px-4 h-24 md:h-28 flex items-center justify-between">
+        <div class="mx-auto max-w-7xl px-4 h-24 md:h-28 flex items-center justify-between">
             <!-- Logo area -->
-            <div class="flex items-center gap-12">
+            <div class="flex items-center">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
-                    <div class="relative">
-                        <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
-                             class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
-                        <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-meatball rounded-full border-2 border-white animate-bounce-subtle"></div>
-                    </div>
+                    <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
+                         class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                     <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
-
-                <!-- Desktop Menu -->
-                <nav class="hidden lg:flex items-center gap-8">
-                    <a th:if="${isLoggedIn}" th:href="@{/register}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
-                        프로젝트 등록
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
-                    </a>
-                    <button th:if="${!isLoggedIn}" type="button" onclick="openLoginModal('/register')" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
-                        프로젝트 등록
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
-                    </button>
-                    <a th:if="${isLoggedIn}" th:href="@{/mypage}" class="text-sm font-black text-poodle-300 hover:text-poodle-900 transition-all relative group/nav">
-                        나의 프로젝트
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-meatball transition-all group-hover/nav:w-full"></span>
-                    </a>
-                </nav>
             </div>
 
             <!-- Right Actions -->
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
                 <button type="button"
                    onclick="openMeetballDrawModal()"
-                   class="inline-flex items-center gap-3 px-5 py-3 bg-poodle-800 text-white rounded-2xl text-sm font-black border border-transparent shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
+                   class="inline-flex h-14 items-center gap-3 px-5 bg-poodle-800 text-white rounded-2xl text-sm font-black border border-transparent shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
                     <i class="fa-solid fa-dice text-base"></i>
-                    밋Ball 뽑기!
+                    밋Ball 뽑기
+                </button>
+                <a th:if="${isLoggedIn}" th:href="@{/register}"
+                   class="inline-flex h-14 items-center gap-3 px-5 bg-poodle-800 text-white rounded-2xl text-sm font-black border border-transparent shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
+                    <i class="fa-solid fa-plus text-base"></i>
+                    프로젝트 등록
+                </a>
+                <button th:if="${!isLoggedIn}" type="button" onclick="openLoginRequiredModal('/register')"
+                   class="inline-flex h-14 items-center gap-3 px-5 bg-poodle-800 text-white rounded-2xl text-sm font-black border border-transparent shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
+                    <i class="fa-solid fa-plus text-base"></i>
+                    프로젝트 등록
                 </button>
                 <button th:if="${!isLoggedIn}" type="button" onclick="openLoginModal('/')"
-                   class="px-6 py-3 bg-poodle-800 text-white rounded-2xl text-sm font-black shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball hover:scale-105 transition-all">
+                   class="inline-flex h-14 items-center justify-center px-5 bg-poodle-800 text-white rounded-2xl text-sm font-black shadow-[0_14px_28px_rgba(78,52,46,0.18)] hover:bg-meatball transition-all active:scale-95">
                     로그인
-                </button>
-
-                <!-- Notifications (Optional Icon) -->
-                <button th:if="${isLoggedIn}" class="w-10 h-10 flex items-center justify-center text-poodle-300 hover:text-poodle-900 transition-colors relative">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                    <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-meatball rounded-full"></span>
                 </button>
 
                 <!-- Current Profile -->
                 <div th:if="${isLoggedIn}" class="relative group h-full flex items-center">
-                    <div class="flex items-center gap-3 pl-6 border-l border-poodle-100 py-2 cursor-pointer transition-all group-hover:bg-poodle-100/50 group-hover:px-4 group-hover:-mx-4 rounded-2xl">
-                        <div class="relative">
-                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Profile"
-                                 class="w-10 h-10 rounded-2xl border-2 border-poodle-50 bg-white object-cover shadow-sm group-hover:border-meatball/20 transition-all">
-                            <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="hidden sm:block">
+                    <div class="inline-flex h-14 items-center gap-3 px-5 bg-white border border-poodle-100 rounded-2xl cursor-pointer transition-all group-hover:border-meatball/20 group-hover:bg-poodle-50/40 shadow-sm">
+                        <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Profile"
+                             class="w-10 h-10 rounded-2xl border-2 border-poodle-50 bg-white object-cover shadow-sm transition-all">
+                        <div class="hidden sm:block min-w-0">
                             <p th:text="${currentProfile.nickname}" class="text-base font-black text-poodle-900 tracking-tight transition-colors group-hover:text-meatball">사용자</p>
                         </div>
                     </div>
@@ -107,6 +89,36 @@
 
     <div th:replace="~{fragments/meetball-draw :: meetballDrawModal}"></div>
 
+    <!-- Login Required Notice Modal -->
+    <div id="loginRequiredModal" th:if="${!isLoggedIn}" class="fixed inset-0 z-[189] hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeLoginRequiredModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
+            <div class="relative w-full max-w-md bg-white rounded-[2rem] shadow-[0_35px_90px_rgba(0,0,0,0.16)] border border-white overflow-hidden pointer-events-auto animate-modal-up">
+                <div class="px-8 py-10 md:px-10 md:py-12 text-center space-y-6">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-poodle-50 text-poodle-800 shadow-sm">
+                        <i class="fa-solid fa-lock text-2xl"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="text-3xl font-black tracking-tight text-poodle-900">로그인이 필요한 기능입니다</h3>
+                        <p id="loginRequiredMessage" class="text-sm font-bold leading-relaxed text-poodle-400">
+                            로그인 후 이용하실 수 있어요.
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <button type="button" onclick="closeLoginRequiredModal()"
+                                class="flex-1 rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-4 text-sm font-black text-poodle-500 transition-all hover:border-poodle-200 hover:bg-poodle-50 hover:text-poodle-700">
+                            닫기
+                        </button>
+                        <button type="button" onclick="proceedToLoginFromRequiredModal()"
+                                class="flex-1 rounded-[1.4rem] bg-poodle-800 px-6 py-4 text-sm font-black text-white shadow-[0_14px_28px_rgba(78,52,46,0.18)] transition-all hover:bg-meatball">
+                            로그인 하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div id="loginModal" th:if="${!isLoggedIn}" class="fixed inset-0 z-[190] hidden" aria-hidden="true">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeLoginModal()"></div>
@@ -127,7 +139,7 @@
                     <div class="space-y-5">
                         <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight leading-tight">Meetball에 오신 것을 환영합니다!</h2>
                         <p class="text-xl md:text-2xl font-bold text-zinc-500 leading-relaxed">
-                            스터디와 사이드 프로젝트를 찾는 가장 쉬운 방법!<br>
+                            스터디와 프로젝트를 찾는 가장 쉬운 방법!<br>
                             Meetball에서 함께 할 팀원들을 찾으세요
                         </p>
                     </div>
@@ -226,6 +238,39 @@
             document.body.style.overflow = 'hidden';
         };
 
+        window.openLoginRequiredModal = function(redirect, message) {
+            window.meetballLoginRedirect = normalizeLoginRedirect(redirect || window.location.pathname + window.location.search);
+            const modal = document.getElementById('loginRequiredModal');
+            if (!modal) {
+                openLoginModal(window.meetballLoginRedirect);
+                return;
+            }
+            const messageNode = document.getElementById('loginRequiredMessage');
+            if (messageNode) {
+                messageNode.textContent = String(message || '로그인 후 이용하실 수 있어요.');
+            }
+            modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeLoginRequiredModal = function() {
+            const modal = document.getElementById('loginRequiredModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = 'auto';
+        };
+
+        window.proceedToLoginFromRequiredModal = function() {
+            const modal = document.getElementById('loginRequiredModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+            openLoginModal(window.meetballLoginRedirect);
+        };
+
         window.closeLoginModal = function() {
             const modal = document.getElementById('loginModal');
             if (!modal) return;
@@ -285,10 +330,10 @@
     <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
         <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md animate-fade-in"></div>
 
-        <div class="relative w-full max-w-4xl rounded-[2.5rem] border border-white bg-white shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] overflow-hidden animate-modal-up">
-            <div class="p-8 md:p-10 lg:p-12">
+        <div class="relative flex max-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2.5rem] border border-white bg-white shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] animate-modal-up md:max-h-[calc(100vh-3rem)]">
+            <div id="welcomeProfileContent" class="flex-1 overflow-y-auto overscroll-contain p-8 transition-all duration-200 md:p-10 lg:p-12">
                 <div id="welcomeStepIndicators" class="mx-auto mb-8 flex max-w-[360px] items-center justify-center">
-                    <div data-step-indicator="1" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#6fd7cf] text-xl font-black text-white shadow-sm">1</div>
+                    <div data-step-indicator="1" class="flex h-12 w-12 items-center justify-center rounded-full bg-poodle-800 text-xl font-black text-white shadow-sm">1</div>
                     <div data-step-line="1" class="mx-3 h-1 flex-1 rounded-full bg-poodle-100"></div>
                     <div data-step-indicator="2" class="flex h-12 w-12 items-center justify-center rounded-full bg-poodle-100 text-xl font-black text-poodle-300">2</div>
                     <div data-step-line="2" class="mx-3 h-1 flex-1 rounded-full bg-poodle-100"></div>
@@ -299,7 +344,7 @@
                     <h2 id="welcomeHeadline" class="text-4xl leading-tight md:text-5xl font-black tracking-tight text-black">
                         기본 정보를 입력해주세요
                     </h2>
-                    <p id="welcomeSubtitle" class="mt-4 text-base md:text-lg font-bold text-poodle-300">
+                    <p id="welcomeSubtitle" class="mt-4 text-base md:text-lg font-bold text-poodle-400">
                         활동을 시작하기 전에 필요한 정보만 순서대로 받고 있어요.
                     </p>
                 </div>
@@ -313,7 +358,7 @@
                                 </label>
                                 <input type="text" id="welcomeName" name="name" required
                                        th:value="${currentProfile.editableAccountName}"
-                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15"
                                        placeholder="이름을 입력해주세요">
                             </div>
                             <div class="space-y-3">
@@ -322,7 +367,7 @@
                                 </label>
                                 <input type="text" id="welcomeNickname" name="nickname" required
                                        th:value="${currentProfile.temporaryNickname ? '' : currentProfile.nickname}"
-                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15"
                                        placeholder="닉네임을 입력해주세요">
                             </div>
                         </div>
@@ -333,7 +378,7 @@
                                 </label>
                                 <input type="tel" id="welcomePhoneNumber" name="phoneNumber" required inputmode="numeric" autocomplete="tel-national"
                                        th:value="${currentProfile.phoneNumber}"
-                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15"
                                        placeholder="010-0000-0000">
                             </div>
                             <div class="space-y-3">
@@ -342,7 +387,7 @@
                                 </label>
                                 <input type="date" id="welcomeBirthDate" name="birthDate" required
                                        th:value="${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}"
-                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15">
+                                       class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15">
                             </div>
                         </div>
 
@@ -362,31 +407,49 @@
                                     포지션을 선택해주세요 <span class="text-red-400">*</span>
                                 </label>
                                 <input type="hidden" id="welcomePosition" name="position" required>
-                                <div id="welcomePositionOptions" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
+                                <div id="welcomePositionDropdownWrap" class="relative">
+                                    <button type="button" id="welcomePositionDropdownBtn" onclick="toggleWelcomePositionDropdown()"
+                                            class="inline-flex w-full items-center justify-between rounded-[1.4rem] border border-poodle-100 bg-white px-5 py-5 text-base font-black text-poodle-900 outline-none transition-all hover:border-poodle-800/20 hover:text-poodle-800">
+                                        <span id="welcomePositionSelectedText">포지션</span>
+                                        <i id="welcomePositionDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-300 transition-all duration-300"></i>
+                                    </button>
+                                    <div id="welcomePositionDropdownMenu"
+                                         class="hidden absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
+                                        <div id="welcomePositionOptions" class="grid grid-cols-1 gap-3"></div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="space-y-3">
                                 <label class="block text-[15px] md:text-lg font-black text-poodle-700">
                                     경력을 선택해주세요 <span class="text-red-400">*</span>
                                 </label>
                                 <input type="hidden" id="welcomeExperienceYears" name="experienceYears" required>
-                                <div id="welcomeExperienceOptions" class="grid grid-cols-2 gap-3 rounded-[1.4rem] border border-poodle-100 bg-white p-4"></div>
+                                <div id="welcomeExperienceDropdownWrap" class="relative">
+                                    <button type="button" id="welcomeExperienceDropdownBtn" onclick="toggleWelcomeExperienceDropdown()"
+                                            class="inline-flex w-full items-center justify-between rounded-[1.4rem] border border-poodle-100 bg-white px-5 py-5 text-base font-black text-poodle-900 outline-none transition-all hover:border-poodle-800/20 hover:text-poodle-800">
+                                        <span id="welcomeExperienceSelectedText">경력</span>
+                                        <i id="welcomeExperienceDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-300 transition-all duration-300"></i>
+                                    </button>
+                                    <div id="welcomeExperienceDropdownMenu"
+                                         class="hidden absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
+                                        <div id="welcomeExperienceOptions" class="grid grid-cols-1 gap-3"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="space-y-3">
-                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <label for="welcomeOrganization" class="block text-[15px] md:text-lg font-black text-poodle-700">
                                     소속을 입력해주세요
                                 </label>
-                                <div id="welcomeOrgVisibleOptions" class="flex items-center gap-2">
-                                    <button type="button" data-org-visible="true" class="rounded-full border px-4 py-2 text-sm font-black transition-all">공개</button>
-                                    <button type="button" data-org-visible="false" class="rounded-full border px-4 py-2 text-sm font-black transition-all">비공개</button>
-                                </div>
+                                <div id="welcomeOrgVisibleOptions" class="inline-flex items-center gap-3"></div>
                             </div>
-                            <input type="text" id="welcomeOrganization" name="organization" required
+                            <input type="text" id="welcomeOrganization" name="organization"
                                    th:value="${currentProfile.organization}"
-                                   class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-[#6fd7cf] focus:ring-4 focus:ring-[#6fd7cf]/15"
+                                   class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-5 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15"
                                    placeholder="소속 학교 또는 직장 이름을 입력해주세요">
+                            </div>
                         </div>
                     </section>
 
@@ -407,23 +470,36 @@
                         </button>
                         <div class="w-full md:w-auto md:min-w-[260px] md:ml-auto">
                             <button type="button" id="welcomeNextButton"
-                                    class="w-full rounded-[1.8rem] bg-[#6fd7cf] px-8 py-5 text-xl font-black text-white transition-all hover:brightness-95">
+                                    class="w-full rounded-[1.8rem] bg-poodle-800 px-8 py-5 text-xl font-black text-white transition-all hover:bg-meatball">
                                 다음
                             </button>
                             <button type="submit" id="welcomeSubmitButton"
-                                    class="hidden w-full rounded-[1.8rem] bg-[#6fd7cf] px-8 py-5 text-xl font-black text-white transition-all hover:brightness-95">
+                                    class="hidden w-full rounded-[1.8rem] bg-poodle-800 px-8 py-5 text-xl font-black text-white transition-all hover:bg-meatball">
                                 시작하기
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 
 	    <script th:if="${session.needsProfile == true}" th:inline="javascript">
             const welcomeGenderOptions = ['남자', '여자'];
-            const welcomeExperienceOptions = ['신입', '1년 미만', '1~3년', '3~5년', '5년 이상'];
+            const welcomeExperienceOptions = [
+                { value: '0', label: '0년' },
+                { value: '1', label: '1년' },
+                { value: '2', label: '2년' },
+                { value: '3', label: '3년' },
+                { value: '4', label: '4년' },
+                { value: '5', label: '5년' },
+                { value: '6', label: '6년' },
+                { value: '7', label: '7년' },
+                { value: '8', label: '8년' },
+                { value: '9', label: '9년' },
+                { value: '10', label: '10년 이상' }
+            ];
             const welcomeStepCopy = {
                 1: {
                     title: '기본 정보를 입력해주세요',
@@ -446,9 +522,9 @@
                 birthDate: /*[[${currentProfile.birthDate != null ? #temporals.format(currentProfile.birthDate, 'yyyy-MM-dd') : ''}]]*/ '',
                 gender: normalizeWelcomeGenderForUi(/*[[${currentProfile.gender}]]*/ ''),
                 position: /*[[${currentProfile.position}]]*/ '',
-                experienceYears: /*[[${currentProfile.experienceYears}]]*/ '',
+                experienceYears: normalizeWelcomeExperienceValue(/*[[${currentProfile.experienceYears}]]*/ ''),
                 organization: /*[[${currentProfile.organization}]]*/ '',
-                orgVisible: /*[[${currentProfile.orgVisible}]]*/ false,
+                orgVisible: /*[[${currentProfile.orgVisible != null ? currentProfile.orgVisible : true}]]*/ true,
                 techStacks: /*[[${currentProfile.techStackNames}]]*/ []
             };
 
@@ -461,6 +537,56 @@
                     return '여자';
                 }
                 return '';
+            }
+
+            function normalizeWelcomeExperienceValue(value) {
+                const normalized = String(value || '').trim();
+                switch (normalized) {
+                    case '0':
+                    case '0년':
+                    case '신입':
+                        return '0';
+                    case '1':
+                    case '1년':
+                    case '1년 미만':
+                    case '1~3년':
+                        return '1';
+                    case '2':
+                    case '2년':
+                        return '2';
+                    case '3':
+                    case '3년':
+                    case '3~5년':
+                        return '3';
+                    case '4':
+                    case '4년':
+                        return '4';
+                    case '5':
+                    case '5년':
+                    case '5년 이상':
+                        return '5';
+                    case '6':
+                    case '6년':
+                        return '6';
+                    case '7':
+                    case '7년':
+                        return '7';
+                    case '8':
+                    case '8년':
+                        return '8';
+                    case '9':
+                    case '9년':
+                        return '9';
+                    case '10':
+                    case '10년 이상':
+                        return '10';
+                    default:
+                        return '';
+                }
+            }
+
+            function getWelcomeExperienceLabel(value) {
+                return welcomeExperienceOptions.find(option => option.value === String(value || ''))?.label || '경력을 선택해주세요';
             }
 
             function formatWelcomePhoneNumber(value) {
@@ -476,6 +602,30 @@
                 if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
                 if (digits.length <= 10) return `${digits.slice(0, 3)}-${digits.slice(3, digits.length - 4)}-${digits.slice(-4)}`;
                 return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+            }
+
+            function lockWelcomeModalScroll() {
+                const html = document.documentElement;
+                const body = document.body;
+                if (!html || !body) return;
+                if (!body.dataset.welcomePrevOverflow) {
+                    body.dataset.welcomePrevOverflow = body.style.overflow || '';
+                }
+                if (!html.dataset.welcomePrevOverflow) {
+                    html.dataset.welcomePrevOverflow = html.style.overflow || '';
+                }
+                body.style.overflow = 'hidden';
+                html.style.overflow = 'hidden';
+            }
+
+            function unlockWelcomeModalScroll() {
+                const html = document.documentElement;
+                const body = document.body;
+                if (!html || !body) return;
+                body.style.overflow = body.dataset.welcomePrevOverflow ?? '';
+                html.style.overflow = html.dataset.welcomePrevOverflow ?? '';
+                delete body.dataset.welcomePrevOverflow;
+                delete html.dataset.welcomePrevOverflow;
             }
 
             function syncWelcomeFields() {
@@ -506,8 +656,8 @@
                 container.innerHTML = welcomeGenderOptions.map(option => {
                     const selected = welcomeState.gender === option;
                     const selectedClass = selected
-                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
-                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
+                        ? 'border-poodle-800 bg-poodle-800 text-white shadow-sm'
+                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-poodle-800 hover:text-poodle-900';
                     return `<button type="button" data-welcome-gender="${window.meetballEscapeHtml(option)}" class="rounded-[1.4rem] border px-4 py-4 text-base font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option)}</button>`;
                 }).join('');
                 container.querySelectorAll('[data-welcome-gender]').forEach(button => {
@@ -522,20 +672,58 @@
             function renderWelcomeOrgVisibleOptions() {
                 const container = document.getElementById('welcomeOrgVisibleOptions');
                 if (!container) return;
-                container.innerHTML = ['true', 'false'].map(value => {
-                    const selected = String(welcomeState.orgVisible) === value;
-                    const label = value === 'true' ? '공개' : '비공개';
-                    const className = selected
-                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
-                        : 'border-poodle-100 bg-white text-poodle-400 hover:border-[#6fd7cf] hover:text-poodle-900';
-                    return `<button type="button" data-org-visible="${value}" class="rounded-full border px-4 py-2 text-sm font-black transition-all ${className}">${label}</button>`;
-                }).join('');
-                container.querySelectorAll('[data-org-visible]').forEach(button => {
-                    button.addEventListener('click', () => {
-                        welcomeState.orgVisible = button.dataset.orgVisible === 'true';
-                        renderWelcomeOrgVisibleOptions();
-                    });
+                const isPublic = Boolean(welcomeState.orgVisible);
+                container.innerHTML = `
+                    <button type="button" id="welcomeOrgVisibleSwitch"
+                            class="relative inline-flex h-12 w-24 items-center rounded-full border transition-all ${isPublic ? 'border-meatball bg-meatball shadow-[0_14px_28px_rgba(255,107,53,0.22)]' : 'border-poodle-100 bg-poodle-100'}"
+                            aria-pressed="${isPublic}" aria-label="소속 공개 여부 전환">
+                        <span class="absolute left-1 top-1 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-300 ${isPublic ? 'translate-x-12' : 'translate-x-0'}">
+                            <i class="fa-solid ${isPublic ? 'fa-lock-open text-meatball' : 'fa-lock text-poodle-300'} text-sm"></i>
+                        </span>
+                    </button>
+                    <div class="text-right">
+                        <p class="text-sm font-black ${isPublic ? 'text-meatball' : 'text-poodle-400'}">${isPublic ? '공개' : '비공개'}</p>
+                        <p class="text-[11px] font-bold text-poodle-300">소속 공개 여부</p>
+                    </div>
+                `;
+                container.querySelector('#welcomeOrgVisibleSwitch')?.addEventListener('click', () => {
+                    welcomeState.orgVisible = !welcomeState.orgVisible;
+                    renderWelcomeOrgVisibleOptions();
                 });
+            }
+
+            function updateWelcomePositionButtonLabel() {
+                const selectedText = document.getElementById('welcomePositionSelectedText');
+                if (!selectedText) return;
+                selectedText.textContent = welcomeState.position || '포지션을 선택해주세요';
+            }
+
+            function syncWelcomeDropdownScrollState() {
+                const content = document.getElementById('welcomeProfileContent');
+                if (!content) return;
+                const hasOpenDropdown = ['welcomePositionDropdownMenu', 'welcomeExperienceDropdownMenu'].some(id => {
+                    const element = document.getElementById(id);
+                    return element && !element.classList.contains('hidden');
+                });
+                content.classList.toggle('overflow-y-hidden', hasOpenDropdown);
+                content.classList.toggle('overflow-y-auto', !hasOpenDropdown);
+            }
+
+            function toggleWelcomePositionDropdown() {
+                const menu = document.getElementById('welcomePositionDropdownMenu');
+                const icon = document.getElementById('welcomePositionDropdownIcon');
+                if (!menu) return;
+                const nextOpen = menu.classList.contains('hidden');
+                closeWelcomeExperienceDropdown();
+                menu.classList.toggle('hidden', !nextOpen);
+                icon?.classList.toggle('rotate-180', nextOpen);
+                syncWelcomeDropdownScrollState();
+            }
+
+            function closeWelcomePositionDropdown() {
+                document.getElementById('welcomePositionDropdownMenu')?.classList.add('hidden');
+                document.getElementById('welcomePositionDropdownIcon')?.classList.remove('rotate-180');
+                syncWelcomeDropdownScrollState();
             }
 
             function renderWelcomePositionOptions() {
@@ -544,34 +732,61 @@
                 container.innerHTML = window.meetballPositionOptions.map(position => {
                     const selected = welcomeState.position === position;
                     const selectedClass = selected
-                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
-                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
+                        ? 'border-poodle-800 bg-poodle-800 text-white shadow-sm'
+                        : 'border-poodle-100 bg-poodle-50 text-poodle-600 hover:border-poodle-800 hover:text-poodle-900';
                     return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-[1.2rem] border px-3 py-3 text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
                 }).join('');
                 container.querySelectorAll('[data-position]').forEach(button => {
                     button.addEventListener('click', () => {
                         welcomeState.position = button.dataset.position;
                         syncWelcomeFields();
+                        updateWelcomePositionButtonLabel();
                         renderWelcomePositionOptions();
+                        closeWelcomePositionDropdown();
                     });
                 });
+            }
+
+            function updateWelcomeExperienceButtonLabel() {
+                const selectedText = document.getElementById('welcomeExperienceSelectedText');
+                if (!selectedText) return;
+                selectedText.textContent = getWelcomeExperienceLabel(welcomeState.experienceYears);
+            }
+
+            function toggleWelcomeExperienceDropdown() {
+                const menu = document.getElementById('welcomeExperienceDropdownMenu');
+                const icon = document.getElementById('welcomeExperienceDropdownIcon');
+                if (!menu) return;
+                const nextOpen = menu.classList.contains('hidden');
+                closeWelcomePositionDropdown();
+                menu.classList.toggle('hidden', !nextOpen);
+                icon?.classList.toggle('rotate-180', nextOpen);
+                syncWelcomeDropdownScrollState();
+            }
+
+            function closeWelcomeExperienceDropdown() {
+                document.getElementById('welcomeExperienceDropdownMenu')?.classList.add('hidden');
+                document.getElementById('welcomeExperienceDropdownIcon')?.classList.remove('rotate-180');
+                syncWelcomeDropdownScrollState();
             }
 
             function renderWelcomeExperienceOptions() {
                 const container = document.getElementById('welcomeExperienceOptions');
                 if (!container) return;
                 container.innerHTML = welcomeExperienceOptions.map(option => {
-                    const selected = welcomeState.experienceYears === option;
+                    const selected = welcomeState.experienceYears === option.value;
                     const selectedClass = selected
-                        ? 'border-[#6fd7cf] bg-[#6fd7cf] text-white shadow-sm'
-                        : 'border-poodle-100 bg-white text-poodle-500 hover:border-[#6fd7cf] hover:text-poodle-900';
-                    return `<button type="button" data-experience="${window.meetballEscapeHtml(option)}" class="rounded-[1.2rem] border px-3 py-4 text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option)}</button>`;
+                        ? 'border-poodle-800 bg-poodle-800 text-white shadow-sm'
+                        : 'border-poodle-100 bg-poodle-50 text-poodle-600 hover:border-poodle-800 hover:text-poodle-900';
+                    return `<button type="button" data-experience="${window.meetballEscapeHtml(option.value)}" class="rounded-[1.2rem] border px-4 py-4 text-left text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option.label)}</button>`;
                 }).join('');
                 container.querySelectorAll('[data-experience]').forEach(button => {
                     button.addEventListener('click', () => {
                         welcomeState.experienceYears = button.dataset.experience;
                         syncWelcomeFields();
+                        updateWelcomeExperienceButtonLabel();
                         renderWelcomeExperienceOptions();
+                        closeWelcomeExperienceDropdown();
                     });
                 });
             }
@@ -603,6 +818,8 @@
             }
 
             function updateWelcomeStepUi() {
+                closeWelcomePositionDropdown();
+                closeWelcomeExperienceDropdown();
                 document.querySelectorAll('[data-welcome-step]').forEach(section => {
                     section.classList.toggle('hidden', Number(section.dataset.welcomeStep) !== welcomeCurrentStep);
                 });
@@ -611,7 +828,7 @@
                     const step = Number(indicator.dataset.stepIndicator);
                     const completed = step < welcomeCurrentStep;
                     const active = step === welcomeCurrentStep;
-                    indicator.classList.toggle('bg-[#6fd7cf]', active || completed);
+                    indicator.classList.toggle('bg-poodle-800', active || completed);
                     indicator.classList.toggle('text-white', active || completed);
                     indicator.classList.toggle('bg-poodle-100', !active && !completed);
                     indicator.classList.toggle('text-poodle-300', !active && !completed);
@@ -620,7 +837,7 @@
                 document.querySelectorAll('[data-step-line]').forEach(line => {
                     const step = Number(line.dataset.stepLine);
                     const active = step < welcomeCurrentStep;
-                    line.classList.toggle('bg-[#6fd7cf]', active);
+                    line.classList.toggle('bg-poodle-800', active);
                     line.classList.toggle('bg-poodle-100', !active);
                 });
 
@@ -679,10 +896,6 @@
                         await meetballAlert('경력을 선택해주세요.');
                         return false;
                     }
-                    if (!welcomeState.organization) {
-                        await meetballAlert('소속을 입력해주세요. 소속이 없다면 무소속으로 입력하시면 됩니다.');
-                        return false;
-                    }
                     return true;
                 }
 
@@ -695,10 +908,13 @@
             }
 
             syncWelcomeFields();
+            lockWelcomeModalScroll();
             renderWelcomeGenderOptions();
             renderWelcomeOrgVisibleOptions();
             renderWelcomePositionOptions();
             renderWelcomeExperienceOptions();
+            updateWelcomePositionButtonLabel();
+            updateWelcomeExperienceButtonLabel();
             renderWelcomeTechStackOptions();
             updateWelcomeStepUi();
 
@@ -718,6 +934,15 @@
             });
             document.getElementById('welcomeOrganization')?.addEventListener('input', (event) => {
                 welcomeState.organization = event.target.value;
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!event.target.closest('#welcomePositionDropdownWrap')) {
+                    closeWelcomePositionDropdown();
+                }
+                if (!event.target.closest('#welcomeExperienceDropdownWrap')) {
+                    closeWelcomeExperienceDropdown();
+                }
             });
 
             document.getElementById('welcomePrevButton')?.addEventListener('click', () => {
@@ -768,6 +993,7 @@
                     });
 
                     if (response.ok) {
+                        unlockWelcomeModalScroll();
                         document.getElementById('welcomeProfileModal').style.display = 'none';
                         window.location.reload();
                         return;
