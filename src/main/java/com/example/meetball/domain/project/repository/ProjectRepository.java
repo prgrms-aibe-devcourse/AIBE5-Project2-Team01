@@ -14,6 +14,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
     @Query("""
             SELECT DISTINCT p
             FROM Project p
+            WHERE p.recruitStatus = :recruitStatus
+              AND p.progressStatus <> :completedStatus
+            ORDER BY p.createdAt DESC, p.id DESC
+            """)
+    List<Project> findRecommendationCandidates(@Param("recruitStatus") String recruitStatus,
+                                               @Param("completedStatus") String completedStatus);
+
+    @Query("""
+            SELECT DISTINCT p
+            FROM Project p
             LEFT JOIN p.positionSelections positionSelection
             LEFT JOIN positionSelection.position positionValue
             LEFT JOIN p.techStackSelections techStackSelection

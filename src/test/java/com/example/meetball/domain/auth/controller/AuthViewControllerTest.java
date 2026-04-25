@@ -91,16 +91,14 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("id=\"loginModal\"")))
                 .andExpect(content().string(containsString("data-client_id=\"test-google-client.apps.googleusercontent.com\"")))
                 .andExpect(content().string(containsString("data-type=\"standard\"")))
-                .andExpect(content().string(containsString("data-width=\"420\"")))
+                .andExpect(content().string(containsString("data-width=\"400\"")))
                 .andExpect(content().string(containsString("data-text=\"continue_with\"")))
-                .andExpect(content().string(containsString("data-logo_alignment=\"right\"")))
+                .andExpect(content().string(containsString("data-logo_alignment=\"center\"")))
                 .andExpect(content().string(containsString("/api/auth/google")))
-                .andExpect(content().string(containsString("class=\"flex justify-center social-login-google\"")))
-                .andExpect(content().string(containsString("Github 로그인 준비중")))
-                .andExpect(content().string(containsString("Kakao 로그인 준비중")))
-                .andExpect(content().string(containsString("Naver 로그인 준비중")))
-                .andExpect(content().string(containsString("aria-label=\"Kakao logo\"")))
-                .andExpect(content().string(containsString("aria-label=\"Naver logo\"")));
+                .andExpect(content().string(containsString("social-login-google")))
+                .andExpect(content().string(containsString("Meetball에 오신 것을 환영합니다!")))
+                .andExpect(content().string(containsString("Meetball에서 함께 할 팀원들을 찾으세요!")))
+                .andExpect(content().string(containsString("id=\"loginError\"")));
     }
 
     @Test

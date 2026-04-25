@@ -8,7 +8,6 @@ import com.example.meetball.domain.project.dto.ProjectListResponseDto;
 import com.example.meetball.domain.project.dto.ProjectParticipantProfile;
 import com.example.meetball.domain.project.dto.ProjectPositionEditConstraint;
 import com.example.meetball.domain.project.dto.ProjectRecruitPositionStatus;
-import com.example.meetball.domain.project.dto.ProjectSummaryView;
 import com.example.meetball.domain.project.dto.ProjectUpdateRequestDto;
 import com.example.meetball.domain.bookmarkedproject.entity.BookmarkedProject;
 import com.example.meetball.domain.projectapplication.entity.ProjectApplication;
@@ -77,36 +76,10 @@ public class ProjectService {
     private final PositionRepository positionRepository;
     private final TechStackRepository techStackRepository;
 
-    public List<ProjectSummaryView> getProjectSummaries() {
-        return projectRepository.findAllByOrderByCreatedAtDescIdDesc()
-                .stream()
-                .map(this::toSummaryView)
-                .toList();
-    }
-
     public ProjectDetailView getProjectDetail(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + id));
         return toDetailView(project);
-    }
-
-    private ProjectSummaryView toSummaryView(Project project) {
-        List<ProjectParticipant> participants = projectParticipantRepository.findByProject(project);
-        int currentRecruitment = calculateCurrentRecruitment(project, participants);
-        return new ProjectSummaryView(
-                project.getId(),
-                project.getTitle(),
-                project.getSummary(),
-                displayProjectPurpose(project.getProjectPurpose()),
-                formatPositionText(project),
-                project.getLeaderName(),
-                project.getLeaderAvatarUrl(),
-                project.getThumbnailUrl(),
-                currentRecruitment,
-                valueOrZero(project.getTotalRecruitment()),
-                formatRecruitmentDeadline(project, project.getRecruitmentDeadline()),
-                splitTechStacks(project)
-        );
     }
 
     private ProjectDetailView toDetailView(Project project) {

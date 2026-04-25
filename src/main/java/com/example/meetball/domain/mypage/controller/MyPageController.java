@@ -26,14 +26,14 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    @GetMapping({"/account", "/profile"})
+    @GetMapping("/account")
     public ResponseEntity<MyPageProfileResponse> getMyProfile(
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
         Long currentProfileId = requireSessionProfile(sessionProfileId);
         return ResponseEntity.ok(myPageService.getMyProfile(currentProfileId, currentProfileId));
     }
 
-    @PutMapping({"/account", "/profile"})
+    @PutMapping("/account")
     public ResponseEntity<Void> updateProfile(
             @RequestBody ProfileUpdateRequest request,
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId,
@@ -86,13 +86,6 @@ public class MyPageController {
             @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
         Long currentProfileId = requireSessionProfile(sessionProfileId);
         return ResponseEntity.ok(myPageService.getMyProjects(currentProfileId, currentProfileId));
-    }
-
-    @GetMapping("/projects/completed")
-    public ResponseEntity<List<ParticipatedProjectResponse>> getCompletedProjects(
-            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
-        Long currentProfileId = requireSessionProfile(sessionProfileId);
-        return ResponseEntity.ok(myPageService.getCompletedProjects(currentProfileId, currentProfileId));
     }
 
     @GetMapping("/recent-reads")

@@ -1,181 +1,127 @@
 package com.example.meetball.domain.recommendation.service;
 
-import com.example.meetball.domain.project.entity.Project;
-import com.example.meetball.domain.project.entity.ProjectRecruitPosition;
-import com.example.meetball.domain.project.entity.ProjectTechStack;
-import com.example.meetball.domain.project.repository.ProjectRepository;
-import com.example.meetball.domain.project.support.ProjectSelectionCatalog;
-import com.example.meetball.domain.recommendation.dto.RecommendationResponseDto;
 import com.example.meetball.domain.profile.entity.Profile;
-import com.example.meetball.domain.profile.entity.ProfileTechStack;
 import com.example.meetball.domain.profile.repository.ProfileRepository;
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.repository.ProjectRepository;
+import com.example.meetball.domain.recommendation.dto.RecommendationListResponseDto;
+import com.example.meetball.domain.recommendation.dto.RecommendationResponseDto;
+import com.example.meetball.domain.recommendation.strategy.FallbackRecommendationFactory;
+import com.example.meetball.domain.recommendation.strategy.RecommendationStrategy;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
- * 규칙 기반 AI 추천 서비스
- *
- * 점수 산정 기준:
- *   - 기술스택 일치 1개당 20점 (profile_tech_stack vs project_tech_stack)
- *   - 프로필 포지션/프로젝트 포지션 유사 시 +30점 (profile_position vs project_recruit_position, 부분 문자열 포함 비교)
- *
- * 추천 대상: 모집 상태가 OPEN이고 진행 상태가 COMPLETED가 아닌 프로젝트만 포함
- * 정렬: 점수 내림차순 → 점수가 동일하면 projectId 오름차순
+ * 규칙 기반 후보군 + 선택적 LLM 해석 + fallback을 제공하는 추천 서비스.
  */
 @Service
 public class RecommendationService {
 
-    // 기술스택 1개 일치당 부여하는 점수
-    private static final int TECH_STACK_SCORE_PER_MATCH = 20;
+    private static final Logger log = LoggerFactory.getLogger(RecommendationService.class);
+    private static final long CACHE_TTL_MS = 10 * 60 * 1000L;
 
-    // 프로필 포지션/프로젝트 포지션 유사 시 부여하는 추가 점수
-    private static final int POSITION_MATCH_SCORE = 30;
+    @Value("${llm.enabled:false}")
+    private boolean llmEnabled;
 
     private final ProjectRepository projectRepository;
     private final ProfileRepository profileRepository;
+    private final RecommendationStrategy recommendationStrategy;
+    private final GeminiRecommendationInterpreter geminiRecommendationInterpreter;
+    private final MockLlmRecommendationInterpreter mockLlmRecommendationInterpreter;
+    private final FallbackRecommendationFactory fallbackRecommendationFactory;
+    private final ConcurrentHashMap<String, CachedResult> resultCache = new ConcurrentHashMap<>();
 
-    public RecommendationService(ProjectRepository projectRepository, ProfileRepository profileRepository) {
+    public RecommendationService(ProjectRepository projectRepository,
+                                 ProfileRepository profileRepository,
+                                 RecommendationStrategy recommendationStrategy,
+                                 GeminiRecommendationInterpreter geminiRecommendationInterpreter,
+                                 MockLlmRecommendationInterpreter mockLlmRecommendationInterpreter,
+                                 FallbackRecommendationFactory fallbackRecommendationFactory) {
         this.projectRepository = projectRepository;
         this.profileRepository = profileRepository;
+        this.recommendationStrategy = recommendationStrategy;
+        this.geminiRecommendationInterpreter = geminiRecommendationInterpreter;
+        this.mockLlmRecommendationInterpreter = mockLlmRecommendationInterpreter;
+        this.fallbackRecommendationFactory = fallbackRecommendationFactory;
     }
 
-    /**
-     * 특정 프로필 기준으로 추천 프로젝트 목록을 반환합니다.
-     *
-     * @param profileId 추천 대상 프로필 ID
-     * @return 점수 내림차순으로 정렬된 추천 프로젝트 목록
-     */
     @Transactional(readOnly = true)
-    public List<RecommendationResponseDto> recommend(Long profileId) {
-        // 1. 프로필 조회 (존재하지 않으면 예외)
+    public RecommendationListResponseDto recommend(Long profileId, List<Long> excludeIds, List<String> recentAxes) {
+        String cacheKey = buildCacheKey(profileId, excludeIds);
+        CachedResult cachedResult = resultCache.get(cacheKey);
+        if (cachedResult != null && !cachedResult.isExpired()) {
+            log.info("[Recommendation] cache hit. profileId={}, key={}", profileId, cacheKey);
+            return cachedResult.result();
+        }
+
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로필을 찾을 수 없습니다. profileId=" + profileId));
 
-        // 2. 모집 중이고 아직 완료되지 않은 프로젝트만 조회
-        List<Project> openProjects = projectRepository.findAll().stream()
-                .filter(project -> Project.RECRUIT_STATUS_OPEN.equals(project.getRecruitStatus()))
-                .filter(project -> !Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus()))
-                .collect(Collectors.toList());
+        List<Project> openProjects = projectRepository.findRecommendationCandidates(
+                Project.RECRUIT_STATUS_OPEN,
+                Project.PROGRESS_STATUS_COMPLETED
+        );
 
-        // 3. 프로필 기술스택을 소문자 집합으로 변환
-        Set<String> profileTechSet = parseProfileTechStack(profile);
-
-        // 4. 각 프로젝트에 대해 점수 및 이유 계산
-        List<RecommendationResponseDto> result = new ArrayList<>();
-        for (Project project : openProjects) {
-            List<String> reasons = new ArrayList<>();
-            int score = 0;
-
-            // 기술스택 점수 계산
-            int techMatchCount = countTechStackMatches(profileTechSet, project);
-            if (techMatchCount > 0) {
-                score += techMatchCount * TECH_STACK_SCORE_PER_MATCH;
-                reasons.add("보유 기술스택이 " + techMatchCount + "개 일치합니다");
+        if (excludeIds != null && !excludeIds.isEmpty()) {
+            List<Project> filtered = openProjects.stream()
+                    .filter(project -> !excludeIds.contains(project.getId()))
+                    .collect(Collectors.toList());
+            if (filtered.size() >= 3) {
+                openProjects = filtered;
             }
+        }
 
-            // 프로필 포지션/프로젝트 포지션 유사도 점수 계산
-            if (isPositionMatched(profile.getPosition(), project)) {
-                score += POSITION_MATCH_SCORE;
-                reasons.add("프로필 포지션과 모집 포지션이 유사합니다");
+        List<RecommendationResponseDto> candidatePool = recommendationStrategy.generateCandidatePool(profile, openProjects);
+
+        RecommendationListResponseDto finalResult;
+        if (llmEnabled) {
+            log.info("[Recommendation] llm.enabled=true -> Gemini interpreter");
+            finalResult = geminiRecommendationInterpreter.interpret(profile, candidatePool, recentAxes);
+            if (finalResult == null) {
+                log.warn("[Recommendation] Gemini 실패, fallback으로 전환합니다.");
+                finalResult = fallbackRecommendationFactory.createFallback(candidatePool);
             }
-
-            // 점수가 0이라도 목록에 포함 (프론트엔드에서 필터링 가능)
-            result.add(new RecommendationResponseDto(project.getId(), project.getTitle(), score, reasons));
+        } else {
+            log.info("[Recommendation] llm.enabled=false -> Mock interpreter");
+            finalResult = mockLlmRecommendationInterpreter.interpret(profile, candidatePool, recentAxes);
+            if (finalResult == null) {
+                finalResult = fallbackRecommendationFactory.createFallback(candidatePool);
+            }
         }
 
-        // 5. 점수 내림차순 정렬 (동점 시 projectId 오름차순)
-        result.sort(Comparator.comparingInt(RecommendationResponseDto::getScore).reversed()
-                .thenComparingLong(RecommendationResponseDto::getProjectId));
-
-        return result;
+        resultCache.put(cacheKey, new CachedResult(finalResult));
+        if (resultCache.size() > 100) {
+            resultCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
+        }
+        return finalResult;
     }
 
-    /**
-     * 지정 기술스택 카탈로그 기준으로 정규화한 뒤 비교용 키 집합으로 파싱합니다.
-     *
-     * @param techStackRaw 원본 기술스택 문자열 (null 허용)
-     * @return 소문자로 정규화된 기술 항목 집합
-     */
-    private Set<String> parseTechStack(String techStackRaw) {
-        if (techStackRaw == null || techStackRaw.isBlank()) {
-            return Set.of();
-        }
-        String normalized = ProjectSelectionCatalog.normalizeTechStackText(techStackRaw);
-        return java.util.Arrays.stream(normalized.split(","))
-                .map(String::trim)
-                .map(ProjectSelectionCatalog::searchKey)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toSet());
+    @Transactional(readOnly = true)
+    public RecommendationListResponseDto recommend(Long profileId) {
+        return recommend(profileId, null, null);
     }
 
-    private Set<String> parseProfileTechStack(Profile profile) {
-        if (profile.getTechStackSelections() != null && !profile.getTechStackSelections().isEmpty()) {
-            return profile.getTechStackSelections().stream()
-                    .map(ProfileTechStack::getTechStackName)
-                    .map(ProjectSelectionCatalog::searchKey)
-                    .filter(value -> !value.isEmpty())
-                    .collect(Collectors.toSet());
-        }
-        return parseTechStack(profile.getTechStack());
+    private String buildCacheKey(Long profileId, List<Long> excludeIds) {
+        String ids = excludeIds == null || excludeIds.isEmpty()
+                ? "none"
+                : excludeIds.stream().sorted().map(Objects::toString).collect(Collectors.joining(","));
+        return profileId + "|" + ids;
     }
 
-    /**
-     * 프로필의 기술스택 집합과 프로젝트 기술스택 선택 목록을 비교하여 일치하는 항목 수를 반환합니다.
-     *
-     * @param profileTechSet  프로필 기술 항목 집합 (소문자)
-     * @return 일치하는 기술 항목 수
-     */
-    private int countTechStackMatches(Set<String> profileTechSet, Project project) {
-        if (profileTechSet.isEmpty()) {
-            return 0;
-        }
-        Set<String> projectTechSet = project.getTechStackSelections() != null && !project.getTechStackSelections().isEmpty()
-                ? project.getTechStackSelections().stream()
-                .map(ProjectTechStack::getTechStackName)
-                .map(ProjectSelectionCatalog::searchKey)
-                .filter(value -> !value.isEmpty())
-                .collect(Collectors.toSet())
-                : Set.of();
-        if (projectTechSet.isEmpty()) {
-            return 0;
+    private record CachedResult(RecommendationListResponseDto result, long createdAt) {
+        private CachedResult(RecommendationListResponseDto result) {
+            this(result, System.currentTimeMillis());
         }
 
-        // 사용자 기술 중 프로젝트 기술 집합에 포함된 것만 카운트
-        return (int) profileTechSet.stream()
-                .filter(projectTechSet::contains)
-                .count();
-    }
-
-    /**
-     * 프로필 포지션과 프로젝트 포지션이 유사한지 판단합니다.
-     * 한쪽이 다른 쪽을 부분 문자열로 포함하면 유사하다고 판단합니다. (대소문자 무시)
-     *
-     * 예: positionName="백엔드 개발자", projectPosition="백엔드" → true
-     *     positionName="Backend Developer", projectPosition="backend" → true
-     *
-     * @param positionName 프로필 포지션 (null 허용)
-     * @param project 프로젝트 모집 포지션을 포함한 프로젝트
-     * @return 유사 여부
-     */
-    private boolean isPositionMatched(String positionName, Project project) {
-        if (positionName == null || positionName.isBlank()) {
-            return false;
+        private boolean isExpired() {
+            return System.currentTimeMillis() - createdAt > CACHE_TTL_MS;
         }
-        String normalizedPosition = positionName.trim().toLowerCase(Locale.ROOT);
-        List<String> positions = project.getPositionSelections() != null && !project.getPositionSelections().isEmpty()
-                ? project.getPositionSelections().stream()
-                .map(ProjectRecruitPosition::getPositionName)
-                .toList()
-                : List.of();
-        return positions.stream()
-                .map(value -> value.toLowerCase(Locale.ROOT))
-                .anyMatch(normalizedPos -> normalizedPosition.contains(normalizedPos) || normalizedPos.contains(normalizedPosition));
     }
 }

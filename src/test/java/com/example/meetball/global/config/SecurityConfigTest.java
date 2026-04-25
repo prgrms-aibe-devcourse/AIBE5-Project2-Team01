@@ -80,11 +80,9 @@ class SecurityConfigTest {
     @Test
     @DisplayName("마이페이지 공개 항목 API도 로그인 없이 조회할 수 없다")
     void myPagePublicSectionsRequireLogin() throws Exception {
-        mockMvc.perform(get("/api/mypage/profile").param("profileId", "1"))
+        mockMvc.perform(get("/api/mypage/account").param("profileId", "1"))
                 .andExpect(status().isForbidden());
         mockMvc.perform(get("/api/mypage/projects").param("profileId", "1"))
-                .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/mypage/projects/completed").param("profileId", "1"))
                 .andExpect(status().isForbidden());
     }
 
@@ -122,15 +120,21 @@ class SecurityConfigTest {
         String csrfHeader = extractMetaContent(html, "_csrf_header");
         Cookie csrfCookie = pageResult.getResponse().getCookie("XSRF-TOKEN");
 
-        mockMvc.perform(put("/api/mypage/profile")
+        mockMvc.perform(put("/api/mypage/account")
                 .session(session)
                 .cookie(csrfCookie)
                 .header(csrfHeader, csrfToken)
                 .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
+                          "name": "초코푸들",
                           "nickname": "초코푸들",
+                          "phoneNumber": "010-1234-5678",
+                          "birthDate": "1995-05-21",
+                          "gender": "남자",
                           "position": "백엔드",
+                          "experienceYears": "3",
+                          "organization": "Meetball",
                           "techStacks": ["Java", "Spring"],
                           "isPublic": true
                         }
@@ -152,15 +156,21 @@ class SecurityConfigTest {
         String csrfHeader = extractMetaContent(html, "_csrf_header");
         Cookie csrfCookie = pageResult.getResponse().getCookie("XSRF-TOKEN");
 
-        mockMvc.perform(put("/api/mypage/profile")
+        mockMvc.perform(put("/api/mypage/account")
                 .session(session)
                 .cookie(csrfCookie)
                 .header(csrfHeader, csrfToken)
                 .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
+                          "name": "초코푸들",
                           "nickname": "초코푸들",
+                          "phoneNumber": "010-1234-5678",
+                          "birthDate": "1995-05-21",
+                          "gender": "남자",
                           "position": "백엔드",
+                          "experienceYears": "3",
+                          "organization": "Meetball",
                           "techStacks": ["Java", "Spring"],
                           "isPublic": true
                         }

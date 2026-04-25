@@ -41,7 +41,7 @@ class MyPageControllerTest {
         Long profileId = 1L;
 
         // when & then
-        mockMvc.perform(get("/api/mypage/profile")
+        mockMvc.perform(get("/api/mypage/account")
                         .session(session(profileId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("초코푸들"))
@@ -69,18 +69,13 @@ class MyPageControllerTest {
     @Test
     @DisplayName("마이페이지 API는 profileId 파라미터와 무관하게 세션 프로필 기준으로 조회한다")
     void myPageUsesOnlySessionProfileScope() throws Exception {
-        mockMvc.perform(get("/api/mypage/profile")
+        mockMvc.perform(get("/api/mypage/account")
                         .param("profileId", "2")
                         .session(session(1L)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profileId").value(1));
 
         mockMvc.perform(get("/api/mypage/projects")
-                        .param("profileId", "2")
-                        .session(session(1L)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/api/mypage/projects/completed")
                         .param("profileId", "2")
                         .session(session(1L)))
                 .andExpect(status().isOk());
@@ -91,7 +86,7 @@ class MyPageControllerTest {
     void updateProfilePersistsSelectedPositionAndTechStacks() throws Exception {
         MockHttpSession session = session(1L);
 
-        mockMvc.perform(put("/api/mypage/profile")
+        mockMvc.perform(put("/api/mypage/account")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -110,7 +105,7 @@ class MyPageControllerTest {
                                 """))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(put("/api/mypage/profile")
+        mockMvc.perform(put("/api/mypage/account")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -129,7 +124,7 @@ class MyPageControllerTest {
                                 """))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/mypage/profile")
+        mockMvc.perform(get("/api/mypage/account")
                         .session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.position").value("백엔드"))

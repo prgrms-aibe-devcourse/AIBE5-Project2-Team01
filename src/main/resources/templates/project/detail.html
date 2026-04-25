@@ -567,9 +567,7 @@
         const PROJECT_DEADLINE_LABEL = /*[[${project.deadlineLabel}]]*/ '';
         const PROJECT_RECRUIT_STATUS = /*[[${project.recruitStatus}]]*/ '';
         const PROJECT_PROGRESS_STATUS = /*[[${project.progressStatus}]]*/ '';
-        const escapeHtml = window.meetballEscapeHtml;
-        const safeUrl = window.meetballSafeUrl;
-        const projectId = () => document.getElementById('applicationProjectId')?.value;
+        const projectId = () => window.meetballResolveProjectId({ elementId: 'applicationProjectId', queryParam: 'projectId', pathIndex: 2 });
         let currentExistingApplication = null;
 
         function hasAvailableRecruitPositions() {
@@ -880,54 +878,10 @@
         async function fetchResources() {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
-
-            try {
-                const res = await fetch(`/api/projects/${currentProjectId}/resources`);
-                if(!res.ok) throw new Error('첨부파일 로드 실패');
-                
-                const resources = await res.json();
-                renderResources(resources, currentProjectId);
-            } catch (err) {
-                console.error(err);
-                renderResources([], currentProjectId);
-            }
-        }
-
-        function renderResources(resources, currentProjectId) {
-            const containers = [
-                document.getElementById('resources-container-detail'),
-                document.getElementById('resources-container-recruitment')
-            ].filter(Boolean);
-
-            containers.forEach(container => {
-                if (!resources || resources.length === 0) {
-                    container.innerHTML = '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 결과물이나 링크가 없습니다.</div>';
-                    return;
-                }
-
-                container.innerHTML = resources.map(item => {
-                    const isLink = item.type === 'LINK';
-                    const icon = isLink ? 'fa-link' : 'fa-download';
-                    const fileProjectId = encodeURIComponent(String(currentProjectId));
-                    const resourceId = encodeURIComponent(String(item.id ?? ''));
-                    const href = safeUrl(isLink ? item.linkUrl : `/api/projects/${fileProjectId}/resources/${resourceId}/download`);
-                    const subText = isLink ? 'External Link' : (Math.round((item.fileSize || 0) / 1024) + ' KB');
-                    const title = escapeHtml(item.originalFileName || (isLink ? '외부 링크' : '파일'));
-
-                    return `
-                    <a href="${escapeHtml(href)}" ${isLink ? 'target="_blank" rel="noopener noreferrer"' : ''}
-                        class="group p-8 bg-poodle-50/30 border-2 border-poodle-100 rounded-3xl flex items-center gap-5 hover:bg-white hover:border-meatball/30 hover:shadow-xl transition-all">
-                        <div
-                            class="w-14 h-14 bg-white border border-poodle-50 rounded-2xl flex items-center justify-center text-meatball group-hover:scale-110 transition-transform shadow-sm flex-shrink-0">
-                            <i class="fa-solid ${icon} text-xl"></i>
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-sm font-black text-poodle-900 truncate">${title}</p>
-                            <p class="text-[10px] text-poodle-400 font-bold uppercase tracking-wider">${escapeHtml(subText)}</p>
-                        </div>
-                    </a>
-                    `;
-                }).join('');
+            await window.meetballLoadProjectResources(currentProjectId, {
+                variant: 'detail',
+                containerIds: ['resources-container-detail', 'resources-container-recruitment'],
+                emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 결과물이나 링크가 없습니다.</div>'
             });
         }
 
