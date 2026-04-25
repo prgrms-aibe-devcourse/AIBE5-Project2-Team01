@@ -12,6 +12,8 @@ import java.util.List;
 public interface ProjectApplicationRepository extends JpaRepository<ProjectApplication, Long> {
     List<ProjectApplication> findByProfile(Profile profile);
 
+    List<ProjectApplication> findByProfileOrderByCreatedAtDesc(Profile profile);
+
     List<ProjectApplication> findByProject(Project project);
 
     List<ProjectApplication> findAllByProjectAndProfile(Project project, Profile profile);

@@ -3,478 +3,788 @@
 
 <head th:replace="~{fragments/head :: commonHead('프로젝트 관리')}"></head>
 
-    <body class="text-poodle-900 bg-poodle-50">
-    <header th:replace="~{fragments/header :: mainHeader}"></header>
-    <input type="hidden" id="projectId" th:value="${projectId}">
+<body class="text-poodle-900 bg-poodle-50">
+<header th:replace="~{fragments/header :: mainHeader}"></header>
+<input type="hidden" id="projectId" th:value="${projectId}">
 
-    <main class="container mx-auto px-4 py-16">
-        <div class="flex flex-col lg:flex-row gap-8 items-end justify-between mb-12">
-            <div>
-                <h1 class="text-4xl font-black text-poodle-900 tracking-tighter mb-3">프로젝트 관리</h1>
-                <p class="text-poodle-400 font-bold italic">미트볼 푸들과 함께 팀원들을 고르고 프로젝트를 성공적으로 이끄세요.</p>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-12">
-            <!-- Project Management Card -->
-            <div class="bg-white rounded-5xl border border-poodle-50 shadow-sm overflow-hidden">
-                <div
-                    class="p-10 bg-poodle-50/50 border-b border-poodle-50 flex items-center justify-between flex-wrap gap-6 text-center sm:text-left">
-                    <div class="flex flex-col sm:flex-row items-center gap-6">
-	                        <img th:src="${#strings.isEmpty(project.thumbnailUrl) ? '/img/logo.png' : project.thumbnailUrl}"
-                                src="/img/logo.png"
-	                            class="w-20 h-20 rounded-3xl object-cover shadow-lg border-2 border-white">
-	                        <div>
-	                            <span
-	                                class="px-3 py-1 bg-meatball text-poodle-900 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
-                                    th:text="${project.progressStatus == 'COMPLETED' ? 'Completed' : (project.recruitStatus == 'CLOSED' ? 'Recruitment Closed' : 'Recruiting')}">Recruiting</span>
-	                            <h2 class="text-2xl font-black text-poodle-900 leading-tight" th:text="${project.title}">프로젝트명</h2>
-	                        </div>
-                    </div>
-                    <div class="flex gap-3 w-full sm:w-auto">
-                        <button onclick="deleteProject()"
-                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-red-50 border border-red-200 text-red-500 rounded-2xl font-black text-sm hover:bg-red-100 transition-colors">프로젝트 삭제</button>
-	                        <button th:if="${project.recruitStatus != 'CLOSED'}" onclick="closeProject()"
-                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/10 hover:bg-meatball hover:text-poodle-900 transition-colors">모집
-                            마감</button>
-                            <button th:if="${project.progressStatus != 'COMPLETED'}" onclick="completeProject()"
-                            class="flex-grow sm:flex-grow-0 px-6 py-3 bg-meatball text-poodle-900 rounded-2xl font-black text-sm shadow-xl shadow-meatball/10 hover:bg-poodle-700 hover:text-white transition-colors">프로젝트 완료</button>
-                    </div>
-                </div>
-
-                <div class="p-10 space-y-12">
-                    <div>
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="text-xl font-black text-poodle-900 flex items-center gap-3">
-                                <i class="fa-solid fa-users text-meatball"></i>
-                                지원자 현황 <span id="applicant-count"
-                                    class="bg-poodle-100 text-poodle-600 px-3 py-1 rounded-full text-xs ml-1 italic">0명</span>
-                            </h3>
-                            <button
-                                class="text-[10px] font-black text-poodle-300 uppercase tracking-widest hover:text-meatball transition-colors">전체
-                                보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>
-                        </div>
-
-                        <div id="applications-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            <!-- JS Rendered -->
-                        </div>
-                    </div>
-
-                    <!-- 첨부파일 관리 섹션 (추가) -->
-                    <div class="mt-12 pt-12 border-t border-poodle-50">
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="text-xl font-black text-poodle-900 flex items-center gap-3">
-                                <i class="fa-solid fa-paperclip text-meatball"></i>
-                                첨부파일 관리
-                            </h3>
-                        </div>
-
-                        <!-- 업로드 폼 -->
-                        <div
-                            class="p-8 rounded-4xl bg-poodle-50/20 border-2 border-dashed border-poodle-100 hover:border-meatball/30 transition-all text-center">
-                            <form id="projectResourceForm" class="flex flex-col items-center gap-4">
-                                <div
-                                    class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-poodle-300 shadow-sm mb-2">
-                                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
-                                </div>
-                                <div>
-                                    <p class="font-black text-poodle-900">클릭하거나 파일을 드래그하여 업로드하세요</p>
-                                    <p class="text-xs text-poodle-400 font-bold mt-1">포트폴리오, 기획서 등 모든 파일 업로드 가능</p>
-                                </div>
-                                <input type="file" id="fileInput" name="file" class="hidden"
-                                    onchange="uploadResource()" />
-                                <button type="button" onclick="document.getElementById('fileInput').click()"
-                                    class="mt-4 px-8 py-3 bg-white border border-poodle-200 text-poodle-600 rounded-2xl font-black text-sm hover:bg-poodle-50 hover:border-meatball hover:text-meatball transition-all">
-                                    파일 선택
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- 업로드된 파일 목록 -->
-                        <div class="mt-8 space-y-4" id="projectResourceList">
-                            <!-- JS를 통해 동적으로 로드되는 첨부파일 항목들 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 🐾 Applicant Detail Modal -->
-    <div id="applicantModal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity"
-            onclick="closeApplicantModal()"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
-            <div
-                class="bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(62,39,35,0.2)] overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
-                <div class="relative p-10 pb-6 border-b border-poodle-50 text-center">
-                    <button onclick="closeApplicantModal()"
-                        class="absolute top-10 right-10 w-10 h-10 bg-poodle-50 text-poodle-300 rounded-full flex items-center justify-center hover:bg-poodle-100 transition-all">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                    <div
-                        class="inline-flex w-16 h-16 bg-poodle-100 text-meatball rounded-2xl items-center justify-center mb-4">
-                        <i class="fa-solid fa-file-invoice text-2xl"></i>
-                    </div>
-                    <h2 class="text-3xl font-black text-poodle-900 tracking-tight">지원자 상세 프로필</h2>
-                </div>
-
-                <div class="p-10 space-y-10 max-h-[60vh] overflow-y-auto no-scrollbar">
-                    <div class="flex items-center gap-6 p-8 bg-poodle-50/50 rounded-[2.5rem] border border-poodle-100">
-                        <img id="modalImg" src=""
-                            class="w-20 h-20 bg-white rounded-2xl shadow-sm border border-poodle-50">
-                        <div class="space-y-2">
-                            <h4 id="modalName" class="text-2xl font-black text-poodle-900">지원자명</h4>
-                            <div class="flex items-center gap-2">
-                                <span id="modalRole"
-                                    class="px-3 py-1 bg-meatball/10 text-meatball rounded-lg text-[10px] font-black uppercase tracking-widest">POSITION</span>
-                                <span
-                                    class="bg-poodle-50 text-poodle-300 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter shadow-sm border border-poodle-100">Verified</span>
-                            </div>
-                        </div>
-                    </div>
-
+<main class="w-full mx-auto max-w-7xl px-4 py-12 md:py-16">
+    <section class="rounded-[2.5rem] border border-poodle-100 bg-white shadow-sm overflow-hidden">
+        <div class="px-6 py-8 md:px-10 md:py-10 bg-poodle-100/60 border-b border-poodle-100">
+            <div class="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+                    <img th:src="${#strings.isEmpty(project.thumbnailUrl) ? '/img/logo.png' : project.thumbnailUrl}"
+                         src="/img/logo.png"
+                         alt="프로젝트 썸네일"
+                         class="w-24 h-24 md:w-28 md:h-28 rounded-[2rem] object-cover border border-white shadow-sm">
                     <div class="space-y-4">
-                        <h5 class="text-xs font-black text-poodle-300 uppercase tracking-[0.2em] italic ml-1">
-                            Application Message</h5>
-                        <div id="modalMsg"
-                            class="p-8 bg-poodle-50/30 border-2 border-transparent hover:border-meatball/10 rounded-[2rem] font-bold text-poodle-600 leading-relaxed text-sm italic transition-all">
-                            메시지 내용이 여기에 표시됩니다.
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full bg-poodle-900 px-4 py-2 text-sm font-black text-white"
+                                  th:attr="data-manage-recruit-status=${project.recruitStatus}"
+                                  th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감' : '모집 중'}">모집 중</span>
+                            <span class="inline-flex items-center rounded-full border border-meatball/20 bg-white px-4 py-2 text-sm font-black text-meatball"
+                                  th:text="${project.progressStatus == 'COMPLETED' ? '프로젝트 완료' : (project.progressStatus == 'IN_PROGRESS' ? '진행 중' : '준비 중')}">준비 중</span>
+                            <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-600"
+                                  th:text="${project.deadlineLabel}">D-3</span>
+                        </div>
+                        <div class="space-y-3">
+                            <h1 class="text-[32px] leading-tight font-black tracking-tight text-poodle-900"
+                                th:text="${project.title}">프로젝트 관리</h1>
+                            <p class="max-w-3xl text-[15px] leading-7 text-poodle-600 font-medium"
+                               th:text="${#strings.isEmpty(project.summary) ? '밋볼에서 프로젝트 진행과 지원자, 자료를 한 화면에서 관리해보세요.' : project.summary}">
+                                밋볼에서 프로젝트 진행과 지원자, 자료를 한 화면에서 관리해보세요.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
+                                  th:text="${project.projectPurpose != null ? project.projectPurpose : '프로젝트'}">프로젝트</span>
+                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
+                                  th:text="${project.workMethod != null ? project.workMethod : '진행 방식 미정'}">온라인</span>
+                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
+                                  th:text="${project.createdDateLabel != null ? '등록일 ' + project.createdDateLabel : '등록일 -'}">등록일 2026.04.25</span>
+                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
+                                  th:text="${project.leaderName != null ? '리더 ' + project.leaderName : '리더 확인 필요'}">리더 Meetball</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-10 pt-0 flex gap-4">
-                    <input type="hidden" id="modalApplicationId" />
-                    <button id="modalRemoveButton" onclick="removeApplication()"
-                        class="flex-1 py-5 bg-white border border-red-100 text-red-500 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">삭제</button>
-                    <button onclick="updateStatus('REJECTED')"
-                        class="flex-1 py-5 bg-poodle-50 text-red-400 rounded-2xl font-black text-sm hover:bg-red-50 transition-all uppercase tracking-widest">거절</button>
-                    <button onclick="updateStatus('ACCEPTED')"
-                        class="flex-[2] py-5 bg-meatball text-poodle-900 rounded-2xl font-black text-sm shadow-xl shadow-meatball/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">승인</button>
+                <div class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:w-[420px]">
+                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
+                        <p class="text-sm font-black text-poodle-400">모집 현황</p>
+                        <p class="mt-2 text-[22px] font-black text-poodle-900">
+                            <span th:text="${project.currentRecruitment != null ? project.currentRecruitment : 0}">0</span>
+                            <span class="text-poodle-300">/</span>
+                            <span th:text="${project.totalRecruitment != null ? project.totalRecruitment : (project.recruitmentCount != null ? project.recruitmentCount : 0)}">0</span>
+                        </p>
+                    </div>
+                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
+                        <p class="text-sm font-black text-poodle-400">조회수</p>
+                        <p class="mt-2 text-[22px] font-black text-poodle-900" th:text="${project.readCount}">0</p>
+                    </div>
+                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
+                        <p class="text-sm font-black text-poodle-400">모집 종료</p>
+                        <p class="mt-2 text-[18px] font-black text-poodle-900"
+                           th:text="${project.recruitmentEndAt != null ? project.recruitmentEndAt : '-'}">2026-05-01</p>
+                    </div>
+                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
+                        <p class="text-sm font-black text-poodle-400">진행 기간</p>
+                        <p class="mt-2 text-[18px] font-black text-poodle-900"
+                           th:text="${project.projectEndAt != null ? project.projectEndAt : '-'}">2026-06-01</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="grid gap-6 px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[1.4fr_0.9fr]">
+            <section class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-meatball shadow-sm">
+                        <i class="fa-solid fa-layer-group text-2xl"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-[22px] font-black text-poodle-900">프로젝트 개요</h2>
+                        <p class="text-sm font-bold text-poodle-500">현재 상태와 모집 정보를 한 번에 확인하세요.</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="rounded-[1.75rem] border border-white bg-white p-5">
+                        <p class="text-sm font-black text-poodle-400">모집 기간</p>
+                        <p class="mt-2 text-[18px] font-black text-poodle-900">
+                            <span th:text="${project.recruitmentStartAt != null ? project.recruitmentStartAt : '-'}">2026-04-25</span>
+                            <span class="text-poodle-300">~</span>
+                            <span th:text="${project.recruitmentEndAt != null ? project.recruitmentEndAt : '-'}">2026-05-05</span>
+                        </p>
+                    </div>
+                    <div class="rounded-[1.75rem] border border-white bg-white p-5">
+                        <p class="text-sm font-black text-poodle-400">프로젝트 기간</p>
+                        <p class="mt-2 text-[18px] font-black text-poodle-900">
+                            <span th:text="${project.projectStartAt != null ? project.projectStartAt : '-'}">2026-05-10</span>
+                            <span class="text-poodle-300">~</span>
+                            <span th:text="${project.projectEndAt != null ? project.projectEndAt : '-'}">2026-07-10</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-[1.75rem] border border-white bg-white p-5">
+                    <div class="flex items-center justify-between gap-4">
+                        <p class="text-sm font-black text-poodle-400">기술스택</p>
+                        <span class="text-sm font-black text-poodle-300"
+                              th:text="${project.techStacks != null ? project.techStacks.size() + '개' : '0개'}">0개</span>
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2" th:if="${project.techStacks != null and !#lists.isEmpty(project.techStacks)}">
+                        <span th:each="tech : ${project.techStacks}"
+                              class="inline-flex items-center rounded-full border border-poodle-200 bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700"
+                              th:text="${tech}">Java</span>
+                    </div>
+                    <p class="mt-4 text-sm font-bold text-poodle-400" th:if="${project.techStacks == null or #lists.isEmpty(project.techStacks)}">
+                        등록된 기술스택이 없습니다.
+                    </p>
+                </div>
+            </section>
+
+            <section class="rounded-[2rem] border border-poodle-100 bg-white p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
+                        <i class="fa-solid fa-bolt text-2xl"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-[22px] font-black text-poodle-900">빠른 작업</h2>
+                        <p class="text-sm font-bold text-poodle-500">모집과 진행 상태를 여기서 바로 관리하세요.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <a th:href="@{/projects/{id}/edit(id=${projectId})}"
+                       class="flex w-full items-center justify-center rounded-[1.5rem] border border-poodle-200 bg-white px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
+                        프로젝트 수정
+                    </a>
+                    <button th:if="${project.progressStatus != 'COMPLETED'}"
+                            th:onclick="${project.recruitStatus == 'CLOSED'} ? 'reopenProjectRecruitment()' : 'closeProject()'"
+                            class="w-full rounded-[1.5rem] bg-[#4E342E] px-5 py-4 text-sm font-black text-white transition hover:bg-[#FF6B35]">
+                        <span th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감 철회' : '모집 마감'}">모집 마감</span>
+                    </button>
+                    <button th:if="${project.progressStatus != 'COMPLETED'}"
+                            onclick="completeProject()"
+                            class="w-full rounded-[1.5rem] bg-white border border-poodle-200 px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
+                        프로젝트 완료
+                    </button>
+                    <button onclick="deleteProject()"
+                            class="w-full rounded-[1.5rem] bg-red-50 border border-red-100 px-5 py-4 text-sm font-black text-red-500 transition hover:bg-red-100">
+                        프로젝트 삭제
+                    </button>
+                </div>
+
+                <div class="mt-6 rounded-[1.75rem] bg-poodle-50/70 p-5">
+                    <p class="text-sm font-black text-poodle-400">관리 포인트</p>
+                    <ul class="mt-3 space-y-2 text-sm font-bold text-poodle-600">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>지원자는 상세 프로필에서 승인, 거절, 삭제할 수 있습니다.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>자료실에서는 파일과 링크를 함께 관리할 수 있습니다.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>모집 마감 후에만 프로젝트 완료가 가능하며, 완료 이후에는 철회할 수 없습니다.</span></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <div class="mt-8 grid gap-8 xl:grid-cols-[1.25fr_0.95fr]">
+        <section class="rounded-[2.5rem] border border-poodle-100 bg-white p-6 md:p-8 shadow-sm">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
+                        <i class="fa-solid fa-users text-2xl"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-[24px] font-black text-poodle-900">지원자 현황</h2>
+                        <p class="text-sm font-bold text-poodle-500">현재 프로젝트에 지원한 멤버를 검토해보세요.</p>
+                    </div>
+                </div>
+                <span id="applicant-count"
+                      class="inline-flex items-center rounded-full bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700">0명</span>
+            </div>
+
+            <div id="applications-grid" class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <!-- JS Rendered -->
+            </div>
+        </section>
+
+        <section class="rounded-[2.5rem] border border-poodle-100 bg-white p-6 md:p-8 shadow-sm">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
+                    <i class="fa-solid fa-paperclip text-2xl"></i>
+                </span>
+                <div>
+                    <h2 class="text-[24px] font-black text-poodle-900">자료 관리</h2>
+                    <p class="text-sm font-bold text-poodle-500">파일과 링크를 등록해서 팀과 공유하세요.</p>
+                </div>
+            </div>
+
+            <div class="grid gap-4">
+                <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-5">
+                    <p class="text-sm font-black text-poodle-400 mb-3">파일 업로드</p>
+                    <form id="projectResourceForm" class="space-y-4">
+                        <input type="file" id="fileInput" name="file" class="hidden" onchange="uploadResource()">
+                        <div class="rounded-[1.5rem] border-2 border-dashed border-poodle-200 bg-white px-5 py-6 text-center">
+                            <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                            </div>
+                            <p class="text-sm font-black text-poodle-900">포트폴리오, 기획서, 참고 자료 업로드</p>
+                            <p id="fileSelectedLabel" class="mt-2 text-sm font-bold text-poodle-400">선택된 파일이 없습니다.</p>
+                            <button type="button"
+                                    onclick="document.getElementById('fileInput').click()"
+                                    class="mt-4 rounded-[1.25rem] border border-poodle-200 bg-white px-5 py-3 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
+                                파일 선택
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-5">
+                    <p class="text-sm font-black text-poodle-400 mb-3">링크 추가</p>
+                    <div class="space-y-3">
+                        <input id="resourceLinkTitle"
+                               type="text"
+                               maxlength="120"
+                               class="w-full rounded-[1.25rem] border border-poodle-200 bg-white px-4 py-3 text-sm font-bold text-poodle-900 outline-none transition focus:border-[#FF6B35]"
+                               placeholder="링크 제목">
+                        <input id="resourceLinkUrl"
+                               type="url"
+                               class="w-full rounded-[1.25rem] border border-poodle-200 bg-white px-4 py-3 text-sm font-bold text-poodle-900 outline-none transition focus:border-[#FF6B35]"
+                               placeholder="https://example.com">
+                        <button type="button"
+                                onclick="uploadResourceLink()"
+                                class="w-full rounded-[1.25rem] bg-[#4E342E] px-5 py-3 text-sm font-black text-white transition hover:bg-[#FF6B35]">
+                            링크 등록
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h3 class="text-[18px] font-black text-poodle-900">등록된 자료</h3>
+                    <span id="resource-count"
+                          class="inline-flex items-center rounded-full bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700">0개</span>
+                </div>
+                <div id="projectResourceList" class="space-y-3">
+                    <!-- JS Rendered -->
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div id="applicantModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-poodle-900/50 backdrop-blur-sm" onclick="closeApplicantModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div class="pointer-events-auto w-full max-w-2xl overflow-hidden rounded-[2.75rem] bg-white shadow-[0_32px_64px_-12px_rgba(62,39,35,0.22)]">
+            <div class="relative border-b border-poodle-100 px-8 py-8 md:px-10">
+                <button onclick="closeApplicantModal()"
+                        class="absolute right-8 top-8 flex h-11 w-11 items-center justify-center rounded-full bg-poodle-50 text-poodle-400 transition hover:bg-poodle-100">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+                <div class="flex items-center gap-5">
+                    <img id="modalImg" src="/img/logo.png" alt="지원자 아바타"
+                         class="h-20 w-20 rounded-[1.75rem] border border-poodle-100 bg-poodle-50 object-cover shadow-sm">
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="modalStatus"
+                                  class="inline-flex items-center rounded-full bg-poodle-900 px-3 py-1.5 text-sm font-black text-white">대기</span>
+                            <span id="modalRole"
+                                  class="inline-flex items-center rounded-full border border-meatball/20 bg-meatball/10 px-3 py-1.5 text-sm font-black text-meatball">포지션</span>
+                        </div>
+                        <h2 id="modalName" class="text-[28px] font-black text-poodle-900">지원자명</h2>
+                        <p id="modalNickname" class="text-sm font-bold text-poodle-500"></p>
+                        <p id="modalSubmittedAt" class="text-sm font-bold text-poodle-400"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-h-[55vh] overflow-y-auto px-8 py-8 md:px-10 no-scrollbar">
+                <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-6">
+                    <p class="text-sm font-black text-poodle-400 mb-3">지원 메시지</p>
+                    <p id="modalMsg" class="text-[15px] leading-7 font-medium text-poodle-700">
+                        메시지 내용이 여기에 표시됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid gap-3 border-t border-poodle-100 px-8 py-6 md:grid-cols-[1fr_1fr_1.4fr] md:px-10">
+                <input type="hidden" id="modalApplicationId">
+                <button id="modalRemoveButton"
+                        onclick="removeApplication()"
+                        class="rounded-[1.4rem] border border-red-100 bg-white px-5 py-4 text-sm font-black text-red-500 transition hover:bg-red-50">
+                    삭제
+                </button>
+                <button onclick="updateStatus('REJECTED')"
+                        class="rounded-[1.4rem] border border-poodle-200 bg-poodle-50 px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-red-200 hover:text-red-500">
+                    거절
+                </button>
+                <button onclick="updateStatus('ACCEPTED')"
+                        class="rounded-[1.4rem] bg-[#4E342E] px-5 py-4 text-sm font-black text-white transition hover:bg-[#FF6B35]">
+                    승인
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
+<footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
-    <style>
-        /* 🎨 Manage Page UI Expansion */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<script>
+    const escapeHtml = window.meetballEscapeHtml;
+    const safeUrl = window.meetballSafeUrl;
+    const defaultAvatarUrl = '/img/logo.png';
+    window.applicationDetails = {};
+
+    function formatDateLabel(value) {
+        if (!value) return '-';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\. /g, '.').replace(/\.$/, '');
+    }
+
+    function formatBytes(size) {
+        if (!size || size <= 0) return '-';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let value = size;
+        let unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.length - 1) {
+            value /= 1024;
+            unitIndex += 1;
         }
+        return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+    }
 
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+    function getApplicationStatusMeta(status) {
+        switch (status) {
+            case 'ACCEPTED':
+                return {
+                    label: '승인됨',
+                    className: 'bg-green-100 text-green-700 border border-green-200'
+                };
+            case 'REJECTED':
+                return {
+                    label: '거절됨',
+                    className: 'bg-red-50 text-red-500 border border-red-100'
+                };
+            default:
+                return {
+                    label: '검토 중',
+                    className: 'bg-poodle-50 text-poodle-600 border border-poodle-200'
+                };
         }
-    </style>
+    }
 
-    <script>
-        const escapeHtml = window.meetballEscapeHtml;
-        const safeUrl = window.meetballSafeUrl;
-        window.applicationDetails = {};
+    function openApplicantModal(id, applicantName, nickname, role, msg, img, status, createdAt) {
+        const statusMeta = getApplicationStatusMeta(status);
+        document.getElementById('modalApplicationId').value = id;
+        document.getElementById('modalName').innerText = applicantName || nickname || '지원자';
+        document.getElementById('modalNickname').innerText = nickname ? `닉네임 ${nickname}` : '';
+        document.getElementById('modalRole').innerText = role || '포지션 미정';
+        document.getElementById('modalMsg').innerText = msg || '지원 메시지가 없습니다.';
+        document.getElementById('modalImg').src = img || defaultAvatarUrl;
+        document.getElementById('modalRemoveButton').innerText = status === 'ACCEPTED' ? '추방' : '삭제';
+        document.getElementById('modalSubmittedAt').innerText = `지원일 ${formatDateLabel(createdAt)}`;
 
-        function openApplicantModal(id, name, role, msg, img, status) {
-            document.getElementById('modalApplicationId').value = id;
-            document.getElementById('modalName').innerText = name;
-            document.getElementById('modalRole').innerText = role;
-            document.getElementById('modalMsg').innerText = `"${msg}"`;
-            document.getElementById('modalImg').src = img;
-            document.getElementById('modalRemoveButton').innerText = status === 'ACCEPTED' ? '추방' : '삭제';
+        const statusElement = document.getElementById('modalStatus');
+        statusElement.innerText = statusMeta.label;
+        statusElement.className = `inline-flex items-center rounded-full px-3 py-1.5 text-sm font-black ${statusMeta.className}`;
 
-            document.getElementById('applicantModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+        document.getElementById('applicantModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-        function openApplicantModalById(id) {
-            const app = window.applicationDetails[id];
-            if (!app) return;
-            openApplicantModal(app.id, app.profileNickname || '', app.position || '', app.message || '', app.avatarUrl || '', app.status || '');
-        }
+    function openApplicantModalById(id) {
+        const app = window.applicationDetails[id];
+        if (!app) return;
+        openApplicantModal(
+            app.id,
+            app.applicantName || '',
+            app.profileNickname || '',
+            app.position || '',
+            app.message || '',
+            app.avatarUrl || defaultAvatarUrl,
+            app.status || '',
+            app.createdAt || ''
+        );
+    }
 
-        function closeApplicantModal() {
-            document.getElementById('applicantModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
+    function closeApplicantModal() {
+        document.getElementById('applicantModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
-        async function updateStatus(newStatus) {
-            const applicationId = document.getElementById('modalApplicationId').value;
-            if (!applicationId) return;
+    async function updateStatus(newStatus) {
+        const applicationId = document.getElementById('modalApplicationId').value;
+        if (!applicationId) return;
 
-            try {
-                const response = await meetballFetch(`/api/applications/${applicationId}/status`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
+        try {
+            const response = await meetballFetch(`/api/applications/${applicationId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
 
-                if (response.ok) {
-                    await meetballAlert('상태가 변경되었습니다.');
-                    closeApplicantModal();
-                    fetchApplications(); // 목록 새로고침
-                } else {
-                    const error = await response.text();
-                    await meetballAlert('변경 실패: ' + error, { type: 'error' });
-                }
-            } catch (err) {
-                console.error(err);
-                await meetballAlert('오류가 발생했습니다.', { type: 'error' });
+            if (response.ok) {
+                await meetballAlert('상태가 변경되었습니다.');
+                closeApplicantModal();
+                fetchApplications();
+            } else {
+                const error = await response.text();
+                await meetballAlert('변경 실패: ' + error, { type: 'error' });
             }
+        } catch (err) {
+            console.error(err);
+            await meetballAlert('오류가 발생했습니다.', { type: 'error' });
         }
+    }
 
-        async function removeApplication() {
-            const applicationId = document.getElementById('modalApplicationId').value;
-            if (!applicationId) return;
-            const app = window.applicationDetails[Number(applicationId)];
-            const actionLabel = app?.status === 'ACCEPTED' ? '추방' : '삭제';
-            if (!await meetballConfirm(`지원자를 ${actionLabel}하시겠습니까?`, { confirmText: actionLabel, cancelText: '취소' })) return;
+    async function removeApplication() {
+        const applicationId = document.getElementById('modalApplicationId').value;
+        if (!applicationId) return;
+        const app = window.applicationDetails[Number(applicationId)];
+        const actionLabel = app?.status === 'ACCEPTED' ? '추방' : '삭제';
+        if (!await meetballConfirm(`지원자를 ${actionLabel}하시겠습니까?`, { confirmText: actionLabel, cancelText: '취소' })) return;
 
-            try {
-                const response = await meetballFetch(`/api/applications/${applicationId}`, {
-                    method: 'DELETE'
-                });
+        try {
+            const response = await meetballFetch(`/api/applications/${applicationId}`, {
+                method: 'DELETE'
+            });
 
-                if (response.ok) {
-                    await meetballAlert(`지원자가 ${actionLabel}되었습니다.`);
-                    closeApplicantModal();
-                    fetchApplications();
-                } else {
-                    const error = await response.text();
-                    await meetballAlert(`${actionLabel} 실패: ${error}`, { type: 'error' });
-                }
-            } catch (err) {
-                console.error(err);
-                await meetballAlert('오류가 발생했습니다.', { type: 'error' });
+            if (response.ok) {
+                await meetballAlert(`지원자가 ${actionLabel}되었습니다.`);
+                closeApplicantModal();
+                fetchApplications();
+            } else {
+                const error = await response.text();
+                await meetballAlert(`${actionLabel} 실패: ${error}`, { type: 'error' });
             }
+        } catch (err) {
+            console.error(err);
+            await meetballAlert('오류가 발생했습니다.', { type: 'error' });
         }
+    }
 
-        async function fetchApplications() {
-            const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
-            console.log('Fetching applications for project:', projectId);
-            if(!projectId) return;
+    async function fetchApplications() {
+        const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
+        if (!projectId) return;
 
-            try {
-                const res = await fetch(`/api/projects/${projectId}/applications`);
-                if (!res.ok) throw new Error('조회 실패');
+        try {
+            const res = await fetch(`/api/projects/${projectId}/applications`);
+            if (!res.ok) throw new Error('조회 실패');
 
-                const apps = await res.json();
-                
-                // Show count
-                const countSpan = document.getElementById('applicant-count');
-                if (countSpan) countSpan.innerText = apps.length + '명';
+            const apps = await res.json();
+            const countSpan = document.getElementById('applicant-count');
+            if (countSpan) countSpan.innerText = `${apps.length}명`;
 
-                const grid = document.getElementById('applications-grid');
-                if (!grid) return;
+            const grid = document.getElementById('applications-grid');
+            if (!grid) return;
 
-                if (apps.length === 0) {
-                    grid.innerHTML = '<div class="col-span-full p-8 text-center text-poodle-400 font-bold">지원자가 없습니다.</div>';
-                    return;
-                }
-
-                window.applicationDetails = {};
-                grid.innerHTML = apps.map(app => {
-                    const id = Number(app.id);
-                    const profileNickname = app.profileNickname || '';
-                    const position = app.position || '';
-                    const message = app.message || '';
-                    const avatarUrl = '/img/logo.png';
-                    window.applicationDetails[id] = { ...app, avatarUrl };
-                    let statusBadge = '';
-                    if(app.status === 'ACCEPTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase">승인됨</span>';
-                    if(app.status === 'REJECTED') statusBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-poodle-300 text-white rounded-full text-[10px] font-black uppercase">거절됨</span>';
-
-                    return `
-                    <div class="p-8 rounded-4xl bg-poodle-50/20 border border-poodle-50 group hover:border-meatball/20 transition-all relative">
-                        ${statusBadge}
-                        <div class="flex items-center gap-4 mb-8 text-left mt-2">
-                            <div class="relative">
-                                <img src="${avatarUrl}" class="w-14 h-14 rounded-2xl shadow-sm border border-white bg-poodle-50">
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="font-black text-poodle-900 leading-tight">${escapeHtml(profileNickname)}</h4>
-                                <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic leading-none">${escapeHtml(position)}</span>
-                            </div>
+            if (apps.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full rounded-[2rem] border border-dashed border-poodle-200 bg-poodle-50/50 px-6 py-10 text-center">
+                        <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-300 shadow-sm">
+                            <i class="fa-solid fa-user-clock text-2xl"></i>
                         </div>
-                        <p class="text-sm text-poodle-400 font-medium line-clamp-2 mb-8 leading-relaxed italic text-left">
-                            "${escapeHtml(message)}"
-                        </p>
-                        <button onclick="openApplicantModalById(${id})"
-                            class="w-full py-4 bg-white border border-poodle-100 text-poodle-600 text-xs font-black rounded-2xl hover:bg-poodle-50 hover:border-meatball transition-all uppercase tracking-widest">
-                            상세 보기
-                        </button>
+                        <p class="text-sm font-black text-poodle-700">아직 지원자가 없습니다.</p>
+                        <p class="mt-2 text-sm font-bold text-poodle-400">모집이 시작되면 이곳에서 지원서를 확인할 수 있어요.</p>
                     </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error(e);
-            }
-        }
-        // 첨부파일 관리 스크립트 연결
-        // ==========================================
-
-        async function fetchResources() {
-            const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
-            if (!projectId) return;
-            try {
-                const response = await fetch(`/api/projects/${projectId}/resources`);
-                if (!response.ok) throw new Error('파일 목록 조회 실패');
-
-                const files = await response.json();
-                renderResources(files, projectId);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        function renderResources(files, projectId) {
-            const listDiv = document.getElementById('projectResourceList');
-            if (!files || files.length === 0) {
-                listDiv.innerHTML = `<p class="text-center text-poodle-400 font-bold py-4">등록된 첨부파일이 없습니다.</p>`;
+                `;
                 return;
             }
 
-            listDiv.innerHTML = files.map(f => {
-                const fileName = escapeHtml(f.originalFileName || '첨부파일');
-                const uploadedAt = f.createdAt || f.uploadedAt;
-                const uploadedLabel = uploadedAt ? new Date(uploadedAt).toLocaleDateString() : '-';
-                const downloadProjectId = encodeURIComponent(String(projectId));
-                const resourceId = encodeURIComponent(String(f.id ?? ''));
+            window.applicationDetails = {};
+            grid.innerHTML = apps.map(app => {
+                const id = Number(app.id);
+                const profileNickname = app.profileNickname || '';
+                const applicantName = app.applicantName || '';
+                const displayName = applicantName || profileNickname || '지원자';
+                const position = app.position || '포지션 미정';
+                const message = app.message || '지원 메시지가 없습니다.';
+                const avatarUrl = defaultAvatarUrl;
+                const createdAt = formatDateLabel(app.createdAt);
+                const statusMeta = getApplicationStatusMeta(app.status);
+                window.applicationDetails[id] = { ...app, avatarUrl };
+
                 return `
-                <div class="flex items-center justify-between p-4 bg-white border border-poodle-50 rounded-2xl shadow-sm">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-poodle-50 text-meatball rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-file"></i>
+                    <article class="rounded-[2rem] border border-poodle-100 bg-poodle-50/40 p-5 transition hover:border-[#FF6B35]/30 hover:bg-white">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <img src="${avatarUrl}" alt="${escapeHtml(displayName)}"
+                                     class="h-14 w-14 rounded-2xl border border-white bg-white object-cover shadow-sm">
+                                <div class="min-w-0">
+                                    <p class="truncate text-[18px] font-black text-poodle-900">${escapeHtml(displayName)}</p>
+                                    <p class="truncate text-sm font-bold text-poodle-500">${profileNickname ? `닉네임 ${escapeHtml(profileNickname)}` : ''}</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-sm font-black ${statusMeta.className}">
+                                ${statusMeta.label}
+                            </span>
                         </div>
-                        <div>
-                            <p class="font-black text-poodle-900 text-sm">${fileName}</p>
-                            <p class="text-[10px] text-poodle-400 font-bold uppercase">Uploaded at ${escapeHtml(uploadedLabel)}</p>
+
+                        <div class="mt-5 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center rounded-full border border-meatball/15 bg-meatball/10 px-3 py-1.5 text-sm font-black text-meatball">
+                                ${escapeHtml(position)}
+                            </span>
+                            <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1.5 text-sm font-black text-poodle-600">
+                                지원일 ${escapeHtml(createdAt)}
+                            </span>
+                        </div>
+
+                        <p class="mt-5 min-h-[84px] rounded-[1.5rem] border border-white bg-white px-4 py-4 text-sm leading-7 font-medium text-poodle-700">
+                            ${escapeHtml(message)}
+                        </p>
+
+                        <button onclick="openApplicantModalById(${id})"
+                                class="mt-5 w-full rounded-[1.25rem] bg-[#4E342E] px-5 py-3 text-sm font-black text-white transition hover:bg-[#FF6B35]">
+                            상세 보기
+                        </button>
+                    </article>
+                `;
+            }).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderResources(files, projectId) {
+        const listDiv = document.getElementById('projectResourceList');
+        const countChip = document.getElementById('resource-count');
+        if (countChip) {
+            countChip.innerText = `${files?.length || 0}개`;
+        }
+
+        if (!files || files.length === 0) {
+            listDiv.innerHTML = `
+                <div class="rounded-[1.75rem] border border-dashed border-poodle-200 bg-poodle-50/50 px-6 py-10 text-center">
+                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-300 shadow-sm">
+                        <i class="fa-solid fa-folder-open text-2xl"></i>
+                    </div>
+                    <p class="text-sm font-black text-poodle-700">등록된 자료가 없습니다.</p>
+                    <p class="mt-2 text-sm font-bold text-poodle-400">파일이나 링크를 등록하면 팀원들이 여기서 확인할 수 있어요.</p>
+                </div>
+            `;
+            return;
+        }
+
+        listDiv.innerHTML = files.map(resource => {
+            const isLink = resource.type === 'LINK';
+            const title = escapeHtml(resource.originalFileName || (isLink ? '공유 링크' : '첨부파일'));
+            const createdAt = formatDateLabel(resource.createdAt);
+            const iconClass = isLink ? 'fa-link' : 'fa-file-lines';
+            const metaLabel = isLink ? '링크' : formatBytes(resource.fileSize);
+            const actionLabel = isLink ? '열기' : '다운로드';
+            const actionHref = isLink
+                ? safeUrl(resource.linkUrl || '#')
+                : safeUrl(`/api/projects/${encodeURIComponent(String(projectId))}/resources/${encodeURIComponent(String(resource.id ?? ''))}/download`);
+            const targetAttr = isLink ? ' target="_blank" rel="noopener noreferrer"' : '';
+
+            return `
+                <div class="flex flex-col gap-4 rounded-[1.75rem] border border-poodle-100 bg-poodle-50/30 p-4 md:flex-row md:items-center md:justify-between">
+                    <div class="flex min-w-0 items-center gap-4">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-meatball shadow-sm">
+                            <i class="fa-solid ${iconClass} text-2xl"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-black text-poodle-900">${title}</p>
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1 text-sm font-black text-poodle-600">${metaLabel}</span>
+                                <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1 text-sm font-black text-poodle-600">${createdAt}</span>
+                            </div>
                         </div>
                     </div>
-                    <a href="${escapeHtml(safeUrl(`/api/projects/${downloadProjectId}/resources/${resourceId}/download`))}" 
-                       class="w-8 h-8 bg-poodle-50 text-poodle-400 hover:bg-meatball hover:text-white rounded-lg flex items-center justify-center transition-all">
-                        <i class="fa-solid fa-download text-xs"></i>
+                    <a href="${escapeHtml(actionHref)}"${targetAttr}
+                       class="inline-flex items-center justify-center rounded-[1.2rem] bg-white border border-poodle-200 px-4 py-3 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
+                        ${actionLabel}
                     </a>
                 </div>
             `;
-            }).join('');
+        }).join('');
+    }
+
+    async function fetchResources() {
+        const projectId = document.getElementById('projectId')?.value || new URL(window.location.href).pathname.split('/')[2];
+        if (!projectId) return;
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}/resources`);
+            if (!response.ok) throw new Error('파일 목록 조회 실패');
+
+            const files = await response.json();
+            renderResources(files, projectId);
+        } catch (error) {
+            console.error(error);
         }
+    }
 
-        async function uploadResource() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            if (!file) return;
+    function updateFileSelectedLabel() {
+        const fileInput = document.getElementById('fileInput');
+        const label = document.getElementById('fileSelectedLabel');
+        if (!fileInput || !label) return;
+        label.innerText = fileInput.files?.[0]?.name || '선택된 파일이 없습니다.';
+    }
 
-            const projectId = document.getElementById('projectId').value;
-            const formData = new FormData();
-            formData.append('file', file);
+    async function uploadResource() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        updateFileSelectedLabel();
+        if (!file) return;
 
-            try {
-                const response = await meetballFetch(`/api/projects/${projectId}/resources`, {
-                    method: 'POST',
-                    body: formData
-                });
+        const projectId = document.getElementById('projectId').value;
+        const formData = new FormData();
+        formData.append('file', file);
 
-                if (response.ok) {
-                    await meetballAlert('파일 업로드에 성공했습니다.');
-                    fetchResources(); // 목록 갱신
-                } else {
-                    await meetballAlert(response.status === 401 ? '로그인이 필요합니다.' : '파일 업로드 실패 (권한 없음 또는 서버 오류)', { type: 'error' });
-                }
-            } catch (error) {
-                console.error('업로드 에러:', error);
-                await meetballAlert('업로드 중 오류가 발생했습니다.', { type: 'error' });
-            } finally {
-                fileInput.value = ''; // 초기화
+        try {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                await meetballAlert('파일 업로드에 성공했습니다.');
+                fetchResources();
+            } else {
+                await meetballAlert(response.status === 401 ? '로그인이 필요합니다.' : '파일 업로드 실패 (권한 없음 또는 서버 오류)', { type: 'error' });
             }
+        } catch (error) {
+            console.error('업로드 에러:', error);
+            await meetballAlert('업로드 중 오류가 발생했습니다.', { type: 'error' });
+        } finally {
+            fileInput.value = '';
+            updateFileSelectedLabel();
+        }
+    }
+
+    async function uploadResourceLink() {
+        const projectId = document.getElementById('projectId').value;
+        const titleInput = document.getElementById('resourceLinkTitle');
+        const urlInput = document.getElementById('resourceLinkUrl');
+        const title = titleInput.value.trim();
+        const rawUrl = urlInput.value.trim();
+        if (!title || !rawUrl) {
+            await meetballAlert('링크 제목과 URL을 모두 입력해주세요.', { type: 'error' });
+            return;
         }
 
-        async function deleteProject() {
-            if (!await meetballConfirm('정말 이 프로젝트를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.', { confirmText: '삭제', cancelText: '취소' })) return;
-            
-            const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
-            if(!projectId) return;
+        const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 
-            try {
-                const response = await meetballFetch(`/api/projects/${projectId}`, {
-                    method: 'DELETE'
-                });
+        try {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, url })
+            });
 
-                if (response.ok) {
-                    await meetballAlert('프로젝트가 성공적으로 삭제되었습니다.');
-                    window.location.href = '/mypage'; // 삭제 후 마이페이지로 이동
-                } else {
-                    await meetballAlert('프로젝트 삭제에 실패했습니다.', { type: 'error' });
-                }
-            } catch (err) {
-                console.error('Delete error', err);
-                await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
+            if (response.ok) {
+                await meetballAlert('링크가 등록되었습니다.');
+                titleInput.value = '';
+                urlInput.value = '';
+                fetchResources();
+            } else {
+                const error = await response.text();
+                await meetballAlert(`링크 등록 실패: ${error}`, { type: 'error' });
             }
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('링크 등록 중 오류가 발생했습니다.', { type: 'error' });
         }
+    }
 
-        async function updateProjectStatus(updater, successMessage, failureMessage) {
-            const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
-            if(!projectId) return;
+    async function deleteProject() {
+        if (!await meetballConfirm('정말 이 프로젝트를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.', { confirmText: '삭제', cancelText: '취소' })) return;
 
-            try {
-                // 1. 기존 프로젝트 정보 조회
-                const getRes = await fetch(`/api/projects/${projectId}`);
-                if (!getRes.ok) {
-                    await meetballAlert('프로젝트 정보를 불러오는데 실패했습니다.', { type: 'error' });
-                    return;
-                }
-                const projectData = await getRes.json();
-                
-                updater(projectData);
+        const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
+        if (!projectId) return;
 
-                const putRes = await meetballFetch(`/api/projects/${projectId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(projectData)
-                });
+        try {
+            const response = await meetballFetch(`/api/projects/${projectId}`, {
+                method: 'DELETE'
+            });
 
-                if (putRes.ok) {
-                    await meetballAlert(successMessage);
-                    window.location.reload(); // 상태 반영을 위해 새로고침
-                } else {
-                    await meetballAlert(failureMessage, { type: 'error' });
-                }
-            } catch (err) {
-                console.error('Project status update error', err);
-                await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
+            if (response.ok) {
+                await meetballAlert('프로젝트가 성공적으로 삭제되었습니다.');
+                window.location.href = '/mypage';
+            } else {
+                await meetballAlert('프로젝트 삭제에 실패했습니다.', { type: 'error' });
             }
+        } catch (err) {
+            console.error('Delete error', err);
+            await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
         }
+    }
 
-        async function closeProject() {
-                if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
-            await updateProjectStatus(
-                projectData => {
-                    projectData.recruitStatus = 'CLOSED';
-                },
-                '모집이 마감되었습니다.',
-                '모집 마감 처리에 실패했습니다.'
-            );
+    async function updateProjectStatus(updater, successMessage, failureMessage) {
+        const projectId = document.getElementById('projectId')?.value || new URLSearchParams(window.location.search).get('projectId');
+        if (!projectId) return;
+
+        try {
+            const getRes = await fetch(`/api/projects/${projectId}`);
+            if (!getRes.ok) {
+                await meetballAlert('프로젝트 정보를 불러오는데 실패했습니다.', { type: 'error' });
+                return;
+            }
+            const projectData = await getRes.json();
+
+            updater(projectData);
+
+            const putRes = await meetballFetch(`/api/projects/${projectId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(projectData)
+            });
+
+            if (putRes.ok) {
+                await meetballAlert(successMessage);
+                window.location.reload();
+            } else {
+                await meetballAlert(failureMessage, { type: 'error' });
+            }
+        } catch (err) {
+            console.error('Project status update error', err);
+            await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
         }
+    }
 
-        async function completeProject() {
-            if (!await meetballConfirm('이 프로젝트를 완료 상태로 전환하시겠습니까? 완료 후 팀원 리뷰가 가능해집니다.', { confirmText: '완료 처리', cancelText: '취소' })) return;
-            await updateProjectStatus(
-                projectData => {
-                    projectData.recruitStatus = 'CLOSED';
-                    projectData.progressStatus = 'COMPLETED';
-                },
-                '프로젝트가 완료 처리되었습니다.',
-                '프로젝트 완료 처리에 실패했습니다.'
-            );
+    async function closeProject() {
+        if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
+        await updateProjectStatus(
+            projectData => {
+                projectData.recruitStatus = 'CLOSED';
+            },
+            '모집이 마감되었습니다.',
+            '모집 마감 처리에 실패했습니다.'
+        );
+    }
+
+    async function reopenProjectRecruitment() {
+        if (!await meetballConfirm('모집 마감을 철회하시겠습니까? 포지션 수정이 다시 가능해집니다.', { confirmText: '철회', cancelText: '취소' })) return;
+        await updateProjectStatus(
+            projectData => {
+                projectData.recruitStatus = 'OPEN';
+            },
+            '모집 마감이 철회되었습니다.',
+            '모집 마감 철회에 실패했습니다.'
+        );
+    }
+
+    async function completeProject() {
+        const badge = document.querySelector('[data-manage-recruit-status]');
+        const recruitStatus = badge?.dataset.recruitStatus || /*[[${project.recruitStatus}]]*/ 'OPEN';
+        if (recruitStatus !== 'CLOSED') {
+            await meetballAlert('프로젝트 완료는 모집 마감 이후에만 가능합니다.', { type: 'error' });
+            return;
         }
+        if (!await meetballConfirm('프로젝트 완료는 철회할 수 없습니다. 완료 처리 후 프로젝트 리뷰와 피어 리뷰가 열립니다. 계속할까요?', { confirmText: '완료 처리', cancelText: '취소' })) return;
+        await updateProjectStatus(
+            projectData => {
+                projectData.progressStatus = 'COMPLETED';
+            },
+            '프로젝트가 완료 처리되었습니다.',
+            '프로젝트 완료 처리에 실패했습니다.'
+        );
+    }
 
-        // 페이지 로드 시 첨부파일 및 지원자 목록 조회
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchResources();
-            fetchApplications();
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', () => {
+        updateFileSelectedLabel();
+        fetchResources();
+        fetchApplications();
+    });
+</script>
 </body>
 
 </html>

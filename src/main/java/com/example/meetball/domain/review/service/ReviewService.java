@@ -7,6 +7,7 @@ import com.example.meetball.domain.review.dto.ReviewRequestDto;
 import com.example.meetball.domain.review.dto.ReviewSummaryDto;
 import com.example.meetball.domain.review.dto.ReviewTargetResponse;
 import com.example.meetball.domain.review.dto.PeerReviewResponse;
+import com.example.meetball.domain.review.dto.ProjectReviewResponse;
 import com.example.meetball.domain.review.entity.ProjectReview;
 import com.example.meetball.domain.review.entity.PeerReview;
 import com.example.meetball.domain.review.repository.ProjectReviewRepository;
@@ -63,6 +64,15 @@ public class ReviewService {
         }
 
         return new ReviewSummaryDto(average, reviews.size(), percentages);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProjectReviewResponse> getProjectReviews(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
+        return projectReviewRepository.findByProject(project).stream()
+                .map(ProjectReviewResponse::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)

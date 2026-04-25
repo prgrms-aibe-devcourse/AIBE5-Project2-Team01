@@ -1,6 +1,7 @@
 package com.example.meetball.domain.review.controller;
 
 import com.example.meetball.domain.review.dto.ReviewRequestDto;
+import com.example.meetball.domain.review.dto.ProjectReviewResponse;
 import com.example.meetball.domain.review.dto.ReviewSummaryDto;
 import com.example.meetball.domain.review.dto.ReviewTargetResponse;
 import com.example.meetball.domain.review.service.ReviewService;
@@ -23,6 +24,11 @@ public class ReviewController {
     @GetMapping("/summary")
     public ResponseEntity<ReviewSummaryDto> getReviewSummary(@PathVariable Long projectId) {
         return ResponseEntity.ok(reviewService.getProjectReviewSummary(projectId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProjectReviewResponse>> getProjectReviews(@PathVariable Long projectId) {
+        return ResponseEntity.ok(reviewService.getProjectReviews(projectId));
     }
 
     // 리뷰 대상 팀원 목록 조회

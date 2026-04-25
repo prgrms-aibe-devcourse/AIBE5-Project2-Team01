@@ -48,6 +48,7 @@ public class ProfileService {
     @Transactional
     public void updateProfile(Long profileId, ProfileUpdateRequest request) {
         Profile profile = getProfileById(profileId);
+        String normalizedName = requireText(request.getName(), "이름을 입력해주세요.", 30);
         String normalizedNickname = requireText(request.getNickname(), "닉네임을 입력해주세요.", 30);
         
         // 닉네임 중복 체크 (기존 닉네임과 다를 경우에만)
@@ -56,7 +57,18 @@ public class ProfileService {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
 
+        String normalizedPhoneNumber = normalizePhoneNumber(request.getPhoneNumber());
+        if (request.getBirthDate() == null) {
+            throw new IllegalArgumentException("생년월일을 입력해주세요.");
+        }
+        if (request.getBirthDate().isAfter(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("생년월일은 오늘 이후일 수 없습니다.");
+        }
+        String normalizedGender = normalizeGender(request.getGender());
         String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getPosition());
+        String normalizedExperienceYears = normalizeExperienceYears(request.getExperienceYears());
+        String normalizedOrganization = optionalText(request.getOrganization(), 100);
+        String normalizedBio = optionalText(request.getBio(), 1000);
         List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());
         Position position = positionRepository.findByName(normalizedPosition)
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 포지션입니다: " + normalizedPosition));
@@ -64,9 +76,16 @@ public class ProfileService {
                 .map(techStack -> techStackRepository.findByName(techStack)
                         .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 기술스택입니다: " + techStack)))
                 .toList();
+        if (profile.getAccount() != null) {
+            profile.getAccount().updateBasicInfo(normalizedName, normalizedPhoneNumber, request.getBirthDate(), normalizedGender);
+        }
         profile.updateProfile(
                 normalizedNickname,
+                normalizedOrganization,
+                request.isOrgVisible(),
+                normalizedBio,
                 position,
+                normalizedExperienceYears,
                 techStacks,
                 request.isPublic()
         );
@@ -93,8 +112,8 @@ public class ProfileService {
 
         String normalizedGender = normalizeGender(request.getGender());
         String normalizedPosition = ProjectSelectionCatalog.normalizeSinglePositionName(request.getPosition());
-        String normalizedExperienceYears = requireText(request.getExperienceYears(), "경력을 선택해주세요.", 255);
-        String normalizedOrganization = requireText(request.getOrganization(), "소속을 입력해주세요.", 100);
+        String normalizedExperienceYears = normalizeExperienceYears(request.getExperienceYears());
+        String normalizedOrganization = optionalText(request.getOrganization(), 100);
         List<String> normalizedTechStacks = ProjectSelectionCatalog.normalizeTechStackNames(request.getTechStacks());
         if (normalizedTechStacks.isEmpty()) {
             throw new IllegalArgumentException("기술 스택을 1개 이상 선택해주세요.");
@@ -207,5 +226,34 @@ public class ProfileService {
             return digits.replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
         }
         return digits;
+    }
+
+    private String optionalText(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
+    }
+
+    private String normalizeExperienceYears(String experienceYears) {
+        String normalized = requireText(experienceYears, "경력을 선택해주세요.", 20);
+        return switch (normalized) {
+            case "0", "0년", "신입" -> "0";
+            case "1", "1년", "1년 미만", "1~3년" -> "1";
+            case "2", "2년" -> "2";
+            case "3", "3년", "3~5년" -> "3";
+            case "4", "4년" -> "4";
+            case "5", "5년", "5년 이상" -> "5";
+            case "6", "6년" -> "6";
+            case "7", "7년" -> "7";
+            case "8", "8년" -> "8";
+            case "9", "9년" -> "9";
+            case "10", "10년", "10년 이상" -> "10";
+            default -> throw new IllegalArgumentException("지원하지 않는 경력 값입니다.");
+        };
     }
 }

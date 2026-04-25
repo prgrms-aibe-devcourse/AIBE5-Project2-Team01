@@ -5,14 +5,26 @@ import com.example.meetball.domain.profile.entity.ProfileTechStack;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 public class MyPageProfileResponse {
     private Long profileId;
+    private String accountName;
+    private String socialProvider;
+    private String profileImage;
     private String nickname;
     private String email;
+    private String phoneNumber;
+    private LocalDate birthDate;
+    private String gender;
     private String position;
+    private String experienceYears;
+    private String organization;
+    private boolean orgVisible;
     private String techStack;
+    private String bio;
     private boolean isPublic;
     private double meetBallIndex;
     private boolean isOwner; // 본인 여부 추가
@@ -33,10 +45,20 @@ public class MyPageProfileResponse {
 
         return MyPageProfileResponse.builder()
                 .profileId(profile.getId())
+                .accountName(profile.getEditableAccountName())
+                .socialProvider(profile.getAccount() != null ? profile.getAccount().getSocialProvider() : null)
+                .profileImage(profile.getProfileImage())
                 .nickname(profile.getNickname())
                 .email(displayEmail)
+                .phoneNumber(profile.getPhoneNumber())
+                .birthDate(profile.getBirthDate())
+                .gender(profile.getGender())
                 .position(profile.getPosition())
+                .experienceYears(profile.getExperienceYears())
+                .organization(profile.getOrganization())
+                .orgVisible(profile.isOrgVisible())
                 .techStack(formatTechStacks(profile))
+                .bio(profile.getBio())
                 .isPublic(profile.isPublic())
                 .meetBallIndex(meetBallIndex)
                 .isOwner(isOwner)

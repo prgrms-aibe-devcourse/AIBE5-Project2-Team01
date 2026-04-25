@@ -23,32 +23,32 @@
                 extend: {
                     colors: {
                         poodle: {
-                            50: '#FFF7EF',
-                            100: '#FFE9D3',
-                            200: '#FFD7B7',
-                            300: '#F4B47F',
-                            400: '#CF875B',
-                            500: '#9A5B3F',
-                            600: '#653728',
-                            700: '#542E24',
-                            800: '#42241D',
-                            900: '#2D1B17',
+                            50: '#F7F5F4',
+                            100: '#EFEBE9',
+                            200: '#D7CCC8',
+                            300: '#A1887F',
+                            400: '#8D6E63',
+                            500: '#795548',
+                            600: '#6D4C41',
+                            700: '#5D4037',
+                            800: '#4E342E',
+                            900: '#3E2723',
                         },
                         meatball: {
-                            DEFAULT: '#F07F37',
-                            50: '#FFF3EA',
-                            100: '#FFE3CC',
-                            200: '#FFC89F',
-                            300: '#F7A86F',
-                            400: '#F07F37',
-                            500: '#DF6B24',
-                            600: '#C35519',
-                            700: '#9F4215',
-                            800: '#7C3516',
-                            900: '#5F2B16',
+                            DEFAULT: '#FF6B35',
+                            50: '#FFF1ED',
+                            100: '#FFE1D6',
+                            200: '#FFC1AD',
+                            300: '#FFA082',
+                            400: '#FF8159',
+                            500: '#FF6B35',
+                            600: '#FF541A',
+                            700: '#E64400',
+                            800: '#BF3900',
+                            900: '#992E00',
                         },
-                        cream: '#FFE9D3',
-                        cocoa: '#653728'
+                        cream: '#EFEBE9',
+                        cocoa: '#4E342E'
                     },
                     borderRadius: {
                         '4xl': '2rem',
@@ -98,9 +98,28 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        :root {
+            --meetball-page-bg: #FDFBFA;
+            --meetball-button-bg: #4E342E;
+            --meetball-button-hover: #FF6B35;
+            --meetball-button-text: #FFFFFF;
+        }
+
+        html {
+            scrollbar-gutter: stable both-edges;
+        }
+
         body {
-            background-color: #FFF7EF;
-            color: #653728;
+            background-color: var(--meetball-page-bg);
+            color: #4E342E;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: clip;
+        }
+
+        body.bg-poodle-50,
+        body[class~="bg-poodle-50"] {
+            background-color: var(--meetball-page-bg) !important;
         }
 
         ::selection {
@@ -109,14 +128,81 @@
         }
 
         .meetball-card {
-            background: rgba(255, 255, 255, 0.86);
-            border: 1px solid rgba(101, 55, 40, 0.08);
-            box-shadow: 0 24px 60px rgba(101, 55, 40, 0.08);
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(78, 52, 46, 0.08);
+            box-shadow: 0 20px 52px rgba(78, 52, 46, 0.08);
         }
 
         .meetball-cream-panel {
-            background: #FFE9D3;
-            border: 1px solid rgba(101, 55, 40, 0.08);
+            background: #F7F5F4;
+            border: 1px solid rgba(78, 52, 46, 0.08);
+        }
+
+        .text-poodle-200 {
+            color: #8D6E63 !important;
+        }
+
+        .text-poodle-300 {
+            color: #795548 !important;
+        }
+
+        .text-poodle-400 {
+            color: #6D4C41 !important;
+        }
+
+        .text-xs,
+        .text-\[9px\],
+        .text-\[10px\],
+        .text-\[11px\],
+        .text-\[12px\],
+        .text-\[13px\] {
+            font-size: 0.875rem !important;
+            line-height: 1.45 !important;
+        }
+
+        .fa-solid,
+        .fa-regular,
+        .fa-brands {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: max(1.5rem, 1em) !important;
+            line-height: 1 !important;
+        }
+
+        svg:not([width]):not([height]) {
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+        }
+
+        button[class*="bg-poodle-6"],
+        button[class*="bg-poodle-7"],
+        button[class*="bg-poodle-8"],
+        button[class*="bg-poodle-9"],
+        button[class*="bg-meatball"],
+        a[class*="bg-poodle-6"],
+        a[class*="bg-poodle-7"],
+        a[class*="bg-poodle-8"],
+        a[class*="bg-poodle-9"],
+        a[class*="bg-meatball"] {
+            background-color: var(--meetball-button-bg) !important;
+            color: var(--meetball-button-text) !important;
+            border-color: transparent !important;
+        }
+
+        button[class*="bg-poodle-6"]:hover,
+        button[class*="bg-poodle-7"]:hover,
+        button[class*="bg-poodle-8"]:hover,
+        button[class*="bg-poodle-9"]:hover,
+        button[class*="bg-meatball"]:hover,
+        a[class*="bg-poodle-6"]:hover,
+        a[class*="bg-poodle-7"]:hover,
+        a[class*="bg-poodle-8"]:hover,
+        a[class*="bg-poodle-9"]:hover,
+        a[class*="bg-meatball"]:hover {
+            background-color: var(--meetball-button-hover) !important;
+            color: var(--meetball-button-text) !important;
         }
         
         .progress-bar-shine {
@@ -155,6 +241,16 @@
             '데이터/AI', '보안', 'DBA', 'QA', '기타'
         ];
 
+        window.meetballProjectPurposeOptions = /*[[${meetballProjectPurposeOptions}]]*/ [
+            { code: 'PROJECT', label: '프로젝트' },
+            { code: 'STUDY', label: '스터디' },
+            { code: 'HACKATHON', label: '해커톤' },
+            { code: 'CONTEST', label: '공모전' },
+            { code: 'STARTUP', label: '스타트업' },
+            { code: 'ENTERPRISE_LINK', label: '기업연계' },
+            { code: 'GOVERNMENT_LINK', label: '정부연계' }
+        ];
+
         window.meetballTechStackOptions = /*[[${meetballTechStackOptions}]]*/ [
             'JavaScript', 'TypeScript', 'React', 'Vue', 'Nodejs', 'Spring', 'Java', 'Nextjs',
             'Nestjs', 'Express', 'Go', 'C', 'Python', 'Django', 'Swift', 'Kotlin',
@@ -175,38 +271,38 @@
         }
 
         window.meetballTechStackMeta = /*[[${meetballTechStackMeta}]]*/ {
-            JavaScript: { label: 'JS', accent: '#F7DF1E', text: '#2D2D2D', bg: '#FFF8CC' },
-            TypeScript: { label: 'TS', accent: '#3178C6', text: '#FFFFFF', bg: '#3178C6' },
-            React: { icon: 'fa-brands fa-react', accent: '#61DAFB', text: '#15AABF', bg: '#ECFEFF' },
-            Vue: { icon: 'fa-brands fa-vuejs', accent: '#42B883', text: '#2F855A', bg: '#ECFDF5' },
-            Nodejs: { icon: 'fa-brands fa-node-js', accent: '#6CC24A', text: '#44883E', bg: '#F0FDF4' },
-            Spring: { label: 'S', accent: '#6DB33F', text: '#FFFFFF', bg: '#6DB33F' },
-            Java: { icon: 'fa-brands fa-java', accent: '#E76F00', text: '#E76F00', bg: '#FFF7ED' },
-            Nextjs: { label: 'N', accent: '#000000', text: '#FFFFFF', bg: '#000000' },
-            Nestjs: { label: 'N', accent: '#E0234E', text: '#E0234E', bg: '#FFF1F2' },
-            Express: { label: 'ex', accent: '#111827', text: '#111827', bg: '#F9FAFB' },
-            Go: { label: 'Go', accent: '#00ADD8', text: '#00ADD8', bg: '#ECFEFF' },
-            C: { label: 'C', accent: '#5C8DBC', text: '#315C8A', bg: '#EFF6FF' },
-            Python: { icon: 'fa-brands fa-python', accent: '#3776AB', text: '#3776AB', bg: '#EFF6FF' },
-            Django: { label: 'dj', accent: '#0C4B33', text: '#0C4B33', bg: '#ECFDF5' },
-            Swift: { icon: 'fa-brands fa-swift', accent: '#FA7343', text: '#EA580C', bg: '#FFF7ED' },
-            Kotlin: { label: 'K', accent: '#7F52FF', text: '#7F52FF', bg: '#F5F3FF' },
-            MySQL: { label: 'My', accent: '#00758F', text: '#00758F', bg: '#ECFEFF' },
-            MongoDB: { label: 'M', accent: '#47A248', text: '#2F7D32', bg: '#F0FDF4' },
-            php: { label: 'php', accent: '#777BB4', text: '#5B5F9E', bg: '#F5F3FF' },
-            GraphQL: { label: 'G', accent: '#E10098', text: '#E10098', bg: '#FDF2F8' },
-            Firebase: { label: 'F', accent: '#FFCA28', text: '#F57C00', bg: '#FFFBEB' },
-            ReactNative: { icon: 'fa-brands fa-react', accent: '#61DAFB', text: '#15AABF', bg: '#ECFEFF' },
-            Unity: { icon: 'fa-brands fa-unity', accent: '#111827', text: '#111827', bg: '#F9FAFB' },
-            Flutter: { label: 'F', accent: '#54C5F8', text: '#027DFD', bg: '#EFF6FF' },
-            AWS: { icon: 'fa-brands fa-aws', accent: '#FF9900', text: '#232F3E', bg: '#FFF7ED' },
-            Kubernetes: { label: 'K8s', accent: '#326CE5', text: '#326CE5', bg: '#EFF6FF' },
-            Docker: { icon: 'fa-brands fa-docker', accent: '#2496ED', text: '#0B75C9', bg: '#EFF6FF' },
-            Git: { icon: 'fa-brands fa-git-alt', accent: '#F05032', text: '#E24329', bg: '#FFF1F2' },
-            Figma: { icon: 'fa-brands fa-figma', accent: '#A259FF', text: '#A259FF', bg: '#FAF5FF' },
-            Zeplin: { label: 'Z', accent: '#FDBD39', text: '#D97706', bg: '#FFFBEB' },
-            Jest: { label: 'J', accent: '#99425B', text: '#99425B', bg: '#FFF1F2' },
-            Svelte: { label: 'S', accent: '#FF3E00', text: '#FF3E00', bg: '#FFF7ED' }
+            JavaScript: { label: 'JS', icon: '/img/tech-stack/javascript.svg', accent: '#F7DF1E', text: '#2D2D2D', bg: '#FFF8CC' },
+            TypeScript: { label: 'TS', icon: '/img/tech-stack/typescript.svg', accent: '#3178C6', text: '#FFFFFF', bg: '#3178C6' },
+            React: { icon: '/img/tech-stack/react.svg', accent: '#61DAFB', text: '#15AABF', bg: '#ECFEFF' },
+            Vue: { icon: '/img/tech-stack/vue.svg', accent: '#42B883', text: '#2F855A', bg: '#ECFDF5' },
+            Nodejs: { icon: '/img/tech-stack/nodejs.svg', accent: '#6CC24A', text: '#44883E', bg: '#F0FDF4' },
+            Spring: { label: 'S', icon: '/img/tech-stack/spring.svg', accent: '#6DB33F', text: '#6DB33F', bg: '#F0FDF4' },
+            Java: { icon: '/img/tech-stack/java.svg', accent: '#E76F00', text: '#E76F00', bg: '#FFF7ED' },
+            Nextjs: { label: 'N', icon: '/img/tech-stack/nextjs.svg', accent: '#000000', text: '#FFFFFF', bg: '#000000' },
+            Nestjs: { label: 'N', icon: '/img/tech-stack/nestjs.svg', accent: '#E0234E', text: '#E0234E', bg: '#FFF1F2' },
+            Express: { label: 'ex', icon: '/img/tech-stack/express.svg', accent: '#111827', text: '#111827', bg: '#F9FAFB' },
+            Go: { label: 'Go', icon: '/img/tech-stack/go.svg', accent: '#00ADD8', text: '#00ADD8', bg: '#ECFEFF' },
+            C: { label: 'C', icon: '/img/tech-stack/c.svg', accent: '#5C8DBC', text: '#315C8A', bg: '#EFF6FF' },
+            Python: { icon: '/img/tech-stack/python.svg', accent: '#3776AB', text: '#3776AB', bg: '#EFF6FF' },
+            Django: { label: 'dj', icon: '/img/tech-stack/django.svg', accent: '#0C4B33', text: '#0C4B33', bg: '#ECFDF5' },
+            Swift: { icon: '/img/tech-stack/swift.svg', accent: '#FA7343', text: '#EA580C', bg: '#FFF7ED' },
+            Kotlin: { label: 'K', icon: '/img/tech-stack/kotlin.svg', accent: '#7F52FF', text: '#7F52FF', bg: '#F5F3FF' },
+            MySQL: { label: 'My', icon: '/img/tech-stack/mysql.svg', accent: '#00758F', text: '#00758F', bg: '#ECFEFF' },
+            MongoDB: { label: 'M', icon: '/img/tech-stack/mongodb.svg', accent: '#47A248', text: '#2F7D32', bg: '#F0FDF4' },
+            php: { label: 'php', icon: '/img/tech-stack/php.svg', accent: '#777BB4', text: '#5B5F9E', bg: '#F5F3FF' },
+            GraphQL: { label: 'G', icon: '/img/tech-stack/graphql.svg', accent: '#E10098', text: '#E10098', bg: '#FDF2F8' },
+            Firebase: { label: 'F', icon: '/img/tech-stack/firebase.svg', accent: '#FFCA28', text: '#F57C00', bg: '#FFFBEB' },
+            ReactNative: { icon: '/img/tech-stack/reactnative.svg', accent: '#61DAFB', text: '#15AABF', bg: '#ECFEFF' },
+            Unity: { icon: '/img/tech-stack/unity.svg', accent: '#111827', text: '#111827', bg: '#F9FAFB' },
+            Flutter: { label: 'F', icon: '/img/tech-stack/flutter.svg', accent: '#54C5F8', text: '#027DFD', bg: '#EFF6FF' },
+            AWS: { icon: '/img/tech-stack/aws.svg', accent: '#FF9900', text: '#232F3E', bg: '#FFF7ED' },
+            Kubernetes: { label: 'K8s', icon: '/img/tech-stack/kubernetes.svg', accent: '#326CE5', text: '#326CE5', bg: '#EFF6FF' },
+            Docker: { icon: '/img/tech-stack/docker.svg', accent: '#2496ED', text: '#0B75C9', bg: '#EFF6FF' },
+            Git: { icon: '/img/tech-stack/git.svg', accent: '#F05032', text: '#E24329', bg: '#FFF1F2' },
+            Figma: { icon: '/img/tech-stack/figma.svg', accent: '#A259FF', text: '#A259FF', bg: '#FAF5FF' },
+            Zeplin: { label: 'Z', icon: '/img/tech-stack/zeplin.svg', accent: '#FDBD39', text: '#D97706', bg: '#FFFBEB' },
+            Jest: { label: 'J', icon: '/img/tech-stack/jest.svg', accent: '#99425B', text: '#99425B', bg: '#FFF1F2' },
+            Svelte: { label: 'S', icon: '/img/tech-stack/svelte.svg', accent: '#FF3E00', text: '#FF3E00', bg: '#FFF7ED' }
         };
 
         window.meetballTechStackLogoHtml = function(tech, selected = false) {
@@ -217,8 +313,12 @@
                 text: '#374151',
                 bg: '#F9FAFB'
             };
-            const content = meta.icon
-                ? `<i class="${meta.icon} text-lg"></i>`
+            const iconValue = typeof meta.icon === 'string' ? meta.icon.trim() : '';
+            const isImageIcon = iconValue.startsWith('/img/') || iconValue.endsWith('.svg');
+            const content = iconValue
+                ? (isImageIcon
+                    ? `<img src="${window.meetballEscapeHtml(iconValue)}" alt="${safeTech} logo" class="w-5 h-5 object-contain" loading="lazy">`
+                    : `<i class="${window.meetballEscapeHtml(iconValue)} text-lg"></i>`)
                 : `<span class="text-[11px] font-black leading-none">${window.meetballEscapeHtml(meta.label)}</span>`;
             return `
                 <span class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0"
@@ -235,8 +335,7 @@
             const stateClass = selected
                 ? ' bg-poodle-900 text-white border-poodle-900 shadow-lg shadow-poodle-900/10'
                 : ' bg-white text-poodle-700 border-poodle-100';
-            const check = selected ? '<i class="fa-solid fa-check text-[10px] text-meatball"></i>' : '';
-            return `<span class="${baseClass}${stateClass}" data-tech-chip="${safeTech}">${window.meetballTechStackLogoHtml(tech, selected)}<span>${safeTech}</span>${check}</span>`;
+            return `<span class="${baseClass}${stateClass}" data-tech-chip="${safeTech}">${window.meetballTechStackLogoHtml(tech, selected)}<span>${safeTech}</span></span>`;
         };
 
         window.meetballEnhanceStaticTechChips = function(root = document) {

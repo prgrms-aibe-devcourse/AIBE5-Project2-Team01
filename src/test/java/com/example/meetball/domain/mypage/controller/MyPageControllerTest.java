@@ -96,8 +96,14 @@ class MyPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "name": "초코푸들",
                                   "nickname": "초코푸들",
+                                  "phoneNumber": "010-1234-5678",
+                                  "birthDate": "1995-05-21",
+                                  "gender": "남자",
                                   "position": "백엔드",
+                                  "experienceYears": "3",
+                                  "organization": "Meetball",
                                   "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
@@ -109,8 +115,14 @@ class MyPageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "name": "초코푸들",
                                   "nickname": "초코푸들",
+                                  "phoneNumber": "010-1234-5678",
+                                  "birthDate": "1995-05-21",
+                                  "gender": "남자",
                                   "position": "백엔드",
+                                  "experienceYears": "3",
+                                  "organization": "Meetball",
                                   "techStacks": ["Java", "Spring"],
                                   "isPublic": true
                                 }
@@ -141,7 +153,7 @@ class MyPageControllerTest {
                                   "birthDate": "1998-07-15",
                                   "gender": "여자",
                                   "position": "디자이너",
-                                  "experienceYears": "1~3년",
+                                  "experienceYears": "3",
                                   "organization": "Meetball Studio",
                                   "orgVisible": true,
                                   "techStacks": ["Figma", "Zeplin"]
@@ -157,10 +169,43 @@ class MyPageControllerTest {
         assertThat(profile.getBirthDate()).hasToString("1998-07-15");
         assertThat(profile.getGender()).isEqualTo("여자");
         assertThat(profile.getPosition()).isEqualTo("디자이너");
-        assertThat(profile.getExperienceYears()).isEqualTo("1~3년");
+        assertThat(profile.getExperienceYears()).isEqualTo("3");
         assertThat(profile.getOrganization()).isEqualTo("Meetball Studio");
         assertThat(profile.isOrgVisible()).isTrue();
         assertThat(profile.getTechStackNames()).containsExactlyInAnyOrder("Figma", "Zeplin");
+        assertThat(profile.isProfileComplete()).isTrue();
+    }
+
+    @Test
+    @DisplayName("최초 로그인 온보딩은 소속이 공란이어도 저장할 수 있다")
+    void completeOnboardingAllowsBlankOrganization() throws Exception {
+        MockHttpSession session = session(3L);
+        session.setAttribute("needsProfile", true);
+
+        mockMvc.perform(put("/api/mypage/onboarding")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "열정고양이",
+                                  "nickname": "열정고양이",
+                                  "phoneNumber": "010-9876-5432",
+                                  "birthDate": "1998-07-15",
+                                  "gender": "여자",
+                                  "position": "디자이너",
+                                  "experienceYears": "0",
+                                  "organization": "",
+                                  "orgVisible": false,
+                                  "techStacks": ["Figma", "Zeplin"]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(request().sessionAttributeDoesNotExist("needsProfile"));
+
+        Profile profile = profileService.getProfileById(3L);
+        assertThat(profile.getExperienceYears()).isEqualTo("0");
+        assertThat(profile.getOrganization()).isNull();
+        assertThat(profile.isOrgVisible()).isFalse();
         assertThat(profile.isProfileComplete()).isTrue();
     }
 
@@ -197,7 +242,7 @@ class MyPageControllerTest {
                         .session(session(profileId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].title").value("AI 기반 헬스케어 모바일 앱 개발"))
+                .andExpect(jsonPath("$[0].title").value("여행 일정 공유 플랫폼 [TripMate]"))
                 .andDo(print());
     }
 

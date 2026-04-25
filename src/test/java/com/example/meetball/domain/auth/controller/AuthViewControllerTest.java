@@ -32,6 +32,8 @@ class AuthViewControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("로그인")))
+                .andExpect(content().string(containsString("/img/tech-stack/react.svg")))
+                .andExpect(content().string(containsString("/img/tech-stack/nodejs.svg")))
                 .andExpect(content().string(not(containsString("김밋볼"))))
                 .andExpect(content().string(not(containsString("meetball_dev@google.com"))));
     }
@@ -145,8 +147,8 @@ class AuthViewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"tab-reads\"")))
                 .andExpect(content().string(containsString("id=\"content-reads\"")))
-                .andExpect(content().string(containsString("id=\"editPositionOptions\"")))
-                .andExpect(content().string(containsString("renderEditPositionOptions")))
+                .andExpect(content().string(containsString("id=\"inlinePositionOptions\"")))
+                .andExpect(content().string(containsString("renderInlinePositionOptions")))
                 .andExpect(content().string(not(containsString("placeholder=\"직무를 입력하세요"))));
     }
 
@@ -164,8 +166,8 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("'임베디드SW'")))
                 .andExpect(content().string(containsString("'매니저(PM)'")))
                 .andExpect(content().string(containsString("meetballTechStackMeta")))
-                .andExpect(content().string(containsString("techStackLogoHtml")))
-                .andExpect(content().string(containsString("fa-brands fa-react")))
+                .andExpect(content().string(containsString("meetballTechStackLogoHtml")))
+                .andExpect(content().string(containsString("/img/tech-stack/react.svg")))
                 .andExpect(content().string(not(containsString("id=\"techStackTags\""))))
                 .andExpect(content().string(not(containsString("id=\"position\""))));
     }
@@ -183,8 +185,8 @@ class AuthViewControllerTest {
                         {
                           "title": "다중 포지션 테스트 프로젝트",
                           "description": "여러 포지션을 저장하는지 확인합니다.",
-                          "projectType": "사이드 프로젝트",
-                          "progressMethod": "온라인",
+                          "projectPurpose": "프로젝트",
+                          "workMethod": "온라인",
                           "position": "프론트엔드:2, 백엔드:1",
                           "techStacks": ["React", "Spring"],
                           "recruitmentCount": 99,
@@ -214,8 +216,8 @@ class AuthViewControllerTest {
                         {
                           "title": "AI 기반 헬스케어 모바일 앱 개발",
                           "description": "지원자가 있는 디자이너 포지션 삭제를 막는지 확인합니다.",
-                          "projectType": "사이드 프로젝트",
-                          "progressMethod": "온라인",
+                          "projectPurpose": "프로젝트",
+                          "workMethod": "온라인",
                           "position": "프론트엔드:2, 백엔드:1, 데이터/AI:1",
                           "techStacks": ["ReactNative", "Python"],
                           "recruitmentStartAt": "2026-04-23",
@@ -275,8 +277,8 @@ class AuthViewControllerTest {
     void projectDetailRendersSidebar() throws Exception {
         mockMvc.perform(get("/projects/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Active Project")))
-                .andExpect(content().string(containsString("id=\"detailReadCount\"")))
+                .andExpect(content().string(containsString("id=\"readStatusLabel\"")))
+                .andExpect(content().string(containsString("조회수 : ")))
                 .andExpect(content().string(containsString("팀 멤버 소개")))
                 .andExpect(content().string(containsString("/people/1")))
                 .andExpect(content().string(containsString("/people/2")));

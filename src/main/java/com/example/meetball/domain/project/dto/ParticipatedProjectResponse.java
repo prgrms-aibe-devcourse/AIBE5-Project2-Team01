@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class ParticipatedProjectResponse {
@@ -13,8 +16,13 @@ public class ParticipatedProjectResponse {
     private String participantRole; // LEADER, MEMBER
     private String status;
     private boolean canReview;
+    private boolean canProjectReview;
+    private boolean canPeerReview;
     private String recruitStatus;
     private String progressStatus;
+    private LocalDateTime createdAt;
+    private LocalDateTime appliedAt;
+    private LocalDate projectEndAt;
     
     @JsonProperty("dDay")
     private Long dDay; // 마감일까지 남은 일수 (모집 중일 때만)
@@ -26,9 +34,13 @@ public class ParticipatedProjectResponse {
                 .participantRole(role)
                 .status(project.isCompleted() ? "COMPLETED" : "PROCEEDING")
                 .canReview(canReview)
+                .canProjectReview(canReview)
+                .canPeerReview(false)
                 .dDay(dDay)
                 .recruitStatus(project.getRecruitStatus())
                 .progressStatus(project.getProgressStatus())
+                .createdAt(project.getCreatedAt())
+                .projectEndAt(project.getProjectEndAt())
                 .build();
     }
 }

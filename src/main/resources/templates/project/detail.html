@@ -6,7 +6,7 @@
 <body class="text-poodle-900 bg-poodle-50">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
 
-    <main class="container mx-auto px-4 py-12 max-w-7xl">
+    <main class="w-full mx-auto max-w-7xl px-4 py-12">
         <!-- Hero Banner Area -->
         <section
             class="relative h-[28rem] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-poodle-900/10 mb-10 group">
@@ -16,7 +16,7 @@
             <div class="absolute inset-0 bg-gradient-to-t from-poodle-900/80 via-poodle-900/20 to-transparent"></div>
             <div class="absolute inset-0 flex flex-col justify-end p-12 text-white">
                 <div class="flex items-center gap-2 mb-4">
-                    <span th:text="${project.projectType}"
+                    <span th:text="${project.projectPurpose}"
                         class="px-4 py-1.5 bg-meatball rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-meatball/20">사이드
                         프로젝트</span>
                     <span th:text="${project.deadlineLabel}"
@@ -27,7 +27,7 @@
                 <div class="flex items-center gap-4 text-poodle-100/60 text-xs font-bold">
                     <span th:text="'등록일: ' + ${project.createdDateLabel}">등록일: 2024.04.01</span>
                     <span class="w-1 h-1 bg-white/20 rounded-full"></span>
-                    <span id="readStatusLabel">프로젝트 상세</span>
+                    <span id="readStatusLabel" th:text="'조회수 : ' + ${project.readCount}">조회수 : 0</span>
                 </div>
             </div>
         </section>
@@ -174,28 +174,43 @@
                         </div>
 
                         <div
-                            class="flex flex-col items-center justify-center py-10 bg-poodle-50/50 rounded-[2.5rem] border border-poodle-100">
-                            <p class="text-[10px] text-meatball font-black uppercase tracking-[0.3em] mb-4">Overall
-                                Experience</p>
-                            <div class="flex items-center gap-4">
-                                <div id="reviewStars" class="flex text-meatball text-3xl gap-1">
-                                    <i class="fa-regular fa-star text-poodle-200"></i>
-                                    <i class="fa-regular fa-star text-poodle-200"></i>
-                                    <i class="fa-regular fa-star text-poodle-200"></i>
-                                    <i class="fa-regular fa-star text-poodle-200"></i>
-                                    <i class="fa-regular fa-star text-poodle-200"></i>
-                                </div>
-                                <div class="flex items-end gap-1">
-                                    <span id="reviewAverage" class="text-5xl font-black text-poodle-900 leading-none">0.0</span>
-                                    <span class="text-xl font-bold text-poodle-200">/ 5.0</span>
+                            class="grid grid-cols-1 md:grid-cols-[1fr_auto_1.5fr] items-center gap-10 py-12 px-8 bg-gradient-to-br from-white to-poodle-50/30 rounded-[3rem] border border-poodle-50 shadow-sm">
+                            <div class="text-center md:pl-8">
+                                <p class="text-[10px] text-meatball font-black uppercase tracking-[0.3em] mb-4">Overall rating</p>
+                                <div class="flex flex-col items-center gap-2">
+                                    <span id="reviewAverage" class="text-7xl font-black text-poodle-900 leading-none">0.0</span>
+                                    <div id="reviewStars" class="flex text-meatball text-2xl gap-1 mt-2">
+                                        <i class="fa-regular fa-star text-poodle-100"></i>
+                                        <i class="fa-regular fa-star text-poodle-100"></i>
+                                        <i class="fa-regular fa-star text-poodle-100"></i>
+                                        <i class="fa-regular fa-star text-poodle-100"></i>
+                                        <i class="fa-regular fa-star text-poodle-100"></i>
+                                    </div>
+                                    <p id="reviewTotal" class="mt-4 text-[10px] font-black text-poodle-300 uppercase tracking-widest whitespace-nowrap">아직 리뷰가 없습니다</p>
                                 </div>
                             </div>
-                            <p id="reviewTotal" class="mt-4 text-[10px] font-black text-poodle-300 uppercase tracking-widest">아직 리뷰가 없습니다</p>
+
+                            <div class="hidden md:block w-px h-32 bg-poodle-100/50"></div>
+
+                            <div id="reviewDistribution" class="space-y-4 pr-8">
+                                <div class="flex flex-col gap-3">
+                                    <div class="text-center p-6 text-sm font-bold text-poodle-300 bg-poodle-50/50 rounded-2xl border border-dashed border-poodle-100">
+                                        리뷰 데이터를 분석 중입니다...
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- 리뷰 리스트 -->
-                        <div id="reviewDistribution" class="space-y-3">
-                            <div class="p-8 text-center text-sm font-bold text-poodle-300 border border-poodle-50 rounded-[2rem]">리뷰 요약을 불러오는 중...</div>
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between gap-4">
+                                <h4 class="text-xl font-black text-poodle-900 tracking-tight">프로젝트 리뷰</h4>
+                                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-poodle-300">Project Review Feed</span>
+                            </div>
+                            <div id="projectReviewList" class="space-y-4">
+                                <div class="p-8 text-center text-sm font-bold text-poodle-300 border border-poodle-50 rounded-[2rem]">
+                                    프로젝트 리뷰를 불러오는 중입니다...
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>
@@ -233,10 +248,6 @@
                     class="bg-white rounded-[2.5rem] p-10 shadow-2xl shadow-poodle-900/5 border border-poodle-50 space-y-10 lg:sticky lg:top-24">
 	                    <div class="flex items-center justify-between pb-8 border-b border-poodle-50">
 	                        <div class="flex items-center gap-2">
-	                            <span class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300">
-	                                <i class="fa-regular fa-eye text-lg"></i>
-	                                <span id="detailReadCount" th:text="${project.readCount}" class="text-sm font-black text-poodle-700">0</span>
-	                            </span>
 	                            <button id="bookmarkBtn" onclick="toggleBookmark()"
 	                                class="flex items-center gap-2.5 px-5 py-2.5 bg-poodle-50 border border-poodle-100 rounded-full text-poodle-300 hover:text-meatball hover:bg-white transition-all group">
 	                                <i id="bookmarkIcon" class="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform"></i>
@@ -247,19 +258,15 @@
                                 <i class="fa-solid fa-share-nodes text-sm"></i>
                             </button>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-meatball rounded-full"></span>
-                            <span class="text-[10px] font-black text-poodle-400 uppercase tracking-[0.25em]">Active Project</span>
-                        </div>
                     </div>
 
                     <div class="space-y-4">
-                        <button th:if="${role == 'GUEST'}" type="button" onclick="openLoginModal(window.location.pathname)"
+                        <button th:if="${role == 'GUEST'}" type="button" data-apply-trigger data-apply-role="guest" onclick="handleApplyAction()"
                             class="flex items-center justify-center w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                             로그인 후 지원하기
                         </button>
 
-                        <button th:if="${role == 'REGULAR_USER'}" onclick="openApplyModal()"
+                        <button th:if="${role == 'REGULAR_USER'}" data-apply-trigger data-apply-role="regular" onclick="handleApplyAction()"
                             class="w-full py-6 bg-poodle-600 text-white rounded-[1.5rem] font-black text-lg shadow-2xl hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">
                             프로젝트 지원하기
                         </button>
@@ -302,8 +309,8 @@
                                 <i class="fa-solid fa-location-dot"></i>
                             </div>
                             <div>
-                                <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Type</p>
-                                <p th:text="${project.progressMethod}" class="text-sm font-black text-poodle-800">온라인</p>
+                                <p class="text-[10px] text-poodle-300 font-black uppercase tracking-[0.2em] mb-1">Method</p>
+                                <p th:text="${project.workMethod}" class="text-sm font-black text-poodle-800">온라인</p>
                             </div>
                         </div>
                     </div>
@@ -337,7 +344,9 @@
                         <div class="space-y-4">
                             <a th:if="${project.leaderProfileId != null}"
                                th:href="@{/people/{profileId}(profileId=${project.leaderProfileId})}"
-                               class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl hover:border-meatball/30 hover:bg-white transition-all group/leader">
+                               th:attr="data-profile-id=${project.leaderProfileId}"
+                               onclick="handleMemberCardClick(event)"
+                               class="flex items-center gap-4 rounded-2xl border border-poodle-100 bg-poodle-50 p-4 shadow-sm transition-all duration-200 group/leader hover:-translate-y-1 hover:border-meatball/30 hover:bg-white hover:shadow-[0_18px_36px_rgba(62,39,35,0.10)]">
                                 <div class="relative">
                                     <img th:src="${project.leaderAvatarUrl}"
                                         src="/img/logo.png"
@@ -348,8 +357,9 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900 group-hover/leader:text-meatball transition-colors">팀장님</p>
-                                    <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
+                                    <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900 transition-colors group-hover/leader:text-meatball">팀장님</p>
+                                    <p th:text="${#strings.isEmpty(project.leaderPosition) ? 'Leader' : 'Leader / ' + project.leaderPosition}"
+                                       class="text-[9px] text-meatball font-black uppercase">Leader</p>
                                 </div>
                             </a>
                             <div th:unless="${project.leaderProfileId != null}" class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
@@ -364,13 +374,16 @@
                                 </div>
                                 <div>
                                     <p th:text="${project.leaderName}" class="text-sm font-black text-poodle-900">팀장님</p>
-                                    <p class="text-[9px] text-meatball font-black uppercase">Leader / PM</p>
+                                    <p th:text="${#strings.isEmpty(project.leaderPosition) ? 'Leader' : 'Leader / ' + project.leaderPosition}"
+                                       class="text-[9px] text-meatball font-black uppercase">Leader</p>
                                 </div>
                             </div>
                             <a th:each="member : ${project.teamMembers}"
                                th:if="${member.participantRole() != 'LEADER'}"
                                th:href="@{/people/{profileId}(profileId=${member.profileId()})}"
-                               class="flex items-center gap-4 p-4 bg-white border border-poodle-50 rounded-2xl hover:border-meatball/30 hover:bg-poodle-50/30 transition-all group/member">
+                               th:attr="data-profile-id=${member.profileId()}"
+                               onclick="handleMemberCardClick(event)"
+                               class="flex items-center gap-4 rounded-2xl border border-poodle-50 bg-white p-4 shadow-sm transition-all duration-200 group/member hover:-translate-y-1 hover:border-meatball/30 hover:bg-poodle-50/30 hover:shadow-[0_18px_36px_rgba(62,39,35,0.10)]">
                                 <div class="relative">
                                     <img th:src="@{/img/logo.png}" src="/img/logo.png"
                                          class="w-12 h-12 bg-white rounded-xl shadow-sm border border-poodle-50">
@@ -379,7 +392,7 @@
                                     </div>
                                 </div>
                                 <div class="min-w-0">
-                                    <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 group-hover/member:text-meatball transition-colors truncate">팀원</p>
+                                    <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 transition-colors group-hover/member:text-meatball truncate">팀원</p>
                                     <p th:text="${#strings.isEmpty(member.position()) ? '포지션 미정' : member.position()}" class="text-[9px] text-poodle-300 font-black uppercase truncate">포지션</p>
                                 </div>
                             </a>
@@ -544,20 +557,109 @@
             box-shadow: 0 12px 24px -8px rgba(240, 127, 55, 0.32);
         }
 
-        .pos-btn.selected .selected-check {
-            display: inline-block !important;
-        }
     </style>
 
     <script th:inline="javascript">
         const CURRENT_USER = {
-            nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null
+            nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null,
+            profileId: /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null
         };
+        const PROJECT_DEADLINE_LABEL = /*[[${project.deadlineLabel}]]*/ '';
+        const PROJECT_RECRUIT_STATUS = /*[[${project.recruitStatus}]]*/ '';
+        const PROJECT_PROGRESS_STATUS = /*[[${project.progressStatus}]]*/ '';
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
         const projectId = () => document.getElementById('applicationProjectId')?.value;
+        let currentExistingApplication = null;
 
-        function openApplyModal() {
+        function hasAvailableRecruitPositions() {
+            return Array.from(document.querySelectorAll('#applyModal .pos-btn')).some(btn => !btn.disabled);
+        }
+
+        function isRecruitmentClosedForApply() {
+            return PROJECT_PROGRESS_STATUS === 'COMPLETED'
+                || PROJECT_RECRUIT_STATUS === 'CLOSED'
+                || String(PROJECT_DEADLINE_LABEL).includes('마감')
+                || !hasAvailableRecruitPositions();
+        }
+
+        function handleMemberCardClick(event) {
+            if (!CURRENT_USER.nickname) {
+                event.preventDefault();
+                openLoginRequiredModal(window.location.pathname + window.location.search);
+            }
+        }
+
+        function syncApplyButtonState() {
+            const isClosed = isRecruitmentClosedForApply();
+            document.querySelectorAll('[data-apply-trigger]').forEach(button => {
+                const role = button.dataset.applyRole;
+                const hasExistingApplication = role === 'regular' && Boolean(currentExistingApplication);
+                const showsPrimaryStyle = !isClosed || hasExistingApplication;
+                button.textContent = hasExistingApplication
+                    ? '이미 지원한 프로젝트'
+                    : isClosed
+                    ? '모집마감'
+                    : (role === 'guest' ? '로그인 후 지원하기' : '프로젝트 지원하기');
+                button.classList.toggle('bg-poodle-600', showsPrimaryStyle);
+                button.classList.toggle('text-white', showsPrimaryStyle);
+                button.classList.toggle('hover:bg-meatball', showsPrimaryStyle);
+                button.classList.toggle('hover:text-poodle-900', showsPrimaryStyle);
+                button.classList.toggle('hover:scale-[1.02]', showsPrimaryStyle);
+                button.classList.toggle('bg-poodle-100', !showsPrimaryStyle);
+                button.classList.toggle('text-poodle-500', !showsPrimaryStyle);
+                button.classList.toggle('hover:bg-poodle-200', !showsPrimaryStyle);
+                button.classList.toggle('hover:text-poodle-700', !showsPrimaryStyle);
+                button.classList.toggle('hover:scale-100', !showsPrimaryStyle);
+            });
+        }
+
+        async function handleApplyAction() {
+            const currentProjectId = projectId();
+            if (currentExistingApplication) {
+                goToAppliedProjects();
+                return;
+            }
+            if (isRecruitmentClosedForApply()) {
+                await meetballAlert('모집이 마감되었습니다.');
+                return;
+            }
+            if (!CURRENT_USER.nickname) {
+                openLoginRequiredModal(`/projects/${currentProjectId}`);
+                return;
+            }
+            currentExistingApplication = await fetchExistingApplication(currentProjectId);
+            syncApplyButtonState();
+            if (currentExistingApplication) {
+                goToAppliedProjects();
+                return;
+            }
+            openApplyModal();
+        }
+
+        async function fetchExistingApplication(currentProjectId) {
+            try {
+                const response = await fetch(`/api/projects/${currentProjectId}/applications/me`, {
+                    credentials: 'same-origin'
+                });
+                if (response.status === 204 || response.status === 404) {
+                    return null;
+                }
+                if (!response.ok) {
+                    return null;
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Existing application fetch error:', error);
+                return null;
+            }
+        }
+
+        async function openApplyModal() {
+            if (isRecruitmentClosedForApply()) {
+                await meetballAlert('모집이 마감되었습니다.');
+                return;
+            }
             document.getElementById('applyModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
@@ -607,7 +709,7 @@
             const selectedBtn = document.querySelector('.pos-btn.selected');
 
             if (!CURRENT_USER.nickname) {
-                openLoginModal(`/projects/${projectId}`);
+                openLoginRequiredModal(`/projects/${projectId}`);
                 return;
             }
             
@@ -635,9 +737,8 @@
                 });
 
                 if (response.ok) {
-                    await meetballAlert('성공적으로 지원되었습니다! 마이페이지에서 상태를 확인하세요.');
                     closeApplyModal();
-                    // 추가로 버튼 상태를 변경할 수 있습니다.
+                    openApplicationSuccessModal();
                 } else {
                     const err = await response.text();
                     await meetballAlert('지원 실패: ' + err, { type: 'error' });
@@ -646,6 +747,30 @@
                 console.error('Error submitting application:', error);
                 await meetballAlert('네트워크 오류가 발생했습니다.', { type: 'error' });
             }
+        }
+
+        function openApplicationSuccessModal() {
+            document.getElementById('applicationSuccessModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeApplicationSuccessModal() {
+            document.getElementById('applicationSuccessModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function goToAppliedProjects() {
+            window.location.href = '/mypage?tab=applied';
+        }
+
+        async function syncExistingApplicationState() {
+            if (!CURRENT_USER.nickname) {
+                currentExistingApplication = null;
+                syncApplyButtonState();
+                return;
+            }
+            currentExistingApplication = await fetchExistingApplication(projectId());
+            syncApplyButtonState();
         }
 
         // ===================================
@@ -709,7 +834,7 @@
                 await meetballAlert('댓글 내용을 입력해주세요.'); return;
             }
             if (!CURRENT_USER.nickname) {
-                openLoginModal(`/projects/${currentProjectId}`);
+                openLoginRequiredModal(`/projects/${currentProjectId}`);
                 return;
             }
 
@@ -824,7 +949,7 @@
             const currentProjectId = projectId();
             if (!currentProjectId) return;
             if (!CURRENT_USER.nickname) {
-                openLoginModal(`/projects/${currentProjectId}`);
+                openLoginRequiredModal(`/projects/${currentProjectId}`);
                 return;
             }
 
@@ -861,11 +986,7 @@
             const currentProjectId = projectId();
             if (!currentProjectId || !CURRENT_USER.nickname) return;
             try {
-                const res = await meetballFetch(`/api/projects/${currentProjectId}/read`, { method: 'POST' });
-                if (res.ok) {
-                    const label = document.getElementById('readStatusLabel');
-                    if (label) label.textContent = '최근 본 프로젝트에 저장됨';
-                }
+                await meetballFetch(`/api/projects/${currentProjectId}/read`, { method: 'POST' });
             } catch (err) {
                 console.error('Read history error', err);
             }
@@ -897,6 +1018,58 @@
                 console.error('Review summary error', err);
                 renderReviewSummary({ averageScore: 0, totalReviews: 0, scorePercentages: {} });
             }
+        }
+
+        async function loadProjectReviewList() {
+            const currentProjectId = projectId();
+            if (!currentProjectId) return;
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/reviews`);
+                if (!res.ok) throw new Error('프로젝트 리뷰 목록 로드 실패');
+                renderProjectReviewList(await res.json());
+            } catch (error) {
+                console.error('Project review list error', error);
+                renderProjectReviewList([]);
+            }
+        }
+
+        function renderProjectReviewList(reviews) {
+            const container = document.getElementById('projectReviewList');
+            if (!container) return;
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-sm font-bold text-poodle-300 border border-poodle-50 rounded-[2rem]">
+                        프로젝트 리뷰가 아직 없습니다.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => {
+                const reviewerNickname = escapeHtml(review.reviewerNickname || '익명');
+                const reviewerPosition = escapeHtml(review.reviewerPosition || '포지션 미정');
+                const content = escapeHtml(review.content || '');
+                const createdAt = review.createdAt ? new Date(review.createdAt).toLocaleDateString('ko-KR') : '-';
+                const stars = buildStars(Number(review.score || 0), 'text-sm');
+                return `
+                    <article class="rounded-[2rem] border border-poodle-50 bg-poodle-50/30 p-6 shadow-sm">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3">
+                                    <img src="/img/logo.png" class="w-11 h-11 rounded-xl border border-white bg-white shadow-sm" alt="reviewer">
+                                    <div>
+                                        <p class="text-sm font-black text-poodle-900">${reviewerNickname}</p>
+                                        <p class="text-[10px] font-black uppercase tracking-[0.16em] text-poodle-300">${reviewerPosition}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1">${stars}</div>
+                            </div>
+                            <span class="text-[10px] font-black text-poodle-300">${escapeHtml(createdAt)}</span>
+                        </div>
+                        <p class="mt-5 text-sm font-bold leading-relaxed text-poodle-600">"${content}"</p>
+                    </article>
+                `;
+            }).join('');
         }
 
         function renderReviewSummary(summary) {
@@ -946,14 +1119,43 @@
             return html;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await syncExistingApplicationState();
             recordRead();
             fetchBookmarkStatus();
             fetchReviewSummary();
+            loadProjectReviewList();
             fetchComments();
             fetchResources();
         });
     </script>
+
+    <div id="applicationSuccessModal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm" onclick="closeApplicationSuccessModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="pointer-events-auto w-full max-w-md rounded-[2.5rem] bg-white px-8 py-10 shadow-[0_32px_64px_-12px_rgba(62,39,35,0.22)]">
+                <div class="text-center space-y-4">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-poodle-50 text-poodle-800">
+                        <i class="fa-solid fa-check text-2xl"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-black text-poodle-900">지원서 제출 완료</h3>
+                        <p class="text-sm font-bold text-poodle-400">마이페이지에서 지원 현황을 바로 확인할 수 있어요.</p>
+                    </div>
+                    <div class="pt-3 flex flex-col gap-3 sm:flex-row">
+                        <button type="button" onclick="closeApplicationSuccessModal()"
+                                class="flex-1 rounded-[1.4rem] border border-poodle-100 bg-white px-6 py-4 text-sm font-black text-poodle-500 transition-all hover:border-poodle-200 hover:bg-poodle-50 hover:text-poodle-700">
+                            확인
+                        </button>
+                        <button type="button" onclick="goToAppliedProjects()"
+                                class="flex-1 rounded-[1.4rem] bg-poodle-800 px-6 py-4 text-sm font-black text-white shadow-[0_14px_28px_rgba(78,52,46,0.18)] transition-all hover:bg-meatball">
+                            지원 프로젝트 보러가기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

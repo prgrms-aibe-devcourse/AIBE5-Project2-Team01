@@ -46,8 +46,8 @@ public class ReviewServiceTest {
         return new Project(
                 title,
                 "설명",
-                "타입",
-                "ONLINE",
+                "프로젝트",
+                "온라인",
                 5,
                 LocalDate.now().minusDays(10),
                 recruitEndDate,
@@ -71,8 +71,8 @@ public class ReviewServiceTest {
         completedProject.update(
                 completedProject.getTitle(),
                 completedProject.getDescription(),
-                completedProject.getProjectType(),
-                completedProject.getProgressMethod(),
+                completedProject.getProjectPurpose(),
+                completedProject.getWorkMethod(),
                 completedProject.getRecruitmentCount(),
                 LocalDate.now().minusDays(10),
                 LocalDate.now().minusDays(1),
@@ -137,8 +137,8 @@ public class ReviewServiceTest {
         recruitmentClosedProject.update(
                 recruitmentClosedProject.getTitle(),
                 recruitmentClosedProject.getDescription(),
-                recruitmentClosedProject.getProjectType(),
-                recruitmentClosedProject.getProgressMethod(),
+                recruitmentClosedProject.getProjectPurpose(),
+                recruitmentClosedProject.getWorkMethod(),
                 recruitmentClosedProject.getRecruitmentCount(),
                 LocalDate.now().minusDays(10),
                 LocalDate.now().minusDays(1),

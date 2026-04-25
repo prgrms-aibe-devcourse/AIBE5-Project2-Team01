@@ -14,7 +14,7 @@ public interface BookmarkedProjectRepository extends JpaRepository<BookmarkedPro
     Optional<BookmarkedProject> findByProjectAndProfile(Project project, Profile profile);
 
     // 사용자별 찜 목록 조회용
-    List<BookmarkedProject> findByProfile(Profile profile);
+    List<BookmarkedProject> findByProfileOrderByCreatedAtDesc(Profile profile);
 
     // 해당 프로젝트의 총 찜 개수 조회용
     int countByProject(Project project);

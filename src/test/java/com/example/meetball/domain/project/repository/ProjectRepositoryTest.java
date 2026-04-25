@@ -24,7 +24,7 @@ public class ProjectRepositoryTest {
     @Autowired
     private ProfileRepository profileRepository;
 
-    private Project saveProject(String title, String projectType) {
+    private Project saveProject(String title, String projectPurpose) {
         Profile owner = profileRepository.save(Profile.builder()
                 .email(title.replaceAll("\\s+", "").toLowerCase() + "@test.local")
                 .nickname(title + "리더")
@@ -33,7 +33,7 @@ public class ProjectRepositoryTest {
         Project project = new Project(
                 title,
                 "설명",
-                projectType,
+                projectPurpose,
                 "ONLINE",
                 5,
                 LocalDate.now().minusDays(1),
@@ -53,8 +53,8 @@ public class ProjectRepositoryTest {
     @DisplayName("프로젝트 필터 검색 - 키워드 테스트")
     void findProjectsWithFilters_Keyword() {
         // given
-        saveProject("Spring Boot 스터디", "사이드");
-        saveProject("React 프로젝트", "사이드");
+        saveProject("Spring Boot 스터디", "PROJECT");
+        saveProject("React 프로젝트", "PROJECT");
 
         // when
         Page<Project> results = projectRepository.findProjectsWithFilters("Spring", null, null, null, null, PageRequest.of(0, 10));
@@ -65,17 +65,17 @@ public class ProjectRepositoryTest {
     }
 
     @Test
-    @DisplayName("프로젝트 필터 검색 - 타입 테스트")
+    @DisplayName("프로젝트 필터 검색 - 목적 테스트")
     void findProjectsWithFilters_Type() {
         // given
         saveProject("스터디", "STUDY");
-        saveProject("공모전", "COMPETITION");
+        saveProject("공모전", "CONTEST");
 
         // when
         Page<Project> results = projectRepository.findProjectsWithFilters(null, "STUDY", null, null, null, PageRequest.of(0, 10));
 
         // then
         assertThat(results.getContent()).hasSize(1);
-        assertThat(results.getContent().get(0).getProjectType()).isEqualTo("STUDY");
+        assertThat(results.getContent().get(0).getProjectPurpose()).isEqualTo("STUDY");
     }
 }

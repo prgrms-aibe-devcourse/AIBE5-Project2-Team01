@@ -80,10 +80,41 @@ public class ProjectController {
     }
 
     @GetMapping("/register")
-    public String register(@SessionAttribute(name = "profileId", required = false) Long profileId) {
+    public String register(@SessionAttribute(name = "profileId", required = false) Long profileId,
+                           Model model) {
         if (profileId == null) {
             return "redirect:/?login=1&redirect=/register";
         }
+        model.addAttribute("pageTitle", "프로젝트 등록");
+        model.addAttribute("editMode", false);
+        model.addAttribute("projectId", null);
+        model.addAttribute("editProject", null);
+        model.addAttribute("positionEditConstraints", java.util.List.of());
+        return "project/register";
+    }
+
+    @GetMapping("/projects/{id}/edit")
+    public String edit(@PathVariable("id") Long id,
+                       @SessionAttribute(name = "profileId", required = false) Long profileId,
+                       Model model) {
+        if (profileId == null) {
+            return "redirect:/?login=1&redirect=/projects/" + id + "/edit";
+        }
+
+        com.example.meetball.domain.project.entity.Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + id));
+        com.example.meetball.domain.profile.entity.Profile currentProfile = profileService.getProfileById(profileId);
+        com.example.meetball.global.auth.enums.ProjectDetailRole role =
+                authorizationService.getProjectDetailRole(currentProfile, project);
+        if (role != com.example.meetball.global.auth.enums.ProjectDetailRole.LEADER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can edit the project.");
+        }
+
+        model.addAttribute("pageTitle", "프로젝트 수정");
+        model.addAttribute("editMode", true);
+        model.addAttribute("projectId", id);
+        model.addAttribute("editProject", projectService.getProjectById(id));
+        model.addAttribute("positionEditConstraints", projectService.getProjectPositionEditConstraints(id));
         return "project/register";
     }
 
@@ -116,14 +147,14 @@ public class ProjectController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "6") int size,
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "projectType", required = false) String projectType,
-            @RequestParam(name = "progressMethod", required = false) String progressMethod,
+            @RequestParam(name = "projectPurpose", required = false) String projectPurpose,
             @RequestParam(name = "position", required = false) String position,
             @RequestParam(name = "techStack", required = false) String techStack,
+            @RequestParam(name = "bookmarkedOnly", defaultValue = "false") boolean bookmarkedOnly,
             @SessionAttribute(name = "profileId", required = false) Long profileId
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectType, progressMethod, position, techStack, pageable, profileId);
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectPurpose, position, techStack, bookmarkedOnly, pageable, profileId);
         return ProjectPageResponseDto.from(projects);
     }
 

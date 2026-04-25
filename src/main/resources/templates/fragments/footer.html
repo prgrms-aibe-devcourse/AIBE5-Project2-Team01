@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-    <footer th:fragment="mainFooter" class="bg-poodle-600 text-poodle-100 pt-24 pb-12 overflow-hidden relative">
+    <footer th:fragment="mainFooter" class="bg-poodle-900 text-poodle-100 pt-24 pb-12 overflow-hidden relative">
         <!-- Decoration light -->
         <div class="absolute top-0 left-0 w-96 h-96 bg-meatball/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
         
-        <div class="container mx-auto px-4 relative z-10">
+        <div class="mx-auto max-w-7xl px-4 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
                 <!-- Branding Section -->
                 <div class="col-span-1 md:col-span-1 space-y-8">
                     <a th:href="@{/}" class="flex items-center gap-3 group translate-z-0">
-                        <div class="w-12 h-12 bg-poodle-100 rounded-2xl flex items-center justify-center shadow-[0_10px_24px_rgba(45,27,23,0.22)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
-                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball" class="w-full h-full object-contain p-1.5 animate-tail-wag">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-[0_12px_28px_rgba(45,27,23,0.24)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball" class="w-full h-full object-cover animate-tail-wag">
                         </div>
                         <span class="text-3xl font-black tracking-tighter text-white">Meetball</span>
                     </a>
                     <p class="text-poodle-300 text-sm font-bold leading-relaxed max-w-xs">
                         우리만의 특별한 팀원을 만나는 곳,<br>
-                        미트볼 푸들과 함께 똑똑하게 매칭하세요.
+                        밋볼이와 함께 팀원을 만나보세요!
                     </p>
                     <div class="flex gap-4">
                         <a href="#" class="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center hover:bg-meatball hover:border-meatball transition-all group/icon">
@@ -60,8 +60,8 @@
                                 <i class="fa-solid fa-medal text-meatball"></i>
                                 Premium Matching
                             </h4>
-                            <p class="text-poodle-200 text-[11px] font-bold leading-relaxed">
-                                미트볼은 신뢰할 수 있는 개발자 커뮤니티 성장을 지향합니다.
+                            <p class="text-poodle-300 text-[11px] font-bold leading-relaxed">
+                                밋볼은 신뢰할 수 있는 개발자 커뮤니티 성장을 지향합니다.
                             </p>
                         </div>
                         <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-meatball/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-meatball border border-meatball/10">
@@ -85,7 +85,7 @@
         </div>
 
         <!-- 🚀 Premium Back to Top Button -->
-        <button id="backToTop" class="fixed bottom-10 right-10 w-14 h-14 bg-meatball text-poodle-900 rounded-2xl shadow-[0_20px_40px_rgba(240,127,55,0.3)] flex items-center justify-center translate-y-32 opacity-0 transition-all duration-700 hover:scale-110 active:scale-95 z-[999] group overflow-hidden">
+        <button id="backToTop" class="fixed bottom-10 right-10 w-14 h-14 bg-meatball text-white rounded-2xl shadow-[0_20px_40px_rgba(255,107,53,0.3)] flex items-center justify-center translate-y-32 opacity-0 transition-all duration-700 hover:scale-110 active:scale-95 z-[999] group overflow-hidden">
             <i class="fa-solid fa-chevron-up text-xl group-hover:-translate-y-1 transition-transform duration-300"></i>
             <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-poodle-800 text-white text-[10px] font-black px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap shadow-xl">TOP</span>
