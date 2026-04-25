@@ -9,7 +9,9 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -36,7 +38,18 @@ class RecommendationControllerTest {
 
         mockMvc.perform(get("/api/recommendations")
                 .session(session)
-                .param("profileId", "2"))
-                .andExpect(status().isOk());
+                .param("profileId", "2")
+                .param("recentAxes", "어떤 성격의 프로젝트가 끌리세요?")
+                .param("excludeIds", "999999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recommendations").isArray())
+                .andExpect(jsonPath("$.recommendations[0].projectId").isNumber())
+                .andExpect(jsonPath("$.recommendations[0].title").isString())
+                .andExpect(jsonPath("$.recommendations[0].recommendationReason").isString())
+                .andExpect(jsonPath("$.recommendations[0].progressMethod").isString())
+                .andExpect(jsonPath("$.recommendations[0].projectType").isString())
+                .andExpect(jsonPath("$.axis").value(notNullValue()))
+                .andExpect(jsonPath("$.question").value(notNullValue()))
+                .andExpect(jsonPath("$.bubbles").isArray());
     }
 }

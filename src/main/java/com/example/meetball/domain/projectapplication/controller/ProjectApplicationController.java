@@ -31,20 +31,6 @@ public class ProjectApplicationController {
         return ResponseEntity.status(201).body(projectApplicationService.createApplication(projectId, request, profileId));
     }
 
-    /** 내가 지원한 목록 조회 (마이페이지용) */
-    @GetMapping("/api/profiles/{profileId}/applications")
-    public ResponseEntity<List<ProjectApplicationResponseDto>> getMyApplications(
-            @PathVariable("profileId") Long profileId,
-            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
-        if (sessionProfileId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
-        }
-        if (!sessionProfileId.equals(profileId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot view another user's applications.");
-        }
-        return ResponseEntity.ok(projectApplicationService.getMyApplications(profileId));
-    }
-
     /** 내가 낸 지원 철회 */
     @PatchMapping("/api/applications/{applicationId}/withdraw")
     public ProjectApplicationResponseDto withdrawApplication(

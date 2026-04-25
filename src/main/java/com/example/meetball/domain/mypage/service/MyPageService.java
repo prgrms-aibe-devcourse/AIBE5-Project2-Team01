@@ -77,15 +77,6 @@ public class MyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ParticipatedProjectResponse> getCompletedProjects(Long profileId, Long viewerId) {
-        requireOwnerAccess(profileId, viewerId);
-        Profile profile = profileService.getProfileById(profileId);
-        return projectService.getParticipatedProjects(profile).stream()
-                .filter(project -> "COMPLETED".equals(project.getProgressStatus()))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
     public List<ViewHistoryProjectResponse> getRecentReads(Long profileId, Long viewerId) {
         requireOwnerAccess(profileId, viewerId);
         Profile profile = profileService.getProfileById(profileId);

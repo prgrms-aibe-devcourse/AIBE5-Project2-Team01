@@ -1,27 +1,27 @@
 package com.example.meetball.domain.recommendation.dto;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
- * 추천 프로젝트 응답 DTO
- * projectId, 제목, 점수, 추천 이유 목록을 포함합니다.
+ * 추천 프로젝트 단일 카드 응답 DTO.
+ *
+ * 현재 브랜치의 프로젝트 구조를 유지하면서도
+ * feat/ai-login-update-clone 프런트가 기대하는 필드를 최대한 맞춥니다.
  */
+@Getter
+@Builder
 public class RecommendationResponseDto {
 
-    private Long projectId;
-    private String title;
-    private int score;
-    private List<String> reasons;
-
-    public RecommendationResponseDto(Long projectId, String title, int score, List<String> reasons) {
-        this.projectId = projectId;
-        this.title = title;
-        this.score = score;
-        this.reasons = reasons;
-    }
-
-    public Long getProjectId() { return projectId; }
-    public String getTitle() { return title; }
-    public int getScore() { return score; }
-    public List<String> getReasons() { return reasons; }
+    private final Long projectId;
+    private final String title;
+    private final String summary;
+    private final int score;
+    private final List<String> reasons;
+    private final String recommendationReason;
+    private final String axisValue;
+    private final String progressMethod;
+    private final String projectType;
+    private final String positionSummary;
 }

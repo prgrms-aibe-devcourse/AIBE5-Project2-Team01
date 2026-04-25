@@ -129,72 +129,51 @@
                     <i class="fa-solid fa-xmark text-3xl"></i>
                 </button>
 
-                <div class="px-10 py-14 md:px-20 md:py-16 text-center space-y-10">
+                <div class="px-10 py-14 md:px-20 md:py-16 text-center space-y-8">
                     <div class="flex justify-center">
-                        <div class="inline-flex items-center gap-3">
-                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball" class="w-14 h-14 object-contain">
-                            <span class="text-6xl font-black tracking-tight text-poodle-900">Meetball</span>
+                        <div class="inline-flex items-center gap-3 select-none">
+                            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
+                                 class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl">
+                            <span class="text-2xl md:text-3xl font-black tracking-tighter text-poodle-900">Meetball</span>
                         </div>
                     </div>
-                    <div class="space-y-5">
-                        <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight leading-tight">Meetball에 오신 것을 환영합니다!</h2>
-                        <p class="text-xl md:text-2xl font-bold text-zinc-500 leading-relaxed">
-                            스터디와 프로젝트를 찾는 가장 쉬운 방법!<br>
-                            Meetball에서 함께 할 팀원들을 찾으세요
+                    <div class="space-y-4">
+                        <h2 class="text-3xl md:text-4xl font-black text-black tracking-tight leading-[1.1]">Meetball에 오신 것을 환영합니다!</h2>
+                        <p class="text-base md:text-xl font-bold text-zinc-500 leading-relaxed">
+                            스터디와 프로젝트를 찾는 가장 쉬운 방법<br>
+                            Meetball에서 함께 할 팀원들을 찾으세요!
                         </p>
                     </div>
 
                     <div class="space-y-4">
-                        <div id="g_id_onload"
-                             th:if="${googleLoginEnabled}"
-                             th:attr="data-client_id=${googleClientId}"
-	                             data-context="signin"
-	                             data-ux_mode="popup"
-	                             data-callback="handleGoogleCredentialResponse"
-	                             data-auto_select="false"
-	                             data-auto_prompt="false"></div>
-                        <div th:if="${googleLoginEnabled}" class="flex justify-center social-login-google">
-	                        <div class="g_id_signin"
-	                             data-type="standard"
-	                             data-shape="pill"
-	                             data-theme="outline"
-	                             data-size="large"
-		                             data-width="420"
-		                             data-text="continue_with"
-		                             data-logo_alignment="right"></div>
+                        <!-- Google Login (Primary Action) -->
+                        <div class="relative w-full max-w-[400px] mx-auto">
+                            <div id="g_id_onload"
+                                 th:if="${googleLoginEnabled}"
+                                 th:attr="data-client_id=${googleClientId}"
+                                 data-context="signin"
+                                 data-ux_mode="popup"
+                                 data-callback="handleGoogleCredentialResponse"
+                                 data-auto_select="false"
+                                 data-auto_prompt="false"></div>
+
+                            <div th:if="${googleLoginEnabled}" class="flex justify-center social-login-google">
+                                <div class="g_id_signin"
+                                     data-type="standard"
+                                     data-shape="pill"
+                                     data-theme="outline"
+                                     data-size="large"
+                                     data-width="400"
+                                     data-text="continue_with"
+                                     data-logo_alignment="center"></div>
+                            </div>
+
+                            <div th:unless="${googleLoginEnabled}" class="w-full p-4 bg-poodle-50 border border-poodle-100 rounded-[2rem] text-center">
+                                <p class="text-sm font-black text-poodle-800">Google 로그인 설정이 필요합니다.</p>
+                            </div>
                         </div>
 
-                        <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
-                            <span class="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center shadow-sm">
-                                <i class="fa-brands fa-github text-lg"></i>
-                            </span>
-                            <span>Github 로그인 준비중</span>
-                        </button>
-                        <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
-	                            <span class="w-10 h-10 rounded-full bg-[#FEE500] flex items-center justify-center text-black/75 shadow-sm">
-                                    <svg role="img" aria-label="Kakao logo" viewBox="0 0 48 48" class="w-7 h-7" fill="currentColor">
-                                        <path d="M24 8C14.06 8 6 14.36 6 22.2c0 5.05 3.35 9.48 8.39 12L12.75 41a1.2 1.2 0 0 0 1.82 1.27l7.46-5.24c.65.06 1.31.09 1.97.09 9.94 0 18-6.36 18-14.2S33.94 8 24 8Z"/>
-                                    </svg>
-                                </span>
-                            <span>Kakao 로그인 준비중</span>
-                        </button>
-                        <button type="button" disabled
-	                                class="w-full h-16 max-w-[420px] mx-auto rounded-[2rem] border border-zinc-200 bg-white text-zinc-700 font-black text-lg flex items-center justify-center gap-5 cursor-not-allowed shadow-sm opacity-80">
-                            <span class="w-10 h-10 rounded-full bg-[#03C75A] flex items-center justify-center text-white shadow-sm">
-                                <svg role="img" aria-label="Naver logo" viewBox="0 0 48 48" class="w-6 h-6" fill="currentColor">
-                                    <path d="M29.44 24.64 18.02 8H8v32h10.56V23.36L29.98 40H40V8H29.44v16.64Z"/>
-                                </svg>
-                            </span>
-                            <span>Naver 로그인 준비중</span>
-                        </button>
-
-                        <p id="loginError" class="hidden text-xs font-bold text-red-500 leading-relaxed"></p>
-	                        <div th:unless="${googleLoginEnabled}" class="max-w-[420px] mx-auto p-5 bg-poodle-50 border border-poodle-100 rounded-2xl text-left">
-                            <p class="text-sm font-black text-poodle-800 mb-2">Google 로그인 설정이 필요합니다.</p>
-                            <p class="text-xs font-bold text-poodle-400 leading-relaxed">로컬 또는 배포 환경의 Google OAuth Client ID 설정을 확인해주세요.</p>
-                        </div>
+                        <p id="loginError" class="hidden text-xs font-bold text-red-500 leading-relaxed text-center mt-4"></p>
                     </div>
                 </div>
             </div>
@@ -202,16 +181,22 @@
     </div>
 
     <style th:if="${!isLoggedIn}">
-        .social-login-google,
-        .social-login-google > div,
-        .social-login-google iframe {
-            width: 100% !important;
-            max-width: 420px !important;
+        /* Override generic styling that breaks Google button constraints */
+        .social-login-google {
+            width: 100%;
+            max-width: 400px;
         }
 
-        .social-login-google iframe {
-            min-height: 64px !important;
+        .social-login-google > div {
+            width: 100% !important;
         }
+
+        /* Ensure iframe scales nicely within bounds */
+        .social-login-google iframe {
+            max-width: 400px !important;
+            margin: 0 auto !important;
+        }
+
     </style>
 
     <script th:if="${!isLoggedIn}" src="https://accounts.google.com/gsi/client" async defer></script>

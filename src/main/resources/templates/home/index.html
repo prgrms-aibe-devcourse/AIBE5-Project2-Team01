@@ -7,32 +7,238 @@
     <header th:replace="~{fragments/header :: mainHeader}"></header>
 
     <main class="w-full flex-grow mx-auto max-w-7xl px-4 py-12 animate-fade-in-up">
-        <!-- Hero Section (Slim Version) -->
-        <section
-            class="mb-12 relative min-h-[26rem] bg-poodle-100 rounded-[3rem] px-8 md:px-14 py-12 md:py-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.12)] border border-white/80 flex items-center">
-            <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball mascot"
-                 class="absolute right-[-5rem] md:right-8 bottom-[-3rem] w-[20rem] md:w-[28rem] max-w-none object-contain opacity-20 md:opacity-95 pointer-events-none select-none">
+        <section id="hero-section"
+                 class="mb-12 relative min-h-[31rem] md:min-h-[34rem] bg-poodle-100 rounded-[3rem] px-8 md:px-14 py-12 md:py-16 overflow-hidden shadow-[0_28px_70px_rgba(101,55,40,0.12)] border border-white/80 flex items-center transition-all duration-700">
+            <div id="mascot-container" class="absolute transition-all duration-1000 ease-in-out z-20 pointer-events-none mascot-wrap-idle">
+                <div id="mascot-tooltip" class="absolute -top-6 md:-top-10 left-1/2 -translate-x-1/2 bg-white text-poodle-900 text-sm font-black px-4 py-2.5 rounded-2xl shadow-xl opacity-0 transition-all duration-300 pointer-events-none whitespace-nowrap scale-95 origin-bottom">
+                    다른 추천도 찾아볼까? 🐾
+                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 border-t-8 border-t-white border-l-8 border-l-transparent border-r-8 border-r-transparent"></div>
+                </div>
+                <img id="main-mascot" th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball mascot"
+                     class="w-[20rem] md:w-[28rem] max-w-none object-contain opacity-20 md:opacity-95 select-none transition-all duration-500">
 
-            <div class="relative z-10 max-w-2xl">
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full border border-white text-poodle-600 text-[10px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
+                <button id="restart-journey-btn" type="button" onclick="RecommendationJourney.restart()"
+                        onmouseenter="MascotHover.enter()"
+                        onmouseleave="MascotHover.leave()"
+                        class="hidden pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 px-6 py-3 bg-white text-poodle-600 hover:bg-meatball hover:text-white border-2 border-poodle-100 hover:border-meatball rounded-full text-[14px] font-black shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all whitespace-nowrap group">
+                    다시 찾아볼까?
+                    <i class="fa-solid fa-rotate-right ml-1 group-hover:animate-spin"></i>
+                </button>
+            </div>
+
+            <div id="hero-idle-state" class="relative z-10 max-w-2xl transition-all duration-500">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-md rounded-full border border-white text-poodle-600 text-[14px] font-black uppercase tracking-widest mb-6 animate-bounce-subtle">
                     <i class="fa-solid fa-paw text-meatball"></i> Meetball: Smart Matching
                 </div>
                 <h1 class="text-4xl md:text-6xl font-black text-poodle-600 tracking-tighter mb-5 leading-tight">
                     같이 할 사람,<br>여기서 만나요
                 </h1>
-                <p
-                    class="text-sm md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
-                    밋볼에서 프로젝트 팀원을 찾아보세요. 따뜻한 매칭 흐름으로 나에게 맞는 팀과 더 빨리 만날 수 있습니다.
+                <p class="text-[14px] md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
+                    밋볼이가 프로필 냄새를 맡고, 지금 나와 잘 맞는 프로젝트를 단계별로 골라드릴게요.
                 </p>
-                <a th:href="@{/#projects}"
-                    class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-white hover:scale-105 active:scale-95 transition-all">
-                    <span class="relative z-10">밋볼이와 AI로 프로젝트 찾기!</span>
-                    <i
-                        class="fa-solid fa-arrow-right-long relative z-10 group-hover:translate-x-2 transition-transform duration-300"></i>
-                </a>
+                <button th:if="${isLoggedIn}" type="button" onclick="RecommendationJourney.start()"
+                        onmouseenter="document.getElementById('main-mascot').classList.add('pose-happy')"
+                        onmouseleave="document.getElementById('main-mascot').classList.remove('pose-happy')"
+                        class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-white hover:scale-105 active:scale-95 transition-all border-none outline-none text-left">
+                    <span class="relative z-10">밋볼아, 찾아줘! 🐾</span>
+                    <i class="fa-solid fa-bone relative z-10 transition-transform duration-300"></i>
+                </button>
+                <button th:unless="${isLoggedIn}" type="button" onclick="openLoginRequiredModal(window.location.pathname + window.location.search, 'AI 추천은 로그인 후 이용할 수 있어요.')"
+                        class="group relative inline-flex items-center gap-4 px-10 py-5 bg-poodle-600 text-white rounded-2xl font-black text-lg overflow-hidden shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-white hover:scale-105 active:scale-95 transition-all border-none outline-none text-left">
+                    <span class="relative z-10">밋볼아, 찾아줘! 🐾</span>
+                    <i class="fa-solid fa-bone relative z-10 transition-transform duration-300"></i>
+                </button>
+            </div>
+
+            <div id="hero-journey-stage" class="hidden relative z-10 w-full flex flex-col items-center justify-center opacity-0 transition-opacity duration-500">
+                <div id="journey-tag-cloud" class="absolute inset-0 pointer-events-none hidden"></div>
+                <div id="journey-search-cloud" class="absolute inset-0 pointer-events-none hidden"></div>
+
+                <div id="journey-analyzing-text" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 z-20">
+                    <div class="relative w-24 h-24 bg-white rounded-full shadow-lg border-4 border-poodle-100 flex flex-col items-center justify-center z-10">
+                        <i class="fa-solid fa-user text-poodle-300 text-3xl mb-1"></i>
+                        <span class="text-[14px] font-black text-poodle-600">내 프로필</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-poodle-900 bg-white/80 px-6 py-2 rounded-full shadow-sm backdrop-blur-sm whitespace-nowrap z-20">밋볼이가 프로필 냄새를 맡고 있어요...</h3>
+                </div>
+
+                <div id="journey-searching-text" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-20">
+                    <div class="relative w-36 h-36 flex items-end justify-center">
+                        <svg viewBox="0 0 100 100" class="absolute bottom-0 w-full h-full text-white z-10 drop-shadow-md" fill="currentColor">
+                            <path d="M50 10 L10 40 L10 90 L90 90 L90 40 Z" stroke="#653728" stroke-width="3" stroke-linejoin="round"/>
+                            <path d="M5 45 L50 10 L95 45" fill="none" stroke="#653728" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M35 90 L35 55 Q50 45 65 55 L65 90 Z" fill="#653728"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-poodle-900 bg-white/80 px-6 py-2 rounded-full shadow-sm backdrop-blur-sm whitespace-nowrap z-30">프로젝트 더미를 파헤치고 있어요...</h3>
+                </div>
+
+                <div id="journey-interaction" class="max-w-3xl mx-auto space-y-6">
+                    <div id="journey-question-wrap" class="space-y-2 text-center relative z-20">
+                        <p id="journey-axis-label" class="text-[14px] font-black text-meatball uppercase tracking-[0.25em] animate-fade-in"></p>
+                        <h2 id="journey-question-text" class="text-2xl md:text-[28px] font-black text-poodle-900 leading-tight"></h2>
+                    </div>
+                    <div id="journey-bubbles" class="flex flex-wrap justify-center gap-3 py-2 relative z-20"></div>
+                </div>
+
+                <div id="journey-result" class="hidden w-full space-y-6 animate-fade-in -mt-2">
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="selected-bubble-chip" class="px-4 py-1.5 bg-meatball text-white rounded-full text-[14px] md:text-[15px] font-black shadow-md"></div>
+                        <h3 class="text-xl md:text-2xl font-black text-poodle-900 mb-1">이 프로젝트는 어떠세요?</h3>
+                    </div>
+                    <div id="journey-result-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 w-full max-w-5xl mx-auto items-stretch"></div>
+                </div>
             </div>
         </section>
+
+        <style>
+            @keyframes happy-jump {
+                0% { transform: translateY(0) scale(1); }
+                25% { transform: translateY(-18px) scale(0.94); }
+                50% { transform: translateY(0) scale(1.06); }
+                75% { transform: translateY(-9px) scale(0.97); }
+                100% { transform: translateY(0) scale(1); }
+            }
+
+            @keyframes happy-jump-loop {
+                0%, 100% { transform: translateY(0) scale(1); }
+                30% { transform: translateY(-18px) scale(0.94); }
+                60% { transform: translateY(0) scale(1.06); }
+                80% { transform: translateY(-9px) scale(0.97); }
+            }
+
+            @keyframes wag {
+                0%, 100% { transform: rotate(-3deg); }
+                50% { transform: rotate(3deg); }
+            }
+
+            @keyframes dig {
+                0%, 100% { transform: translate(-10%, 10%) rotate(-5deg); }
+                50% { transform: translate(-10%, 10%) rotate(5deg) translateY(-5px); }
+            }
+
+            @keyframes orbit {
+                0% { transform: translate(-30%, -30%) scale(0.9); z-index: 5; }
+                25% { transform: translate(0%, -50%) scale(0.8); z-index: 5; }
+                50% { transform: translate(30%, -30%) scale(1.1); z-index: 25; }
+                75% { transform: translate(0%, -10%) scale(1.2); z-index: 25; }
+                100% { transform: translate(-30%, -30%) scale(0.9); z-index: 5; }
+            }
+
+            @keyframes float-tag {
+                0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+                15% { transform: translate(calc(var(--tx) * 0.3), calc(var(--ty) * 0.3)) scale(1.1) rotate(calc(var(--tr) * 0.3)); opacity: 1; }
+                85% { transform: translate(calc(var(--tx) * 0.8), calc(var(--ty) * 0.8)) scale(1) rotate(calc(var(--tr) * 0.8)); opacity: 1; }
+                100% { transform: translate(var(--tx), var(--ty)) scale(0.9) rotate(var(--tr)); opacity: 0; }
+            }
+
+            .pose-searching { animation: dig 0.4s infinite ease-in-out !important; }
+            .pose-asking { animation: wag 1s infinite ease-in-out !important; }
+            .pose-happy { animation: happy-jump 0.7s ease-in-out forwards !important; }
+            .pose-happy-loop { animation: happy-jump-loop 0.8s ease-in-out infinite !important; }
+            .pose-analyzing { animation: orbit 4s infinite linear !important; }
+
+            #mascot-container {
+                position: absolute;
+                transition: top 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                            right 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                            bottom 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                            left 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                            transform 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                            opacity 0.6s ease;
+            }
+
+            .mascot-wrap-idle { top: auto; bottom: -3rem; left: auto; right: -5rem; transform: none; opacity: 1; }
+            @media (min-width: 768px) {
+                .mascot-wrap-idle { right: 2rem; }
+            }
+
+            .mascot-wrap-analyzing { top: 30%; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -50%); opacity: 0.85; }
+            .mascot-wrap-searching { top: 55%; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -50%); opacity: 0.85; }
+            .mascot-wrap-asking { top: auto; bottom: -1rem; left: auto; right: 1rem; transform: scale(0.75); opacity: 0.9; }
+            @media (min-width: 768px) {
+                .mascot-wrap-asking { right: 4%; bottom: -2rem; transform: scale(0.85); }
+            }
+
+            .mascot-wrap-result { top: auto; bottom: -4rem; left: auto; right: -3rem; transform: scale(0.7); opacity: 0.9; }
+            @media (min-width: 768px) {
+                .mascot-wrap-result { right: -1rem; bottom: -3rem; transform: scale(0.8); }
+            }
+
+            .mascot-base { opacity: 0.9 !important; }
+            .mascot-analyzing { transform: scale(0.55); opacity: 0.7 !important; }
+            .mascot-searching { transform: scale(0.5); opacity: 0.75 !important; }
+            .mascot-asking { transform: scale(0.7) rotate(-5deg); opacity: 1 !important; }
+            .mascot-result-compact { transform: scale(0.4) rotate(-8deg); opacity: 0.9 !important; }
+
+            .journey-tag,
+            .journey-tag-search {
+                position: absolute;
+                padding: 6px 12px;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 900;
+                color: #653728;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                white-space: nowrap;
+                pointer-events: none;
+                z-index: 8;
+            }
+
+            .journey-tag {
+                background: white;
+                animation: float-tag 3s infinite linear;
+            }
+
+            .journey-tag-search {
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid var(--color-poodle-100);
+                animation: float-tag 2.5s infinite linear;
+            }
+
+            #journey-tag-cloud,
+            #journey-search-cloud {
+                overflow: hidden;
+                z-index: 8;
+            }
+
+            #hero-section.journey-active {
+                background-color: #fdf8f4;
+            }
+
+            #hero-section.result-active {
+                padding-top: 3rem;
+                padding-bottom: 3rem;
+            }
+
+            #journey-analyzing-text,
+            #journey-searching-text {
+                z-index: 30;
+            }
+
+            .mini-card {
+                background: white;
+                border: 1px solid #fdf8f4;
+                border-radius: 2rem;
+                padding: 1.75rem;
+                text-align: left;
+                transition: all 0.3s;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+                min-height: 15rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;
+            }
+
+            .mini-card:hover {
+                border-color: #653728;
+                transform: translateY(-6px);
+                box-shadow: 0 15px 40px rgba(101, 55, 40, 0.1);
+            }
+        </style>
 
         <!-- Search & Filter Section -->
         <section id="projects" class="relative z-20 mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
@@ -152,8 +358,11 @@
         const escapeHtml = window.meetballEscapeHtml;
         const safeUrl = window.meetballSafeUrl;
         const HOME_LOGGED_IN = Boolean(/*[[${isLoggedIn}]]*/ false);
+        const CURRENT_PROFILE_ID = /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null;
         const HOME_PAGE_SIZE = 6;
         const MOBILE_MEDIA_QUERY = window.matchMedia('(max-width: 767px)');
+        const RECOMMENDATION_STORAGE_KEY = CURRENT_PROFILE_ID ? `meetball_home_journey_${CURRENT_PROFILE_ID}` : null;
+        const RECENT_AXES_STORAGE_KEY = CURRENT_PROFILE_ID ? `meetball_home_recent_axes_${CURRENT_PROFILE_ID}` : 'MEETBALL_HOME_RECENT_AXES';
 
         let filterState = {
             keyword: '',
@@ -466,6 +675,486 @@
             }
         }
 
+        const MascotHover = {
+            enter() {
+                const mascot = document.getElementById('main-mascot');
+                const tooltip = document.getElementById('mascot-tooltip');
+                if (mascot) {
+                    mascot.classList.add('pose-happy-loop');
+                }
+                if (tooltip) {
+                    tooltip.classList.remove('opacity-0', 'scale-95');
+                    tooltip.classList.add('opacity-100', 'scale-100');
+                }
+            },
+            leave() {
+                const mascot = document.getElementById('main-mascot');
+                const tooltip = document.getElementById('mascot-tooltip');
+                if (mascot) {
+                    mascot.classList.remove('pose-happy-loop', 'pose-happy');
+                }
+                if (tooltip) {
+                    tooltip.classList.remove('opacity-100', 'scale-100');
+                    tooltip.classList.add('opacity-0', 'scale-95');
+                }
+            }
+        };
+
+        const RecommendationJourney = {
+            state: 'idle',
+            data: null,
+            selectedBubbleIndex: null,
+            excludeIds: [],
+            recentAxes: [],
+
+            async start(force = false) {
+                if (!HOME_LOGGED_IN) {
+                    openLoginRequiredModal(window.location.pathname + window.location.search, 'AI 추천은 로그인 후 이용할 수 있어요.');
+                    return;
+                }
+                if (!force && this.state !== 'idle') {
+                    return;
+                }
+
+                this.setState('analyzing');
+
+                if (this.recentAxes.length === 0 && RECENT_AXES_STORAGE_KEY) {
+                    try {
+                        const storedAxes = sessionStorage.getItem(RECENT_AXES_STORAGE_KEY);
+                        if (storedAxes) {
+                            this.recentAxes = JSON.parse(storedAxes) || [];
+                        }
+                    } catch (error) {
+                        console.error('Failed to restore recent recommendation axes', error);
+                    }
+                }
+
+                this.renderAnalyzingTags();
+
+                try {
+                    const params = new URLSearchParams({ t: String(Date.now()) });
+                    this.excludeIds.forEach(projectId => params.append('excludeIds', String(projectId)));
+                    this.recentAxes.forEach(axis => params.append('recentAxes', axis));
+
+                    const fetchPromise = fetch(`/api/recommendations?${params.toString()}`).then(response => {
+                        if (response.status === 401) {
+                            openLoginRequiredModal(window.location.pathname + window.location.search);
+                            throw new Error('unauthorized');
+                        }
+                        if (!response.ok) {
+                            throw new Error(`Recommendation fetch failed: ${response.status}`);
+                        }
+                        return response.json();
+                    });
+
+                    await new Promise(resolve => setTimeout(resolve, 2500));
+
+                    this.setState('searching');
+                    this.renderSearchingTags();
+
+                    const [data] = await Promise.all([
+                        fetchPromise,
+                        new Promise(resolve => setTimeout(resolve, 1500))
+                    ]);
+
+                    this.data = data;
+                    this.selectedBubbleIndex = null;
+
+                    if (data?.axis && !this.recentAxes.includes(data.axis)) {
+                        this.recentAxes.push(data.axis);
+                        if (this.recentAxes.length > 3) {
+                            this.recentAxes.shift();
+                        }
+                        if (RECENT_AXES_STORAGE_KEY) {
+                            sessionStorage.setItem(RECENT_AXES_STORAGE_KEY, JSON.stringify(this.recentAxes));
+                        }
+                    }
+
+                    this.setState('asking');
+                } catch (error) {
+                    if (error.message !== 'unauthorized') {
+                        console.error('Journey error:', error);
+                        await window.meetballAlert('AI 추천을 불러오는 중 오류가 발생했습니다.', { type: 'error' });
+                    }
+                    this.reset();
+                }
+            },
+
+            asking() {
+                const axis = this.data?.axis;
+                const bubbles = this.data?.bubbles || [];
+                const llmQuestion = this.data?.question;
+                const axisLabel = document.getElementById('journey-axis-label');
+                const questionText = document.getElementById('journey-question-text');
+                const bubbleWrap = document.getElementById('journey-bubbles');
+
+                if (!axisLabel || !questionText || !bubbleWrap) {
+                    return;
+                }
+
+                const fallbackQuestionMap = {
+                    '진행 방식': '어떤 방식으로 팀을 만나고 싶으세요?',
+                    '프로젝트 성격': '어떤 성격의 프로젝트가 끌리세요?',
+                    '모집 포지션': '어떤 역할로 참여하면 가장 즐거우실까요?'
+                };
+                const fallbackQuestion = fallbackQuestionMap[axis] || '오늘은 어떤 분위기의 프로젝트가 좋으세요?';
+
+                axisLabel.textContent = axis || 'AI 분석 결과';
+                questionText.textContent = llmQuestion || fallbackQuestion;
+                bubbleWrap.innerHTML = bubbles.map((bubble, index) => `
+                    <button type="button" onclick="RecommendationJourney.selectBubble(${index})"
+                            class="px-6 py-3.5 bg-white border-2 border-poodle-100 hover:border-meatball hover:text-meatball hover:bg-meatball/5 text-poodle-700 rounded-full text-[14px] md:text-[15px] font-black shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 animate-fade-in-up"
+                            style="animation-delay: ${index * 0.1}s">
+                        ${escapeHtml(bubble)}
+                    </button>
+                `).join('');
+            },
+
+            selectBubble(index) {
+                this.selectedBubbleIndex = index;
+                const interaction = document.getElementById('journey-interaction');
+                interaction?.classList.add('opacity-0', 'scale-95');
+
+                const selectedBubbleText = this.data?.bubbles?.[index];
+                const recommendations = this.data?.recommendations;
+                if (selectedBubbleText && Array.isArray(recommendations)) {
+                    recommendations.sort((left, right) => {
+                        const leftScore = this.calculateSemanticScore(selectedBubbleText, left);
+                        const rightScore = this.calculateSemanticScore(selectedBubbleText, right);
+                        if (leftScore !== rightScore) {
+                            return rightScore - leftScore;
+                        }
+                        const leftOriginal = recommendations.indexOf(left) === index;
+                        const rightOriginal = recommendations.indexOf(right) === index;
+                        return Number(rightOriginal) - Number(leftOriginal);
+                    });
+                    this.selectedBubbleIndex = 0;
+                }
+
+                window.setTimeout(() => this.setState('result'), 400);
+            },
+
+            calculateSemanticScore(bubble, project) {
+                if (!bubble || !project) {
+                    return 0;
+                }
+
+                let score = 0;
+                const bubbleNorm = bubble.toLowerCase().replace(/\s/g, '');
+                const bubbleWords = bubble.toLowerCase().split(/[\s,·]+/).filter(word => word.length > 1);
+
+                const checkField = (value, exactBonus, wordBonus) => {
+                    if (!value) {
+                        return;
+                    }
+                    const normalizedValue = value.toLowerCase().replace(/\s/g, '');
+                    if (normalizedValue.includes(bubbleNorm) || bubbleNorm.includes(normalizedValue)) {
+                        score += exactBonus;
+                        return;
+                    }
+
+                    const valueWords = value.toLowerCase().split(/[\s,]+/);
+                    valueWords.forEach(word => {
+                        if (word.length > 1 && bubbleWords.some(bubbleWord => bubbleWord.includes(word) || word.includes(bubbleWord))) {
+                            score += wordBonus;
+                        }
+                    });
+                };
+
+                checkField(project.progressMethod, 1000, 50);
+                checkField(project.projectType, 1000, 50);
+                checkField(project.axisValue, 500, 30);
+                checkField(project.positionSummary, 50, 10);
+                checkField(project.title, 5, 2);
+
+                return score;
+            },
+
+            renderResult() {
+                const recommendations = this.data?.recommendations || [];
+                const bubbles = this.data?.bubbles || [];
+                const grid = document.getElementById('journey-result-grid');
+                const chip = document.getElementById('selected-bubble-chip');
+                if (!grid || !chip) {
+                    return;
+                }
+
+                const selectedBubbleText = bubbles[this.selectedBubbleIndex] || '나의 선택';
+                chip.textContent = selectedBubbleText;
+
+                const top3 = recommendations.slice(0, 3);
+                const displayItems = [];
+                if (top3.length > 0) {
+                    displayItems.push({ item: top3[1] || top3[0], isMain: false, delay: 0.1 });
+                    displayItems.push({ item: top3[0], isMain: true, delay: 0.2 });
+                }
+                if (top3.length > 2) {
+                    displayItems.push({ item: top3[2], isMain: false, delay: 0.3 });
+                } else if (top3.length === 2) {
+                    displayItems.push({ item: top3[1], isMain: false, delay: 0.3 });
+                }
+
+                grid.innerHTML = displayItems.map(({ item, isMain, delay }) => {
+                    const projectId = encodeURIComponent(String(item.projectId ?? ''));
+                    const title = escapeHtml(item.title || '추천 프로젝트');
+                    const bubbleNorm = selectedBubbleText.toLowerCase().replace(/\s/g, '');
+                    const bubbleWords = selectedBubbleText.toLowerCase().split(/[\s,·]+/).filter(word => word.length > 1);
+
+                    const highlightTag = tagText => {
+                        const raw = String(tagText || '').trim();
+                        if (!raw) {
+                            return 'bg-poodle-50 text-poodle-600';
+                        }
+                        const tagNorm = raw.toLowerCase().replace(/\s/g, '');
+                        if (tagNorm.includes(bubbleNorm) || bubbleNorm.includes(tagNorm)) {
+                            return 'bg-meatball text-white ring-2 ring-meatball/40 shadow-sm';
+                        }
+                        if (bubbleWords.some(word => tagNorm.includes(word))) {
+                            return 'bg-meatball/80 text-white ring-1 ring-meatball/30';
+                        }
+                        if (item.axisValue) {
+                            const axisNorm = String(item.axisValue).toLowerCase().replace(/\s/g, '');
+                            if (tagNorm.includes(axisNorm) || axisNorm.includes(tagNorm)) {
+                                return 'bg-meatball/60 text-white ring-1 ring-meatball/20';
+                            }
+                        }
+                        return 'bg-poodle-50 text-poodle-600';
+                    };
+
+                    const cardStyle = isMain
+                        ? 'border-meatball ring-2 ring-meatball/20 shadow-2xl scale-[1.02] bg-white z-10 relative opacity-100'
+                        : 'border-poodle-50 opacity-80 grayscale-[30%] scale-[0.97] bg-white hover:opacity-100 hover:grayscale-0 hover:scale-[0.99] transition-all duration-300';
+                    const reasonStyle = isMain
+                        ? 'text-[14px] md:text-[15px] font-bold text-poodle-700 bg-meatball/10 border border-meatball/20 px-3 py-2 rounded-xl line-clamp-2 break-keep'
+                        : 'text-[14px] font-bold text-poodle-500 bg-poodle-50 px-3 py-2 rounded-xl line-clamp-2 break-keep';
+
+                    return `
+                        <div class="animate-fade-in-up h-full flex flex-col justify-center relative" style="animation-delay: ${delay}s">
+                            ${isMain ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 z-20 bg-meatball text-white text-[14px] font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"><i class="fa-solid fa-medal"></i> 밋볼의 1순위 추천</div>' : ''}
+                            <a href="/projects/${projectId}" class="mini-card ${cardStyle} group h-full flex flex-col pt-7">
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <p class="${reasonStyle}">
+                                            <i class="fa-solid fa-quote-left mr-1.5 opacity-40"></i>${escapeHtml(item.recommendationReason || '밋볼 추천!')}
+                                        </p>
+                                        ${isMain ? '<i class="fa-solid fa-sparkles text-meatball text-[14px] shrink-0 mt-1 group-hover:rotate-12 transition-transform"></i>' : ''}
+                                    </div>
+                                    <div class="mt-1">
+                                        <h3 class="text-[18px] md:text-[22px] font-black text-poodle-900 leading-snug mb-2.5 line-clamp-2 group-hover:text-meatball transition-colors break-keep">${title}</h3>
+                                        <p class="text-[14px] md:text-[15px] text-poodle-500 font-bold leading-relaxed line-clamp-2 opacity-90">${escapeHtml(item.summary || '')}</p>
+                                    </div>
+                                </div>
+                                <div class="pt-4 mt-auto border-t border-poodle-50/50 flex flex-wrap gap-2">
+                                    <span class="px-2.5 py-1.5 ${highlightTag(item.progressMethod)} rounded-lg text-[14px] font-black transition-all">${escapeHtml(item.progressMethod || '진행 방식')}</span>
+                                    <span class="px-2.5 py-1.5 ${highlightTag(item.projectType)} rounded-lg text-[14px] font-black transition-all">${escapeHtml(item.projectType || '프로젝트 성격')}</span>
+                                    <span class="px-2.5 py-1.5 ${highlightTag(item.positionSummary)} rounded-lg text-[14px] font-black max-w-full truncate transition-all">
+                                        <i class="fa-solid fa-user-group mr-1.5 opacity-50"></i>${escapeHtml(item.positionSummary || '팀원 모집 중')}
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    `;
+                }).join('');
+
+                if (RECOMMENDATION_STORAGE_KEY) {
+                    try {
+                        const persistData = { ...this.data, selectedBubbleIndex: this.selectedBubbleIndex };
+                        sessionStorage.setItem(RECOMMENDATION_STORAGE_KEY, JSON.stringify(persistData));
+                    } catch (error) {
+                        console.error('Failed to persist recommendation journey', error);
+                    }
+                }
+            },
+
+            setState(newState) {
+                const idle = document.getElementById('hero-idle-state');
+                const journey = document.getElementById('hero-journey-stage');
+                const mascotWrap = document.getElementById('mascot-container');
+                const mascot = document.getElementById('main-mascot');
+                const heroSection = document.getElementById('hero-section');
+                const analyzingText = document.getElementById('journey-analyzing-text');
+                const searchingText = document.getElementById('journey-searching-text');
+                const tagCloud = document.getElementById('journey-tag-cloud');
+                const searchCloud = document.getElementById('journey-search-cloud');
+                const interaction = document.getElementById('journey-interaction');
+                const result = document.getElementById('journey-result');
+                const restartButton = document.getElementById('restart-journey-btn');
+
+                if (!idle || !journey || !mascotWrap || !mascot || !heroSection || !interaction || !result) {
+                    return;
+                }
+
+                this.state = newState;
+
+                mascotWrap.classList.remove('mascot-wrap-idle', 'mascot-wrap-analyzing', 'mascot-wrap-searching', 'mascot-wrap-asking', 'mascot-wrap-result');
+                mascot.classList.remove('pose-analyzing', 'pose-asking', 'pose-happy', 'pose-searching', 'mascot-base', 'mascot-analyzing', 'mascot-searching', 'mascot-asking', 'mascot-result-compact');
+                heroSection.classList.remove('journey-active', 'result-active');
+
+                analyzingText?.classList.add('hidden');
+                analyzingText?.classList.remove('flex');
+                searchingText?.classList.add('hidden');
+                searchingText?.classList.remove('flex');
+                tagCloud?.classList.add('hidden');
+                searchCloud?.classList.add('hidden');
+
+                if (newState === 'idle') {
+                    mascotWrap.classList.add('mascot-wrap-idle');
+                    mascot.classList.add('mascot-base');
+                    idle.classList.remove('hidden');
+                    window.setTimeout(() => idle.classList.remove('opacity-0'), 10);
+                    journey.classList.add('hidden');
+                } else {
+                    idle.classList.add('hidden');
+                    journey.classList.remove('hidden');
+                    window.setTimeout(() => journey.classList.add('opacity-100'), 10);
+                    heroSection.classList.add('journey-active');
+
+                    if (newState === 'analyzing') {
+                        mascotWrap.classList.add('mascot-wrap-analyzing');
+                        mascot.classList.add('mascot-analyzing', 'pose-analyzing');
+                        tagCloud?.classList.remove('hidden');
+                        interaction.classList.add('hidden');
+                        result.classList.add('hidden');
+                        analyzingText?.classList.remove('hidden');
+                        analyzingText?.classList.add('flex');
+                    } else if (newState === 'searching') {
+                        mascotWrap.classList.add('mascot-wrap-searching');
+                        mascot.classList.add('mascot-searching', 'pose-searching');
+                        searchCloud?.classList.remove('hidden');
+                        interaction.classList.add('hidden');
+                        result.classList.add('hidden');
+                        searchingText?.classList.remove('hidden');
+                        searchingText?.classList.add('flex');
+                    } else if (newState === 'asking') {
+                        mascotWrap.classList.add('mascot-wrap-asking');
+                        mascot.classList.add('mascot-asking', 'pose-asking');
+                        tagCloud?.classList.add('hidden');
+                        interaction.classList.remove('hidden', 'opacity-0', 'scale-95');
+                        result.classList.add('hidden');
+                        this.asking();
+                    } else if (newState === 'result') {
+                        mascotWrap.classList.add('mascot-wrap-result');
+                        mascot.classList.add('mascot-result-compact', 'pose-happy');
+                        heroSection.classList.add('result-active');
+                        interaction.classList.add('hidden');
+                        result.classList.remove('hidden');
+                        restartButton?.classList.remove('hidden');
+                        this.renderResult();
+                    }
+                }
+
+                if (newState !== 'result') {
+                    restartButton?.classList.add('hidden');
+                }
+            },
+
+            restart() {
+                if (this.data?.recommendations) {
+                    this.data.recommendations.forEach(recommendation => {
+                        if (recommendation.projectId && !this.excludeIds.includes(recommendation.projectId)) {
+                            this.excludeIds.push(recommendation.projectId);
+                        }
+                    });
+                }
+                this.start(true);
+            },
+
+            renderAnalyzingTags() {
+                const cloud = document.getElementById('journey-tag-cloud');
+                if (!cloud) {
+                    return;
+                }
+                cloud.innerHTML = '';
+                const tags = ['React', 'Spring Boot', 'Backend', 'Frontend', 'Designer', 'Planning', 'Java', 'Python', 'AI', 'Figma'];
+
+                for (let index = 0; index < 12; index++) {
+                    const tag = document.createElement('div');
+                    tag.className = 'journey-tag';
+                    tag.textContent = tags[index % tags.length];
+                    tag.style.left = '50%';
+                    tag.style.top = '50%';
+                    tag.style.setProperty('--tx', `${(Math.random() - 0.5) * 500}px`);
+                    tag.style.setProperty('--ty', `${(Math.random() - 0.5) * 350}px`);
+                    tag.style.setProperty('--tr', `${(Math.random() - 0.5) * 60}deg`);
+                    tag.style.animationDelay = `${Math.random() * 2}s`;
+                    cloud.appendChild(tag);
+                }
+            },
+
+            renderSearchingTags() {
+                const cloud = document.getElementById('journey-search-cloud');
+                if (!cloud) {
+                    return;
+                }
+                cloud.innerHTML = '';
+                const tags = ['사이드 프로젝트', '스터디', '기업연계', '오프라인', '실전 경험', '포트폴리오', '창업', '해커톤'];
+
+                for (let index = 0; index < 15; index++) {
+                    const tag = document.createElement('div');
+                    tag.className = 'journey-tag-search';
+                    tag.textContent = tags[index % tags.length];
+                    tag.style.left = '50%';
+                    tag.style.top = '60%';
+                    tag.style.setProperty('--tx', `${(Math.random() - 0.5) * 700}px`);
+                    tag.style.setProperty('--ty', `${(Math.random() - 0.5) * 400}px`);
+                    tag.style.setProperty('--tr', `${(Math.random() - 0.5) * 90}deg`);
+                    tag.style.animationDelay = `${Math.random() * 1.5}s`;
+                    cloud.appendChild(tag);
+                }
+            },
+
+            reset() {
+                this.data = null;
+                this.selectedBubbleIndex = null;
+                this.excludeIds = [];
+                if (RECOMMENDATION_STORAGE_KEY) {
+                    sessionStorage.removeItem(RECOMMENDATION_STORAGE_KEY);
+                }
+                this.setState('idle');
+            }
+        };
+
+        function loadPersistedRecommendations() {
+            if (!RECOMMENDATION_STORAGE_KEY) {
+                return;
+            }
+
+            const isReload = (() => {
+                try {
+                    const entries = performance.getEntriesByType('navigation');
+                    if (entries.length > 0) {
+                        return entries[0].type === 'reload';
+                    }
+                    return performance.navigation && performance.navigation.type === 1;
+                } catch (error) {
+                    return false;
+                }
+            })();
+
+            if (isReload) {
+                sessionStorage.removeItem(RECOMMENDATION_STORAGE_KEY);
+                return;
+            }
+
+            try {
+                const stored = sessionStorage.getItem(RECOMMENDATION_STORAGE_KEY);
+                if (!stored) {
+                    return;
+                }
+                const parsed = JSON.parse(stored);
+                if (parsed && parsed.selectedBubbleIndex !== undefined && parsed.selectedBubbleIndex !== null) {
+                    RecommendationJourney.data = parsed;
+                    RecommendationJourney.selectedBubbleIndex = parsed.selectedBubbleIndex;
+                    RecommendationJourney.setState('result');
+                }
+            } catch (error) {
+                console.error('Failed to restore recommendation journey', error);
+            }
+        }
+
+        window.MascotHover = MascotHover;
+        window.RecommendationJourney = RecommendationJourney;
+
         async function fetchProjects(page = filterState.page) {
             filterState.page = page;
             filterState.viewMode = normalizeViewMode(filterState.viewMode);
@@ -776,6 +1465,7 @@
             const keywordInput = document.getElementById('keywordInput');
             keywordInput?.addEventListener('input', handleKeywordInput);
 
+            loadPersistedRecommendations();
             fetchProjects(filterState.page);
         });
 

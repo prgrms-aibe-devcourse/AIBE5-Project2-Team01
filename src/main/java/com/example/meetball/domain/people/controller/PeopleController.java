@@ -1,20 +1,16 @@
 package com.example.meetball.domain.people.controller;
 
-import com.example.meetball.domain.people.dto.PeopleProfileResponse;
 import com.example.meetball.domain.people.dto.PeopleProjectResponse;
 import com.example.meetball.domain.people.service.PeopleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,30 +51,5 @@ public class PeopleController {
         }
 
         return "people/detail";
-    }
-
-    @ResponseBody
-    @GetMapping("/api/people/{profileId}/profile")
-    public ResponseEntity<PeopleProfileResponse> getProfile(
-            @PathVariable("profileId") Long profileId,
-            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
-        Long viewerId = requireSignedInProfileId(sessionProfileId);
-        return ResponseEntity.ok(peopleService.getProfile(profileId, viewerId));
-    }
-
-    @ResponseBody
-    @GetMapping("/api/people/{profileId}/projects")
-    public ResponseEntity<List<PeopleProjectResponse>> getProjects(
-            @PathVariable("profileId") Long profileId,
-            @SessionAttribute(name = "profileId", required = false) Long sessionProfileId) {
-        Long viewerId = requireSignedInProfileId(sessionProfileId);
-        return ResponseEntity.ok(peopleService.getProjects(profileId, viewerId));
-    }
-
-    private Long requireSignedInProfileId(Long sessionProfileId) {
-        if (sessionProfileId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
-        }
-        return sessionProfileId;
     }
 }
