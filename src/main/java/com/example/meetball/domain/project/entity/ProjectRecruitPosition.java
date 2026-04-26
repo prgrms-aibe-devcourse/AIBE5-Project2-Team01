@@ -83,6 +83,14 @@ public class ProjectRecruitPosition {
         }
     }
 
+    public void closeRecruitment() {
+        this.recruitStatus = STATUS_CLOSED;
+    }
+
+    public void reopenRecruitment() {
+        this.recruitStatus = approvedUser >= capacity ? STATUS_CLOSED : STATUS_OPEN;
+    }
+
     public Long getPositionId() {
         return position != null ? position.getId() : null;
     }

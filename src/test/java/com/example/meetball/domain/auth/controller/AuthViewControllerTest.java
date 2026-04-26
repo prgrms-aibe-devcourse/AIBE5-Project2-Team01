@@ -1,5 +1,8 @@
 package com.example.meetball.domain.auth.controller;
 
+import com.example.meetball.domain.project.entity.Project;
+import com.example.meetball.domain.project.entity.ProjectRecruitPosition;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,6 +29,9 @@ class AuthViewControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @DisplayName("비로그인 홈 화면은 게스트용 헤더를 보여준다")
@@ -230,6 +237,64 @@ class AuthViewControllerTest {
     }
 
     @Test
+    @DisplayName("프로젝트 상태를 모집 마감으로 수정하면 모든 모집 포지션도 함께 닫힌다")
+    void updateProjectClosesAllRecruitPositionsWhenRecruitmentCloses() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("profileId", 1L);
+
+        mockMvc.perform(put("/api/projects/1")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "title": "AI 기반 헬스케어 모바일 앱 개발",
+                          "description": "모집 마감 시 포지션 상태도 함께 닫히는지 확인합니다.",
+                          "projectPurpose": "프로젝트",
+                          "workMethod": "온라인",
+                          "position": "프론트엔드:2, 백엔드:1, 디자이너:1",
+                          "techStacks": ["ReactNative", "Python"],
+                          "recruitmentStartAt": "2026-04-23",
+                          "recruitmentEndAt": "2026-05-23",
+                          "projectStartAt": "2026-05-24",
+                          "projectEndAt": "2026-06-24",
+                          "recruitStatus": "CLOSED",
+                          "progressStatus": "READY"
+                        }
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitStatus").value("CLOSED"));
+
+        Project project = loadProjectWithPositions(1L);
+        assertThat(project.getPositionSelections()).isNotEmpty();
+        assertThat(project.getPositionSelections())
+                .extracting(ProjectRecruitPosition::getRecruitStatus)
+                .containsOnly(ProjectRecruitPosition.STATUS_CLOSED);
+    }
+
+    @Test
+    @DisplayName("전용 상태 API는 모집 마감 이후 프로젝트 완료를 일관되게 처리한다")
+    void statusActionEndpointsCloseAndCompleteProjectConsistently() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("profileId", 1L);
+
+        mockMvc.perform(post("/api/projects/1/close-recruitment").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitStatus").value("CLOSED"));
+
+        mockMvc.perform(post("/api/projects/1/complete").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitStatus").value("CLOSED"))
+                .andExpect(jsonPath("$.progressStatus").value("COMPLETED"));
+
+        Project project = loadProjectWithPositions(1L);
+        assertThat(project.getRecruitStatus()).isEqualTo(Project.RECRUIT_STATUS_CLOSED);
+        assertThat(project.getProgressStatus()).isEqualTo(Project.PROGRESS_STATUS_COMPLETED);
+        assertThat(project.getPositionSelections())
+                .extracting(ProjectRecruitPosition::getRecruitStatus)
+                .containsOnly(ProjectRecruitPosition.STATUS_CLOSED);
+    }
+
+    @Test
     @DisplayName("비로그인 사람 프로필 페이지 접근은 로그인 모달로 유도한다")
     void guestPeopleProfileRedirectsToLogin() throws Exception {
         mockMvc.perform(get("/people/2"))
@@ -280,5 +345,15 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("팀 멤버 소개")))
                 .andExpect(content().string(containsString("/people/1")))
                 .andExpect(content().string(containsString("/people/2")));
+    }
+
+    private Project loadProjectWithPositions(Long projectId) {
+        entityManager.clear();
+        return entityManager.createQuery(
+                        "select distinct p from Project p left join fetch p.positionSelections where p.id = :projectId",
+                        Project.class
+                )
+                .setParameter("projectId", projectId)
+                .getSingleResult();
     }
 }

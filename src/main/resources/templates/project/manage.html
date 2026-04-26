@@ -623,44 +623,40 @@
         }
     }
 
-    async function updateProjectStatus(updater, successMessage, failureMessage) {
+    async function runProjectStatusAction(path, successMessage, failureMessage) {
         const projectId = resolveProjectId();
         if (!projectId) return;
 
         try {
-            const getRes = await fetch(`/api/projects/${projectId}`);
-            if (!getRes.ok) {
-                await meetballAlert('프로젝트 정보를 불러오는데 실패했습니다.', { type: 'error' });
-                return;
-            }
-            const projectData = await getRes.json();
-
-            updater(projectData);
-
-            const putRes = await meetballFetch(`/api/projects/${projectId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(projectData)
+            const response = await meetballFetch(`/api/projects/${projectId}/${path}`, {
+                method: 'POST'
             });
 
-            if (putRes.ok) {
+            if (response.ok) {
                 await meetballAlert(successMessage);
                 window.location.reload();
             } else {
-                await meetballAlert(failureMessage, { type: 'error' });
+                let message = failureMessage;
+                try {
+                    const payload = await response.json();
+                    if (payload?.message) {
+                        message = payload.message;
+                    }
+                } catch (parseError) {
+                    console.debug('Status action error payload parse failed', parseError);
+                }
+                await meetballAlert(message, { type: 'error' });
             }
         } catch (err) {
-            console.error('Project status update error', err);
+            console.error('Project status action error', err);
             await meetballAlert('서버 오류가 발생했습니다.', { type: 'error' });
         }
     }
 
     async function closeProject() {
         if (!await meetballConfirm('이 프로젝트의 모집을 마감하시겠습니까?', { confirmText: '마감', cancelText: '취소' })) return;
-        await updateProjectStatus(
-            projectData => {
-                projectData.recruitStatus = 'CLOSED';
-            },
+        await runProjectStatusAction(
+            'close-recruitment',
             '모집이 마감되었습니다.',
             '모집 마감 처리에 실패했습니다.'
         );
@@ -668,27 +664,17 @@
 
     async function reopenProjectRecruitment() {
         if (!await meetballConfirm('모집 마감을 철회하시겠습니까? 포지션 수정이 다시 가능해집니다.', { confirmText: '철회', cancelText: '취소' })) return;
-        await updateProjectStatus(
-            projectData => {
-                projectData.recruitStatus = 'OPEN';
-            },
+        await runProjectStatusAction(
+            'reopen-recruitment',
             '모집 마감이 철회되었습니다.',
             '모집 마감 철회에 실패했습니다.'
         );
     }
 
     async function completeProject() {
-        const badge = document.querySelector('[data-manage-recruit-status]');
-        const recruitStatus = badge?.dataset.recruitStatus || /*[[${project.recruitStatus}]]*/ 'OPEN';
-        if (recruitStatus !== 'CLOSED') {
-            await meetballAlert('프로젝트 완료는 모집 마감 이후에만 가능합니다.', { type: 'error' });
-            return;
-        }
         if (!await meetballConfirm('프로젝트 완료는 철회할 수 없습니다. 완료 처리 후 프로젝트 리뷰와 피어 리뷰가 열립니다. 계속할까요?', { confirmText: '완료 처리', cancelText: '취소' })) return;
-        await updateProjectStatus(
-            projectData => {
-                projectData.progressStatus = 'COMPLETED';
-            },
+        await runProjectStatusAction(
+            'complete',
             '프로젝트가 완료 처리되었습니다.',
             '프로젝트 완료 처리에 실패했습니다.'
         );

@@ -180,6 +180,27 @@ public class ProjectController {
     }
 
     @ResponseBody
+    @PostMapping("/api/projects/{projectId}/close-recruitment")
+    public ProjectDetailResponseDto closeProjectRecruitment(@PathVariable("projectId") Long projectId,
+                                                            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectService.closeProjectRecruitment(projectId, profileId);
+    }
+
+    @ResponseBody
+    @PostMapping("/api/projects/{projectId}/reopen-recruitment")
+    public ProjectDetailResponseDto reopenProjectRecruitment(@PathVariable("projectId") Long projectId,
+                                                             @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectService.reopenProjectRecruitment(projectId, profileId);
+    }
+
+    @ResponseBody
+    @PostMapping("/api/projects/{projectId}/complete")
+    public ProjectDetailResponseDto completeProject(@PathVariable("projectId") Long projectId,
+                                                    @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        return projectService.completeProject(projectId, profileId);
+    }
+
+    @ResponseBody
     @DeleteMapping("/api/projects/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Long projectId,
                                               @SessionAttribute(name = "profileId", required = false) Long profileId) {

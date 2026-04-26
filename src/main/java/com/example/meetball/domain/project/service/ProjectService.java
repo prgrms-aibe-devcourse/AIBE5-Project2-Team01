@@ -392,13 +392,25 @@ public class ProjectService {
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
         String currentPositionText = formatPositionText(project);
         boolean positionsChanged = !Objects.equals(currentPositionText, normalizedPositions);
+        boolean requestWantsCompleted = Project.PROGRESS_STATUS_COMPLETED.equalsIgnoreCase(request.getProgressStatus());
+        boolean requestWantsClosedRecruitment = requestWantsCompleted
+                || Project.RECRUIT_STATUS_CLOSED.equalsIgnoreCase(request.getRecruitStatus());
+        boolean requestWantsOpenRecruitment = !requestWantsCompleted
+                && Project.RECRUIT_STATUS_OPEN.equalsIgnoreCase(request.getRecruitStatus());
         if (positionsChanged) {
             validateMinimumRecruitment(totalRecruitment);
             validateLeaderPositionIncluded(project.getOwnerProfile(), normalizedPositions);
             validatePositionUpdate(project, normalizedPositions);
         }
-        if (Project.PROGRESS_STATUS_COMPLETED.equalsIgnoreCase(request.getProgressStatus())
-                && !Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())) {
+        if (project.isCompleted() && !requestWantsCompleted) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "프로젝트 완료 상태는 되돌릴 수 없습니다.");
+        }
+        if (project.isCompleted() && requestWantsOpenRecruitment) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "완료된 프로젝트의 모집은 다시 열 수 없습니다.");
+        }
+        if (requestWantsCompleted
+                && !Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())
+                && !requestWantsClosedRecruitment) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "프로젝트 완료는 모집 마감 이후에만 가능합니다.");
         }
 
@@ -422,9 +434,64 @@ public class ProjectService {
         );
         project.replaceTechStacks(resolveTechStacks(normalizedTechStacks));
         project.updateThumbnailUrl(cleanText(request.getThumbnailUrl()));
+        applyStatusTransition(project, requestWantsClosedRecruitment, requestWantsCompleted);
         Project updatedProject = projectRepository.save(project);
 
         return toDetailResponse(updatedProject);
+    }
+
+    @Transactional
+    public ProjectDetailResponseDto closeProjectRecruitment(Long projectId, Long profileId) {
+        Project project = getProjectForLeaderAction(projectId, profileId);
+        project.closeRecruitment();
+        return toDetailResponse(projectRepository.save(project));
+    }
+
+    @Transactional
+    public ProjectDetailResponseDto reopenProjectRecruitment(Long projectId, Long profileId) {
+        Project project = getProjectForLeaderAction(projectId, profileId);
+        if (project.isCompleted()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "완료된 프로젝트의 모집은 다시 열 수 없습니다.");
+        }
+        project.reopenRecruitment();
+        return toDetailResponse(projectRepository.save(project));
+    }
+
+    @Transactional
+    public ProjectDetailResponseDto completeProject(Long projectId, Long profileId) {
+        Project project = getProjectForLeaderAction(projectId, profileId);
+        if (!Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "프로젝트 완료는 모집 마감 이후에만 가능합니다.");
+        }
+        project.completeProject();
+        return toDetailResponse(projectRepository.save(project));
+    }
+
+    private Project getProjectForLeaderAction(Long projectId, Long profileId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+
+        if (profileId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        Profile leaderProfile = profileService.getProfileById(profileId);
+        if (!isProjectLeader(project, leaderProfile)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update the project.");
+        }
+        return project;
+    }
+
+    private void applyStatusTransition(Project project, boolean requestWantsClosedRecruitment, boolean requestWantsCompleted) {
+        if (requestWantsCompleted) {
+            project.completeProject();
+            return;
+        }
+        if (requestWantsClosedRecruitment) {
+            project.closeRecruitment();
+            return;
+        }
+        project.reopenRecruitment();
     }
 
     private void validatePositionUpdate(Project project, String normalizedPositions) {

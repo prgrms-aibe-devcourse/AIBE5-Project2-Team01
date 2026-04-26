@@ -190,6 +190,24 @@ public class Project {
         }
     }
 
+    public void closeRecruitment() {
+        this.recruitStatus = RECRUIT_STATUS_CLOSED;
+        this.positionSelections.forEach(ProjectRecruitPosition::closeRecruitment);
+    }
+
+    public void reopenRecruitment() {
+        if (isCompleted()) {
+            throw new IllegalStateException("Completed project recruitment cannot be reopened.");
+        }
+        this.recruitStatus = RECRUIT_STATUS_OPEN;
+        this.positionSelections.forEach(ProjectRecruitPosition::reopenRecruitment);
+    }
+
+    public void completeProject() {
+        closeRecruitment();
+        this.progressStatus = PROGRESS_STATUS_COMPLETED;
+    }
+
     public void replacePositions(List<ProjectSelectionCatalog.PositionCapacity> positions,
                                  java.util.function.Function<String, Position> positionResolver) {
         List<ProjectSelectionCatalog.PositionCapacity> requested = positions == null ? List.of() : positions;
