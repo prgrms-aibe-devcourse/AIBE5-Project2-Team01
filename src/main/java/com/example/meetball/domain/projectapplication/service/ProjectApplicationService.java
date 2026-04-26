@@ -163,6 +163,7 @@ public class ProjectApplicationService {
         if (!isProjectLeader(project, leaderProfile)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can update application status.");
         }
+        ensureProjectApplicationsMutable(project);
 
         ProjectApplicationStatus previousStatus = application.getStatus();
         ProjectApplicationStatus nextStatus = parseStatus(request);
@@ -207,6 +208,11 @@ public class ProjectApplicationService {
     public ProjectApplicationResponseDto withdrawApplication(Long applicationId, Long profileId) {
         ProjectApplication application = projectApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ProjectApplication not found with id: " + applicationId));
+        Project project = application.getProject();
+        if (project == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found.");
+        }
+        ensureProjectApplicationsMutable(project);
 
         if (profileId == null || application.getProfile() == null || !profileId.equals(application.getProfile().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the applicant can withdraw this application.");
@@ -237,6 +243,7 @@ public class ProjectApplicationService {
         if (project == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project related to this application not found.");
         }
+        ensureProjectApplicationsMutable(project);
 
         if (Project.RECRUIT_STATUS_CLOSED.equals(project.getRecruitStatus())
                 || Project.PROGRESS_STATUS_COMPLETED.equals(project.getProgressStatus())
@@ -269,6 +276,7 @@ public class ProjectApplicationService {
         if (!isProjectLeader(project, leader)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can remove applications.");
         }
+        ensureProjectApplicationsMutable(project);
 
         Profile applicant = application.getProfile();
         boolean wasAccepted = isAccepted(application.getStatus());
@@ -364,6 +372,12 @@ public class ProjectApplicationService {
                 .count();
         Integer totalRecruitment = project.getTotalRecruitment();
         return totalRecruitment != null && totalRecruitment > 0 && currentRecruitment >= totalRecruitment;
+    }
+
+    private void ensureProjectApplicationsMutable(Project project) {
+        if (project != null && project.isCompleted()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "완료된 프로젝트의 지원 내역은 변경할 수 없습니다.");
+        }
     }
 
     private ProjectApplicationStatus parseStatus(ProjectApplicationStatusUpdateRequestDto request) {

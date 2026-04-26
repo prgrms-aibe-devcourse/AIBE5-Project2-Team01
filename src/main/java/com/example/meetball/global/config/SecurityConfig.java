@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/projects/*/comments",
                                 "/api/projects/*/resources",
                                 "/api/projects/*/bookmarks",
+                                "/api/projects/*/reviews",
                                 "/api/projects/*/reviews/summary"
                         ).permitAll()
                         .anyRequest().authenticated()

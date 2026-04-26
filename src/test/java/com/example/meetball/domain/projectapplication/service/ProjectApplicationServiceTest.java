@@ -125,6 +125,24 @@ public class ProjectApplicationServiceTest {
                 .toList();
     }
 
+    private void completeProject(Project project) {
+        project.update(
+                project.getTitle(),
+                project.getDescription(),
+                project.getProjectPurpose(),
+                project.getWorkMethod(),
+                project.getRecruitmentCount(),
+                LocalDate.now(),
+                LocalDate.now().plusDays(7),
+                LocalDate.now().plusDays(8),
+                LocalDate.now().plusDays(30),
+                Project.RECRUIT_STATUS_CLOSED,
+                Project.PROGRESS_STATUS_COMPLETED,
+                LocalDateTime.now()
+        );
+        projectRepository.saveAndFlush(project);
+    }
+
     @Test
     @DisplayName("프로젝트 지원하기 - 성공")
     void createApplication_Success() {
@@ -344,27 +362,61 @@ public class ProjectApplicationServiceTest {
     @Test
     @DisplayName("프로젝트 완료 상태에서는 지원할 수 없다")
     void createApplication_CompletedProject_Fail() {
-        testProject.update(
-                testProject.getTitle(),
-                testProject.getDescription(),
-                testProject.getProjectPurpose(),
-                testProject.getWorkMethod(),
-                testProject.getRecruitmentCount(),
-                LocalDate.now(),
-                LocalDate.now().plusDays(7),
-                LocalDate.now().plusDays(8),
-                LocalDate.now().plusDays(30),
-                Project.RECRUIT_STATUS_CLOSED,
-                Project.PROGRESS_STATUS_COMPLETED,
-                LocalDateTime.now()
-        );
-        projectRepository.saveAndFlush(testProject);
+        completeProject(testProject);
 
         ProjectApplicationRequestDto request = new ProjectApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "메시지");
 
         assertThatThrownBy(() -> projectApplicationService.createApplication(testProject.getId(), request, testUser.getId()))
                 .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
                 .hasMessageContaining("Cannot apply");
+    }
+
+    @Test
+    @DisplayName("완료된 프로젝트에서는 팀장이 지원 상태를 변경할 수 없다")
+    void updateApplicationStatus_CompletedProject_Fail() {
+        ProjectApplicationResponseDto app = projectApplicationService.createApplication(
+                testProject.getId(),
+                new ProjectApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "메시지"),
+                testUser.getId()
+        );
+        completeProject(testProject);
+
+        ProjectApplicationStatusUpdateRequestDto updateRequest = new ProjectApplicationStatusUpdateRequestDto();
+        updateRequest.setStatus("ACCEPTED");
+
+        assertThatThrownBy(() -> projectApplicationService.updateApplicationStatus(app.getId(), updateRequest, leaderUser.getId()))
+                .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                .hasMessageContaining("완료된 프로젝트의 지원 내역은 변경할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("완료된 프로젝트에서는 지원자가 지원을 철회할 수 없다")
+    void withdrawApplication_CompletedProject_Fail() {
+        ProjectApplicationResponseDto app = projectApplicationService.createApplication(
+                testProject.getId(),
+                new ProjectApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "메시지"),
+                testUser.getId()
+        );
+        completeProject(testProject);
+
+        assertThatThrownBy(() -> projectApplicationService.withdrawApplication(app.getId(), testUser.getId()))
+                .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                .hasMessageContaining("완료된 프로젝트의 지원 내역은 변경할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("완료된 프로젝트에서는 팀장이 지원자를 삭제하거나 추방할 수 없다")
+    void removeApplication_CompletedProject_Fail() {
+        ProjectApplicationResponseDto app = projectApplicationService.createApplication(
+                testProject.getId(),
+                new ProjectApplicationRequestDto(testUser.getId(), testUser.getNickname(), "백엔드", "메시지"),
+                testUser.getId()
+        );
+        completeProject(testProject);
+
+        assertThatThrownBy(() -> projectApplicationService.removeApplication(app.getId(), leaderUser.getId()))
+                .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                .hasMessageContaining("완료된 프로젝트의 지원 내역은 변경할 수 없습니다.");
     }
 
     @Test

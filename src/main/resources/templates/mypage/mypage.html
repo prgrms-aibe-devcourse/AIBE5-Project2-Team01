@@ -205,12 +205,12 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div class="space-y-3">
-                                <label class="mypage-field-label">Rating</label>
+                                <label class="mypage-field-label">MeetBall Index</label>
                                 <div class="mypage-field-card">
                                     <span class="inline-flex items-center gap-3 rounded-full bg-poodle-50 px-4 py-3 text-sm font-black text-poodle-600 border border-poodle-100">
-                                        <i class="fa-solid fa-star text-meatball"></i>
-                                        <span th:text="${profile.meetBallIndex}">4.7</span>
-                                        <span class="text-poodle-300">/ 5.0</span>
+                                        <i class="fa-solid fa-temperature-three-quarters text-meatball"></i>
+                                        <span th:text="${profile.meetBallIndex}">36.5</span>
+                                        <span class="text-poodle-300">매너 온도</span>
                                     </span>
                                 </div>
                             </div>
@@ -991,8 +991,9 @@
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = encodeURIComponent(String(p.projectId ?? ''));
                 const dDay = Number(p.dDay || 0);
+                const closedProjectLabel = p.progressStatus === 'IN_PROGRESS' ? '프로젝트 진행 중' : '준비 중';
                 let dDayBadge = '';
-                if (p.recruitStatus === 'CLOSED') dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 마감</span><span class="text-sm font-black text-poodle-400">프로젝트 진행 중</span>`;
+                if (p.recruitStatus === 'CLOSED') dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 마감</span><span class="text-sm font-black text-poodle-400">${closedProjectLabel}</span>`;
                 else if (dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${dDay}</span>`;
                 else dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
                 
@@ -1021,8 +1022,9 @@
                 const title = escapeHtml(p.title || '프로젝트 제목 없음');
                 const projectId = encodeURIComponent(String(p.projectId ?? ''));
                 const dDay = Number(p.dDay || 0);
+                const closedProjectLabel = p.progressStatus === 'IN_PROGRESS' ? '프로젝트 진행 중' : '준비 중';
                 let dDayBadge = p.recruitStatus === 'CLOSED'
-                    ? `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">모집 마감</span><span class="text-[11px] font-bold text-poodle-400">프로젝트 진행 중</span>`
+                    ? `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">모집 마감</span><span class="text-[11px] font-bold text-poodle-400">${closedProjectLabel}</span>`
                     : `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
                 return `
                 <div class="project-preview-card p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">

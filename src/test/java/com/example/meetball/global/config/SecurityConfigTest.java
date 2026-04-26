@@ -78,6 +78,20 @@ class SecurityConfigTest {
     }
 
     @Test
+    @DisplayName("프로젝트 리뷰 요약과 목록은 게스트도 조회할 수 있다")
+    void projectReviewReadApisArePublic() throws Exception {
+        mockMvc.perform(get("/api/projects/2/reviews/summary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.averageScore").value(5.0))
+                .andExpect(jsonPath("$.totalReviews").value(1));
+
+        mockMvc.perform(get("/api/projects/2/reviews"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].score").value(5.0));
+    }
+
+    @Test
     @DisplayName("마이페이지 공개 항목 API도 로그인 없이 조회할 수 없다")
     void myPagePublicSectionsRequireLogin() throws Exception {
         mockMvc.perform(get("/api/mypage/account").param("profileId", "1"))

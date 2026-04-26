@@ -288,21 +288,27 @@
                 </div>
             </div>
 
-            <div class="grid gap-3 border-t border-poodle-100 px-8 py-6 md:grid-cols-[1fr_1fr_1.4fr] md:px-10">
+            <div class="space-y-3 border-t border-poodle-100 px-8 py-6 md:px-10">
                 <input type="hidden" id="modalApplicationId">
-                <button id="modalRemoveButton"
-                        onclick="removeApplication()"
-                        class="rounded-[1.4rem] border border-red-100 bg-white px-5 py-4 text-sm font-black text-red-500 transition hover:bg-red-50">
-                    삭제
-                </button>
-                <button onclick="updateStatus('REJECTED')"
-                        class="rounded-[1.4rem] border border-poodle-200 bg-poodle-50 px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-red-200 hover:text-red-500">
-                    거절
-                </button>
-                <button onclick="updateStatus('ACCEPTED')"
-                        class="rounded-[1.4rem] bg-[#4E342E] px-5 py-4 text-sm font-black text-white transition hover:bg-[#FF6B35]">
-                    승인
-                </button>
+                <p id="modalCompletedNotice"
+                   class="hidden rounded-[1.6rem] border border-poodle-100 bg-poodle-50 px-5 py-4 text-center text-sm font-black text-poodle-500">
+                    완료된 프로젝트는 지원자 상태를 변경할 수 없습니다.
+                </p>
+                <div id="modalApplicantActions" class="grid gap-3 md:grid-cols-[1fr_1fr_1.4fr]">
+                    <button id="modalRemoveButton"
+                            onclick="removeApplication()"
+                            class="rounded-[1.4rem] border border-red-100 bg-white px-5 py-4 text-sm font-black text-red-500 transition hover:bg-red-50">
+                        삭제
+                    </button>
+                    <button onclick="updateStatus('REJECTED')"
+                            class="rounded-[1.4rem] border border-poodle-200 bg-poodle-50 px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-red-200 hover:text-red-500">
+                        거절
+                    </button>
+                    <button onclick="updateStatus('ACCEPTED')"
+                            class="rounded-[1.4rem] bg-[#4E342E] px-5 py-4 text-sm font-black text-white transition hover:bg-[#FF6B35]">
+                        승인
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -313,6 +319,8 @@
 <script>
     const escapeHtml = window.meetballEscapeHtml;
     const defaultAvatarUrl = '/img/logo.png';
+    const PROJECT_PROGRESS_STATUS = /*[[${project.progressStatus}]]*/ 'READY';
+    const APPLICATIONS_EDITABLE = PROJECT_PROGRESS_STATUS !== 'COMPLETED';
     window.applicationDetails = {};
     const resolveProjectId = () => window.meetballResolveProjectId({ elementId: 'projectId', queryParam: 'projectId', pathIndex: 2 });
 
@@ -350,6 +358,8 @@
         const statusElement = document.getElementById('modalStatus');
         statusElement.innerText = statusMeta.label;
         statusElement.className = `inline-flex items-center rounded-full px-3 py-1.5 text-sm font-black ${statusMeta.className}`;
+        document.getElementById('modalApplicantActions').classList.toggle('hidden', !APPLICATIONS_EDITABLE);
+        document.getElementById('modalCompletedNotice').classList.toggle('hidden', APPLICATIONS_EDITABLE);
 
         document.getElementById('applicantModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -376,6 +386,10 @@
     }
 
     async function updateStatus(newStatus) {
+        if (!APPLICATIONS_EDITABLE) {
+            await meetballAlert('완료된 프로젝트의 지원 내역은 변경할 수 없습니다.', { type: 'error' });
+            return;
+        }
         const applicationId = document.getElementById('modalApplicationId').value;
         if (!applicationId) return;
 
@@ -401,6 +415,10 @@
     }
 
     async function removeApplication() {
+        if (!APPLICATIONS_EDITABLE) {
+            await meetballAlert('완료된 프로젝트의 지원 내역은 변경할 수 없습니다.', { type: 'error' });
+            return;
+        }
         const applicationId = document.getElementById('modalApplicationId').value;
         if (!applicationId) return;
         const app = window.applicationDetails[Number(applicationId)];
@@ -688,7 +706,7 @@
 
     async function completeProject() {
         const badge = document.querySelector('[data-manage-recruit-status]');
-        const recruitStatus = badge?.dataset.recruitStatus || /*[[${project.recruitStatus}]]*/ 'OPEN';
+        const recruitStatus = badge?.getAttribute('data-manage-recruit-status') || 'OPEN';
         if (recruitStatus !== 'CLOSED') {
             await meetballAlert('프로젝트 완료는 모집 마감 이후에만 가능합니다.', { type: 'error' });
             return;
