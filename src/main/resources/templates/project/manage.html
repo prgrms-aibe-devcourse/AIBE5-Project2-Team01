@@ -316,7 +316,7 @@
 
 <footer th:replace="~{fragments/footer :: mainFooter}"></footer>
 
-<script>
+<script th:inline="javascript">
     const escapeHtml = window.meetballEscapeHtml;
     const defaultAvatarUrl = '/img/logo.png';
     const PROJECT_PROGRESS_STATUS = /*[[${project.progressStatus}]]*/ 'READY';
