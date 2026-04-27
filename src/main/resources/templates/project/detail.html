@@ -791,7 +791,7 @@
                 ? `<button onclick="deleteComment(${commentId})" class="text-poodle-300 hover:text-red-400 text-[10px] font-black transition-all">삭제</button>`
                 : '';
                 
-            const replyButton = !isReply && CURRENT_USER.role === 'LEADER'
+            const replyButton = !isReply && (CURRENT_USER.role === 'LEADER' || CURRENT_USER.role === 'MEMBER')
                 ? `<button onclick="toggleReplyForm(${commentId})" class="text-meatball hover:underline text-[10px] font-black transition-all">답글 달기</button>`
                 : '';
 
