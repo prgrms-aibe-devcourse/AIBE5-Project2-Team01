@@ -1181,6 +1181,15 @@
                 currentPageData = data;
                 renderProjects(currentProjects);
                 renderPagination(data);
+
+                // 페이지 전환 시 프로젝트 목록 상단으로 부드럽게 이동
+                if (page > 0 || filterState.page > 0) {
+                    const projectsSection = document.getElementById('projects');
+                    if (projectsSection) {
+                        const offset = projectsSection.getBoundingClientRect().top + window.scrollY - 120;
+                        window.scrollTo({ top: offset, behavior: 'smooth' });
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching projects:', error);
             }
