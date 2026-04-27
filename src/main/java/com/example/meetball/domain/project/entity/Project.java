@@ -50,12 +50,6 @@ public class Project {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "required_qualifications", columnDefinition = "TEXT")
-    private String requiredQualifications;
-
-    @Column(name = "preferred_qualifications", columnDefinition = "TEXT")
-    private String preferredQualifications;
-
     @Column(name = "thumbnail_url", length = 255)
     private String thumbnailUrl;
 
@@ -121,15 +115,12 @@ public class Project {
     protected Project() {
     }
 
-    public Project(String title, String description, String requiredQualifications, String preferredQualifications,
-                   String projectPurpose, String workMethod,
+    public Project(String title, String description, String projectPurpose, String workMethod,
                    Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                    LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
-        this.requiredQualifications = requiredQualifications;
-        this.preferredQualifications = preferredQualifications;
         this.projectPurpose = normalizeProjectPurpose(projectPurpose);
         this.workMethod = normalizeWorkMethod(workMethod);
         this.requiredMember = recruitmentCount == null ? 0 : recruitmentCount;
@@ -150,15 +141,12 @@ public class Project {
         this.ownerProfile = Objects.requireNonNull(ownerProfile, "ownerProfile");
     }
 
-    public void update(String title, String description, String requiredQualifications, String preferredQualifications,
-                       String projectPurpose, String workMethod,
+    public void update(String title, String description, String projectPurpose, String workMethod,
                        Integer recruitmentCount, LocalDate recruitmentStartAt, LocalDate recruitmentEndAt,
                        LocalDate projectStartAt, LocalDate projectEndAt, String recruitStatus, String progressStatus,
                        LocalDateTime updatedAt) {
         this.title = title;
         this.description = description;
-        this.requiredQualifications = requiredQualifications;
-        this.preferredQualifications = preferredQualifications;
         this.projectPurpose = projectPurpose == null || projectPurpose.isBlank()
                 ? this.projectPurpose
                 : normalizeProjectPurpose(projectPurpose);
@@ -321,8 +309,6 @@ public class Project {
         return description.length() > 50 ? description.substring(0, 50) : description;
     }
     public String getDescription() { return description; }
-    public String getRequiredQualifications() { return requiredQualifications; }
-    public String getPreferredQualifications() { return preferredQualifications; }
     public String getProjectPurpose() { return projectPurpose; }
     public String getPosition() {
         return positionSelections.stream()

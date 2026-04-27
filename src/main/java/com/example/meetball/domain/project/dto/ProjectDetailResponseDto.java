@@ -10,8 +10,6 @@ public class ProjectDetailResponseDto {
     private String title;
     private String summary;
     private String description;
-    private String requiredQualifications;
-    private String preferredQualifications;
     private String projectPurpose;
     private String workMethod;
     private String position;
@@ -35,16 +33,16 @@ public class ProjectDetailResponseDto {
     private List<ProjectRecruitPositionStatus> positionStatuses;
     private int readCount;
 
-    public ProjectDetailResponseDto(Long id, String title, String description, String requiredQualifications, String preferredQualifications, String projectPurpose,
+    public ProjectDetailResponseDto(Long id, String title, String description, String projectPurpose,
                                     String workMethod, Integer recruitmentCount, LocalDate recruitmentStartAt,
                                     LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
                                     String recruitStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this(id, title, null, description, requiredQualifications, preferredQualifications, projectPurpose, workMethod, null, null, null, null, null, null,
+        this(id, title, null, description, projectPurpose, workMethod, null, null, null, null, null, null,
                 null, null, recruitmentCount, recruitmentStartAt, recruitmentEndAt, projectStartAt,
                 projectEndAt, recruitStatus, "READY", createdAt, updatedAt, List.of(), List.of(), 0);
     }
 
-    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String requiredQualifications, String preferredQualifications, String projectPurpose,
+    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectPurpose,
                                     String workMethod, String position, Long leaderProfileId, String leaderName,
                                     String leaderRole, String leaderAvatarUrl, String thumbnailUrl, Integer currentRecruitment,
                                     Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
@@ -52,13 +50,13 @@ public class ProjectDetailResponseDto {
                                     String recruitStatus, String progressStatus, LocalDateTime createdAt, LocalDateTime updatedAt,
                                     List<String> techStacks,
                                     List<ProjectRecruitPositionStatus> positionStatuses) {
-        this(id, title, summary, description, requiredQualifications, preferredQualifications, projectPurpose, workMethod, position, leaderProfileId, leaderName,
+        this(id, title, summary, description, projectPurpose, workMethod, position, leaderProfileId, leaderName,
                 leaderRole, leaderAvatarUrl, thumbnailUrl, currentRecruitment, totalRecruitment, recruitmentCount,
                 recruitmentStartAt, recruitmentEndAt, projectStartAt, projectEndAt, recruitStatus, progressStatus, createdAt,
                 updatedAt, techStacks, positionStatuses, 0);
     }
 
-    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String requiredQualifications, String preferredQualifications, String projectPurpose,
+    public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectPurpose,
                                     String workMethod, String position, Long leaderProfileId, String leaderName,
                                     String leaderRole, String leaderAvatarUrl, String thumbnailUrl, Integer currentRecruitment,
                                     Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
@@ -69,8 +67,6 @@ public class ProjectDetailResponseDto {
         this.title = title;
         this.summary = summary;
         this.description = description;
-        this.requiredQualifications = requiredQualifications;
-        this.preferredQualifications = preferredQualifications;
         this.projectPurpose = projectPurpose;
         this.workMethod = workMethod;
         this.position = position;
@@ -99,8 +95,6 @@ public class ProjectDetailResponseDto {
     public String getTitle() { return title; }
     public String getSummary() { return summary; }
     public String getDescription() { return description; }
-    public String getRequiredQualifications() { return requiredQualifications; }
-    public String getPreferredQualifications() { return preferredQualifications; }
     public String getProjectPurpose() { return projectPurpose; }
     public String getWorkMethod() { return workMethod; }
     public String getPosition() { return position; }

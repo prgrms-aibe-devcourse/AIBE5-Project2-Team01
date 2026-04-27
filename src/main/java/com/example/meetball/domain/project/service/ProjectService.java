@@ -349,8 +349,6 @@ public class ProjectService {
         Project project = new Project(
                 request.getTitle(),
                 request.getDescription(),
-                request.getRequiredQualifications(),
-                request.getPreferredQualifications(),
                 normalizeProjectPurposeForStorage(request.getProjectPurpose()),
                 normalizeWorkMethod(request.getWorkMethod()),
                 totalRecruitment,
@@ -426,8 +424,6 @@ public class ProjectService {
         project.update(
                 request.getTitle(),
                 request.getDescription(),
-                request.getRequiredQualifications(),
-                request.getPreferredQualifications(),
                 normalizeProjectPurposeForStorage(request.getProjectPurpose()),
                 normalizeWorkMethod(request.getWorkMethod()),
                 totalRecruitment,
@@ -830,8 +826,6 @@ public class ProjectService {
                 project.getTitle(),
                 project.getSummary(),
                 project.getDescription(),
-                project.getRequiredQualifications(),
-                project.getPreferredQualifications(),
                 displayProjectPurpose(project.getProjectPurpose()),
                 displayWorkMethod(project.getWorkMethod()),
                 formatPositionText(project),

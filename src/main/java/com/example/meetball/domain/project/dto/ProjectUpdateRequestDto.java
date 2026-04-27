@@ -9,8 +9,6 @@ public class ProjectUpdateRequestDto {
 
     private String title;
     private String description;
-    private String requiredQualifications;
-    private String preferredQualifications;
     private String projectPurpose;
     private String workMethod;
     private String position;
@@ -29,8 +27,6 @@ public class ProjectUpdateRequestDto {
 
     public String getTitle() { return title; }
     public String getDescription() { return description; }
-    public String getRequiredQualifications() { return requiredQualifications; }
-    public String getPreferredQualifications() { return preferredQualifications; }
     public String getProjectPurpose() { return projectPurpose; }
     public String getWorkMethod() { return workMethod; }
     public String getPosition() { return position; }
