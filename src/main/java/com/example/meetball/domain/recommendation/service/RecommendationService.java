@@ -54,10 +54,10 @@ public class RecommendationService {
 
     @Transactional(readOnly = true)
     public RecommendationListResponseDto recommend(Long profileId, List<Long> excludeIds, List<String> recentAxes) {
-        String cacheKey = buildCacheKey(profileId, excludeIds);
+        String cacheKey = buildCacheKey(profileId, excludeIds, recentAxes);
         CachedResult cachedResult = resultCache.get(cacheKey);
         if (cachedResult != null && !cachedResult.isExpired()) {
-            log.info("[Recommendation] cache hit. profileId={}, key={}", profileId, cacheKey);
+            log.info("[Recommendation] 캐시 HIT. profileId={}, key={}", profileId, cacheKey);
             return cachedResult.result();
         }
 
@@ -82,17 +82,23 @@ public class RecommendationService {
 
         RecommendationListResponseDto finalResult;
         if (llmEnabled) {
-            log.info("[Recommendation] llm.enabled=true -> Gemini interpreter");
+            log.info("[Recommendation][LLM-MODE] llm_enabled=true, profileId={}, recentAxes={}", profileId, recentAxes);
             finalResult = geminiRecommendationInterpreter.interpret(profile, candidatePool, recentAxes);
             if (finalResult == null) {
-                log.warn("[Recommendation] Gemini 실패, fallback으로 전환합니다.");
+                log.warn("[Recommendation][LLM-MODE] llm_success=false, fallback_used=true, profileId={}", profileId);
                 finalResult = fallbackRecommendationFactory.createFallback(candidatePool);
+            } else {
+                log.info("[Recommendation][LLM-MODE] llm_success=true, axis='{}', question='{}', bubbles={}", 
+                        finalResult.getAxis(), finalResult.getQuestion(), finalResult.getBubbles());
             }
         } else {
-            log.info("[Recommendation] llm.enabled=false -> Mock interpreter");
+            log.info("[Recommendation][MOCK-MODE] llm_enabled=false, mock_mode=true, profileId={}, recentAxes={}", profileId, recentAxes);
             finalResult = mockLlmRecommendationInterpreter.interpret(profile, candidatePool, recentAxes);
             if (finalResult == null) {
+                log.warn("[Recommendation][MOCK-MODE] mock_result=null, fallback_used=true");
                 finalResult = fallbackRecommendationFactory.createFallback(candidatePool);
+            } else {
+                log.info("[Recommendation][MOCK-MODE] mock_success=true, axis='{}', bubbles={}", finalResult.getAxis(), finalResult.getBubbles());
             }
         }
 
@@ -108,11 +114,14 @@ public class RecommendationService {
         return recommend(profileId, null, null);
     }
 
-    private String buildCacheKey(Long profileId, List<Long> excludeIds) {
-        String ids = excludeIds == null || excludeIds.isEmpty()
+    private String buildCacheKey(Long profileId, List<Long> excludeIds, List<String> recentAxes) {
+        String ids = (excludeIds == null || excludeIds.isEmpty())
                 ? "none"
                 : excludeIds.stream().sorted().map(Objects::toString).collect(Collectors.joining(","));
-        return profileId + "|" + ids;
+        String axes = (recentAxes == null || recentAxes.isEmpty())
+                ? "none"
+                : recentAxes.stream().sorted().collect(Collectors.joining(","));
+        return profileId + "|" + ids + "|" + axes;
     }
 
     private record CachedResult(RecommendationListResponseDto result, long createdAt) {

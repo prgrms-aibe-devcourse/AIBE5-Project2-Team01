@@ -118,11 +118,11 @@
             }
 
             @keyframes orbit {
-                0% { transform: translate(-30%, -30%) scale(0.9); z-index: 5; }
-                25% { transform: translate(0%, -50%) scale(0.8); z-index: 5; }
-                50% { transform: translate(30%, -30%) scale(1.1); z-index: 25; }
-                75% { transform: translate(0%, -10%) scale(1.2); z-index: 25; }
-                100% { transform: translate(-30%, -30%) scale(0.9); z-index: 5; }
+                0% { transform: translate(-30%, -10%) scale(0.9); z-index: 5; }
+                25% { transform: translate(0%, -30%) scale(0.8); z-index: 5; }
+                50% { transform: translate(30%, -10%) scale(1.1); z-index: 25; }
+                75% { transform: translate(0%, 10%) scale(1.2); z-index: 25; }
+                100% { transform: translate(-30%, -10%) scale(0.9); z-index: 5; }
             }
 
             @keyframes float-tag {
@@ -153,7 +153,7 @@
                 .mascot-wrap-idle { right: 2rem; }
             }
 
-            .mascot-wrap-analyzing { top: 30%; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -50%); opacity: 0.85; }
+            .mascot-wrap-analyzing { top: 48%; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -50%); opacity: 0.85; }
             .mascot-wrap-searching { top: 55%; bottom: auto; left: 50%; right: auto; transform: translate(-50%, -50%); opacity: 0.85; }
             .mascot-wrap-asking { top: auto; bottom: -1rem; left: auto; right: 1rem; transform: scale(0.75); opacity: 0.9; }
             @media (min-width: 768px) {
@@ -237,6 +237,23 @@
                 border-color: #653728;
                 transform: translateY(-6px);
                 box-shadow: 0 15px 40px rgba(101, 55, 40, 0.1);
+            }
+
+            /* 1순위 카드 강조 */
+            .mini-card.main-pick {
+                border: 3px solid #653728;
+                box-shadow: 0 25px 60px rgba(101, 55, 40, 0.15);
+                background: linear-gradient(to bottom right, #ffffff, #fdf8f4);
+            }
+
+            /* 태그 하이라이트 애니메이션 */
+            @keyframes pulse-highlight {
+                0% { box-shadow: 0 0 0 0 rgba(101, 55, 40, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(101, 55, 40, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(101, 55, 40, 0); }
+            }
+            .tag-highlight-strong {
+                animation: pulse-highlight 2s infinite;
             }
         </style>
 
@@ -704,6 +721,8 @@
             state: 'idle',
             data: null,
             selectedBubbleIndex: null,
+            selectedBubbleValue: null,
+            selectedBubbleLabel: null,
             excludeIds: [],
             recentAxes: [],
 
@@ -759,6 +778,8 @@
 
                     this.data = data;
                     this.selectedBubbleIndex = null;
+                    this.selectedBubbleValue = null;
+                    this.selectedBubbleLabel = null;
 
                     if (data?.axis && !this.recentAxes.includes(data.axis)) {
                         this.recentAxes.push(data.axis);
@@ -801,169 +822,155 @@
 
                 axisLabel.textContent = axis || 'AI 분석 결과';
                 questionText.textContent = llmQuestion || fallbackQuestion;
-                bubbleWrap.innerHTML = bubbles.map((bubble, index) => `
-                    <button type="button" onclick="RecommendationJourney.selectBubble(${index})"
-                            class="px-6 py-3.5 bg-white border-2 border-poodle-100 hover:border-meatball hover:text-meatball hover:bg-meatball/5 text-poodle-700 rounded-full text-[14px] md:text-[15px] font-black shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 animate-fade-in-up"
-                            style="animation-delay: ${index * 0.1}s">
-                        ${escapeHtml(bubble)}
-                    </button>
-                `).join('');
+                bubbleWrap.innerHTML = bubbles.map((bubble, index) => {
+                    const label = typeof bubble === 'object' ? bubble.label : bubble;
+                    return `
+                        <button type="button" onclick="RecommendationJourney.selectBubble(${index})"
+                                class="px-6 py-3.5 bg-white border-2 border-poodle-100 hover:border-meatball hover:text-meatball hover:bg-meatball/5 text-poodle-700 rounded-full text-[14px] md:text-[15px] font-black shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 animate-fade-in-up"
+                                style="animation-delay: ${index * 0.1}s">
+                            ${escapeHtml(label)}
+                        </button>
+                    `;
+                }).join('');
             },
 
             selectBubble(index) {
+                const bubble = this.data.bubbles[index];
                 this.selectedBubbleIndex = index;
-                const interaction = document.getElementById('journey-interaction');
-                interaction?.classList.add('opacity-0', 'scale-95');
+                this.selectedBubbleLabel = typeof bubble === 'object' ? bubble.label : bubble;
+                this.selectedBubbleValue = typeof bubble === 'object' ? bubble.value : bubble;
 
-                const selectedBubbleText = this.data?.bubbles?.[index];
-                const recommendations = this.data?.recommendations;
-                if (selectedBubbleText && Array.isArray(recommendations)) {
-                    recommendations.sort((left, right) => {
-                        const leftScore = this.calculateSemanticScore(selectedBubbleText, left);
-                        const rightScore = this.calculateSemanticScore(selectedBubbleText, right);
-                        if (leftScore !== rightScore) {
-                            return rightScore - leftScore;
-                        }
-                        const leftOriginal = recommendations.indexOf(left) === index;
-                        const rightOriginal = recommendations.indexOf(right) === index;
-                        return Number(rightOriginal) - Number(leftOriginal);
+                const interaction = document.getElementById('journey-interaction');
+                if (interaction) {
+                    interaction.classList.add('opacity-0', 'scale-95');
+                }
+
+                if (this.selectedBubbleValue && this.data.recommendations) {
+                    this.data.recommendations.sort((a, b) => {
+                        const scoreA = this._calculateSemanticScore(this.selectedBubbleValue, a);
+                        const scoreB = this._calculateSemanticScore(this.selectedBubbleValue, b);
+                        if (scoreA !== scoreB) return scoreB - scoreA;
+                        
+                        const aOriginalIndex = this.data.recommendations.indexOf(a);
+                        const bOriginalIndex = this.data.recommendations.indexOf(b);
+                        return aOriginalIndex - bOriginalIndex;
                     });
                     this.selectedBubbleIndex = 0;
                 }
 
-                window.setTimeout(() => this.setState('result'), 400);
+                setTimeout(() => {
+                    this.setState('result');
+                }, 400);
             },
 
-            calculateSemanticScore(bubble, project) {
-                if (!bubble || !project) {
-                    return 0;
-                }
-
+            _calculateSemanticScore(bubbleValue, project) {
+                if (!bubbleValue || !project) return 0;
                 let score = 0;
-                const bubbleNorm = bubble.toLowerCase().replace(/\s/g, '');
-                const bubbleWords = bubble.toLowerCase().split(/[\s,·]+/).filter(word => word.length > 1);
+                const vNorm = bubbleValue.toLowerCase().replace(/\s/g, '');
 
-                const checkField = (value, exactBonus, wordBonus) => {
-                    if (!value) {
-                        return;
+                const checkExactMatch = (val, bonus) => {
+                    if (!val) return;
+                    const tagNorm = val.toLowerCase().replace(/\s/g, '');
+                    if (tagNorm === vNorm) {
+                        score += bonus;
+                        return true;
                     }
-                    const normalizedValue = value.toLowerCase().replace(/\s/g, '');
-                    if (normalizedValue.includes(bubbleNorm) || bubbleNorm.includes(normalizedValue)) {
-                        score += exactBonus;
-                        return;
+                    if (tagNorm.includes(vNorm)) {
+                        score += bonus * 0.5;
+                        return true;
                     }
-
-                    const valueWords = value.toLowerCase().split(/[\s,]+/);
-                    valueWords.forEach(word => {
-                        if (word.length > 1 && bubbleWords.some(bubbleWord => bubbleWord.includes(word) || word.includes(bubbleWord))) {
-                            score += wordBonus;
-                        }
-                    });
+                    return false;
                 };
 
-                checkField(project.progressMethod, 1000, 50);
-                checkField(project.projectType, 1000, 50);
-                checkField(project.axisValue, 500, 30);
-                checkField(project.positionSummary, 50, 10);
-                checkField(project.title, 5, 2);
+                // value와 태그의 직접 매칭 우선
+                checkExactMatch(project.progressMethod, 1000);
+                checkExactMatch(project.projectType, 1000);
+                checkExactMatch(project.axisValue, 500);
 
                 return score;
             },
 
             renderResult() {
                 const recommendations = this.data?.recommendations || [];
-                const bubbles = this.data?.bubbles || [];
                 const grid = document.getElementById('journey-result-grid');
                 const chip = document.getElementById('selected-bubble-chip');
-                if (!grid || !chip) {
-                    return;
-                }
 
-                const selectedBubbleText = bubbles[this.selectedBubbleIndex] || '나의 선택';
-                chip.textContent = selectedBubbleText;
+                if (chip) chip.textContent = this.selectedBubbleLabel || '나의 선택';
 
                 const top3 = recommendations.slice(0, 3);
                 const displayItems = [];
-                if (top3.length > 0) {
-                    displayItems.push({ item: top3[1] || top3[0], isMain: false, delay: 0.1 });
-                    displayItems.push({ item: top3[0], isMain: true, delay: 0.2 });
-                }
-                if (top3.length > 2) {
-                    displayItems.push({ item: top3[2], isMain: false, delay: 0.3 });
-                } else if (top3.length === 2) {
-                    displayItems.push({ item: top3[1], isMain: false, delay: 0.3 });
-                }
+                if (top3.length > 0) displayItems.push({ item: top3[1] || top3[0], isMain: false, delay: 0.1 });
+                if (top3.length > 0) displayItems.push({ item: top3[0], isMain: true, delay: 0.2 });
+                if (top3.length > 2) displayItems.push({ item: top3[2], isMain: false, delay: 0.3 });
+                else if (top3.length === 2) displayItems.push({ item: top3[1], isMain: false, delay: 0.3 });
 
-                grid.innerHTML = displayItems.map(({ item, isMain, delay }) => {
-                    const projectId = encodeURIComponent(String(item.projectId ?? ''));
-                    const title = escapeHtml(item.title || '추천 프로젝트');
-                    const bubbleNorm = selectedBubbleText.toLowerCase().replace(/\s/g, '');
-                    const bubbleWords = selectedBubbleText.toLowerCase().split(/[\s,·]+/).filter(word => word.length > 1);
+                if (grid) {
+                    grid.innerHTML = displayItems.map(({item, isMain, delay}) => {
+                        const projectId = encodeURIComponent(String(item.projectId ?? ''));
+                        const title = escapeHtml(item.title || '추천 프로젝트');
+                        const cardClass = isMain ? 'main-pick' : '';
+                        const wrapperClass = isMain ? 'scale-[1.05] z-10' : 'opacity-85 scale-[0.96] grayscale-[10%]';
 
-                    const highlightTag = tagText => {
-                        const raw = String(tagText || '').trim();
-                        if (!raw) {
-                            return 'bg-poodle-50 text-poodle-600';
-                        }
-                        const tagNorm = raw.toLowerCase().replace(/\s/g, '');
-                        if (tagNorm.includes(bubbleNorm) || bubbleNorm.includes(tagNorm)) {
-                            return 'bg-meatball text-white ring-2 ring-meatball/40 shadow-sm';
-                        }
-                        if (bubbleWords.some(word => tagNorm.includes(word))) {
-                            return 'bg-meatball/80 text-white ring-1 ring-meatball/30';
-                        }
-                        if (item.axisValue) {
-                            const axisNorm = String(item.axisValue).toLowerCase().replace(/\s/g, '');
-                            if (tagNorm.includes(axisNorm) || axisNorm.includes(tagNorm)) {
-                                return 'bg-meatball/60 text-white ring-1 ring-meatball/20';
-                            }
-                        }
-                        return 'bg-poodle-50 text-poodle-600';
-                    };
-
-                    const cardStyle = isMain
-                        ? 'border-meatball ring-2 ring-meatball/20 shadow-2xl scale-[1.02] bg-white z-10 relative opacity-100'
-                        : 'border-poodle-50 opacity-80 grayscale-[30%] scale-[0.97] bg-white hover:opacity-100 hover:grayscale-0 hover:scale-[0.99] transition-all duration-300';
-                    const reasonStyle = isMain
-                        ? 'text-[14px] md:text-[15px] font-bold text-poodle-700 bg-meatball/10 border border-meatball/20 px-3 py-2 rounded-xl line-clamp-2 break-keep'
-                        : 'text-[14px] font-bold text-poodle-500 bg-poodle-50 px-3 py-2 rounded-xl line-clamp-2 break-keep';
-
-                    return `
-                        <div class="animate-fade-in-up h-full flex flex-col justify-center relative" style="animation-delay: ${delay}s">
-                            ${isMain ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 z-20 bg-meatball text-white text-[14px] font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"><i class="fa-solid fa-medal"></i> 밋볼의 1순위 추천</div>' : ''}
-                            <a href="/projects/${projectId}" class="mini-card ${cardStyle} group h-full flex flex-col pt-7">
-                                <div class="flex flex-col gap-3">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <p class="${reasonStyle}">
-                                            <i class="fa-solid fa-quote-left mr-1.5 opacity-40"></i>${escapeHtml(item.recommendationReason || '밋볼 추천!')}
-                                        </p>
-                                        ${isMain ? '<i class="fa-solid fa-sparkles text-meatball text-[14px] shrink-0 mt-1 group-hover:rotate-12 transition-transform"></i>' : ''}
+                        return `
+                            <div class="animate-fade-in-up h-full flex flex-col justify-center relative transition-all duration-500 ${wrapperClass}" style="animation-delay: ${delay}s">
+                                ${isMain ? `<div class="absolute -top-4 left-1/2 -translate-x-1/2 z-30 bg-poodle-600 text-white text-[13px] font-black px-4 py-1.5 rounded-full shadow-xl flex items-center gap-2 whitespace-nowrap border-2 border-white"><i class="fa-solid fa-crown text-meatball"></i> 밋볼의 1순위 추천</div>` : ''}
+                                <a href="/projects/${projectId}" class="mini-card ${cardClass} group h-full flex flex-col pt-8">
+                                    <div class="flex flex-col gap-4">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-3 py-1.5 bg-meatball/10 text-meatball rounded-xl text-[13px] font-black border border-meatball/20">
+                                                ${escapeHtml(item.recommendationReason || '나에게 딱!')}
+                                            </span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <h3 class="text-[18px] md:text-[20px] font-black text-poodle-900 leading-snug mb-3 line-clamp-2 group-hover:text-poodle-600 transition-colors break-keep">
+                                                ${title}
+                                            </h3>
+                                            <p class="text-[13px] md:text-[14px] text-poodle-500 font-bold leading-relaxed line-clamp-2 opacity-90 break-keep">
+                                                ${escapeHtml(item.summary || '')}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="mt-1">
-                                        <h3 class="text-[18px] md:text-[22px] font-black text-poodle-900 leading-snug mb-2.5 line-clamp-2 group-hover:text-meatball transition-colors break-keep">${title}</h3>
-                                        <p class="text-[14px] md:text-[15px] text-poodle-500 font-bold leading-relaxed line-clamp-2 opacity-90">${escapeHtml(item.summary || '')}</p>
+
+                                    <div class="pt-5 mt-auto border-t border-poodle-50/80 flex flex-wrap gap-2">
+                                        <span class="px-2.5 py-1.5 ${this.checkHighlight(item.progressMethod, this.selectedBubbleValue, item.axisValue)} rounded-lg text-[12px] font-black transition-all duration-300">
+                                            <i class="fa-solid fa-location-dot mr-1 opacity-60"></i>${escapeHtml(item.progressMethod || '방식')}
+                                        </span>
+                                        <span class="px-2.5 py-1.5 ${this.checkHighlight(item.projectType, this.selectedBubbleValue, item.axisValue)} rounded-lg text-[12px] font-black transition-all duration-300">
+                                            <i class="fa-solid fa-tag mr-1 opacity-60"></i>${escapeHtml(item.projectType || '성격')}
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="pt-4 mt-auto border-t border-poodle-50/50 flex flex-wrap gap-2">
-                                    <span class="px-2.5 py-1.5 ${highlightTag(item.progressMethod)} rounded-lg text-[14px] font-black transition-all">${escapeHtml(item.progressMethod || '진행 방식')}</span>
-                                    <span class="px-2.5 py-1.5 ${highlightTag(item.projectType)} rounded-lg text-[14px] font-black transition-all">${escapeHtml(item.projectType || '프로젝트 성격')}</span>
-                                    <span class="px-2.5 py-1.5 ${highlightTag(item.positionSummary)} rounded-lg text-[14px] font-black max-w-full truncate transition-all">
-                                        <i class="fa-solid fa-user-group mr-1.5 opacity-50"></i>${escapeHtml(item.positionSummary || '팀원 모집 중')}
-                                    </span>
-                                </div>
-                            </a>
-                        </div>
-                    `;
-                }).join('');
+                                </a>
+                            </div>
+                        `;
+                    }).join('');
+                }
 
                 if (RECOMMENDATION_STORAGE_KEY) {
                     try {
-                        const persistData = { ...this.data, selectedBubbleIndex: this.selectedBubbleIndex };
+                        const persistData = { 
+                            ...this.data, 
+                            selectedBubbleIndex: this.selectedBubbleIndex,
+                            selectedBubbleValue: this.selectedBubbleValue,
+                            selectedBubbleLabel: this.selectedBubbleLabel
+                        };
                         sessionStorage.setItem(RECOMMENDATION_STORAGE_KEY, JSON.stringify(persistData));
-                    } catch (error) {
-                        console.error('Failed to persist recommendation journey', error);
-                    }
+                    } catch(e) {}
                 }
+            },
+
+            checkHighlight(tagText, bubbleValue, axisValue) {
+                const raw = (tagText || '').trim();
+                if (!raw || !bubbleValue) return 'bg-poodle-50 text-poodle-400';
+                
+                const vNorm = bubbleValue.toLowerCase().replace(/\s/g, '');
+                const tagNorm = raw.toLowerCase().replace(/\s/g, '');
+                
+                // exact match 또는 1:1 매칭 우선
+                if (tagNorm === vNorm || tagNorm.includes(vNorm) || 
+                    (axisValue && tagNorm.includes(axisValue.toLowerCase().replace(/\s/g, '')))) {
+                    return 'bg-poodle-600 text-white shadow-md tag-highlight-strong';
+                }
+                return 'bg-poodle-50 text-poodle-500';
             },
 
             setState(newState) {

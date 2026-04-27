@@ -3,6 +3,7 @@ package com.example.meetball.domain.recommendation.service;
 import com.example.meetball.domain.profile.entity.Profile;
 import com.example.meetball.domain.recommendation.dto.RecommendationListResponseDto;
 import com.example.meetball.domain.recommendation.dto.RecommendationResponseDto;
+import com.example.meetball.domain.recommendation.dto.BubbleResponseDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
                 }
 
                 String axisValue = result.bubbles != null && !result.bubbles.isEmpty()
-                        ? result.bubbles.get(Math.min(i, result.bubbles.size() - 1))
+                        ? result.bubbles.get(Math.min(i, result.bubbles.size() - 1)).value
                         : "";
                 String recommendationReason = result.recommendationReasons != null && !result.recommendationReasons.isEmpty()
                         ? result.recommendationReasons.get(Math.min(i, result.recommendationReasons.size() - 1))
@@ -92,7 +93,11 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
                         .build());
             }
 
-            return new RecommendationListResponseDto(finalProjects, result.axis, result.bubbles, result.question);
+            List<BubbleResponseDto> finalBubbles = result.bubbles.stream()
+                    .map(b -> new BubbleResponseDto(b.label, b.value))
+                    .collect(Collectors.toList());
+
+            return new RecommendationListResponseDto(finalProjects, result.axis, finalBubbles, result.question);
         } catch (Exception exception) {
             log.error("[LLM] Gemini 해석 실패: {}", exception.getMessage());
             return null;
@@ -101,15 +106,16 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
 
     private String buildPrompt(Profile profile, List<RecommendationResponseDto> candidatePool, List<String> recentAxes) {
         StringBuilder builder = new StringBuilder();
-        builder.append("You are Meetball, a warm and playful AI mascot for project matching.\n");
-        builder.append("All output text must be in Korean. Return valid JSON only.\n\n");
+        builder.append("You are 'Meetball', an AI-powered brown poodle mascot for a team-matching service. ");
+        builder.append("Your mission is to act as an AI Curator. You will receive a Candidate Pool of projects and the User's Profile. ");
+        builder.append("You MUST select the 3 BEST projects for this user, determine a logical comparison axis, and generate engaging text.\n\n");
 
         builder.append("Profile:\n");
         builder.append("- nickname: ").append(profile.getNickname()).append('\n');
         builder.append("- position: ").append(profile.getPosition() == null ? "" : profile.getPosition()).append('\n');
         builder.append("- techStack: ").append(profile.getTechStack() == null ? "" : profile.getTechStack()).append("\n\n");
 
-        builder.append("Candidate Pool:\n");
+        builder.append("Candidate Pool (up to 10 projects):\n");
         for (RecommendationResponseDto recommendation : candidatePool) {
             builder.append("- projectId: ").append(recommendation.getProjectId())
                     .append(", title: ").append(recommendation.getTitle())
@@ -120,26 +126,40 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
                     .append('\n');
         }
 
+        builder.append("\nYour Task (Output in Korean):\n");
+        builder.append("1. Select exactly 3 Project IDs from the Candidate Pool that are the best fit for the user.\n");
+        builder.append("2. Determine a single comparison AXIS that meaningfully differentiates the 3 chosen projects.\n");
+        builder.append("   - CRITICAL: NEVER use boring, superficial axes like '진행 방식', '프로젝트 유형', '팀 규모'. ");
+        builder.append("Dig deeper into the project summaries to find psychological or vibe-based differences.\n");
+
         if (recentAxes != null && !recentAxes.isEmpty()) {
-            builder.append("\nRecently used axes: ").append(String.join(", ", recentAxes)).append('\n');
-            builder.append("Try hard to avoid reusing those axes.\n");
+            builder.append("\n   - FIRM CONSTRAINT: These axes were RECENTLY used: [").append(String.join(", ", recentAxes)).append("]. ");
+            builder.append("Try very hard to choose a DIFFERENT angle.\n");
         }
 
         builder.append("""
 
-                Tasks:
-                1. Choose exactly 3 project IDs from the candidate pool.
-                2. Create one meaningful axis that differentiates the chosen projects.
-                3. Write one short Korean question for that axis.
-                4. Create 2 or 3 short Korean bubbles for the axis.
-                5. Write 3 short Korean recommendationReasons, each 10-20 characters max.
+                3. Create a short, character-rich Korean question (1-2 sentences max).
+                4. Create 3 distinct bubbles. Each bubble MUST be an object with { "label": "...", "value": "..." }.
+                   - label: A natural, evocative Korean sentence (e.g., "스타트업에서 실전처럼").
+                   - value: A single representative keyword found in the project's tags (e.g., "스타트업", "오프라인", "스터디"). This is used for internal matching.
+                5. Write a recommendation reason (recommendationReasons) for each chosen project.
 
-                JSON shape:
+                Response Requirements:
+                - Language: All output text in Korean except JSON keys.
+                - Tone: Enthusiastic, cute, and helpful (Meetball vibe).
+                - Response MUST be ONLY valid JSON.
+
+                JSON Structure:
                 {
-                  "selectedProjectIds": [1, 2, 3],
+                  "selectedProjectIds": [id1, id2, id3],
                   "axis": "...",
                   "question": "...",
-                  "bubbles": ["...", "...", "..."],
+                  "bubbles": [
+                    { "label": "버블 문구 1", "value": "매칭 키워드 1" },
+                    { "label": "버블 문구 2", "value": "매칭 키워드 2" },
+                    { "label": "버블 문구 3", "value": "매칭 키워드 3" }
+                  ],
                   "recommendationReasons": ["...", "...", "..."]
                 }
                 """);
@@ -164,8 +184,20 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
             return response.getBody();
         } catch (HttpStatusCodeException exception) {
             if (exception.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-                log.warn("[LLM] Gemini rate limit 초과(429). fallback으로 전환합니다.");
-                return null;
+                log.warn("[LLM] Gemini rate limit 초과(429). 2초 대기 후 1회 재시도합니다.");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
+                try {
+                    ResponseEntity<String> retryResponse = restTemplate.exchange(urlWithKey, HttpMethod.POST, entity, String.class);
+                    return retryResponse.getBody();
+                } catch (Exception retryEx) {
+                    log.error("[LLM] Gemini 재시도 실패: {}", retryEx.getMessage());
+                    return null;
+                }
             }
             if (exception.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
                 log.warn("[LLM] Gemini 서비스 일시 불가(503). fallback으로 전환합니다.");
@@ -226,7 +258,12 @@ public class GeminiRecommendationInterpreter implements LlmRecommendationInterpr
         public List<Long> selectedProjectIds;
         public String axis;
         public String question;
-        public List<String> bubbles;
+        public List<BubbleResult> bubbles;
         public List<String> recommendationReasons;
+    }
+
+    private static class BubbleResult {
+        public String label;
+        public String value;
     }
 }

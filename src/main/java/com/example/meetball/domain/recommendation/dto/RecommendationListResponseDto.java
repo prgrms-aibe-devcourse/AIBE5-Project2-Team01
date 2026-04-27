@@ -9,14 +9,14 @@ public class RecommendationListResponseDto {
 
     private final List<RecommendationResponseDto> recommendations;
     private final String axis;
-    private final List<String> bubbles;
+    private final List<BubbleResponseDto> bubbles;
     private final String question;
 
-    public RecommendationListResponseDto(List<RecommendationResponseDto> recommendations, String axis, List<String> bubbles) {
+    public RecommendationListResponseDto(List<RecommendationResponseDto> recommendations, String axis, List<BubbleResponseDto> bubbles) {
         this(recommendations, axis, bubbles, null);
     }
 
-    public RecommendationListResponseDto(List<RecommendationResponseDto> recommendations, String axis, List<String> bubbles, String question) {
+    public RecommendationListResponseDto(List<RecommendationResponseDto> recommendations, String axis, List<BubbleResponseDto> bubbles, String question) {
         this.recommendations = recommendations;
         this.axis = axis;
         this.bubbles = bubbles;
@@ -31,7 +31,7 @@ public class RecommendationListResponseDto {
         return axis;
     }
 
-    public List<String> getBubbles() {
+    public List<BubbleResponseDto> getBubbles() {
         return bubbles;
     }
 
