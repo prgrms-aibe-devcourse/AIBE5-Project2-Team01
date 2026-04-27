@@ -1353,20 +1353,21 @@
                             <h3 class="text-2xl font-black text-poodle-900 mb-2 leading-tight group-hover:text-meatball transition-colors">${title}</h3>
                             <p class="text-sm text-poodle-400 font-bold leading-relaxed line-clamp-2">${summary}</p>
                         </div>
+                        <div class="space-y-4">
                             <div class="flex flex-wrap gap-1.5">${techBadges}</div>
                         </div>
                     </div>
                     <div class="p-6 md:p-7 md:w-56 flex md:flex-col items-center md:items-stretch justify-between gap-5 border-t md:border-t-0 md:border-l border-poodle-50">
                         <div class="w-full">
-                            <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center justify-between mb-2">
                                 <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit</span>
-                                ${projectMetrics}
-                            </div>
-                            <div class="flex items-center justify-between mb-3">
                                 <span class="text-xs font-black text-poodle-900"><span class="text-meatball">${currentRecruit}</span> / ${totalRecruit}</span>
                             </div>
-                            <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden">
+                            <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-4">
                                 <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="flex justify-end">
+                                ${projectMetrics}
                             </div>
                         </div>
                         <div class="shrink-0 flex items-center gap-2">
@@ -1410,10 +1411,7 @@
 
                     <div class="mt-auto pt-4 border-t border-poodle-50">
                         <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Status</span>
-                                ${projectMetrics}
-                            </div>
+                            <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit Status</span>
                             <span class="text-xs font-black text-poodle-900">
                                 <span class="text-meatball">${currentRecruit}</span> <span class="text-poodle-100">/</span> <span>${totalRecruit}</span>
                             </span>
@@ -1421,9 +1419,12 @@
                         <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
                             <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
-                        <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
-                            프로젝트 보기
-                        </a>
+                        <div class="flex items-center justify-between">
+                            ${projectMetrics}
+                            <a href="/projects/${projectId}" class="w-full max-w-[140px] inline-flex justify-center py-3 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
+                                프로젝트 보기
+                            </a>
+                        </div>
                     </div>
                 </div>
             </article>`;
