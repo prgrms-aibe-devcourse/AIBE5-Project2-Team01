@@ -231,8 +231,9 @@ public class ProjectService {
                 formatRecruitmentDeadline(project, project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
                 project.getRecruitStatus(),
                 project.getProgressStatus(),
-                bookmarkedProjectRepository.countByProject(project),
+                (int) bookmarkedProjectRepository.countByProject(project),
                 project.getViewCount(),
+                (int) commentRepository.countByProjectId(project.getId()),
                 viewer != null && bookmarkedProjectRepository.findByProjectAndProfile(project, viewer).isPresent(),
                 project.getCreatedAt()
         ));

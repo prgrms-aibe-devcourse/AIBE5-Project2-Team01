@@ -1295,20 +1295,26 @@
                 const summary = escapeHtml(p.summary || '');
                 const readCount = Number(p.readCount ?? 0);
                 const bookmarkCount = Number(p.bookmarkCount ?? p.totalBookmarks ?? 0);
+                const commentCount = Number(p.commentCount ?? 0);
+
                 const isBookmarked = Boolean(p.bookmarked ?? p.isBookmarked);
                 const bookmarkButtonClass = isBookmarked
                     ? 'bg-white text-meatball border-meatball/20'
                     : 'bg-poodle-50 text-poodle-300 border-poodle-100';
                 const bookmarkIconClass = isBookmarked ? 'fa-solid text-meatball' : 'fa-regular';
                 const projectMetrics = `
-                    <div class="flex items-center gap-4 text-[10px] font-black text-poodle-300">
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="fa-regular fa-eye"></i>
-                            <span>${readCount}</span>
+                    <div class="flex items-center gap-4 text-[11px] font-bold text-poodle-500">
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-blue-500 group/metric">
+                            <i class="fa-regular fa-eye text-blue-400/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span class="text-poodle-400 font-black">${readCount}</span>
                         </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="fa-regular fa-heart"></i>
-                            <span id="homeBookmarkCount-${domProjectId}">${bookmarkCount}</span>
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-emerald-500 group/metric" title="댓글">
+                            <i class="fa-regular fa-comment-dots text-emerald-400/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span class="text-poodle-400 font-black">${commentCount}</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-meatball group/metric">
+                            <i class="fa-regular fa-heart text-meatball/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span id="homeBookmarkCount-${domProjectId}" class="text-poodle-400 font-black">${bookmarkCount}</span>
                         </span>
                     </div>`;
                 const bookmarkButton = `
