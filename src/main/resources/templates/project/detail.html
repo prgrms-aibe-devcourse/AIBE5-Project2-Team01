@@ -346,7 +346,7 @@
                             <h4 class="text-lg font-black text-poodle-900 tracking-tight">팀 멤버 소개</h4>
                             <span class="px-3 py-1 bg-meatball/5 text-meatball rounded-full text-[9px] font-black uppercase tracking-widest">Team Members</span>
                         </div>
-                        <div class="space-y-4">
+                        <div class="space-y-4 max-h-[440px] overflow-y-auto pr-2 custom-slim-scrollbar">
                             <a th:if="${project.leaderProfileId != null}"
                                th:href="@{/people/{profileId}(profileId=${project.leaderProfileId})}"
                                th:attr="data-profile-id=${project.leaderProfileId}"
@@ -558,6 +558,20 @@
             background-color: #FFF3EA !important;
             color: #DF6B24 !important;
             box-shadow: 0 12px 24px -8px rgba(240, 127, 55, 0.32);
+        }
+ 
+        .custom-slim-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-thumb {
+            background: theme('colors.poodle.100');
+            border-radius: 10px;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.meatball.200');
         }
 
     </style>

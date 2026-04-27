@@ -851,7 +851,9 @@ public class ProjectService {
                 project.getUpdatedAt(),
                 techStacks,
                 buildPositionStatuses(project, participants),
-                project.getViewCount()
+                project.getViewCount(),
+                project.getBookmarkCount(),
+                (int) commentRepository.countByProjectId(project.getId())
         );
     }
 

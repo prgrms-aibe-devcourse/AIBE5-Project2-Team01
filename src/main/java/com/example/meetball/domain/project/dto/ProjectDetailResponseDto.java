@@ -32,6 +32,9 @@ public class ProjectDetailResponseDto {
     private List<String> techStacks;
     private List<ProjectRecruitPositionStatus> positionStatuses;
     private int readCount;
+    private int bookmarkCount;
+    private int commentCount;
+
 
     public ProjectDetailResponseDto(Long id, String title, String description, String projectPurpose,
                                     String workMethod, Integer recruitmentCount, LocalDate recruitmentStartAt,
@@ -39,7 +42,7 @@ public class ProjectDetailResponseDto {
                                     String recruitStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this(id, title, null, description, projectPurpose, workMethod, null, null, null, null, null, null,
                 null, null, recruitmentCount, recruitmentStartAt, recruitmentEndAt, projectStartAt,
-                projectEndAt, recruitStatus, "READY", createdAt, updatedAt, List.of(), List.of(), 0);
+                projectEndAt, recruitStatus, "READY", createdAt, updatedAt, List.of(), List.of(), 0, 0, 0);
     }
 
     public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectPurpose,
@@ -53,7 +56,7 @@ public class ProjectDetailResponseDto {
         this(id, title, summary, description, projectPurpose, workMethod, position, leaderProfileId, leaderName,
                 leaderRole, leaderAvatarUrl, thumbnailUrl, currentRecruitment, totalRecruitment, recruitmentCount,
                 recruitmentStartAt, recruitmentEndAt, projectStartAt, projectEndAt, recruitStatus, progressStatus, createdAt,
-                updatedAt, techStacks, positionStatuses, 0);
+                updatedAt, techStacks, positionStatuses, 0, 0, 0);
     }
 
     public ProjectDetailResponseDto(Long id, String title, String summary, String description, String projectPurpose,
@@ -62,7 +65,8 @@ public class ProjectDetailResponseDto {
                                     Integer totalRecruitment, Integer recruitmentCount, LocalDate recruitmentStartAt,
                                     LocalDate recruitmentEndAt, LocalDate projectStartAt, LocalDate projectEndAt,
                                     String recruitStatus, String progressStatus, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                    List<String> techStacks, List<ProjectRecruitPositionStatus> positionStatuses, int readCount) {
+                                    List<String> techStacks, List<ProjectRecruitPositionStatus> positionStatuses, int readCount,
+                                    int bookmarkCount, int commentCount) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -89,6 +93,8 @@ public class ProjectDetailResponseDto {
         this.techStacks = techStacks == null ? List.of() : techStacks;
         this.positionStatuses = positionStatuses == null ? List.of() : positionStatuses;
         this.readCount = readCount;
+        this.bookmarkCount = bookmarkCount;
+        this.commentCount = commentCount;
     }
 
     public Long getId() { return id; }
@@ -143,5 +149,13 @@ public class ProjectDetailResponseDto {
 
     public int getReadCount() {
         return readCount;
+    }
+
+    public int getBookmarkCount() {
+        return bookmarkCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
     }
 }
