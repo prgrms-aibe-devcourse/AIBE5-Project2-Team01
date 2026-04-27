@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead(${project.title})}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    ${project.title},
+    ${#strings.isEmpty(project.summary) ? project.title + ' 프로젝트의 모집 정보와 팀원 구성을 MeetBall에서 확인하세요.' : project.summary},
+    ${project.title + ', ' + project.projectPurpose + ', 팀원 모집, 팀원 매칭, 프로젝트 지원, MeetBall'},
+    'index, follow'
+)}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
     <header th:replace="~{fragments/header :: mainHeader}"></header>

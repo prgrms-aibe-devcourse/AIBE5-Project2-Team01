@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: commonHead(${pageTitle})}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    ${pageTitle},
+    ${editMode ? 'MeetBall 프로젝트 모집 정보를 수정하고 팀원 매칭에 필요한 정보를 최신 상태로 관리하세요.' : 'MeetBall에서 프로젝트, 스터디, 공모전, 해커톤, 창업 팀원을 모집하고 팀에 맞는 멤버를 매칭하세요.'},
+    '프로젝트 등록, 팀원 모집 등록, 팀원 매칭, 프로젝트 팀빌딩, 사이드 프로젝트 모집, 스터디 모집, 공모전 팀원 모집, 해커톤 팀원 모집, 창업 팀원 모집, MeetBall',
+    'noindex, follow'
+)}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
     <header th:replace="~{fragments/header :: mainHeader}"></header>

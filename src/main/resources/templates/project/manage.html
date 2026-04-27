@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead(${project.title} + ' 관리')}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    ${project.title + ' 관리'},
+    'MeetBall 프로젝트 관리 화면에서 모집 현황, 지원자, 자료, 프로젝트 상태를 한 곳에서 확인하세요.',
+    '프로젝트 관리, 모집 관리, 지원자 관리, 프로젝트 자료 관리, 팀원 모집 운영, MeetBall',
+    'noindex, nofollow'
+)}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
