@@ -243,12 +243,12 @@
         <!-- Search & Filter Section -->
         <section id="projects" class="relative z-20 mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
             <div class="meetball-card relative z-20 rounded-[3rem] border border-white/80 px-6 py-6 shadow-[0_25px_70px_rgba(101,55,40,0.12)] md:px-8 md:py-8">
-                <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(9rem,0.72fr)_minmax(9rem,0.72fr)_minmax(12rem,0.95fr)_minmax(14rem,1.15fr)_minmax(10rem,0.82fr)_auto]">
+                <div class="grid grid-cols-1 gap-3 xl:grid-cols-[auto_auto_auto_1fr_auto_auto_auto_auto] items-stretch">
                     <div class="relative z-30">
                         <button type="button" id="projectPurposeDropdownBtn" onclick="toggleProjectPurposeDropdown()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="projectPurposeSelectedText">목적</span>
-                            <i id="projectPurposeDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="projectPurposeDropdownIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="projectPurposeDropdownMenu"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
@@ -274,9 +274,9 @@
 
                     <div class="relative z-30">
                         <button type="button" id="roleDropdownBtn" onclick="toggleRoleDropdown()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="roleSelectedText">포지션</span>
-                            <i id="roleDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="roleDropdownIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="roleDropdownMenu"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
@@ -289,9 +289,9 @@
 
                     <div class="relative z-30">
                         <button type="button" id="techStackMainBtn" onclick="toggleTechStackPanel()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="techStackSelectedText">기술스택</span>
-                            <i id="techStackPanelIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="techStackPanelIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="techStackPanel"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-3 md:max-h-[28rem] md:w-[min(48rem,calc(100vw-6rem))]">
@@ -319,8 +319,21 @@
                     </label>
 
                     <button type="button" id="bookmarkedFilterBtn" onclick="toggleBookmarkedOnly()"
-                            class="inline-flex h-full min-h-[4rem] items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-poodle-50 px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/20 hover:bg-white hover:text-meatball">
+                            class="group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/30 hover:bg-poodle-50/50 hover:shadow-md active:scale-95">
+                        <i class="fa-regular fa-heart text-lg text-meatball/40 group-hover/filter:text-meatball transition-colors"></i>
                         관심 프로젝트
+                    </button>
+
+                    <button type="button" id="openOnlyFilterBtn" onclick="toggleOpenOnly()"
+                            class="group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-blue-300/30 hover:bg-blue-50/30 hover:shadow-md active:scale-95">
+                        <i class="fa-regular fa-circle-check text-lg text-blue-400/40 group-hover/filter:text-blue-500 transition-colors"></i>
+                        모집 중
+                    </button>
+
+                    <button type="button" onclick="resetAllFilters()"
+                            class="inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center rounded-[1.35rem] border border-transparent bg-meatball/5 px-5 py-4 text-base font-black text-meatball shadow-sm transition-all hover:bg-meatball hover:text-white group">
+                        <i class="fa-solid fa-rotate-left mr-2 transition-transform group-hover:rotate-[-45deg]"></i>
+                        초기화
                     </button>
 
                     <div class="hidden items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-white p-1 shadow-sm md:flex">
@@ -368,6 +381,7 @@
             keyword: '',
             projectPurpose: '',
             bookmarkedOnly: false,
+            openOnly: false,
             position: '',
             techStacks: [],
             viewMode: 'grid',
@@ -391,6 +405,7 @@
             if (state.keyword) params.set('keyword', state.keyword);
             if (state.projectPurpose) params.set('projectPurpose', state.projectPurpose);
             if (state.bookmarkedOnly) params.set('bookmarkedOnly', 'true');
+            if (state.openOnly) params.set('openOnly', 'true');
             if (state.position) params.set('position', state.position);
             if (state.techStacks.length) params.set('techStack', state.techStacks.join(','));
             const normalizedViewMode = normalizeViewMode(state.viewMode);
@@ -409,6 +424,7 @@
             filterState.keyword = params.get('keyword') || '';
             filterState.projectPurpose = params.get('projectPurpose') || '';
             filterState.bookmarkedOnly = HOME_LOGGED_IN && params.get('bookmarkedOnly') === 'true';
+            filterState.openOnly = params.get('openOnly') === 'true';
             filterState.position = params.get('position') || '';
             filterState.techStacks = (params.get('techStack') || '')
                 .split(',')
@@ -426,22 +442,39 @@
         function syncBookmarkedButton() {
             const button = document.getElementById('bookmarkedFilterBtn');
             if (!button) return;
+            const icon = button.querySelector('i');
             const isActive = filterState.bookmarkedOnly;
-            button.classList.toggle('bg-poodle-600', isActive);
-            button.classList.toggle('text-white', isActive);
-            button.classList.toggle('border-transparent', isActive);
-            button.classList.toggle('shadow-lg', isActive);
-            button.classList.toggle('shadow-poodle-600/15', isActive);
-            button.classList.toggle('hover:bg-meatball', isActive);
-            button.classList.toggle('hover:text-white', isActive);
+            
+            if (isActive) {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border-transparent bg-meatball px-5 py-4 text-base font-black text-white shadow-lg shadow-meatball/20 transition-all active:scale-95";
+                if (icon) {
+                    icon.className = "fa-solid fa-heart text-lg text-white";
+                }
+            } else {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/30 hover:bg-poodle-50/50 hover:shadow-md active:scale-95";
+                if (icon) {
+                    icon.className = "fa-regular fa-heart text-lg text-meatball/40 group-hover/filter:text-meatball transition-colors";
+                }
+            }
+        }
 
-            button.classList.toggle('bg-poodle-50', !isActive);
-            button.classList.toggle('text-poodle-600', !isActive);
-            button.classList.toggle('border-poodle-100', !isActive);
-            button.classList.toggle('shadow-sm', !isActive);
-            button.classList.toggle('hover:border-meatball/20', !isActive);
-            button.classList.toggle('hover:bg-white', !isActive);
-            button.classList.toggle('hover:text-meatball', !isActive);
+        function syncOpenOnlyButton() {
+            const button = document.getElementById('openOnlyFilterBtn');
+            if (!button) return;
+            const icon = button.querySelector('i');
+            const isActive = filterState.openOnly;
+            
+            if (isActive) {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border-transparent bg-blue-500 px-5 py-4 text-base font-black text-white shadow-lg shadow-blue-500/20 transition-all active:scale-95";
+                if (icon) {
+                    icon.className = "fa-solid fa-circle-check text-lg text-white";
+                }
+            } else {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-blue-300/30 hover:bg-blue-50/30 hover:shadow-md active:scale-95";
+                if (icon) {
+                    icon.className = "fa-regular fa-circle-check text-lg text-blue-400/40 group-hover/filter:text-blue-500 transition-colors";
+                }
+            }
         }
 
         function updateProjectPurposeButtonLabel() {
@@ -520,6 +553,52 @@
             filterState.bookmarkedOnly = !filterState.bookmarkedOnly;
             filterState.page = 0;
             syncBookmarkedButton();
+            fetchProjects(0);
+        }
+
+        function toggleOpenOnly() {
+            filterState.openOnly = !filterState.openOnly;
+            filterState.page = 0;
+            syncOpenOnlyButton();
+            fetchProjects(0);
+        }
+
+        function resetAllFilters() {
+            // 필터 상태 초기화
+            filterState.keyword = '';
+            filterState.projectPurpose = '';
+            filterState.bookmarkedOnly = false;
+            filterState.openOnly = false;
+            filterState.position = '';
+            filterState.techStacks = [];
+            filterState.page = 0;
+
+            // UI 요소 갱신
+            const keywordInput = document.getElementById('keywordInput');
+            if (keywordInput) keywordInput.value = '';
+
+            syncBookmarkedButton();
+            syncOpenOnlyButton();
+            updateProjectPurposeButtonLabel();
+            
+            // 포지션/역할 필터 초기화
+            const roleOptions = document.querySelectorAll('[data-role-option]');
+            roleOptions.forEach(button => {
+                const isActive = button.dataset.roleOption === '';
+                button.classList.toggle('bg-poodle-600', isActive);
+                button.classList.toggle('text-white', isActive);
+                button.classList.toggle('shadow-lg', isActive);
+                button.classList.toggle('bg-poodle-50', !isActive);
+                button.classList.toggle('text-poodle-600', !isActive);
+            });
+            updatePositionButtonLabel();
+
+            // 기술 스택 초기화
+            activeTechCategory = '모두보기';
+            renderTechStackTabs();
+            renderTechStackOptions();
+
+            // 데이터 다시 불러오기
             fetchProjects(0);
         }
 
@@ -1169,7 +1248,8 @@
                     projectPurpose: filterState.projectPurpose,
                     position: filterState.position,
                     techStack: filterState.techStacks.join(','),
-                    bookmarkedOnly: String(filterState.bookmarkedOnly)
+                    bookmarkedOnly: String(filterState.bookmarkedOnly),
+                    openOnly: String(filterState.openOnly)
                 }).toString();
 
                 const res = await fetch(`/api/projects?${query}`);
@@ -1494,6 +1574,7 @@
             updateProjectPurposeButtonLabel();
             updateTechStackButtonLabel();
             syncBookmarkedButton();
+            syncOpenOnlyButton();
             updateViewButtons();
 
             const keywordInput = document.getElementById('keywordInput');

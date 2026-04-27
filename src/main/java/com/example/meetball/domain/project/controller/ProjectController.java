@@ -151,10 +151,11 @@ public class ProjectController {
             @RequestParam(name = "position", required = false) String position,
             @RequestParam(name = "techStack", required = false) String techStack,
             @RequestParam(name = "bookmarkedOnly", defaultValue = "false") boolean bookmarkedOnly,
+            @RequestParam(name = "openOnly", defaultValue = "false") boolean openOnly,
             @SessionAttribute(name = "profileId", required = false) Long profileId
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectPurpose, position, techStack, bookmarkedOnly, pageable, profileId);
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectPurpose, position, techStack, bookmarkedOnly, openOnly, pageable, profileId);
         return ProjectPageResponseDto.from(projects);
     }
 

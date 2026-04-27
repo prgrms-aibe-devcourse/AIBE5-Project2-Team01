@@ -199,8 +199,8 @@ public class ProjectService {
 
     public Page<ProjectListResponseDto> getProjects(String keyword, String projectPurpose,
                                                     String position, String techStack,
-                                                    boolean bookmarkedOnly, Pageable pageable,
-                                                    Long viewerId) {
+                                                    boolean bookmarkedOnly, boolean showOpenOnly,
+                                                    Pageable pageable, Long viewerId) {
         Profile viewer = viewerId != null ? profileService.getProfileById(viewerId) : null;
         String normalizedPosition = normalizePositionFilter(position);
         List<String> normalizedTechStacks = normalizeTechStackFilterList(techStack);
@@ -211,6 +211,7 @@ public class ProjectService {
                         normalizedPosition,
                         normalizedTechStacks,
                         bookmarkedOnly,
+                        showOpenOnly,
                         viewer
                 ),
                 pageable
@@ -241,7 +242,8 @@ public class ProjectService {
 
     private Specification<Project> buildProjectFilterSpec(String keyword, String projectPurpose,
                                                           String position, List<String> techStacks,
-                                                          boolean bookmarkedOnly, Profile viewer) {
+                                                          boolean bookmarkedOnly, boolean showOpenOnly,
+                                                          Profile viewer) {
         return (root, query, cb) -> {
             if (query != null) {
                 query.distinct(true);
@@ -289,6 +291,10 @@ public class ProjectService {
                     subquery.where(cb.equal(bookmarkedRoot.get("profile").get("id"), viewer.getId()));
                     predicates.add(root.get("id").in(subquery));
                 }
+            }
+
+            if (showOpenOnly) {
+                predicates.add(cb.equal(root.get("recruitStatus"), "OPEN"));
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));
