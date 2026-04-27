@@ -893,7 +893,8 @@ public class ProjectService {
                         participant.getProfile().getId(),
                         participant.getProfile().getNickname(),
                         participant.getRole(),
-                        fallbackPosition(participantPositionName(participant), participant.getProfile().getPosition())
+                        fallbackPosition(participantPositionName(participant), participant.getProfile().getPosition()),
+                        participant.getProfile().getProfileImage()
                 ))
                 .toList();
         if (!members.isEmpty()) {
@@ -906,7 +907,8 @@ public class ProjectService {
                 project.getOwnerProfile().getId(),
                 project.getOwnerProfile().getNickname(),
                 "LEADER",
-                normalizeProjectPosition(project.getOwnerProfile().getPosition())
+                normalizeProjectPosition(project.getOwnerProfile().getPosition()),
+                project.getOwnerProfile().getProfileImage()
         ));
     }
 
