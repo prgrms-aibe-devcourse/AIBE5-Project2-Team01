@@ -10,9 +10,9 @@
         <!-- Hero Banner Area -->
         <section
             class="relative h-[28rem] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-poodle-900/10 mb-10 group">
-            <img th:src="${project.thumbnailUrl}" th:alt="${project.title}"
-                src="/img/logo.png"
-                class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105">
+            <img th:src="${!#strings.isEmpty(project.thumbnailUrl) ? project.thumbnailUrl : '/img/logo.png'}" 
+                 th:alt="${project.title}"
+                 class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105 shadow-inner">
             <div class="absolute inset-0 bg-gradient-to-t from-poodle-900/80 via-poodle-900/20 to-transparent"></div>
             <div class="absolute inset-0 flex flex-col justify-end p-12 text-white">
                 <div class="flex items-center gap-2 mb-4">
@@ -93,19 +93,19 @@
                                     <p class="text-sm font-black text-poodle-900 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 필수 요건
                                     </p>
-                                    <ul class="space-y-3 text-sm text-poodle-400 font-bold list-none pl-3">
-                                        <li>열정적이고 책임감 있는 분</li>
-                                        <li>프로젝트 완성까지 함께할 수 있는 분</li>
-                                    </ul>
+                                    <div th:text="${project.requiredQualifications}"
+                                         class="text-sm text-poodle-400 font-bold whitespace-pre-wrap pl-3">
+                                        열정적이고 책임감 있는 분
+                                    </div>
                                 </div>
                                 <div class="space-y-4">
                                     <p class="text-sm font-black text-poodle-900 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 bg-poodle-300 rounded-full"></span> 우대 사항
                                     </p>
-                                    <ul class="space-y-3 text-sm text-poodle-400 font-bold list-none pl-3">
-                                        <li>모바일 앱 개발 경험</li>
-                                        <li>AI/ML 관련 프로젝트 경험</li>
-                                    </ul>
+                                    <div th:text="${project.preferredQualifications}"
+                                         class="text-sm text-poodle-400 font-bold whitespace-pre-wrap pl-3">
+                                        모바일 앱 개발 경험
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -237,6 +237,9 @@
                         
                         <div id="comments-container" class="space-y-6 pt-8 border-t border-poodle-50">
                             <!-- JS injected comments -->
+                        </div>
+                        <div id="comments-pagination" class="flex justify-center items-center gap-2 pt-10">
+                            <!-- Pagination buttons injected here -->
                         </div>
                     </section>
                 </div>
@@ -828,31 +831,75 @@
             return html;
         }
 
-        async function fetchComments() {
+        let currentCommentsPage = 0;
+
+        async function fetchComments(page = 0) {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
+            currentCommentsPage = page;
 
             try {
-                const res = await fetch(`/api/projects/${currentProjectId}/comments`);
+                const res = await fetch(`/api/projects/${currentProjectId}/comments?page=${page}&size=10&sort=createdAt,desc`);
                 if(!res.ok) throw new Error('댓글 불러오기 실패');
                 
                 const data = await res.json();
                 const comments = data.content || [];
                 const container = document.getElementById('comments-container');
                 const countBadge = document.getElementById('comment-count-badge');
+                
                 if (countBadge) {
                     countBadge.textContent = String(data.totalElements ?? comments.length);
                 }
 
                 if (comments.length === 0) {
                     container.innerHTML = '<div class="text-center text-poodle-300 font-bold py-10">첫 번째 댓글을 남겨보세요!</div>';
+                    document.getElementById('comments-pagination').innerHTML = '';
                     return;
                 }
 
                 container.innerHTML = comments.map(c => renderCommentItem(c)).join('');
+                renderPagination(data);
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        function renderPagination(data) {
+            const container = document.getElementById('comments-pagination');
+            if (!container) return;
+            
+            const totalPages = data.totalPages;
+            const currentPage = data.number;
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            // Previous Button
+            if (currentPage > 0) {
+                html += `<button onclick="fetchComments(${currentPage - 1})" class="w-8 h-8 flex items-center justify-center rounded-xl bg-poodle-50 text-poodle-400 hover:bg-meatball hover:text-white transition-all"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
+            }
+
+            // Page numbers (showing at most 5 around current page)
+            let startPage = Math.max(0, currentPage - 2);
+            let endPage = Math.min(totalPages - 1, startPage + 4);
+            if (endPage - startPage < 4) {
+                startPage = Math.max(0, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'bg-meatball text-white shadow-lg shadow-meatball/20' : 'bg-poodle-50 text-poodle-400 hover:bg-poodle-100';
+                html += `<button onclick="fetchComments(${i})" class="w-8 h-8 rounded-xl font-black text-xs transition-all ${activeClass}">${i + 1}</button>`;
+            }
+
+            // Next Button
+            if (currentPage < totalPages - 1) {
+                html += `<button onclick="fetchComments(${currentPage + 1})" class="w-8 h-8 flex items-center justify-center rounded-xl bg-poodle-50 text-poodle-400 hover:bg-meatball hover:text-white transition-all"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
+            }
+
+            container.innerHTML = html;
         }
 
         function toggleReplyForm(commentId) {
@@ -897,10 +944,11 @@
                 if (res.ok) {
                     if (parentId) {
                         document.getElementById(`reply-input-${parentId}`).value = '';
+                        fetchComments(currentCommentsPage);
                     } else {
                         document.getElementById('commentContent').value = '';
+                        fetchComments(0); // 새로운 댓글은 첫 페이지로 이동해서 확인
                     }
-                    fetchComments();
                 } else {
                     await meetballAlert('등록에 실패했습니다.', { type: 'error' });
                 }
@@ -916,7 +964,7 @@
             try {
                 const res = await meetballFetch(`/api/projects/${currentProjectId}/comments/${commentId}`, { method: 'DELETE' });
                 if(res.ok) {
-                    fetchComments();
+                    fetchComments(currentCommentsPage);
                 } else {
                     await meetballAlert('삭제에 실패했습니다.', { type: 'error' });
                 }

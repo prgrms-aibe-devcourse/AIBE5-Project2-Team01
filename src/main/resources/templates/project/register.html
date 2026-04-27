@@ -115,15 +115,31 @@
                             </div>
                         </div>
 
-                        <div class="space-y-3">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Description
-                            </label>
-                            <textarea id="description"
-                                      class="w-full h-80 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed">[필수 요건]
-
-[우대 사항]
-</textarea>
+                        <div class="space-y-8">
+                            <div class="space-y-3">
+                                <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> Project Introduction
+                                </label>
+                                <textarea id="description" placeholder="프로젝트를 한눈에 알 수 있게 소개해 주세요!"
+                                          class="w-full h-48 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed"></textarea>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-3">
+                                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
+                                        <span class="w-1 h-1 bg-meatball rounded-full"></span> Required Qualifications
+                                    </label>
+                                    <textarea id="requiredQualifications" placeholder="어떤 분들이 꼭 필요한가요?"
+                                              class="w-full h-48 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed"></textarea>
+                                </div>
+                                <div class="space-y-3">
+                                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
+                                        <span class="w-1 h-1 bg-poodle-300 rounded-full"></span> Preferred Qualifications
+                                    </label>
+                                    <textarea id="preferredQualifications" placeholder="이런 분이면 더 좋아요!"
+                                              class="w-full h-48 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -573,7 +589,9 @@
             if (!editMode || !editProject) return;
 
             document.getElementById('title').value = editProject.title || '';
-            document.getElementById('description').value = (editProject.description || '').trim() || DESCRIPTION_TEMPLATE;
+            document.getElementById('description').value = editProject.description || '';
+            document.getElementById('requiredQualifications').value = editProject.requiredQualifications || '';
+            document.getElementById('preferredQualifications').value = editProject.preferredQualifications || '';
             document.getElementById('thumbnailUrl').value = editProject.thumbnailUrl || '';
             document.getElementById('recruitmentStartAt').value = editProject.recruitmentStartAt || '';
             document.getElementById('recruitmentEndAt').value = editProject.recruitmentEndAt || '';
@@ -608,9 +626,10 @@
             const pEnd = document.getElementById('projectEndAt')?.value;
             const datesDone = !!(rStart && rEnd && pStart && pEnd);
 
-            const hasTitle = !!document.getElementById('title')?.value.trim();
-            const hasDesc = hasMeaningfulDescription();
-            const contentDone = hasTitle && hasDesc;
+            const hasDesc = !!document.getElementById('description')?.value.trim();
+            const hasReq = !!document.getElementById('requiredQualifications')?.value.trim();
+            const hasPref = !!document.getElementById('preferredQualifications')?.value.trim();
+            const contentDone = hasTitle && hasDesc && hasReq && hasPref;
 
             const items = [
                 { id: 'check-type', done: typeDone },
@@ -981,19 +1000,11 @@
             updatePlanningFileLabel();
         }
 
-        const DESCRIPTION_TEMPLATE = `[필수 요건]\n\n[우대 사항]\n`;
-
-        function buildDescription() {
-            return document.getElementById('description').value.trim();
-        }
-
-        function hasMeaningfulDescription() {
-            const description = buildDescription();
-            const normalized = description
-                .replace(/\[필수 요건\]/g, '')
-                .replace(/\[우대 사항\]/g, '')
-                .replace(/\s/g, '');
-            return normalized.length > 0;
+        function hasMeaningfulContent() {
+            const desc = document.getElementById('description')?.value.trim();
+            const req = document.getElementById('requiredQualifications')?.value.trim();
+            const pref = document.getElementById('preferredQualifications')?.value.trim();
+            return desc.length > 0 && req.length > 0 && pref.length > 0;
         }
 
         async function uploadOptionalArtifacts(projectId) {
@@ -1031,7 +1042,9 @@
 
             const payload = {
                 title: document.getElementById('title').value,
-                description: buildDescription(),
+                description: document.getElementById('description').value.trim(),
+                requiredQualifications: document.getElementById('requiredQualifications').value.trim(),
+                preferredQualifications: document.getElementById('preferredQualifications').value.trim(),
                 projectPurpose: document.getElementById('projectPurpose').value,
                 workMethod: document.getElementById('workMethod').value,
                 thumbnailUrl,
@@ -1046,8 +1059,8 @@
                 progressStatus: editMode ? currentProgressStatus : 'READY'
             };
 
-            if (!payload.title || !payload.projectPurpose || !hasMeaningfulDescription()) {
-                await meetballAlert('기본 정보를 모두 입력해주세요!');
+            if (!payload.title || !payload.projectPurpose || !hasMeaningfulContent()) {
+                await meetballAlert('소개, 필수 요건, 우대 사항을 모두 입력해주세요!');
                 return;
             }
             if (!payload.workMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 2 || payload.techStacks.length === 0) {
@@ -1132,10 +1145,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             applyEditProject();
-            const description = document.getElementById('description');
-            if (description && !description.value.trim()) {
-                description.value = DESCRIPTION_TEMPLATE;
-            }
             renderPositions();
             renderTechStackOptions();
             updatePlanningFileLabel();
