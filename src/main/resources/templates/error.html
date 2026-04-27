@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: commonHead(
+    '오류',
+    '요청 처리 중 문제가 발생했습니다.',
+    'MeetBall, 오류 페이지',
+    'noindex, nofollow'
+)}"></head>
+<body class="bg-poodle-50 text-poodle-900 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-2xl w-full text-center space-y-10 animate-fade-in-up flex flex-col items-center">
+        <div class="relative w-full h-64 flex items-center justify-center overflow-hidden">
+            <div class="relative z-10 animate-poodle-wander">
+                <div class="w-48 h-48 bg-white rounded-[3rem] shadow-[0_20px_50px_rgba(62,39,35,0.1)] border border-poodle-100 flex items-center justify-center">
+                    <img th:src="@{/img/meetball.png}" src="/img/meetball.png" alt="Meetball"
+                         class="w-32 h-32 object-contain drop-shadow-xl">
+                </div>
+            </div>
+            <div class="absolute w-64 h-64 bg-meatball/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="space-y-6 relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-poodle-900/5 rounded-full text-[10px] font-black text-poodle-300 uppercase tracking-widest">
+                System Message: Error <span th:text="${status ?: '404'}">404</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-poodle-900 tracking-tighter leading-tight">
+                앗! 밋볼이가<br><span class="text-meatball">길을 잃었어요.</span>
+            </h1>
+            <p class="text-poodle-300 font-bold text-base leading-relaxed max-w-sm mx-auto opacity-80"
+               th:text="${message ?: '요청하신 페이지가 존재하지 않거나, 일시적인 오류가 발생했습니다. 밋볼과 함께 안전한 홈으로 돌아갈까요?'}">
+                요청하신 페이지가 존재하지 않거나, 일시적인 오류가 발생했습니다.
+            </p>
+        </div>
+
+        <div class="pt-6 relative z-10">
+            <a href="/"
+               class="inline-flex items-center gap-4 px-10 py-5 bg-poodle-900 text-white rounded-2xl font-black text-lg hover:bg-meatball transition-all shadow-xl shadow-poodle-900/20 hover:scale-105 active:scale-95 group">
+                <i class="fa-solid fa-house-chimney group-hover:-translate-y-1 transition-transform"></i>
+                홈으로 돌아가기
+            </a>
+        </div>
+    </div>
+    <style>
+        @keyframes poodle-wander {
+            0% { transform: translateX(-80px) translateY(0) scaleX(1); }
+            10% { transform: translateX(-40px) translateY(-40px) scaleX(1); }
+            20% { transform: translateX(0px) translateY(0) scaleX(1); }
+            30% { transform: translateX(40px) translateY(-40px) scaleX(1); }
+            40% { transform: translateX(80px) translateY(0) scaleX(1); }
+            50% { transform: translateX(80px) translateY(0) scaleX(-1); }
+            60% { transform: translateX(40px) translateY(-40px) scaleX(-1); }
+            70% { transform: translateX(0px) translateY(0) scaleX(-1); }
+            80% { transform: translateX(-40px) translateY(-40px) scaleX(-1); }
+            90% { transform: translateX(-80px) translateY(0) scaleX(-1); }
+            100% { transform: translateX(-80px) translateY(0) scaleX(1); }
+        }
+
+        .animate-poodle-wander {
+            animation: poodle-wander 6s infinite ease-in-out;
+        }
+    </style>
+</body>
+</html>

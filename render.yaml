@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: meetball
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_HOST
+        fromDatabase:
+          name: meetball-db
+          property: host
+      - key: SPRING_DATASOURCE_PORT
+        fromDatabase:
+          name: meetball-db
+          property: port
+      - key: SPRING_DATASOURCE_DB
+        fromDatabase:
+          name: meetball-db
+          property: database
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: meetball-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: meetball-db
+          property: password
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+      - key: APP_SEED_ENABLED
+        value: "false"
+
+databases:
+  - name: meetball-db
+    plan: free
+    databaseName: meetball
+    user: meetball

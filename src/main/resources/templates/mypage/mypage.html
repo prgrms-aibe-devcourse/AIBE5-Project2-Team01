@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: commonHead(
+    '마이 페이지',
+    'MeetBall 마이페이지에서 내 프로필과 등록한 프로젝트, 지원 프로젝트, 관심 프로젝트, 읽은 프로젝트, 받은 리뷰를 관리하세요.',
+    'MeetBall 마이페이지, 내 프로젝트 관리, 프로필 관리, 지원 프로젝트, 관심 프로젝트, 읽은 프로젝트, 받은 리뷰, 프로젝트 팀원 모집 관리',
+    'noindex, nofollow'
+)}"></head>
+
+<body class="min-h-screen text-poodle-900 bg-poodle-50">
+<header th:replace="~{fragments/header :: mainHeader}"></header>
+
+<main class="w-full flex-grow mx-auto max-w-7xl px-4 py-12">
+    <section class="meetball-cream-panel mb-10 rounded-[3rem] px-8 py-16 md:px-12 md:py-20 relative overflow-hidden">
+        <img th:src="@{/img/logo.png}" src="/img/logo.png" alt=""
+             class="absolute right-[-4rem] bottom-[-4rem] w-72 md:w-96 object-contain opacity-15 md:opacity-70 pointer-events-none select-none">
+
+        <div class="relative z-10 flex flex-col gap-4">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 text-[11px] font-black uppercase tracking-[0.24em] text-poodle-400 border border-poodle-100 w-fit">
+                <i class="fa-solid fa-id-badge text-meatball"></i> Meetball account
+            </span>
+            <div class="space-y-3">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight text-poodle-700">개인 정보를 한 곳에서 관리하세요</h1>
+                <p class="text-sm md:text-base font-bold text-poodle-400 max-w-2xl">계정 정보와 프로필 정보를 같은 화면에서 바로 확인하고 수정할 수 있습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <div th:if="${mypageNotice != null}"
+         class="mb-8 rounded-3xl border border-poodle-100 bg-white px-8 py-5 text-sm font-bold text-poodle-600 shadow-sm flex items-center gap-4">
+        <div class="w-8 h-8 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball">
+            <i class="fa-solid fa-bell-concierge"></i>
+        </div>
+        <span th:text="${mypageNotice}">마이페이지 안내 메시지</span>
+    </div>
+
+    <div class="space-y-10">
+            <!-- 고도화된 탭 바 (정적 카드 스타일로 변경) -->
+            <div class="relative bg-white rounded-[2.5rem] p-2 border border-poodle-50 shadow-[0_20px_50px_rgba(62,39,35,0.08)] inline-flex items-center gap-1 min-w-full md:min-w-fit overflow-x-auto no-scrollbar scroll-smooth">
+                <button type="button" onclick="switchTab('account')" id="tab-account"
+                        class="tab-btn active px-10 py-4 bg-poodle-600 rounded-full text-sm font-black text-white shadow-xl shadow-poodle-600/20 transition-all whitespace-nowrap">
+                    <i class="fa-solid fa-user-gear mr-2 opacity-80"></i>개인 정보
+                </button>
+                <button type="button" onclick="switchTab('participating')" id="tab-participating"
+                        class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
+                    참여 프로젝트
+                </button>
+                <button type="button" onclick="switchTab('applied')" id="tab-applied"
+                        class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
+                    지원 프로젝트
+                </button>
+                <button type="button" onclick="switchTab('wishlist')" id="tab-wishlist"
+                        class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
+                    관심 프로젝트
+                </button>
+                <button type="button" onclick="switchTab('reads')" id="tab-reads"
+                        class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
+                    읽은 프로젝트
+                </button>
+                <button type="button" onclick="switchTab('reviews')" id="tab-reviews"
+                        class="tab-btn px-10 py-4 text-sm font-black text-poodle-400 hover:text-poodle-800 hover:bg-poodle-50 rounded-full transition-all whitespace-nowrap">
+                    받은 리뷰
+                </button>
+            </div>
+
+            <!-- Account Content -->
+            <div id="content-account" class="tab-content section-card space-y-16 animate-fade-in bg-white rounded-[4rem] p-10 md:p-16 border border-poodle-50 shadow-[0_32px_64px_-16px_rgba(62,39,35,0.08)] relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-meatball/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-poodle-100/50 rounded-full blur-[80px] -ml-32 -mb-32"></div>
+                
+                <input type="hidden" id="profileId" th:value="${profile.profileId}">
+                <input type="hidden" id="inlineProfilePublic" th:value="${profile.public}">
+                <input type="hidden" id="inlinePositionValue" data-inline-position-current th:data-inline-position-current="${profile.position}" th:value="${profile.position}">
+                <input type="hidden" id="inlineTechStackValue" data-inline-tech-current th:data-inline-tech-current="${profile.techStack}" th:value="${profile.techStack}">
+                <select id="inlineExperienceYears" class="hidden">
+                    <option th:each="year : ${#numbers.sequence(0,10)}"
+                            th:value="${year}"
+                            th:selected="${profile.experienceYears == year.toString()}"
+                            th:text="${year == 10 ? '10년 이상' : year + '년'}">0년</option>
+                </select>
+                <select id="inlineOrgVisible" class="hidden">
+                    <option value="true" th:selected="${profile.orgVisible}">공개</option>
+                    <option value="false" th:selected="${!profile.orgVisible}">비공개</option>
+                </select>
+
+                <!-- Header Section -->
+                <div class="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between pb-10 border-b border-poodle-50">
+                    <div class="space-y-3">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-poodle-50 text-[10px] font-black uppercase tracking-widest text-poodle-400 border border-poodle-100">
+                            <span class="w-1.5 h-1.5 bg-meatball rounded-full animate-pulse"></span> 본인 인증 및 연락처 정보
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-poodle-900 leading-tight">개인 정보 설정</h2>
+                        <p class="text-base font-bold text-poodle-400">나의 계정과 프로필을 한눈에 확인하고 자유롭게 커스터마이징하세요.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="button" id="profileEditCancelBtn" onclick="cancelInlineProfileEdit()"
+                                class="hidden px-8 py-4 rounded-2xl border-2 border-poodle-100 bg-white text-sm font-black text-poodle-500 transition-all hover:border-poodle-200 hover:bg-poodle-50 hover:text-poodle-800">
+                            취소
+                        </button>
+                        <button type="button" id="profileEditToggleBtn" th:if="${isOwner}" onclick="startInlineProfileEdit()"
+                                class="px-8 py-4 bg-poodle-900 text-white rounded-2xl font-black text-sm flex items-center gap-3 shadow-2xl shadow-poodle-900/20 transition-all hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98]">
+                            <i class="fa-regular fa-pen-to-square text-lg"></i>
+                            <span id="profileEditToggleLabel">정보 업데이트</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative z-10 space-y-20">
+                    <!-- SECTION 1: Account Info -->
+                    <section class="space-y-10">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 bg-poodle-900 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-poodle-900/10">
+                                <i class="fa-solid fa-shield-halved text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black text-poodle-900 tracking-tight">기본 계정 정보</h3>
+                                <p class="text-xs font-bold text-poodle-300 mt-1 uppercase tracking-wider">계정 보안 및 연락처</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Name Card -->
+                            <div class="group/card space-y-4 p-8 bg-poodle-50/40 rounded-[2.5rem] border border-transparent transition-all hover:bg-white hover:border-poodle-100 hover:shadow-xl hover:shadow-poodle-900/5">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-signature text-meatball"></i> 실명
+                                </label>
+                                <div class="min-h-[2rem] flex items-center">
+                                    <span class="profile-readonly text-base font-black text-poodle-800" th:text="${profile.accountName != null && !#strings.isEmpty(profile.accountName) ? profile.accountName : '이름 미설정'}">홍길동</span>
+                                    <input id="inlineAccountName" type="text" th:value="${profile.accountName}"
+                                           class="profile-edit-only hidden w-full bg-white px-4 py-3 rounded-xl border border-poodle-100 outline-none font-black text-poodle-800 focus:border-meatball focus:ring-4 focus:ring-meatball/5 transition-all"
+                                           placeholder="이름 입력">
+                                </div>
+                            </div>
+
+                            <!-- Phone Card -->
+                            <div class="group/card space-y-4 p-8 bg-poodle-50/40 rounded-[2.5rem] border border-transparent transition-all hover:bg-white hover:border-poodle-100 hover:shadow-xl hover:shadow-poodle-900/5">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-mobile-screen-button text-meatball"></i> 휴대폰 번호
+                                </label>
+                                <div class="min-h-[2rem] flex items-center">
+                                    <span class="profile-readonly text-base font-black text-poodle-800" th:text="${profile.phoneNumber != null && !#strings.isEmpty(profile.phoneNumber) ? profile.phoneNumber : '연락처 미등록'}">-</span>
+                                    <input id="inlinePhoneNumber" type="text" th:value="${profile.phoneNumber}"
+                                           class="profile-edit-only hidden w-full bg-white px-4 py-3 rounded-xl border border-poodle-100 outline-none font-black text-poodle-800 focus:border-meatball focus:ring-4 focus:ring-meatball/5 transition-all"
+                                           placeholder="010-0000-0000">
+                                </div>
+                            </div>
+
+                            <!-- Birthday Card -->
+                            <div class="group/card space-y-4 p-8 bg-poodle-50/40 rounded-[2.5rem] border border-transparent transition-all hover:bg-white hover:border-poodle-100 hover:shadow-xl hover:shadow-poodle-900/5">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-day text-meatball"></i> 생년월일
+                                </label>
+                                <div class="min-h-[2rem] flex items-center">
+                                    <span class="profile-readonly text-base font-black text-poodle-800" th:text="${profile.birthDate != null ? #temporals.format(profile.birthDate, 'yyyy MM. dd') : '생일 미설정'}">-</span>
+                                    <input id="inlineBirthDate" type="date" th:value="${profile.birthDate}"
+                                           class="profile-edit-only hidden w-full bg-white px-4 py-3 rounded-xl border border-poodle-100 outline-none font-black text-poodle-800 focus:border-meatball focus:ring-4 focus:ring-meatball/5 transition-all">
+                                </div>
+                            </div>
+
+                            <!-- Gender Card -->
+                            <div class="group/card space-y-4 p-8 bg-poodle-50/40 rounded-[2.5rem] border border-transparent transition-all hover:bg-white hover:border-poodle-100 hover:shadow-xl hover:shadow-poodle-900/5">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-venus-mars text-meatball"></i> 성별
+                                </label>
+                                <div class="min-h-[2rem] flex items-center">
+                                    <span class="profile-readonly text-base font-black text-poodle-800" th:text="${profile.gender != null && !#strings.isEmpty(profile.gender) ? profile.gender : '성별 미선택'}">-</span>
+                                    <select id="inlineGender" class="profile-edit-only hidden w-full bg-white px-4 py-3 rounded-xl border border-poodle-100 outline-none font-black text-poodle-800 focus:border-meatball focus:ring-4 focus:ring-meatball/5 transition-all">
+                                        <option value="남자" th:selected="${profile.gender == '남자'}">남자</option>
+                                        <option value="여자" th:selected="${profile.gender == '여자'}">여자</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 2: Profile Info -->
+                    <section class="space-y-12">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 bg-meatball rounded-2xl flex items-center justify-center text-white shadow-xl shadow-meatball/20">
+                                <i class="fa-solid fa-user-pen text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black text-poodle-900 tracking-tight">공개 프로필 정보</h3>
+                                <p class="text-xs font-bold text-poodle-300 mt-1 uppercase tracking-wider">공개 프로필 및 전문성</p>
+                            </div>
+                        </div>
+
+                        <!-- Top row: Avatar & Nickname -->
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                            <div class="md:col-span-4 p-10 bg-poodle-50/30 rounded-[3rem] border border-poodle-50 flex flex-col items-center justify-center gap-6 relative overflow-hidden group/avatar">
+                                <div class="absolute inset-0 bg-gradient-to-br from-meatball/5 to-transparent opacity-0 group-hover/avatar:opacity-100 transition-opacity"></div>
+                                <div class="relative">
+                                    <img th:src="${profile.profileImage != null && !#strings.isEmpty(profile.profileImage) ? profile.profileImage : '/img/logo.png'}"
+                                         src="/img/logo.png"
+                                         class="w-40 h-40 rounded-[3rem] border-8 border-white shadow-2xl bg-white shadow-poodle-600/10 object-cover relative z-10 transition-transform group-hover/avatar:scale-105"
+                                         alt="프로필 사진">
+                                    <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-meatball z-20 border border-poodle-50">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </div>
+                                </div>
+                                <div class="text-center space-y-1 relative z-10">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-poodle-300">프로필 사진</p>
+                                    <p class="text-xs font-bold text-poodle-400">이미지는 곧 수정 가능 예정입니다.</p>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-8 space-y-8">
+                                <div class="p-10 bg-white rounded-[3rem] border border-poodle-100 shadow-sm space-y-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300">활동 닉네임</label>
+                                        <div class="flex items-center gap-4">
+                                            <span class="profile-readonly text-4xl font-black tracking-tighter text-poodle-900" th:text="${profile.nickname}">활동 닉네임</span>
+                                            <input id="inlineNickname" type="text" th:value="${profile.nickname}"
+                                                   class="profile-edit-only hidden w-full bg-poodle-50 px-8 py-5 rounded-[2rem] border-2 border-transparent outline-none text-3xl font-black text-poodle-900 focus:bg-white focus:border-meatball transition-all"
+                                                   placeholder="닉네임 입력">
+                                            <div class="profile-readonly flex items-center gap-2 px-3 py-1 bg-meatball/5 rounded-full text-[10px] font-black text-meatball whitespace-nowrap">
+                                                <i class="fa-solid fa-temperature-three-quarters"></i>
+                                                <span th:text="${profile.meetBallIndex}">36.5</span>℃
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 pt-8 border-t border-poodle-50">
+                                        <!-- Position -->
+                                        <div class="space-y-4 relative">
+                                            <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300">현재 포지션</label>
+                                            <div class="profile-readonly flex items-center gap-3 text-poodle-700 font-bold">
+                                                <div class="w-8 h-8 rounded-xl bg-poodle-50 flex items-center justify-center text-meatball text-xs">
+                                                    <i class="fa-solid fa-code"></i>
+                                                </div>
+                                                <span class="text-base font-black" th:text="${profile.position != null && !#strings.isEmpty(profile.position) ? profile.position : '포지션 미설정'}">백엔드</span>
+                                            </div>
+                                            <div class="profile-edit-only hidden relative">
+                                                <button type="button" id="inlinePositionTrigger" onclick="toggleInlineDropdown('position')" 
+                                                        class="w-full flex items-center justify-between px-6 py-4 bg-poodle-50 rounded-2xl border-2 border-transparent font-black text-poodle-800 hover:bg-poodle-100/50 transition-all focus:border-meatball/30">
+                                                    <span id="inlinePositionTriggerText">포지션 선택</span>
+                                                    <i id="inlinePositionChevron" class="fa-solid fa-chevron-down text-poodle-300 transition-transform"></i>
+                                                </button>
+                                                <div id="inlinePositionDropdown" class="absolute z-[100] left-0 right-0 mt-3 p-6 bg-white rounded-[2.5rem] shadow-2xl border border-poodle-100 hidden animate-modal-up inline-filter-panel">
+                                                    <div id="inlinePositionOptions" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto no-scrollbar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Experience -->
+                                        <div class="space-y-4 relative">
+                                            <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300">경력 수준</label>
+                                            <div class="profile-readonly flex items-center gap-3 text-poodle-700 font-bold">
+                                                <div class="w-8 h-8 rounded-xl bg-poodle-50 flex items-center justify-center text-meatball text-xs">
+                                                    <i class="fa-solid fa-briefcase"></i>
+                                                </div>
+                                                <span class="text-base font-black" th:text="${profile.experienceYears != null && !#strings.isEmpty(profile.experienceYears) ? (profile.experienceYears == '10' ? '10년 이상' : profile.experienceYears + '년 차') : '경력 미설정'}">3년 차</span>
+                                            </div>
+                                            <div class="profile-edit-only hidden relative">
+                                                <button type="button" id="inlineExperienceTrigger" onclick="toggleInlineDropdown('experience')" 
+                                                        class="w-full flex items-center justify-between px-6 py-4 bg-poodle-50 rounded-2xl border-2 border-transparent font-black text-poodle-800 hover:bg-poodle-100/50 transition-all focus:border-meatball/30">
+                                                    <span id="inlineExperienceTriggerText">경력 선택</span>
+                                                    <i id="inlineExperienceChevron" class="fa-solid fa-chevron-down text-poodle-300 transition-transform"></i>
+                                                </button>
+                                                <div id="inlineExperienceDropdown" class="absolute z-[100] left-0 right-0 mt-3 p-6 bg-white rounded-[2.5rem] shadow-2xl border border-poodle-100 hidden animate-modal-up inline-filter-panel">
+                                                    <div id="inlineExperienceOptions" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto no-scrollbar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Organization -->
+                                        <div class="space-y-4 relative">
+                                            <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300">소속 조직명</label>
+                                            <div class="profile-readonly flex items-center gap-3 text-poodle-700 font-bold">
+                                                <div class="w-8 h-8 rounded-xl bg-poodle-50 flex items-center justify-center text-meatball text-xs">
+                                                    <i class="fa-solid fa-building"></i>
+                                                </div>
+                                                <span class="text-base font-black" th:text="${profile.organization != null && !#strings.isEmpty(profile.organization) ? profile.organization : '소속 제공 안 함'}">소속 조직</span>
+                                            </div>
+                                            <div class="profile-edit-only hidden">
+                                                <input id="inlineOrganization" type="text" th:value="${profile.organization}"
+                                                       class="w-full bg-poodle-50 px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:bg-white focus:border-meatball transition-all"
+                                                       placeholder="소속 입력">
+                                            </div>
+                                        </div>
+
+                                        <!-- Visibility -->
+                                        <div class="space-y-4 relative">
+                                            <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300">신원 공개 설정</label>
+                                            <div class="profile-readonly flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-xl bg-poodle-50 flex items-center justify-center text-meatball text-xs">
+                                                     <i th:class="${profile.orgVisible ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock'}"></i>
+                                                </div>
+                                                <span class="text-sm font-black" th:classappend="${profile.orgVisible ? 'text-meatball' : 'text-poodle-300'}"
+                                                      th:text="${profile.orgVisible ? '모두에게 공개' : '나만 보기'}">공개</span>
+                                            </div>
+                                            <div class="profile-edit-only hidden flex items-center gap-4 h-[56px] px-2">
+                                                <!-- Premium Toggle Switch -->
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" id="inlineOrgVisibleCheck" class="sr-only peer" th:checked="${profile.orgVisible}">
+                                                    <div class="w-14 h-8 bg-poodle-100 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-meatball shadow-inner"></div>
+                                                </label>
+                                                <span id="inlineOrgVisibleStatusText" class="text-sm font-black text-poodle-400">나만 보기</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Tech Stacks -->
+                        <div class="space-y-5 p-10 bg-poodle-50/20 rounded-[3.5rem] border border-poodle-50 group/section hover:bg-white hover:shadow-2xl transition-all duration-500">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-poodle-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-bolt text-meatball"></i> 보유 기술 스택
+                                </label>
+                                <span class="profile-readonly text-[11px] font-bold text-poodle-300 italic">전문 역량 분야</span>
+                            </div>
+                            <div class="min-h-[4rem]">
+                                <div class="profile-readonly flex flex-wrap gap-3" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
+                                    <span th:each="stack : ${stacks}"
+                                          th:if="${!#strings.isEmpty(#strings.trim(stack))}"
+                                          th:attr="data-tech-chip=${#strings.trim(stack)}"
+                                          th:text="${#strings.trim(stack)}"
+                                          class="px-5 py-2.5 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">Java</span>
+                                    <div th:if="${profile.techStack == null or profile.techStack == ''}" class="flex flex-col items-center gap-2 py-4">
+                                        <p class="text-sm font-bold text-poodle-200 italic">아직 등록된 기술 스택이 없습니다. 버튼을 눌러 스택을 추가해주세요!</p>
+                                    </div>
+                                </div>
+                                <div class="profile-edit-only hidden space-y-6">
+                                    <!-- Category Tabs for Tech Stack -->
+                                    <div id="inlineTechCategoryTabs" class="flex flex-wrap gap-2 pb-4 border-b border-poodle-50">
+                                        <!-- Tabs dynamically injected -->
+                                    </div>
+                                    <!-- Tech Stack Options Grid -->
+                                    <div id="inlineTechStackOptions" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-8 rounded-[2.5rem] bg-poodle-50/50 border border-poodle-100 max-h-[30rem] overflow-y-auto no-scrollbar">
+                                        <!-- Options dynamically injected -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bio Card -->
+                        <div class="space-y-5 p-10 bg-poodle-900 rounded-[3.5rem] shadow-2xl shadow-poodle-900/15 relative overflow-hidden group/bio">
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                            <div class="relative z-10 flex items-center justify-between">
+                                <label class="block text-[13px] font-black uppercase tracking-widest text-white/40 flex items-center gap-2">
+                                    <i class="fa-solid fa-quote-left text-meatball"></i> 나의 자기소개
+                                </label>
+                                <i class="fa-solid fa-sparkles text-white/20"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="profile-readonly p-8 bg-white/5 rounded-3xl border border-white/10">
+                                    <p class="text-base leading-relaxed text-white/90 font-bold whitespace-pre-wrap" th:text="${profile.bio != null && !#strings.isEmpty(profile.bio) ? profile.bio : '아직 자기소개가 작성되지 않았습니다.'}">자기소개 내용이 들어갑니다.</p>
+                                </div>
+                                <div class="profile-edit-only hidden">
+                                    <textarea id="inlineBio" rows="6" maxlength="1000"
+                                              class="w-full bg-white/10 p-8 rounded-[2.5rem] border-2 border-white/20 outline-none font-bold text-base leading-relaxed text-white placeholder-white/30 focus:border-white focus:bg-white/20 transition-all resize-none shadow-inner"
+                                              placeholder="나를 멋지게 표현해 주세요!"
+                                              th:text="${profile.bio}"></textarea>
+                                    <div class="mt-3 flex justify-end">
+                                        <span class="text-[10px] font-black text-white/40 tracking-wider">Markdown & Emoji support planned</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Participating Content (매끄러운 통합 대시보드 스타일) -->
+            <div id="content-participating" class="tab-content hidden animate-fade-in bg-white rounded-[3rem] border border-poodle-100 shadow-[0_10px_40px_rgba(62,39,35,0.05)] overflow-hidden">
+                <!-- 탭 헤더 컨트롤 -->
+                <div class="flex flex-col md:flex-row items-center justify-between p-8 md:p-12 border-b border-poodle-50 gap-6">
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 bg-poodle-900 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-poodle-900/10">
+                            <i class="fa-solid fa-diagram-project text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-2xl font-black text-poodle-900 tracking-tight">참여 프로젝트 대시보드</h4>
+                            <p class="text-xs font-bold text-poodle-300">내 프로젝트 현황을 한눈에 관리하세요.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-8 md:px-12 py-6 bg-poodle-50/30 border-b border-poodle-50">
+                    <div class="flex p-1.5 bg-poodle-100/50 rounded-[1.5rem] w-full max-w-2xl mx-auto">
+                        <button onclick="switchParticipatingSubTab('leader')" id="subtab-btn-leader" 
+                                class="participating-subtab-btn flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.2rem] text-sm font-black transition-all active:scale-95 bg-white text-poodle-900 shadow-sm group/btn">
+                            <i class="fa-solid fa-crown text-[10px] text-meatball"></i>
+                            리딩 중
+                            <span id="count-leader" class="ml-1 px-2 py-0.5 bg-poodle-50 text-[10px] rounded-full text-poodle-400 group-hover/btn:bg-meatball/10 group-hover/btn:text-meatball transition-colors">0</span>
+                        </button>
+                        <button onclick="switchParticipatingSubTab('member')" id="subtab-btn-member"
+                                class="participating-subtab-btn flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.2rem] text-sm font-black transition-all active:scale-95 text-poodle-400 hover:text-poodle-700 group/btn">
+                            <i class="fa-solid fa-users text-[10px] text-blue-400 opacity-60 group-hover/btn:opacity-100"></i>
+                            참여 중
+                            <span id="count-member" class="ml-1 px-2 py-0.5 bg-poodle-100/50 text-[10px] rounded-full text-poodle-300 group-hover/btn:bg-blue-50 group-hover/btn:text-blue-500 transition-colors">0</span>
+                        </button>
+                        <button onclick="switchParticipatingSubTab('completed')" id="subtab-btn-completed"
+                                class="participating-subtab-btn flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.2rem] text-sm font-black transition-all active:scale-95 text-poodle-400 hover:text-poodle-700 group/btn">
+                            <i class="fa-solid fa-flag-checkered text-[10px] text-emerald-400 opacity-60 group-hover/btn:opacity-100"></i>
+                            완료됨
+                            <span id="count-completed" class="ml-1 px-2 py-0.5 bg-poodle-100/50 text-[10px] rounded-full text-poodle-300 group-hover/btn:bg-emerald-50 group-hover/btn:text-emerald-500 transition-colors">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-8 md:p-12 min-h-[400px]">
+                    <!-- 👑 SECTION 1: 내가 리딩하는 팀 -->
+                    <div id="subtab-leader" class="participating-subtab-content space-y-8 animate-fade-in">
+                        <div id="leader-projects-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                            <!-- JS Injected -->
+                        </div>
+                        <div id="leader-pagination" class="flex justify-center items-center gap-4 pt-4"></div>
+                    </div>
+
+                    <!-- 🤝 SECTION 2: 함께 참여하는 팀 -->
+                    <div id="subtab-member" class="participating-subtab-content hidden space-y-8 animate-fade-in">
+                        <div id="member-projects-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                            <!-- JS Injected -->
+                        </div>
+                        <div id="member-pagination" class="flex justify-center items-center gap-4 pt-4"></div>
+                    </div>
+
+                    <!-- 🏆 SECTION 3: 지난 프로젝트 -->
+                    <div id="subtab-completed" class="participating-subtab-content hidden space-y-8 animate-fade-in">
+                        <div id="completed-projects-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                            <!-- JS Injected -->
+                        </div>
+                        <div id="completed-pagination" class="flex justify-center items-center gap-4 pt-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applied Content (지원한 프로젝트) -->
+            <div id="content-applied" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm">
+                <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
+                    <div class="w-10 h-10 bg-poodle-100 rounded-2xl flex items-center justify-center text-meatball">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    지원한 프로젝트
+                </h3>
+
+                <!-- Dynamic Applications Container -->
+                <div id="applications-container" class="space-y-6">
+                    <!-- Loading or injected via JS -->
+                </div>
+            </div>
+
+            <!-- Wishlist Content (관심 프로젝트) -->
+            <div id="content-wishlist" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm">
+                <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
+                    <div class="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    관심 프로젝트
+                </h3>
+
+                <!-- Dynamic Bookmark Container -->
+                <div id="wishlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Loading or injected via JS -->
+                </div>
+            </div>
+
+            <!-- Reads Content (읽은 프로젝트) -->
+            <div id="content-reads" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm">
+                <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
+                    <div class="w-10 h-10 bg-poodle-100 rounded-2xl flex items-center justify-center text-meatball">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    읽은 프로젝트
+                </h3>
+
+                <div id="recent-reads-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="p-8 bg-poodle-50/30 rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">읽은 프로젝트를 불러오는 중...</div>
+                </div>
+            </div>
+
+            <!-- Reviews Content (받은 리뷰) -->
+            <div id="content-reviews" class="tab-content hidden space-y-12 animate-fade-in bg-white rounded-[3rem] p-12 border border-poodle-50 shadow-sm relative overflow-hidden">
+                <h3 class="text-3xl font-black text-poodle-900 mb-12 tracking-tight flex items-center gap-4">
+                    <div class="w-10 h-10 bg-poodle-100 rounded-2xl flex items-center justify-center text-meatball">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    받은 피어 리뷰
+                </h3>
+
+                <!-- Dynamic Reviews Container -->
+                <div id="reviews-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                    <!-- Loading or injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: mainFooter}"></footer>
+
+<style>
+    /* 🎨 MyPage Premium UI Expansion */
+    .project-preview-container.project-preview-collapsed {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .project-preview-container.project-preview-collapsed::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 140px;
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0));
+        pointer-events: none;
+    }
+
+    .project-preview-container.project-preview-collapsed .project-preview-card:nth-child(3) {
+        opacity: 0.45;
+        filter: saturate(0.8);
+        pointer-events: none;
+    }
+
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+</style>
+
+	<script>
+	    const escapeHtml = window.meetballEscapeHtml;
+	    const initialInlineProfileState = {
+	        accountName: String(document.getElementById('inlineAccountName')?.value || '').trim(),
+	        nickname: String(document.getElementById('inlineNickname')?.value || '').trim(),
+	        phoneNumber: String(document.getElementById('inlinePhoneNumber')?.value || '').trim(),
+	        birthDate: String(document.getElementById('inlineBirthDate')?.value || '').trim(),
+	        gender: String(document.getElementById('inlineGender')?.value || '').trim(),
+	        organization: String(document.getElementById('inlineOrganization')?.value || '').trim(),
+	        orgVisible: String(document.getElementById('inlineOrgVisible')?.value || 'false') === 'true',
+	        bio: String(document.getElementById('inlineBio')?.value || '').trim(),
+	        position: String(document.querySelector('#content-account [data-inline-position-current]')?.dataset.inlinePositionCurrent || '').trim(),
+	        experienceYears: String(document.getElementById('inlineExperienceYears')?.value || '').trim(),
+	        techStacks: String(document.querySelector('#content-account [data-inline-tech-current]')?.dataset.inlineTechCurrent || '')
+	            .split(',')
+	            .map(value => value.trim())
+	            .filter(Boolean)
+	    };
+	    let profileEditMode = false;
+	    let editSelectedPosition = initialInlineProfileState.position || '';
+	    let editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
+	    let currentInlineTechCategory = '모두보기';
+
+	    function setInlineProfileEditMode(enabled) {
+	        profileEditMode = enabled;
+	        document.querySelectorAll('#content-account .profile-readonly').forEach(node => {
+	            node.classList.toggle('hidden', enabled);
+	        });
+	        document.querySelectorAll('#content-account .profile-edit-only').forEach(node => {
+	            node.classList.toggle('hidden', !enabled);
+	        });
+	        document.getElementById('profileEditCancelBtn')?.classList.toggle('hidden', !enabled);
+	        const toggleBtn = document.getElementById('profileEditToggleBtn');
+	        const toggleLabel = document.getElementById('profileEditToggleLabel');
+	        if (toggleBtn && toggleLabel) {
+	            toggleBtn.onclick = enabled ? saveInlineProfile : startInlineProfileEdit;
+	            toggleLabel.textContent = enabled ? '저장하기' : '개인 정보 수정';
+	        }
+	    }
+
+	    function toggleInlineDropdown(type) {
+	        const dropdown = document.getElementById(`inline${type.charAt(0).toUpperCase() + type.slice(1)}Dropdown`);
+	        const chevron = document.getElementById(`inline${type.charAt(0).toUpperCase() + type.slice(1)}Chevron`);
+	        if (!dropdown) return;
+	        
+	        const isHidden = dropdown.classList.contains('hidden');
+	        // 다른 드롭다운 닫기
+	        document.querySelectorAll('.inline-filter-panel').forEach(d => d.classList.add('hidden'));
+	        document.querySelectorAll('.fa-chevron-down').forEach(c => c.classList.remove('rotate-180'));
+	        
+	        if (isHidden) {
+	            dropdown.classList.remove('hidden');
+	            chevron?.classList.add('rotate-180');
+	        }
+	    }
+
+	    function setInlineOrgVisible(visible) {
+	        const checkbox = document.getElementById('inlineOrgVisibleCheck');
+	        if (checkbox) checkbox.checked = visible;
+	        
+	        const statusText = document.getElementById('inlineOrgVisibleStatusText');
+	        if (statusText) {
+	            statusText.textContent = visible ? '모두에게 공개' : '나만 보기';
+	            statusText.className = `text-sm font-black transition-all ${visible ? 'text-meatball' : 'text-poodle-400'}`;
+	        }
+	    }
+
+	    function renderInlinePositionOptions() {
+	        const container = document.getElementById('inlinePositionOptions');
+	        if (!container) return;
+	        container.innerHTML = window.meetballPositionOptions.map(position => {
+	            const selected = editSelectedPosition === position;
+	            const selectedClass = selected
+	                ? 'border-meatball bg-meatball text-poodle-900 shadow-sm'
+	                : 'border-poodle-100 bg-white text-poodle-500 hover:border-meatball hover:text-poodle-900';
+	            return `<button type="button" data-inline-position="${escapeHtml(position)}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${escapeHtml(position)}</button>`;
+	        }).join('');
+	        container.querySelectorAll('[data-inline-position]').forEach(button => {
+	            button.addEventListener('click', () => {
+	                editSelectedPosition = button.dataset.inlinePosition;
+	                document.getElementById('inlinePositionValue').value = editSelectedPosition;
+	                const triggerText = document.getElementById('inlinePositionTriggerText');
+	                if (triggerText) triggerText.textContent = editSelectedPosition;
+	                renderInlinePositionOptions();
+	                toggleInlineDropdown('position'); // 선택 후 닫기
+	            });
+	        });
+	    }
+
+	    function renderInlineTechStackOptions() {
+	        const tabsContainer = document.getElementById('inlineTechCategoryTabs');
+	        const optionsContainer = document.getElementById('inlineTechStackOptions');
+	        if (!tabsContainer || !optionsContainer) return;
+
+	        // 1. Render Category Tabs
+	        const categories = ['모두보기', '인기', '프론트엔드', '백엔드', '모바일', '기타']
+	            .filter(c => window.meetballTechStackCategories[c]);
+	        
+	        tabsContainer.innerHTML = categories.map(category => {
+	            const active = category === currentInlineTechCategory;
+	            return `
+	                <button type="button" onclick="setInlineTechCategory('${escapeHtml(category)}')"
+	                        class="px-4 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-poodle-900 text-white shadow-lg' : 'text-poodle-400 hover:bg-poodle-50 hover:text-poodle-700'}">
+	                    ${escapeHtml(category)}
+	                </button>
+	            `;
+	        }).join('');
+
+	        // 2. Render Tech Stack Options for Active Category
+	        const visibleTechs = window.meetballTechStackCategories[currentInlineTechCategory] || window.meetballTechStackOptions;
+	        optionsContainer.innerHTML = visibleTechs.map(tech => {
+	            const selected = editSelectedTechStacks.has(tech);
+	            return `
+	                <button type="button" onclick="toggleInlineTechStack('${escapeHtml(tech)}')" class="transition-all hover:scale-105 active:scale-95 text-left">
+	                    ${window.meetballTechStackChipHtml(tech, {
+	                        selected,
+	                        className: 'flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-xs font-black transition-all shadow-sm'
+	                    })}
+	                </button>
+	            `;
+	        }).join('');
+	    }
+
+	    function setInlineTechCategory(category) {
+	        currentInlineTechCategory = category;
+	        renderInlineTechStackOptions();
+	    }
+
+	    function toggleInlineTechStack(tech) {
+	        if (editSelectedTechStacks.has(tech)) {
+	            editSelectedTechStacks.delete(tech);
+	        } else {
+	            editSelectedTechStacks.add(tech);
+	        }
+	        renderInlineTechStackOptions();
+	    }
+
+	    function renderInlineExperienceOptions() {
+	        const container = document.getElementById('inlineExperienceOptions');
+	        if (!container) return;
+	        const years = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+	        container.innerHTML = years.map(year => {
+	            const val = String(year);
+	            const label = year === 10 ? '10년 이상' : (year === 0 ? '신입' : `${year}년 차`);
+	            const selected = String(document.getElementById('inlineExperienceYears').value) === val;
+	            const selectedClass = selected
+	                ? 'border-meatball bg-meatball text-poodle-900 shadow-sm'
+	                : 'border-poodle-100 bg-white text-poodle-500 hover:border-meatball hover:text-poodle-900';
+	            return `<button type="button" data-inline-experience="${val}" class="rounded-2xl border px-3 py-2 text-xs font-black transition-all ${selectedClass}">${label}</button>`;
+	        }).join('');
+	        container.querySelectorAll('[data-inline-experience]').forEach(button => {
+	            button.addEventListener('click', () => {
+	                document.getElementById('inlineExperienceYears').value = button.dataset.inlineExperience;
+	                document.getElementById('inlineExperienceTriggerText').textContent = button.textContent;
+	                renderInlineExperienceOptions();
+	                toggleInlineDropdown('experience'); 
+	            });
+	        });
+	    }
+
+	    function startInlineProfileEdit() {
+	        editSelectedPosition = initialInlineProfileState.position || '';
+	        editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
+	        currentInlineTechCategory = '모두보기';
+	        
+	        renderInlinePositionOptions();
+	        renderInlineExperienceOptions();
+	        renderInlineTechStackOptions();
+			setInlineOrgVisible(initialInlineProfileState.orgVisible);
+			
+	        // 초기 라벨 텍스트 동기화
+	        const posLabel = document.getElementById('inlinePositionTriggerText');
+	        if (posLabel) posLabel.textContent = editSelectedPosition || '포지션 선택';
+	        
+	        const expLabel = document.getElementById('inlineExperienceTriggerText');
+	        const expValue = document.getElementById('inlineExperienceYears').value;
+	        if (expLabel) {
+	            expLabel.textContent = expValue === '10' ? '10년 이상' : (expValue === '0' ? '신입' : expValue + '년 차');
+	        }
+
+	        setInlineProfileEditMode(true);
+	        
+	        // 토글 변경 이벤트 리스너 추가
+	        const visibleCheck = document.getElementById('inlineOrgVisibleCheck');
+	        if (visibleCheck) {
+	            visibleCheck.onchange = (e) => setInlineOrgVisible(e.target.checked);
+	            setInlineOrgVisible(visibleCheck.checked);
+	        }
+	    }
+
+	    function cancelInlineProfileEdit() {
+	        document.getElementById('inlineAccountName').value = initialInlineProfileState.accountName;
+	        document.getElementById('inlineNickname').value = initialInlineProfileState.nickname;
+	        document.getElementById('inlinePhoneNumber').value = initialInlineProfileState.phoneNumber;
+	        document.getElementById('inlineBirthDate').value = initialInlineProfileState.birthDate;
+	        document.getElementById('inlineGender').value = initialInlineProfileState.gender || '남자';
+	        document.getElementById('inlineOrganization').value = initialInlineProfileState.organization;
+	        document.getElementById('inlineOrgVisible').value = initialInlineProfileState.orgVisible ? 'true' : 'false';
+	        document.getElementById('inlineBio').value = initialInlineProfileState.bio;
+	        document.getElementById('inlineExperienceYears').value = initialInlineProfileState.experienceYears || '0';
+	        editSelectedPosition = initialInlineProfileState.position || '';
+	        editSelectedTechStacks = new Set(initialInlineProfileState.techStacks || []);
+	        currentInlineTechCategory = '모두보기';
+	        
+	        renderInlinePositionOptions();
+	        renderInlineExperienceOptions();
+	        renderInlineTechStackOptions();
+
+	        // 취소 시 라벨 텍스트 원복
+	        const posLabel = document.getElementById('inlinePositionTriggerText');
+	        if (posLabel) posLabel.textContent = initialInlineProfileState.position || '포지션 선택';
+	        
+	        const expLabel = document.getElementById('inlineExperienceTriggerText');
+	        const expVal = initialInlineProfileState.experienceYears;
+	        if (expLabel) {
+	            expLabel.textContent = expVal === '10' ? '10년 이상' : (expVal === '0' ? '신입' : expVal + '년 차');
+	        }
+
+	        setInlineProfileEditMode(false);
+	        
+	        const checkbox = document.getElementById('inlineOrgVisibleCheck');
+	        if (checkbox) checkbox.checked = initialInlineProfileState.orgVisible;
+	    }
+
+    function switchTab(tabName) {
+        const normalizedTabName = tabName === 'profile' ? 'account' : tabName;
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+            content.classList.remove('animate-fade-in');
+        });
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-poodle-600', 'bg-poodle-700', 'text-white', 'shadow-xl', 'shadow-poodle-600/20', 'shadow-poodle-700/20');
+            btn.classList.add('text-poodle-400');
+            const icon = btn.querySelector('i');
+            if(icon) icon.classList.add('opacity-50');
+        });
+        
+        const targetContent = document.getElementById('content-' + normalizedTabName);
+        if (targetContent) {
+            targetContent.classList.remove('hidden');
+            setTimeout(() => targetContent.classList.add('animate-fade-in'), 10);
+        }
+        
+        const activeBtn = document.getElementById('tab-' + normalizedTabName);
+        if (activeBtn) {
+            activeBtn.classList.add('active', 'bg-poodle-600', 'text-white', 'shadow-xl', 'shadow-poodle-600/20');
+            activeBtn.classList.remove('text-poodle-400');
+            const icon = activeBtn.querySelector('i');
+            if(icon) icon.classList.remove('opacity-50');
+        }
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', normalizedTabName);
+        window.history.replaceState({}, '', url);
+
+        // 탭 변경 시 데이터 로드
+        if (normalizedTabName === 'wishlist') {
+            loadBookmarks();
+        } else if (normalizedTabName === 'applied') {
+            loadApplications();
+        } else if (normalizedTabName === 'participating') {
+            loadParticipatingProjects();
+        } else if (normalizedTabName === 'reads') {
+            loadRecentReads();
+        } else if (normalizedTabName === 'reviews') {
+            loadReviews();
+        }
+    }
+
+    async function loadRecentReads() {
+        const container = document.getElementById('recent-reads-container');
+        if (!container) return;
+
+        try {
+            const response = await fetch('/api/mypage/recent-reads');
+            if (!response.ok) throw new Error('최근 본 프로젝트 조회 실패');
+            const reads = await response.json();
+            renderRecentReads(reads);
+        } catch (error) {
+            console.error('Error fetching recent reads:', error);
+            container.innerHTML = '<div class="p-8 bg-poodle-50/30 rounded-[2rem] border border-poodle-50 text-sm font-bold text-poodle-300">읽은 프로젝트를 불러오지 못했습니다.</div>';
+        }
+    }
+
+    function renderRecentReads(reads) {
+        const container = document.getElementById('recent-reads-container');
+        if (!reads || reads.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full py-20 text-center space-y-6 bg-poodle-50/20 rounded-[2.5rem] border-2 border-dashed border-poodle-100">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-poodle-900/5">
+                        <i class="fa-regular fa-eye text-poodle-100 text-3xl"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="text-poodle-800 font-black text-xl tracking-tight">최근에 본 프로젝트가 없어요.</p>
+                        <p class="text-poodle-300 font-bold text-sm">다양한 프로젝트를 둘러보며 영감을 얻어보세요! 🔍</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = reads.map(item => {
+            const projectId = encodeURIComponent(String(item.projectId ?? ''));
+            const title = escapeHtml(item.title || '프로젝트 제목 없음');
+	            const techStackChips = String(item.techStack || '')
+	                .split(',')
+	                .map(value => value.trim())
+	                .filter(Boolean)
+	                .map(tech => window.meetballTechStackChipHtml(tech, {
+	                    className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
+	                }))
+	                .join('');
+            const readAt = item.readAt ? new Date(item.readAt).toLocaleDateString('ko-KR') : '-';
+
+            return `
+                <a href="/projects/${projectId}" class="group p-6 bg-white border border-poodle-50 rounded-[2rem] shadow-sm hover:border-meatball/20 hover:shadow-xl transition-all">
+                    <div class="flex items-start justify-between gap-5">
+                        <div>
+                            <h4 class="text-base font-black text-poodle-900 mb-2 group-hover:text-meatball transition-colors">${title}</h4>
+	                            <div class="flex flex-wrap gap-1.5">${techStackChips || '<span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest">기술 스택 미정</span>'}</div>
+                        </div>
+                        <span class="shrink-0 text-[10px] font-black text-poodle-300">${escapeHtml(readAt)}</span>
+                    </div>
+                </a>
+            `;
+        }).join('');
+    }
+
+    function updateProjectPreviewToggle(btn, collapsed) {
+        const label = btn.dataset.label || '프로젝트';
+        btn.innerHTML = collapsed
+            ? `${label} 더 보기 <i class="fa-solid fa-chevron-down ml-2"></i>`
+            : `접기 <i class="fa-solid fa-chevron-up ml-2"></i>`;
+    }
+
+    function configureProjectPreview(containerId, toggleButtonId) {
+        const container = document.getElementById(containerId);
+        const toggleBtn = document.getElementById(toggleButtonId);
+        if (!container || !toggleBtn) return;
+
+        const cards = Array.from(container.querySelectorAll('.project-preview-card'));
+        if (cards.length <= 2) {
+            container.classList.remove('project-preview-collapsed');
+            container.style.maxHeight = 'none';
+            toggleBtn.classList.add('hidden');
+            return;
+        }
+
+        const gapValue = parseFloat(getComputedStyle(container).rowGap || getComputedStyle(container).gap || '24');
+        const previewHeight = Math.round(cards[2].offsetHeight * 0.45);
+        const collapsedHeight = cards[0].offsetHeight + cards[1].offsetHeight + (gapValue * 2) + previewHeight;
+        container.dataset.collapsedHeight = String(collapsedHeight);
+        container.classList.add('project-preview-collapsed');
+        container.style.maxHeight = `${collapsedHeight}px`;
+        toggleBtn.classList.remove('hidden');
+        updateProjectPreviewToggle(toggleBtn, true);
+    }
+
+    function toggleSection(containerId, btn) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const isCollapsed = container.classList.contains('project-preview-collapsed');
+        if (isCollapsed) {
+            container.classList.remove('project-preview-collapsed');
+            container.style.maxHeight = 'none';
+            updateProjectPreviewToggle(btn, false);
+        } else {
+            const collapsedHeight = container.dataset.collapsedHeight || '480';
+            container.classList.add('project-preview-collapsed');
+            container.style.maxHeight = `${collapsedHeight}px`;
+            updateProjectPreviewToggle(btn, true);
+        }
+    }
+
+    async function saveInlineProfile() {
+        const profileId = document.getElementById('profileId').value;
+        const accountName = document.getElementById('inlineAccountName').value;
+        const nickname = document.getElementById('inlineNickname').value;
+        const phoneNumber = document.getElementById('inlinePhoneNumber').value;
+        const birthDate = document.getElementById('inlineBirthDate').value;
+        const gender = document.getElementById('inlineGender').value;
+        const orgVisible = document.getElementById('inlineOrgVisibleCheck').checked;
+        const organization = document.getElementById('inlineOrganization').value;
+        const bio = document.getElementById('inlineBio').value;
+        const experienceYears = document.getElementById('inlineExperienceYears').value;
+        const position = editSelectedPosition;
+        const techStacks = Array.from(editSelectedTechStacks);
+        const isPublic = String(document.getElementById('inlineProfilePublic')?.value || 'true') === 'true';
+
+	        if (!profileId) {
+	            await meetballAlert('로그인 정보가 없습니다.', { type: 'error' });
+	            return;
+	        }
+	        if (!position) {
+	            await meetballAlert('포지션을 선택해주세요.');
+	            return;
+	        }
+	        if (techStacks.length === 0) {
+	            await meetballAlert('기술 스택을 1개 이상 선택해주세요.');
+	            return;
+	        }
+
+        try {
+            const response = await meetballFetch('/api/mypage/account', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: accountName,
+                    nickname,
+                    phoneNumber,
+                    birthDate,
+                    gender,
+                    position,
+                    experienceYears,
+                    organization,
+                    orgVisible,
+                    techStacks,
+                    bio,
+                    isPublic
+                })
+            });
+
+            if (response.ok) {
+                await meetballAlert('개인 정보가 성공적으로 수정되었습니다.');
+                location.reload();
+            } else {
+                const errorText = await response.text();
+                await meetballAlert('개인 정보 수정 실패: ' + (errorText || response.status), { type: 'error' });
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            await meetballAlert('네트워크 오류가 발생했습니다.', { type: 'error' });
+        }
+    }
+
+    async function loadBookmarks() {
+        try {
+            const response = await fetch('/api/mypage/bookmarks');
+            if (!response.ok) throw new Error('북마크 조회 실패');
+
+            const bookmarks = await response.json();
+            renderBookmarks(bookmarks);
+        } catch (error) {
+            console.error('Error fetching bookmarks:', error);
+        }
+    }
+
+    function renderBookmarks(bookmarks) {
+        const container = document.getElementById('wishlist-container');
+        if (!container) return;
+
+        if (!bookmarks || bookmarks.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full py-24 text-center space-y-8 bg-poodle-50/20 rounded-[2.5rem] border-2 border-dashed border-poodle-100">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-poodle-900/5 relative">
+                        <i class="fa-regular fa-heart text-poodle-100 text-4xl"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-poodle-800 font-black text-2xl tracking-tight">마음에 쏙 든 프로젝트가 없으신가요?</p>
+                        <p class="text-poodle-300 font-bold text-sm">관심 있는 프로젝트에 하트를 꾹 눌러보세요! 💕</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+	        container.innerHTML = bookmarks.map(bm => {
+	            const stacks = bm.techStack ? bm.techStack.split(',')
+	                .map(s => s.trim())
+	                .filter(Boolean)
+	                .map(tech => window.meetballTechStackChipHtml(tech, {
+	                    className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
+	                }))
+	                .join('') : '';
+            const projectId = encodeURIComponent(String(bm.projectId ?? ''));
+            return `
+            <div role="button" tabindex="0" onclick="goToProjectDetail(${projectId})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToProjectDetail(${projectId});}" class="group block p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-red-200 hover:shadow-xl transition-all shadow-sm cursor-pointer">
+                <div class="flex items-start justify-between mb-6">
+                    <h5 class="text-xl font-black text-poodle-900 group-hover:text-red-500 transition-colors line-clamp-2 leading-tight">${escapeHtml(bm.title)}</h5>
+                    <button type="button" onclick="toggleWishlistBookmark(${projectId}, event)"
+                        class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    ${stacks}
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function goToProjectDetail(projectId) {
+        window.location.href = `/projects/${encodeURIComponent(String(projectId ?? ''))}`;
+    }
+
+    async function toggleWishlistBookmark(projectId, event) {
+        event?.stopPropagation?.();
+        event?.preventDefault?.();
+        try {
+            const response = await meetballFetch(`/api/projects/${encodeURIComponent(String(projectId))}/bookmarks`, {
+                method: 'POST'
+            });
+            if (!response.ok) {
+                throw new Error('북마크 해제 실패');
+            }
+            await loadBookmarks();
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('관심 프로젝트 변경에 실패했습니다.', { type: 'error' });
+        }
+    }
+
+    async function loadApplications() {
+        try {
+            const response = await fetch('/api/mypage/applications');
+            if (!response.ok) throw new Error('지원 현황 조회 실패');
+
+            const applications = await response.json();
+            renderApplications(applications);
+        } catch (error) {
+            console.error('Error fetching applications:', error);
+        }
+    }
+
+    function renderApplications(apps) {
+        const container = document.getElementById('applications-container');
+        if (!container) return;
+
+        if (!apps || apps.length === 0) {
+            container.innerHTML = `
+                <div class="py-24 text-center space-y-8 bg-poodle-50/20 rounded-[2.5rem] border-2 border-dashed border-poodle-100">
+                    <div class="relative inline-block">
+                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-poodle-900/5">
+                            <i class="fa-solid fa-rocket text-poodle-100 text-4xl"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-meatball text-poodle-900 rounded-lg flex items-center justify-center animate-bounce">
+                            <i class="fa-solid fa-question text-[10px]"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-poodle-800 font-black text-2xl tracking-tight">아직 도전 중인 프로젝트가 없어요!</p>
+                        <p class="text-poodle-300 font-bold text-sm">밋볼이가 프로젝트를 찾고 있어요 🐶</p>
+                    </div>
+                    <div class="pt-4">
+                        <a href="/" class="inline-flex items-center gap-3 px-10 py-5 bg-poodle-600 text-white rounded-full font-black text-sm shadow-2xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-105 active:scale-95 transition-all">
+                            프로젝트 둘러보기 <i class="fa-solid fa-arrow-right-long opacity-50"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = apps.map(app => {
+            let statusBadge = '';
+            if (app.status === 'PENDING') {
+                statusBadge = '<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-black uppercase shadow-sm">심사 중</span>';
+            } else if (app.status === 'ACCEPTED') {
+                statusBadge = '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-black uppercase shadow-sm">합격!</span>';
+            } else if (app.status === 'WITHDRAWN') {
+                statusBadge = '<span class="px-3 py-1 bg-poodle-100 text-poodle-500 rounded-lg text-xs font-black uppercase shadow-sm">철회됨</span>';
+            } else if (app.status === 'REMOVED') {
+                statusBadge = '<span class="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-black uppercase shadow-sm">삭제됨</span>';
+            } else {
+                statusBadge = '<span class="px-3 py-1 bg-poodle-100 text-poodle-500 rounded-lg text-xs font-black uppercase shadow-sm">불합격</span>';
+            }
+
+            const dateStr = new Date(app.createdAt).toLocaleDateString('ko-KR');
+            const projectId = encodeURIComponent(String(app.projectId ?? ''));
+            const withdrawButton = app.status === 'PENDING'
+                ? `<button onclick="withdrawApplication(${Number(app.id)})" class="px-6 py-3 bg-poodle-50 text-red-400 rounded-2xl text-xs font-black hover:bg-red-50 transition-all text-center whitespace-nowrap md:w-auto w-full">지원 철회</button>`
+                : '';
+            const editButton = app.status === 'PENDING'
+                ? `<button onclick="openApplicationEditModal(${Number(app.id)}, ${Number(app.projectId)}, '${encodeURIComponent(app.position || '')}', '${encodeURIComponent(app.message || '')}')" class="px-6 py-3 bg-white border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap md:w-auto w-full">지원서 수정</button>`
+                : '';
+
+            return `
+            <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-blue-200 transition-all shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            ${statusBadge}
+                            <span class="text-xs font-bold text-poodle-300">${escapeHtml(dateStr)} 지원</span>
+                        </div>
+                        <h5 class="text-xl font-black text-poodle-900 line-clamp-1">${escapeHtml(app.projectTitle || '프로젝트 제목 없음')}</h5>
+                        <p class="text-sm font-bold text-meatball">지원 포지션: ${escapeHtml(app.position)}</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full">
+                        ${withdrawButton}
+                        ${editButton}
+                        <a href="/projects/${projectId}" class="px-6 py-3 border-2 border-poodle-50 text-poodle-600 rounded-2xl text-xs font-black hover:border-meatball hover:text-meatball transition-all text-center whitespace-nowrap md:w-auto w-full">프로젝트 상세보기</a>
+                    </div>
+                </div>
+                ${app.message ? `<div class="mt-6 p-4 bg-poodle-50/50 rounded-2xl border border-poodle-50 text-sm font-medium text-poodle-600 italic">"${escapeHtml(app.message)}"</div>` : ''}
+            </div>
+            `;
+        }).join('');
+    }
+
+    async function withdrawApplication(applicationId) {
+        if (!applicationId) return;
+        if (!await meetballConfirm('지원서를 철회하시겠습니까?', { confirmText: '철회', cancelText: '취소' })) return;
+        try {
+            const response = await meetballFetch(`/api/applications/${applicationId}/withdraw`, {
+                method: 'PATCH'
+            });
+            if (response.ok) {
+                await meetballAlert('지원서가 철회되었습니다.');
+                loadApplications();
+            } else {
+                const error = await response.text();
+                await meetballAlert('철회 실패: ' + error, { type: 'error' });
+            }
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('오류가 발생했습니다.', { type: 'error' });
+        }
+    }
+
+    async function loadParticipatingProjects() {
+        try {
+            const response = await fetch('/api/mypage/projects');
+            if (!response.ok) throw new Error('프로젝트 현황 조회 실패');
+            
+            const projects = await response.json();
+            window.lastParticipatingProjects = projects; 
+            window.participatingCurrentPages = { leader: 1, member: 1, completed: 1 }; // 페이지 초기화
+            renderParticipatingProjects(projects);
+        } catch (error) {
+            console.error('Error fetching participating projects:', error);
+        }
+    }
+
+    function renderParticipatingProjects(projects) {
+        const leaderContainer = document.getElementById('leader-projects-container');
+        const memberContainer = document.getElementById('member-projects-container');
+        const completedContainer = document.getElementById('completed-projects-container');
+
+        const leaderProjects = projects.filter(p => p.progressStatus !== 'COMPLETED' && p.participantRole === 'LEADER');
+        const memberProjects = projects.filter(p => p.progressStatus !== 'COMPLETED' && p.participantRole === 'MEMBER');
+        const completedProjects = projects.filter(p => p.progressStatus === 'COMPLETED');
+
+        // 각 탭별 개수 업데이트
+        const countLeader = document.getElementById('count-leader');
+        const countMember = document.getElementById('count-member');
+        const countCompleted = document.getElementById('count-completed');
+        if (countLeader) countLeader.textContent = leaderProjects.length;
+        if (countMember) countMember.textContent = memberProjects.length;
+        if (countCompleted) countCompleted.textContent = completedProjects.length;
+
+        const getEmptyMessage = (title, sub, icon, iconColor) => `
+            <div class="col-span-full py-16 text-center space-y-6 bg-poodle-50/20 rounded-[2.5rem] border-2 border-dashed border-poodle-100 w-full">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-lg shadow-poodle-900/5">
+                    <i class="fa-solid ${icon} ${iconColor || 'text-poodle-100'} text-2xl"></i>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-poodle-800 font-black text-lg tracking-tight">${title}</p>
+                    <p class="text-poodle-300 font-bold text-xs">${sub}</p>
+                </div>
+            </div>
+        `;
+
+        const leaderEmpty = getEmptyMessage("아직 리딩하는 팀이 없어요!", "멋진 아이디어를 프로젝트로 만들어 리더에 도전해보세요! 👑", "fa-crown", "text-meatball");
+        const memberEmpty = getEmptyMessage("아직 소속된 팀이 없어요!", "매력적인 프로젝트에 지원하여 동료들과 함께 성장해보세요! 🤝", "fa-people-group", "text-blue-400");
+        const completedEmpty = getEmptyMessage("완료된 프로젝트가 아직 없네요.", "차근차근 프로젝트를 마쳐서 멋진 경험을 쌓아보세요! 🏆", "fa-flag-checkered", "text-emerald-400");
+
+        const perPage = 6;
+
+        // Leader
+        if (leaderContainer) {
+            const page = window.participatingCurrentPages.leader || 1;
+            const pagedLeader = leaderProjects.slice((page - 1) * perPage, page * perPage);
+            leaderContainer.innerHTML = pagedLeader.length ? pagedLeader.map(p => {
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = encodeURIComponent(String(p.projectId ?? ''));
+                const dDay = Number(p.dDay || 0);
+                const closedProjectLabel = p.progressStatus === 'IN_PROGRESS' ? '프로젝트 진행 중' : '준비 중';
+                let dDayBadge = '';
+                if (p.recruitStatus === 'CLOSED') dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 마감</span><span class="text-sm font-black text-poodle-400">${closedProjectLabel}</span>`;
+                else if (dDay > 0) dDayBadge = `<span class="px-3 py-1 bg-meatball/5 text-meatball rounded-lg text-[10px] font-black uppercase tracking-tighter">모집 중</span><span class="text-sm font-black text-meatball">D-${dDay}</span>`;
+                else dDayBadge = `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">진행 중</span><span class="text-sm font-black text-poodle-400">${dDay === 0 ? '오늘 마감! ✨' : '진행 ' + (dDay * -1) + '일차 🚀'}</span>`;
+                
+                return `
+                <div class="project-preview-card p-8 bg-white border border-poodle-50 rounded-[2.5rem] shadow-sm hover:border-meatball/30 hover:shadow-xl transition-all group/item">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div class="space-y-4 flex-grow">
+                            <div class="flex items-center gap-3">
+                                ${dDayBadge}
+                            </div>
+                            <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
+                        </div>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            <a href="/projects/${projectId}/manage" class="flex-1 md:flex-none px-10 py-4 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball hover:text-poodle-900 transition-all text-center">프로젝트 관리</a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('') : leaderEmpty;
+            configureProjectPreview('leader-projects-container', 'leader-projects-toggle');
+        }
+
+        // Member
+        if (memberContainer) {
+            const page = window.participatingCurrentPages.member || 1;
+            const pagedMember = memberProjects.slice((page - 1) * perPage, page * perPage);
+            memberContainer.innerHTML = pagedMember.length ? pagedMember.map(p => {
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = encodeURIComponent(String(p.projectId ?? ''));
+                const dDay = Number(p.dDay || 0);
+                const closedProjectLabel = p.progressStatus === 'IN_PROGRESS' ? '프로젝트 진행 중' : '준비 중';
+                let dDayBadge = p.recruitStatus === 'CLOSED'
+                    ? `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">모집 마감</span><span class="text-[11px] font-bold text-poodle-400">${closedProjectLabel}</span>`
+                    : `<span class="px-3 py-1 bg-poodle-600 text-white rounded-lg text-[10px] font-black uppercase">진행 중</span><span class="text-[11px] font-bold text-poodle-400">${dDay > 0 ? '마감까지 D-' + dDay : (dDay === 0 ? '오늘 마지막 날! ⏳' : '운행 ' + (dDay * -1) + '일차 🚃')}</span>`;
+                return `
+                <div class="project-preview-card p-8 bg-poodle-50/20 border border-transparent rounded-[2.5rem] hover:bg-white hover:border-poodle-100 transition-all">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div class="space-y-4 flex-grow">
+                            <div class="flex items-center gap-3">
+                                ${dDayBadge}
+                            </div>
+                            <h5 class="text-2xl font-black text-poodle-800">${title}</h5>
+                        </div>
+                        <a href="/projects/${projectId}" class="w-full md:w-auto px-8 py-4 bg-white border border-poodle-100 text-poodle-600 rounded-2xl font-black text-xs hover:border-meatball hover:text-meatball transition-all text-center">상세 보기</a>
+                    </div>
+                </div>
+                `;
+            }).join('') : memberEmpty;
+            configureProjectPreview('member-projects-container', 'member-projects-toggle');
+        }
+
+        // Closed
+        if (completedContainer) {
+            const page = window.participatingCurrentPages.completed || 1;
+            const pagedCompleted = completedProjects.slice((page - 1) * perPage, page * perPage);
+            completedContainer.innerHTML = pagedCompleted.length ? pagedCompleted.map(p => {
+                const title = escapeHtml(p.title || '프로젝트 제목 없음');
+                const projectId = Number(p.projectId);
+                const projectReviewButton = Number.isFinite(projectId)
+                    ? `<button onclick="openReviewModal(${projectId}, 'project')" ${p.canProjectReview ? '' : 'disabled'}
+                        class="flex-1 md:flex-none px-6 py-4 rounded-2xl font-black text-xs transition-all ${p.canProjectReview ? 'bg-poodle-600 text-white hover:bg-meatball hover:text-poodle-900' : 'bg-poodle-100 text-poodle-400 cursor-not-allowed'}">프로젝트 리뷰${p.canProjectReview ? ' 작성' : ' 완료'}</button>`
+                    : '';
+                const peerReviewButton = Number.isFinite(projectId)
+                    ? `<button onclick="openReviewModal(${projectId}, 'peer')" ${p.canPeerReview ? '' : 'disabled'}
+                        class="flex-1 md:flex-none px-6 py-4 rounded-2xl font-black text-xs transition-all ${p.canPeerReview ? 'border border-poodle-200 bg-white text-poodle-700 hover:border-meatball hover:text-meatball' : 'bg-poodle-50 text-poodle-300 cursor-not-allowed border border-poodle-100'}">피어 리뷰${p.canPeerReview ? ' 작성' : ' 완료'}</button>`
+                    : '';
+                return `
+                <div class="project-preview-card p-8 bg-white/60 border border-poodle-50 rounded-[2.5rem] opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <h5 class="text-xl font-black text-poodle-800 flex-grow">${title}</h5>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            ${projectReviewButton}
+                            ${peerReviewButton}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('') : completedEmpty;
+        }
+
+        // 페이지네이션 렌더링 호출
+        renderParticipatingPagination('leader', leaderProjects);
+        renderParticipatingPagination('member', memberProjects);
+        renderParticipatingPagination('completed', completedProjects);
+    }
+
+    function renderParticipatingPagination(type, allProjects) {
+        const paginationContainer = document.getElementById(`${type}-pagination`);
+        if (!paginationContainer) return;
+
+        const totalItems = allProjects.length;
+        const perPage = 6;
+        const totalPages = Math.ceil(totalItems / perPage);
+        const currentPage = window.participatingCurrentPages[type] || 1;
+
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        paginationContainer.innerHTML = `
+            <button onclick="changeParticipatingPage('${type}', ${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''}
+                    class="w-10 h-10 rounded-xl border border-poodle-100 flex items-center justify-center text-poodle-400 hover:bg-poodle-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-black text-poodle-900">${currentPage}</span>
+                <span class="text-xs font-bold text-poodle-200">/</span>
+                <span class="text-xs font-bold text-poodle-300">${totalPages}</span>
+            </div>
+            <button onclick="changeParticipatingPage('${type}', ${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''}
+                    class="w-10 h-10 rounded-xl border border-poodle-100 flex items-center justify-center text-poodle-400 hover:bg-poodle-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        `;
+    }
+
+    function changeParticipatingPage(type, newPage) {
+        const projects = window.lastParticipatingProjects;
+        const allOfType = projects.filter(p => {
+            if (type === 'leader') return p.progressStatus !== 'COMPLETED' && p.participantRole === 'LEADER';
+            if (type === 'member') return p.progressStatus !== 'COMPLETED' && p.participantRole === 'MEMBER';
+            if (type === 'completed') return p.progressStatus === 'COMPLETED';
+            return false;
+        });
+
+        const perPage = 6;
+        const totalPages = Math.ceil(allOfType.length / perPage);
+        
+        if (newPage < 1 || newPage > totalPages) return;
+
+        window.participatingCurrentPages[type] = newPage;
+        renderParticipatingProjects(projects);
+        
+        // 탭 컨테이너 상단으로 스크롤 이동 (선택적)
+        document.getElementById(`subtab-${type}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function switchParticipatingSubTab(subTab) {
+        // 모든 탭 컨텐츠 숨기기
+        document.querySelectorAll('.participating-subtab-content').forEach(c => c.classList.add('hidden'));
+        // 선택한 탭 컨텐츠 보이기
+        document.getElementById('subtab-' + subTab)?.classList.remove('hidden');
+
+        // 버튼 스타일 초기화 및 선택 스타일 적용
+        document.querySelectorAll('.participating-subtab-btn').forEach(btn => {
+            btn.classList.remove('bg-white', 'text-poodle-900', 'shadow-sm');
+            btn.classList.add('text-poodle-400', 'hover:text-poodle-700');
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.add('opacity-60');
+        });
+        const activeBtn = document.getElementById('subtab-btn-' + subTab);
+        if (activeBtn) {
+            activeBtn.classList.remove('text-poodle-400', 'hover:text-poodle-700');
+            activeBtn.classList.add('bg-white', 'text-poodle-900', 'shadow-sm');
+            const icon = activeBtn.querySelector('i');
+            if (icon) icon.classList.remove('opacity-60');
+        }
+    }
+
+    async function loadReviews() {
+        try {
+            const response = await fetch('/api/mypage/reviews');
+            if (!response.ok) throw new Error('리뷰 목록 조회 실패');
+            
+            const reviews = await response.json();
+            renderReviews(reviews);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    }
+
+    function renderReviews(reviews) {
+        const container = document.getElementById('reviews-container');
+        if (!container) return;
+
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full py-24 text-center space-y-8 bg-poodle-50/20 rounded-[2.5rem] border-2 border-dashed border-poodle-100 relative z-10">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-poodle-900/5">
+                        <i class="fa-solid fa-medal text-poodle-100 text-4xl"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-poodle-800 font-black text-2xl tracking-tight">아직 도착한 리뷰가 없어요!</p>
+                        <p class="text-poodle-300 font-bold text-sm">프로젝트를 마친 후 팀원들의 따뜻한 한마디가 도착할 거예요 ✨</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = reviews.map(r => {
+            const dateStr = new Date(r.createdAt).toLocaleDateString('ko-KR');
+            const reviewerNickname = escapeHtml(r.reviewerNickname || '익명');
+            const reviewerPosition = escapeHtml(r.reviewerPosition || '-');
+            const projectTitle = escapeHtml(r.projectTitle || '프로젝트');
+            const content = escapeHtml(r.content || '');
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= r.score) stars += '<i class="fa-solid fa-star text-meatball"></i>';
+                else if (i - 0.5 === r.score) stars += '<i class="fa-solid fa-star-half-stroke text-meatball"></i>';
+                else stars += '<i class="fa-regular fa-star text-poodle-200"></i>';
+            }
+
+            return `
+            <div class="p-8 bg-white border border-poodle-50 rounded-[2.5rem] hover:border-meatball/30 hover:shadow-xl transition-all shadow-sm flex flex-col justify-between space-y-6">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="/img/logo.png" class="w-10 h-10 rounded-xl bg-poodle-50 border-2 border-white shadow-sm" alt="reviewer">
+                            <div>
+                                <h6 class="text-sm font-black text-poodle-900">${reviewerNickname}</h6>
+                                <p class="text-[10px] font-bold text-poodle-300">${reviewerPosition}</p>
+                            </div>
+                        </div>
+                        <div class="flex text-sm">${stars}</div>
+                    </div>
+                    <p class="text-xs font-black text-meatball mb-2">${projectTitle}</p>
+                    <p class="text-sm font-bold text-poodle-600 leading-relaxed italic">"${content}"</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-poodle-300">${escapeHtml(dateStr)}</span>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // ===================================
+    // Review Modal Script
+    // ===================================
+    let targetProjectIdForReview = null;
+    let reviewMode = 'peer';
+
+    async function openReviewModal(projectId, mode) {
+        targetProjectIdForReview = projectId;
+        reviewMode = mode || 'peer';
+        const targetSelect = document.getElementById('reviewTargetSelect');
+        const targetWrapper = document.getElementById('reviewTargetWrapper');
+        const titleNode = document.getElementById('reviewModalTitle');
+        const subtitleNode = document.getElementById('reviewModalSubtitle');
+        targetSelect.innerHTML = '<option value="">불러오는 중...</option>';
+        
+        document.getElementById('reviewScore').value = "5";
+        document.getElementById('reviewContent').value = "";
+        
+        document.getElementById('reviewModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        if (reviewMode === 'project') {
+            titleNode.textContent = '프로젝트 리뷰 작성';
+            subtitleNode.textContent = '프로젝트 전반에 대한 후기를 남겨주세요.';
+            targetWrapper.classList.add('hidden');
+            targetSelect.innerHTML = '<option value="">프로젝트 리뷰</option>';
+            return;
+        }
+
+        titleNode.textContent = '피어 리뷰 작성';
+        subtitleNode.textContent = '함께한 팀원에게 따뜻한 후기를 남겨주세요.';
+        targetWrapper.classList.remove('hidden');
+
+        try {
+            const res = await fetch(`/api/projects/${projectId}/reviews/teammates`);
+            if (!res.ok) throw new Error('팀원 목록을 불러오지 못했습니다.');
+            const teammates = await res.json();
+            
+            if (teammates.length === 0) {
+                targetSelect.innerHTML = '<option value="">평가할 팀원이 없습니다.</option>';
+            } else {
+                targetSelect.innerHTML = '<option value="">평가할 팀원 선택</option>' + 
+                    teammates.map(t => {
+                        const nickname = escapeHtml(t.nickname || '');
+                        const position = escapeHtml(t.position || '포지션 미정');
+                        return `<option value="${nickname}">${nickname} (${position})</option>`;
+                    }).join('');
+            }
+        } catch (e) {
+            console.error(e);
+            targetSelect.innerHTML = '<option value="">팀원 목록 로드 실패</option>';
+        }
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        targetProjectIdForReview = null;
+    }
+
+    async function submitReview() {
+        if (!targetProjectIdForReview) return;
+        
+        const targetProfileNickname = reviewMode === 'peer' ? document.getElementById('reviewTargetSelect').value : '';
+        const score = parseFloat(document.getElementById('reviewScore').value);
+        const content = document.getElementById('reviewContent').value;
+
+        if (reviewMode === 'peer' && !targetProfileNickname) {
+            await meetballAlert('평가할 팀원을 선택해주세요.');
+            return;
+        }
+
+        const payload = {
+            score: score,
+            targetProfileNickname: targetProfileNickname,
+            content: content
+        };
+
+        try {
+            if (reviewMode === 'peer') {
+                const confirmed = await meetballConfirm(
+                    '피어 리뷰는 제출 후 다시 열어보거나 수정할 수 없습니다. 이대로 제출할까요?',
+                    { confirmText: '제출', cancelText: '취소' }
+                );
+                if (!confirmed) return;
+            }
+            const res = await meetballFetch(`/api/projects/${targetProjectIdForReview}/reviews`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                await meetballAlert('리뷰가 등록되었습니다!');
+                closeReviewModal();
+                loadParticipatingProjects(); // Can review 상태 갱신
+            } else {
+                const err = await res.text();
+                await meetballAlert('리뷰 등록 실패: ' + err, { type: 'error' });
+            }
+        } catch (e) {
+            console.error(e);
+            await meetballAlert('오류가 발생했습니다.', { type: 'error' });
+        }
+    }
+
+    let editingApplicationId = null;
+    let editingApplicationProjectId = null;
+
+    async function openApplicationEditModal(applicationId, projectId, currentPosition, currentMessage) {
+        editingApplicationId = applicationId;
+        editingApplicationProjectId = projectId;
+        const modal = document.getElementById('applicationEditModal');
+        const title = document.getElementById('applicationEditProjectTitle');
+        const options = document.getElementById('applicationEditPositionOptions');
+        const messageInput = document.getElementById('applicationEditMessage');
+        const decodedCurrentPosition = decodeURIComponent(currentPosition || '');
+        const decodedCurrentMessage = decodeURIComponent(currentMessage || '');
+        title.textContent = '지원서 수정';
+        options.innerHTML = '<p class="text-sm font-bold text-poodle-300">포지션을 불러오는 중입니다...</p>';
+        messageInput.value = decodedCurrentMessage;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}`);
+            if (!response.ok) throw new Error('프로젝트 상세 조회 실패');
+            const project = await response.json();
+            title.textContent = project.title || '지원서 수정';
+            const statuses = Array.isArray(project.positionStatuses) ? project.positionStatuses : [];
+            const availableStatuses = statuses.filter(status => !status.full || status.name === decodedCurrentPosition);
+            options.innerHTML = availableStatuses.length
+                ? availableStatuses.map(status => `
+                    <button type="button" onclick="selectApplicationEditPosition('${escapeHtml(status.name).replace(/'/g, "\\'")}')"
+                        class="application-edit-position-btn ${status.name === decodedCurrentPosition ? 'selected' : ''}"
+                        data-position="${escapeHtml(status.name)}">
+                        <span>${escapeHtml(status.name)}</span>
+                        <span class="application-edit-position-count">${escapeHtml(String(status.current))}/${escapeHtml(String(status.capacity))}</span>
+                    </button>
+                `).join('')
+                : '<p class="text-sm font-bold text-poodle-300">선택 가능한 포지션이 없습니다.</p>';
+        } catch (error) {
+            console.error(error);
+            options.innerHTML = '<p class="text-sm font-bold text-red-400">포지션을 불러오지 못했습니다.</p>';
+        }
+    }
+
+    function closeApplicationEditModal() {
+        document.getElementById('applicationEditModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        editingApplicationId = null;
+        editingApplicationProjectId = null;
+    }
+
+    function selectApplicationEditPosition(position) {
+        document.querySelectorAll('.application-edit-position-btn').forEach(button => {
+            button.classList.toggle('selected', button.dataset.position === position);
+        });
+    }
+
+    async function submitApplicationEdit() {
+        if (!editingApplicationId || !editingApplicationProjectId) return;
+        const selected = document.querySelector('.application-edit-position-btn.selected');
+        const position = selected?.dataset.position;
+        const message = document.getElementById('applicationEditMessage').value.trim();
+        if (!position) {
+            await meetballAlert('지원 포지션을 선택해주세요.');
+            return;
+        }
+        if (!message) {
+            await meetballAlert('지원 메시지를 입력해주세요.');
+            return;
+        }
+        try {
+            const response = await meetballFetch(`/api/applications/${editingApplicationId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ position, message })
+            });
+            if (response.ok) {
+                await meetballAlert('지원서가 수정되었습니다.');
+                closeApplicationEditModal();
+                loadApplications();
+            } else {
+                const errorText = await response.text();
+                await meetballAlert('지원서 수정 실패: ' + (errorText || response.status), { type: 'error' });
+            }
+        } catch (error) {
+            console.error(error);
+            await meetballAlert('지원서 수정 중 오류가 발생했습니다.', { type: 'error' });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialTab = new URLSearchParams(window.location.search).get('tab') || 'account';
+        switchTab(initialTab);
+    });
+</script>
+
+<!-- Review Modal HTML -->
+<div id="reviewModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity" onclick="closeReviewModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div class="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
+            <div class="p-10 border-b border-poodle-50">
+                <h2 id="reviewModalTitle" class="text-3xl font-black text-poodle-900">팀원 리뷰 작성</h2>
+                <p id="reviewModalSubtitle" class="text-sm font-bold text-poodle-400 mt-2">함께한 팀원에게 따뜻한 후기를 남겨주세요.</p>
+            </div>
+            
+            <div class="p-10 space-y-8">
+                <div id="reviewTargetWrapper" class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> Target Teammate
+                    </label>
+                    <select id="reviewTargetSelect" class="w-full p-5 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-2xl font-bold text-poodle-800 outline-none transition-all">
+                        <option value="">불러오는 중...</option>
+                    </select>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> Score / 5.0
+                    </label>
+                    <input type="number" id="reviewScore" min="0.5" max="5.0" step="0.5" value="5" class="w-full p-5 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-2xl font-black text-poodle-800 outline-none transition-all">
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> Content
+                    </label>
+                    <textarea id="reviewContent" placeholder="최대 100자 이내로 작성해주세요." maxlength="100" class="w-full h-32 p-5 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-2xl font-bold text-poodle-800 text-sm outline-none transition-all resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="p-10 pt-0 flex gap-4">
+                <button onclick="closeReviewModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 transition-all uppercase">취소</button>
+                <button onclick="submitReview()" class="flex-[1.5] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">제출하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="applicationEditModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-poodle-900/40 backdrop-blur-sm transition-opacity" onclick="closeApplicationEditModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto transform transition-all animate-modal-up">
+            <div class="p-10 border-b border-poodle-50">
+                <h2 class="text-3xl font-black text-poodle-900">지원서 수정</h2>
+                <p id="applicationEditProjectTitle" class="text-sm font-bold text-poodle-400 mt-2">프로젝트 정보를 불러오는 중입니다.</p>
+            </div>
+            <div class="p-10 space-y-8">
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 포지션
+                    </label>
+                    <div id="applicationEditPositionOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 지원 메시지
+                    </label>
+                    <textarea id="applicationEditMessage" maxlength="300"
+                        class="w-full h-32 p-5 bg-poodle-50/50 border-2 border-transparent focus:border-meatball/20 focus:bg-white rounded-2xl font-bold text-poodle-800 text-sm outline-none transition-all resize-none"
+                        placeholder="지원 메시지를 입력해주세요."></textarea>
+                </div>
+            </div>
+            <div class="p-10 pt-0 flex gap-4">
+                <button onclick="closeApplicationEditModal()" class="flex-1 py-5 bg-poodle-50 text-poodle-400 rounded-2xl font-black text-sm hover:bg-poodle-100 transition-all">취소</button>
+                <button onclick="submitApplicationEdit()" class="flex-[1.5] py-5 bg-poodle-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-poodle-600/20 hover:bg-meatball hover:text-poodle-900 hover:scale-[1.02] active:scale-[0.98] transition-all">저장하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .application-edit-position-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 3.5rem;
+        border-radius: 1.25rem;
+        border: 1px solid rgba(223, 215, 210, 1);
+        background: rgba(249, 245, 243, 0.8);
+        color: #6d4c41;
+        font-size: 0.875rem;
+        font-weight: 800;
+        transition: all 0.2s ease;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .application-edit-position-btn:hover {
+        border-color: rgba(255, 107, 53, 0.35);
+        color: #ff6b35;
+        background: #fff;
+    }
+
+    .application-edit-position-btn.selected {
+        background: #4e342e;
+        color: #fff;
+        border-color: #4e342e;
+        box-shadow: 0 12px 24px -10px rgba(78, 52, 46, 0.35);
+    }
+
+    .application-edit-position-count {
+        font-size: 0.75rem;
+        font-weight: 900;
+        opacity: 0.7;
+    }
+</style>
+</body>
+</html>
