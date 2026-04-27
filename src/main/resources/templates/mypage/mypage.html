@@ -314,7 +314,16 @@
                                         <p class="text-sm font-bold text-poodle-200 italic">아직 등록된 기술 스택이 없습니다. 버튼을 눌러 스택을 추가해주세요!</p>
                                     </div>
                                 </div>
-                                <div id="inlineTechStackOptions" class="profile-edit-only hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-8 rounded-[2.5rem] bg-poodle-50/50 border border-poodle-100 max-h-[30rem] overflow-y-auto no-scrollbar"></div>
+                                <div class="profile-edit-only hidden space-y-6">
+                                    <!-- Category Tabs for Tech Stack -->
+                                    <div id="inlineTechCategoryTabs" class="flex flex-wrap gap-2 pb-4 border-b border-poodle-50">
+                                        <!-- Tabs dynamically injected -->
+                                    </div>
+                                    <!-- Tech Stack Options Grid -->
+                                    <div id="inlineTechStackOptions" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-8 rounded-[2.5rem] bg-poodle-50/50 border border-poodle-100 max-h-[30rem] overflow-y-auto no-scrollbar">
+                                        <!-- Options dynamically injected -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -540,8 +549,9 @@
 	            .filter(Boolean)
 	    };
 	    let profileEditMode = false;
-	    let editSelectedPosition = window.meetballPositionOptions.includes(initialInlineProfileState.position) ? initialInlineProfileState.position : '';
-	    const editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
+	    let editSelectedPosition = initialInlineProfileState.position || '';
+	    let editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
+	    let currentInlineTechCategory = '모두보기';
 
 	    function setInlineProfileEditMode(enabled) {
 	        profileEditMode = enabled;
@@ -615,15 +625,42 @@
 	    }
 
 	    function renderInlineTechStackOptions() {
-	        const container = document.getElementById('inlineTechStackOptions');
-	        if (!container) return;
-	        container.innerHTML = window.meetballTechStackOptions.map(tech => {
-	            const selected = editSelectedTechStacks.has(tech);
-	            return `<button type="button" onclick="toggleInlineTechStack('${escapeHtml(tech)}')">${window.meetballTechStackChipHtml(tech, {
-	                selected,
-	                className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
-	            })}</button>`;
+	        const tabsContainer = document.getElementById('inlineTechCategoryTabs');
+	        const optionsContainer = document.getElementById('inlineTechStackOptions');
+	        if (!tabsContainer || !optionsContainer) return;
+
+	        // 1. Render Category Tabs
+	        const categories = ['모두보기', '인기', '프론트엔드', '백엔드', '모바일', '기타']
+	            .filter(c => window.meetballTechStackCategories[c]);
+	        
+	        tabsContainer.innerHTML = categories.map(category => {
+	            const active = category === currentInlineTechCategory;
+	            return `
+	                <button type="button" onclick="setInlineTechCategory('${escapeHtml(category)}')"
+	                        class="px-4 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-poodle-900 text-white shadow-lg' : 'text-poodle-400 hover:bg-poodle-50 hover:text-poodle-700'}">
+	                    ${escapeHtml(category)}
+	                </button>
+	            `;
 	        }).join('');
+
+	        // 2. Render Tech Stack Options for Active Category
+	        const visibleTechs = window.meetballTechStackCategories[currentInlineTechCategory] || window.meetballTechStackOptions;
+	        optionsContainer.innerHTML = visibleTechs.map(tech => {
+	            const selected = editSelectedTechStacks.has(tech);
+	            return `
+	                <button type="button" onclick="toggleInlineTechStack('${escapeHtml(tech)}')" class="transition-all hover:scale-105 active:scale-95 text-left">
+	                    ${window.meetballTechStackChipHtml(tech, {
+	                        selected,
+	                        className: 'flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-xs font-black transition-all shadow-sm'
+	                    })}
+	                </button>
+	            `;
+	        }).join('');
+	    }
+
+	    function setInlineTechCategory(category) {
+	        currentInlineTechCategory = category;
+	        renderInlineTechStackOptions();
 	    }
 
 	    function toggleInlineTechStack(tech) {
@@ -659,6 +696,10 @@
 	    }
 
 	    function startInlineProfileEdit() {
+	        editSelectedPosition = initialInlineProfileState.position || '';
+	        editSelectedTechStacks = new Set(initialInlineProfileState.techStacks);
+	        currentInlineTechCategory = '모두보기';
+	        
 	        renderInlinePositionOptions();
 	        renderInlineExperienceOptions();
 	        renderInlineTechStackOptions();
@@ -687,9 +728,10 @@
 	        document.getElementById('inlineOrgVisible').value = initialInlineProfileState.orgVisible ? 'true' : 'false';
 	        document.getElementById('inlineBio').value = initialInlineProfileState.bio;
 	        document.getElementById('inlineExperienceYears').value = initialInlineProfileState.experienceYears || '0';
-	        editSelectedPosition = initialInlineProfileState.position;
-	        editSelectedTechStacks.clear();
-	        initialInlineProfileState.techStacks.forEach(stack => editSelectedTechStacks.add(stack));
+	        editSelectedPosition = initialInlineProfileState.position || '';
+	        editSelectedTechStacks = new Set(initialInlineProfileState.techStacks || []);
+	        currentInlineTechCategory = '모두보기';
+	        
 	        renderInlinePositionOptions();
 	        renderInlineExperienceOptions();
 	        renderInlineTechStackOptions();

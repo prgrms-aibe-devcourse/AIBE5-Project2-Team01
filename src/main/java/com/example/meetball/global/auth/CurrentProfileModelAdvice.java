@@ -43,6 +43,9 @@ public class CurrentProfileModelAdvice {
             return profileService.getProfileById((Long) profileId);
         } catch (IllegalArgumentException exception) {
             session.removeAttribute("profileId");
+            session.removeAttribute("needsProfile");
+            session.removeAttribute("profileNickname");
+            session.removeAttribute("accountId");
             return null;
         }
     }

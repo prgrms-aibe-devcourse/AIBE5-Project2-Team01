@@ -60,7 +60,7 @@ public class Profile {
     private String organization;
 
     @Column(name = "is_org_visible", nullable = false)
-    private boolean orgVisible;
+    private boolean orgVisible = true;
 
     @Column(name = "website_url", length = 255)
     private String websiteUrl;
