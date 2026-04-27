@@ -2,7 +2,7 @@
 <!-- AI Recommendation Feature Updated: 2026-04-27 -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead('홈')}"></head>
+<head th:replace="~{fragments/head :: commonHead('사이드 프로젝트 팀 빌딩 플랫폼')}"></head>
 
 <body class="text-poodle-900 flex flex-col min-h-screen">
     <header th:replace="~{fragments/header :: mainHeader}"></header>
@@ -34,7 +34,7 @@
                 <h1 class="text-4xl md:text-6xl font-black text-poodle-600 tracking-tighter mb-5 leading-tight">
                     같이 할 사람,<br>여기서 만나요
                 </h1>
-                <p class="text-[14px] md:text-base text-poodle-500 font-bold mb-8 max-w-lg leading-relaxed">
+                <p class="text-[14px] md:text-base text-poodle-500 font-bold mb-8 max-w-2xl leading-relaxed break-keep">
                     밋볼이가 프로필 냄새를 맡고, 지금 나와 잘 맞는 프로젝트를 단계별로 골라드릴게요.
                 </p>
                 <button th:if="${isLoggedIn}" type="button" onclick="RecommendationJourney.start()"
@@ -261,12 +261,12 @@
         <!-- Search & Filter Section -->
         <section id="projects" class="relative z-20 mb-16 animate-fade-in-up" style="animation-delay: 0.2s;">
             <div class="meetball-card relative z-20 rounded-[3rem] border border-white/80 px-6 py-6 shadow-[0_25px_70px_rgba(101,55,40,0.12)] md:px-8 md:py-8">
-                <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(9rem,0.72fr)_minmax(9rem,0.72fr)_minmax(12rem,0.95fr)_minmax(14rem,1.15fr)_minmax(10rem,0.82fr)_auto]">
+                <div class="grid grid-cols-1 gap-3 xl:grid-cols-[auto_auto_auto_1fr_auto_auto_auto_auto] items-stretch">
                     <div class="relative z-30">
                         <button type="button" id="projectPurposeDropdownBtn" onclick="toggleProjectPurposeDropdown()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="projectPurposeSelectedText">목적</span>
-                            <i id="projectPurposeDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="projectPurposeDropdownIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="projectPurposeDropdownMenu"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
@@ -292,9 +292,9 @@
 
                     <div class="relative z-30">
                         <button type="button" id="roleDropdownBtn" onclick="toggleRoleDropdown()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="roleSelectedText">포지션</span>
-                            <i id="roleDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="roleDropdownIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="roleDropdownMenu"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-3 md:max-h-[24rem] md:w-[24rem]">
@@ -307,9 +307,9 @@
 
                     <div class="relative z-30">
                         <button type="button" id="techStackMainBtn" onclick="toggleTechStackPanel()"
-                                class="inline-flex w-full items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
+                                class="inline-flex w-full whitespace-nowrap items-center justify-between rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-700 shadow-sm transition-all hover:border-meatball/20 hover:text-meatball">
                             <span id="techStackSelectedText">기술스택</span>
-                            <i id="techStackPanelIcon" class="fa-solid fa-chevron-down text-sm text-poodle-200 transition-all duration-300"></i>
+                            <i id="techStackPanelIcon" class="fa-solid fa-chevron-down ml-2 text-sm text-poodle-200 transition-all duration-300"></i>
                         </button>
                         <div id="techStackPanel"
                              class="hidden fixed inset-x-4 bottom-4 z-[120] max-h-[72vh] overflow-y-auto rounded-[2.25rem] border border-poodle-100 bg-white p-5 shadow-[0_35px_80px_rgba(101,55,40,0.18)] md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:right-auto md:top-full md:mt-3 md:max-h-[28rem] md:w-[min(48rem,calc(100vw-6rem))]">
@@ -337,8 +337,21 @@
                     </label>
 
                     <button type="button" id="bookmarkedFilterBtn" onclick="toggleBookmarkedOnly()"
-                            class="inline-flex h-full min-h-[4rem] items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-poodle-50 px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/20 hover:bg-white hover:text-meatball">
+                            class="group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/30 hover:bg-poodle-50/50 hover:shadow-md active:scale-95">
+                        <i class="fa-regular fa-heart text-lg text-meatball/40 group-hover/filter:text-meatball transition-colors"></i>
                         관심 프로젝트
+                    </button>
+
+                    <button type="button" id="openOnlyFilterBtn" onclick="toggleOpenOnly()"
+                            class="group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-blue-300/30 hover:bg-blue-50/30 hover:shadow-md active:scale-95">
+                        <i class="fa-regular fa-circle-check text-lg text-blue-400/40 group-hover/filter:text-blue-500 transition-colors"></i>
+                        모집 중
+                    </button>
+
+                    <button type="button" onclick="resetAllFilters()"
+                            class="inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center rounded-[1.35rem] border border-transparent bg-meatball/5 px-5 py-4 text-base font-black text-meatball shadow-sm transition-all hover:bg-meatball hover:text-white group">
+                        <i class="fa-solid fa-rotate-left mr-2 transition-transform group-hover:rotate-[-45deg]"></i>
+                        초기화
                     </button>
 
                     <div class="hidden items-center justify-center rounded-[1.35rem] border border-poodle-100 bg-white p-1 shadow-sm md:flex">
@@ -386,6 +399,7 @@
             keyword: '',
             projectPurpose: '',
             bookmarkedOnly: false,
+            openOnly: false,
             position: '',
             techStacks: [],
             viewMode: 'grid',
@@ -409,6 +423,7 @@
             if (state.keyword) params.set('keyword', state.keyword);
             if (state.projectPurpose) params.set('projectPurpose', state.projectPurpose);
             if (state.bookmarkedOnly) params.set('bookmarkedOnly', 'true');
+            if (state.openOnly) params.set('openOnly', 'true');
             if (state.position) params.set('position', state.position);
             if (state.techStacks.length) params.set('techStack', state.techStacks.join(','));
             const normalizedViewMode = normalizeViewMode(state.viewMode);
@@ -427,6 +442,7 @@
             filterState.keyword = params.get('keyword') || '';
             filterState.projectPurpose = params.get('projectPurpose') || '';
             filterState.bookmarkedOnly = HOME_LOGGED_IN && params.get('bookmarkedOnly') === 'true';
+            filterState.openOnly = params.get('openOnly') === 'true';
             filterState.position = params.get('position') || '';
             filterState.techStacks = (params.get('techStack') || '')
                 .split(',')
@@ -444,22 +460,39 @@
         function syncBookmarkedButton() {
             const button = document.getElementById('bookmarkedFilterBtn');
             if (!button) return;
+            const icon = button.querySelector('i');
             const isActive = filterState.bookmarkedOnly;
-            button.classList.toggle('bg-poodle-600', isActive);
-            button.classList.toggle('text-white', isActive);
-            button.classList.toggle('border-transparent', isActive);
-            button.classList.toggle('shadow-lg', isActive);
-            button.classList.toggle('shadow-poodle-600/15', isActive);
-            button.classList.toggle('hover:bg-meatball', isActive);
-            button.classList.toggle('hover:text-white', isActive);
+            
+            if (isActive) {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border-transparent bg-meatball px-5 py-4 text-base font-black text-white shadow-lg shadow-meatball/20 transition-all active:scale-95";
+                if (icon) {
+                    icon.className = "fa-solid fa-heart text-lg text-white";
+                }
+            } else {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-meatball/30 hover:bg-poodle-50/50 hover:shadow-md active:scale-95";
+                if (icon) {
+                    icon.className = "fa-regular fa-heart text-lg text-meatball/40 group-hover/filter:text-meatball transition-colors";
+                }
+            }
+        }
 
-            button.classList.toggle('bg-poodle-50', !isActive);
-            button.classList.toggle('text-poodle-600', !isActive);
-            button.classList.toggle('border-poodle-100', !isActive);
-            button.classList.toggle('shadow-sm', !isActive);
-            button.classList.toggle('hover:border-meatball/20', !isActive);
-            button.classList.toggle('hover:bg-white', !isActive);
-            button.classList.toggle('hover:text-meatball', !isActive);
+        function syncOpenOnlyButton() {
+            const button = document.getElementById('openOnlyFilterBtn');
+            if (!button) return;
+            const icon = button.querySelector('i');
+            const isActive = filterState.openOnly;
+            
+            if (isActive) {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border-transparent bg-blue-500 px-5 py-4 text-base font-black text-white shadow-lg shadow-blue-500/20 transition-all active:scale-95";
+                if (icon) {
+                    icon.className = "fa-solid fa-circle-check text-lg text-white";
+                }
+            } else {
+                button.className = "group/filter inline-flex h-full min-h-[4rem] whitespace-nowrap items-center justify-center gap-2 rounded-[1.35rem] border border-poodle-100 bg-white px-5 py-4 text-base font-black text-poodle-600 shadow-sm transition-all hover:border-blue-300/30 hover:bg-blue-50/30 hover:shadow-md active:scale-95";
+                if (icon) {
+                    icon.className = "fa-regular fa-circle-check text-lg text-blue-400/40 group-hover/filter:text-blue-500 transition-colors";
+                }
+            }
         }
 
         function updateProjectPurposeButtonLabel() {
@@ -538,6 +571,52 @@
             filterState.bookmarkedOnly = !filterState.bookmarkedOnly;
             filterState.page = 0;
             syncBookmarkedButton();
+            fetchProjects(0);
+        }
+
+        function toggleOpenOnly() {
+            filterState.openOnly = !filterState.openOnly;
+            filterState.page = 0;
+            syncOpenOnlyButton();
+            fetchProjects(0);
+        }
+
+        function resetAllFilters() {
+            // 필터 상태 초기화
+            filterState.keyword = '';
+            filterState.projectPurpose = '';
+            filterState.bookmarkedOnly = false;
+            filterState.openOnly = false;
+            filterState.position = '';
+            filterState.techStacks = [];
+            filterState.page = 0;
+
+            // UI 요소 갱신
+            const keywordInput = document.getElementById('keywordInput');
+            if (keywordInput) keywordInput.value = '';
+
+            syncBookmarkedButton();
+            syncOpenOnlyButton();
+            updateProjectPurposeButtonLabel();
+            
+            // 포지션/역할 필터 초기화
+            const roleOptions = document.querySelectorAll('[data-role-option]');
+            roleOptions.forEach(button => {
+                const isActive = button.dataset.roleOption === '';
+                button.classList.toggle('bg-poodle-600', isActive);
+                button.classList.toggle('text-white', isActive);
+                button.classList.toggle('shadow-lg', isActive);
+                button.classList.toggle('bg-poodle-50', !isActive);
+                button.classList.toggle('text-poodle-600', !isActive);
+            });
+            updatePositionButtonLabel();
+
+            // 기술 스택 초기화
+            activeTechCategory = '모두보기';
+            renderTechStackTabs();
+            renderTechStackOptions();
+
+            // 데이터 다시 불러오기
             fetchProjects(0);
         }
 
@@ -1177,7 +1256,8 @@
                     projectPurpose: filterState.projectPurpose,
                     position: filterState.position,
                     techStack: filterState.techStacks.join(','),
-                    bookmarkedOnly: String(filterState.bookmarkedOnly)
+                    bookmarkedOnly: String(filterState.bookmarkedOnly),
+                    openOnly: String(filterState.openOnly)
                 }).toString();
 
                 const res = await fetch(`/api/projects?${query}`);
@@ -1189,6 +1269,15 @@
                 currentPageData = data;
                 renderProjects(currentProjects);
                 renderPagination(data);
+
+                // 페이지 전환 시 프로젝트 목록 상단으로 부드럽게 이동
+                if (page > 0 || filterState.page > 0) {
+                    const projectsSection = document.getElementById('projects');
+                    if (projectsSection) {
+                        const offset = projectsSection.getBoundingClientRect().top + window.scrollY - 120;
+                        window.scrollTo({ top: offset, behavior: 'smooth' });
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching projects:', error);
             }
@@ -1268,9 +1357,15 @@
                         </p>
                     </div>
                     <div class="mt-8">
-                        <a href="/register" class="inline-flex items-center gap-2 px-6 py-3 bg-poodle-900 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all active:scale-95">
+                        <button onclick="(() => {
+                            if (!HOME_LOGGED_IN) {
+                                openLoginRequiredModal('/register');
+                            } else {
+                                window.location.href = '/register';
+                            }
+                        })()" class="inline-flex items-center gap-2 px-6 py-3 bg-poodle-900 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all active:scale-95">
                             <i class="fa-solid fa-plus"></i> 프로젝트 생성하기
-                        </a>
+                        </button>
                     </div>
                 </div>`;
                 return;
@@ -1294,20 +1389,26 @@
                 const summary = escapeHtml(p.summary || '');
                 const readCount = Number(p.readCount ?? 0);
                 const bookmarkCount = Number(p.bookmarkCount ?? p.totalBookmarks ?? 0);
+                const commentCount = Number(p.commentCount ?? 0);
+
                 const isBookmarked = Boolean(p.bookmarked ?? p.isBookmarked);
                 const bookmarkButtonClass = isBookmarked
                     ? 'bg-white text-meatball border-meatball/20'
                     : 'bg-poodle-50 text-poodle-300 border-poodle-100';
                 const bookmarkIconClass = isBookmarked ? 'fa-solid text-meatball' : 'fa-regular';
                 const projectMetrics = `
-                    <div class="flex items-center gap-4 text-[10px] font-black text-poodle-300">
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="fa-regular fa-eye"></i>
-                            <span>${readCount}</span>
+                    <div class="flex items-center gap-4 text-[11px] font-bold text-poodle-500">
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-blue-500 group/metric">
+                            <i class="fa-regular fa-eye text-blue-400/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span class="text-poodle-400 font-black">${readCount}</span>
                         </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <i class="fa-regular fa-heart"></i>
-                            <span id="homeBookmarkCount-${domProjectId}">${bookmarkCount}</span>
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-emerald-500 group/metric" title="댓글">
+                            <i class="fa-regular fa-comment-dots text-emerald-400/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span class="text-poodle-400 font-black">${commentCount}</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 transition-colors hover:text-meatball group/metric">
+                            <i class="fa-regular fa-heart text-meatball/80 group-hover/metric:scale-110 transition-transform"></i>
+                            <span id="homeBookmarkCount-${domProjectId}" class="text-poodle-400 font-black">${bookmarkCount}</span>
                         </span>
                     </div>`;
                 const bookmarkButton = `
@@ -1317,22 +1418,32 @@
                         <i id="homeBookmarkIcon-${domProjectId}" class="fa-heart ${bookmarkIconClass}"></i>
                     </button>`;
 
-                // 기술 스택 (Array 처리)
-	                const techBadges = (p.techStacks || []).map(tech =>
-	                    window.meetballTechStackChipHtml(tech, {
-	                        className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
-	                    })
-	                ).join('');
+                // 기술 스택 (최대 6개로 제한하여 카드 높이 일정 유지)
+                const techList = p.techStacks || [];
+                const maxVisible = 6;
+                const visibleTechs = techList.slice(0, maxVisible);
+                const remaining = techList.length - maxVisible;
+
+                let techBadges = visibleTechs.map(tech =>
+                    window.meetballTechStackChipHtml(tech, {
+                        className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
+                    })
+                ).join('');
+
+                if (remaining > 0) {
+                    techBadges += `<span class="inline-flex items-center px-2.5 py-1.5 rounded-full border border-poodle-50 bg-poodle-50 text-poodle-300 text-[10px] font-black">+${remaining}</span>`;
+                }
 
                 if (filterState.viewMode === 'list') {
                     return `
-            <article class="project-card bg-white rounded-[2rem] border border-poodle-50 overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+            <article onclick="window.location.href='/projects/${projectId}'" 
+                     class="project-card cursor-pointer bg-white rounded-[2rem] border border-poodle-50 overflow-hidden group hover:border-meatball/20 transition-all shadow-sm hover:shadow-2xl hover:-translate-y-1">
                 <div class="grid grid-cols-1 md:grid-cols-[15rem_1fr_auto] gap-0 md:gap-6 items-stretch">
-                    <a href="/projects/${projectId}" class="relative h-48 md:h-full min-h-[12rem] overflow-hidden bg-poodle-50">
+                    <div class="relative h-48 md:h-full min-h-[12rem] overflow-hidden bg-poodle-50">
                         <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <span class="absolute top-4 left-4 text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
-                    </a>
+                        <span class="absolute top-4 left-4 text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg pointer-events-none">${deadlineLabel}</span>
+                    </div>
                     <div class="p-6 md:p-7 flex flex-col justify-between gap-5">
                         <div>
                             <div class="flex flex-wrap gap-2 mb-3">
@@ -1344,7 +1455,6 @@
                         </div>
                         <div class="space-y-4">
                             <div class="flex flex-wrap gap-1.5">${techBadges}</div>
-                            ${projectMetrics}
                         </div>
                     </div>
                     <div class="p-6 md:p-7 md:w-56 flex md:flex-col items-center md:items-stretch justify-between gap-5 border-t md:border-t-0 md:border-l border-poodle-50">
@@ -1353,14 +1463,17 @@
                                 <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit</span>
                                 <span class="text-xs font-black text-poodle-900"><span class="text-meatball">${currentRecruit}</span> / ${totalRecruit}</span>
                             </div>
-                            <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden">
+                            <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-4">
                                 <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="flex justify-end">
+                                ${projectMetrics}
                             </div>
                         </div>
                         <div class="shrink-0 flex items-center gap-2">
                             ${bookmarkButton}
                             <a href="/projects/${projectId}" class="inline-flex justify-center py-3.5 px-5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95">
-                                보기 <i class="fa-solid fa-chevron-right ml-1.5"></i>
+                                보기
                             </a>
                         </div>
                     </div>
@@ -1369,13 +1482,14 @@
                 }
 
                 return `
-            <article class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+            <article onclick="window.location.href='/projects/${projectId}'"
+                     class="project-card cursor-pointer bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/20 transition-all shadow-sm hover:shadow-2xl hover:-translate-y-2">
                 <!-- Image Section -->
                 <div class="relative h-44 overflow-hidden">
                     <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute top-4 left-4">
-                        <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
+                        <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg pointer-events-none">${deadlineLabel}</span>
                     </div>
                     <div class="absolute top-4 right-4">
                         ${bookmarkButton}
@@ -1394,12 +1508,9 @@
                     <div class="flex flex-wrap gap-1.5 mb-6">
                         ${techBadges}
                     </div>
-                    <div class="mb-5">
-                        ${projectMetrics}
-                    </div>
 
                     <div class="mt-auto pt-4 border-t border-poodle-50">
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center justify-between mb-3">
                             <span class="text-[9px] font-black text-poodle-200 uppercase tracking-widest italic">Recruit Status</span>
                             <span class="text-xs font-black text-poodle-900">
                                 <span class="text-meatball">${currentRecruit}</span> <span class="text-poodle-100">/</span> <span>${totalRecruit}</span>
@@ -1408,9 +1519,12 @@
                         <div class="w-full h-1.5 bg-poodle-50 rounded-full overflow-hidden mb-5">
                             <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
-                        <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
-                            프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
-                        </a>
+                        <div class="flex items-center justify-between">
+                            ${projectMetrics}
+                            <a href="/projects/${projectId}" class="w-full max-w-[140px] inline-flex justify-center py-3 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
+                                프로젝트 보기
+                            </a>
+                        </div>
                     </div>
                 </div>
             </article>`;
@@ -1468,6 +1582,7 @@
             updateProjectPurposeButtonLabel();
             updateTechStackButtonLabel();
             syncBookmarkedButton();
+            syncOpenOnlyButton();
             updateViewButtons();
 
             const keywordInput = document.getElementById('keywordInput');

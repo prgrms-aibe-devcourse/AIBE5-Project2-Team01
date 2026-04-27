@@ -22,6 +22,7 @@ public class ProjectListResponseDto {
     private String progressStatus;
     private int bookmarkCount;
     private int readCount;
+    private int commentCount;
     private boolean bookmarked;
     private LocalDateTime createdAt;
 
@@ -29,7 +30,7 @@ public class ProjectListResponseDto {
                                   Integer currentRecruitment, Integer totalRecruitment, String projectPurpose,
                                   String workMethod, String position, List<String> techStacks,
                                   LocalDate recruitmentEndAt, String dDay, String recruitStatus, String progressStatus,
-                                  int bookmarkCount, int readCount, boolean bookmarked, LocalDateTime createdAt) {
+                                  int bookmarkCount, int readCount, int commentCount, boolean bookmarked, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -46,6 +47,7 @@ public class ProjectListResponseDto {
         this.progressStatus = progressStatus;
         this.bookmarkCount = bookmarkCount;
         this.readCount = readCount;
+        this.commentCount = commentCount;
         this.bookmarked = bookmarked;
         this.createdAt = createdAt;
     }
@@ -67,6 +69,7 @@ public class ProjectListResponseDto {
     public String getProgressStatus() { return progressStatus; }
     public int getBookmarkCount() { return bookmarkCount; }
     public int getReadCount() { return readCount; }
+    public int getCommentCount() { return commentCount; }
     public boolean isBookmarked() { return bookmarked; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

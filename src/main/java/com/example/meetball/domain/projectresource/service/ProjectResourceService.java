@@ -45,7 +45,7 @@ public class ProjectResourceService {
     }
 
     @Transactional
-    public ProjectResourceResponseDto uploadFile(Long projectId, MultipartFile file) {
+    public ProjectResourceResponseDto uploadFile(Long projectId, MultipartFile file, String tabType) {
         try {
             if (file == null || file.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ProjectResource file is required.");
@@ -72,6 +72,7 @@ public class ProjectResourceService {
                     .storedFilePath(storedFileName) 
                     .type("FILE")
                     .fileSize(file.getSize())
+                    .tabType(tabType)
                     .build();
 
             ProjectResource savedProjectResource = projectResourceRepository.save(projectResource);
@@ -101,7 +102,7 @@ public class ProjectResourceService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + projectResource.getOriginalFileName());
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다: " + projectResource.getOriginalFileName());
             }
         } catch (MalformedURLException ex) {
             throw new RuntimeException("File not found", ex);
@@ -114,7 +115,7 @@ public class ProjectResourceService {
     }
 
     @Transactional
-    public ProjectResourceResponseDto uploadLink(Long projectId, String title, String url) {
+    public ProjectResourceResponseDto uploadLink(Long projectId, String title, String url, String tabType) {
         String safeTitle = StringUtils.hasText(title) ? title.trim() : "관련 링크";
         String safeUrl = validateHttpUrl(url);
         ProjectResource projectResource = ProjectResource.builder()
@@ -122,6 +123,7 @@ public class ProjectResourceService {
                 .originalFileName(safeTitle)
                 .linkUrl(safeUrl)
                 .type("LINK")
+                .tabType(tabType)
                 .build();
         
         ProjectResource saved = projectResourceRepository.save(projectResource);

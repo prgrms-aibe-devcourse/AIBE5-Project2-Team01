@@ -10,9 +10,9 @@
         <!-- Hero Banner Area -->
         <section
             class="relative h-[28rem] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-poodle-900/10 mb-10 group">
-            <img th:src="${project.thumbnailUrl}" th:alt="${project.title}"
-                src="/img/logo.png"
-                class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105">
+            <img th:src="${!#strings.isEmpty(project.thumbnailUrl) ? project.thumbnailUrl : '/img/logo.png'}" 
+                 th:alt="${project.title}"
+                 class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105 shadow-inner">
             <div class="absolute inset-0 bg-gradient-to-t from-poodle-900/80 via-poodle-900/20 to-transparent"></div>
             <div class="absolute inset-0 flex flex-col justify-end p-12 text-white">
                 <div class="flex items-center gap-2 mb-4">
@@ -238,6 +238,11 @@
                         <div id="comments-container" class="space-y-6 pt-8 border-t border-poodle-50">
                             <!-- JS injected comments -->
                         </div>
+
+                        <!-- 🐾 Comment Pagination -->
+                        <div id="comment-pagination" class="flex justify-center items-center gap-2 pt-10">
+                            <!-- JS injected pagination -->
+                        </div>
                     </section>
                 </div>
             </div>
@@ -348,9 +353,9 @@
                                onclick="handleMemberCardClick(event)"
                                class="flex items-center gap-4 rounded-2xl border border-poodle-100 bg-poodle-50 p-4 shadow-sm transition-all duration-200 group/leader hover:-translate-y-1 hover:border-meatball/30 hover:bg-white hover:shadow-[0_18px_36px_rgba(62,39,35,0.10)]">
                                 <div class="relative">
-                                    <img th:src="${project.leaderAvatarUrl}"
+                                    <img th:src="${!#strings.isEmpty(project.leaderAvatarUrl) ? project.leaderAvatarUrl : '/img/logo.png'}"
                                         src="/img/logo.png"
-                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm object-cover border border-poodle-50">
                                     <div
                                         class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
                                         <i class="fa-solid fa-crown"></i>
@@ -364,9 +369,9 @@
                             </a>
                             <div th:unless="${project.leaderProfileId != null}" class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
                                 <div class="relative">
-                                    <img th:src="${project.leaderAvatarUrl}"
+                                    <img th:src="${!#strings.isEmpty(project.leaderAvatarUrl) ? project.leaderAvatarUrl : '/img/logo.png'}"
                                         src="/img/logo.png"
-                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm object-cover border border-poodle-50">
                                     <div
                                         class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
                                         <i class="fa-solid fa-crown"></i>
@@ -385,11 +390,9 @@
                                onclick="handleMemberCardClick(event)"
                                class="flex items-center gap-4 rounded-2xl border border-poodle-50 bg-white p-4 shadow-sm transition-all duration-200 group/member hover:-translate-y-1 hover:border-meatball/30 hover:bg-poodle-50/30 hover:shadow-[0_18px_36px_rgba(62,39,35,0.10)]">
                                 <div class="relative">
-                                    <img th:src="@{/img/logo.png}" src="/img/logo.png"
-                                         class="w-12 h-12 bg-white rounded-xl shadow-sm border border-poodle-50">
-                                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-poodle-300 text-white rounded-md flex items-center justify-center text-[8px]">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
+                                    <img th:src="${!#strings.isEmpty(member.avatarUrl) ? member.avatarUrl : '/img/logo.png'}" 
+                                         src="/img/logo.png"
+                                         class="w-12 h-12 bg-white rounded-xl shadow-sm border border-poodle-50 object-cover">
                                 </div>
                                 <div class="min-w-0">
                                     <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 transition-colors group-hover/member:text-meatball truncate">팀원</p>
@@ -562,7 +565,8 @@
     <script th:inline="javascript">
         const CURRENT_USER = {
             nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null,
-            profileId: /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null
+            profileId: /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null,
+            role: /*[[${role}]]*/ 'GUEST'
         };
         const escapeHtml = window.meetballEscapeHtml;
         const PROJECT_DEADLINE_LABEL = /*[[${project.deadlineLabel}]]*/ '';
@@ -570,6 +574,7 @@
         const PROJECT_PROGRESS_STATUS = /*[[${project.progressStatus}]]*/ '';
         const projectId = () => window.meetballResolveProjectId({ elementId: 'applicationProjectId', queryParam: 'projectId', pathIndex: 2 });
         let currentExistingApplication = null;
+        let currentCommentPage = 0;
 
         function hasAvailableRecruitPositions() {
             return Array.from(document.querySelectorAll('#applyModal .pos-btn')).some(btn => !btn.disabled);
@@ -775,15 +780,67 @@
         // ===================================
         // Comments Script
         // ===================================
-        async function fetchComments() {
+        function renderCommentItem(c, isReply = false) {
+            const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const author = escapeHtml(c.authorNickname);
+            const authorProfileId = Number(c.authorProfileId);
+            const authorLink = Number.isFinite(authorProfileId)
+                ? `<a href="/people/${authorProfileId}" class="hover:text-meatball transition-colors">${author}</a>`
+                : `<span>${author}</span>`;
+            const content = escapeHtml(c.content);
+            const commentId = Number(c.id);
+            const isAuthor = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname;
+            
+            const deleteButton = isAuthor && Number.isFinite(commentId)
+                ? `<button onclick="deleteComment(${commentId})" class="text-poodle-300 hover:text-red-400 text-[10px] font-black transition-all">삭제</button>`
+                : '';
+                
+            const replyButton = !isReply && (CURRENT_USER.role === 'LEADER' || CURRENT_USER.role === 'MEMBER')
+                ? `<button onclick="toggleReplyForm(${commentId})" class="text-meatball hover:underline text-[10px] font-black transition-all">답글 달기</button>`
+                : '';
+
+            let html = `
+            <div class="${isReply ? 'ml-14 mt-4' : 'mb-6'} flex gap-4 animate-fade-in-up">
+                <img src="/img/logo.png" class="${isReply ? 'w-10 h-10' : 'w-12 h-12'} bg-poodle-50 rounded-xl shadow-sm border border-white flex-shrink-0">
+                <div class="${isReply ? 'bg-poodle-100/30' : 'bg-poodle-50/30'} p-5 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-black text-poodle-900 text-sm">${authorLink} <span class="text-[9px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
+                        <div class="flex items-center gap-3">
+                            ${replyButton}
+                            ${deleteButton}
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
+                    
+                    <!-- Reply Form Placeholder -->
+                    <div id="reply-form-container-${commentId}" class="hidden mt-4 pt-4 border-t border-poodle-100 animate-fade-in">
+                        <div class="flex gap-3">
+                            <textarea id="reply-input-${commentId}" placeholder="답글을 남겨보세요..." 
+                                class="w-full p-4 bg-white border border-poodle-100 rounded-2xl outline-none text-sm font-bold text-poodle-800 focus:border-meatball/30 resize-none h-20"></textarea>
+                            <button onclick="postComment(${commentId})" 
+                                class="px-6 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball transition-all whitespace-nowrap">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            if (c.children && c.children.length > 0) {
+                html += c.children.map(child => renderCommentItem(child, true)).join('');
+            }
+
+            return html;
+        }
+
+        async function fetchComments(page = 0) {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
+            currentCommentPage = page;
 
             try {
-                const res = await fetch(`/api/projects/${currentProjectId}/comments`);
+                const res = await fetch(`/api/projects/${currentProjectId}/comments?page=${page}&size=5&sort=createdAt,desc`);
                 if(!res.ok) throw new Error('댓글 불러오기 실패');
                 
-                // Pagination Response { content: [], ... }
                 const data = await res.json();
                 const comments = data.content || [];
                 const container = document.getElementById('comments-container');
@@ -794,43 +851,85 @@
 
                 if (comments.length === 0) {
                     container.innerHTML = '<div class="text-center text-poodle-300 font-bold py-10">첫 번째 댓글을 남겨보세요!</div>';
+                    document.getElementById('comment-pagination').innerHTML = '';
                     return;
                 }
 
-                container.innerHTML = comments.map(c => {
-                    const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-                    const author = escapeHtml(c.authorNickname);
-                    const authorProfileId = Number(c.authorProfileId);
-                    const authorLink = Number.isFinite(authorProfileId)
-                        ? `<a href="/people/${authorProfileId}" class="hover:text-meatball transition-colors">${author}</a>`
-                        : `<span>${author}</span>`;
-                    const content = escapeHtml(c.content);
-                    const commentId = Number(c.id);
-                    const deleteButton = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname && Number.isFinite(commentId)
-                        ? `<button onclick="deleteComment(${commentId})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>`
-                        : '';
-                    return `
-                    <div class="flex gap-4">
-                        <img src="/img/logo.png" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
-                        <div class="bg-poodle-50/30 p-6 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
-                            <h4 class="font-black text-poodle-900 text-sm mb-1">${authorLink} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
-                            <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
-                            ${deleteButton}
-                        </div>
-                    </div>
-                    `;
-                }).join('');
+                container.innerHTML = comments.map(c => renderCommentItem(c)).join('');
+                renderCommentPagination(data);
             } catch (err) {
                 console.error(err);
             }
         }
 
-        async function postComment() {
+        function renderCommentPagination(data) {
+            const container = document.getElementById('comment-pagination');
+            if (!container) return;
+            
+            const totalPages = data.totalPages;
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const currentPage = data.number;
+            let html = '';
+
+            // Previous Button
+            html += `
+                <button onclick="fetchComments(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''} 
+                    class="w-10 h-10 flex items-center justify-center rounded-xl border border-poodle-100 text-poodle-400 hover:border-meatball hover:text-meatball disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+            `;
+
+            // Page Numbers (Simple version: show all if few, or limit if many)
+            for (let i = 0; i < totalPages; i++) {
+                if (i >= currentPage - 2 && i <= currentPage + 2) {
+                    html += `
+                        <button onclick="fetchComments(${i})" 
+                            class="w-10 h-10 flex items-center justify-center rounded-xl font-black text-sm transition-all
+                            ${currentPage === i ? 'bg-poodle-600 text-white shadow-lg shadow-poodle-600/20' : 'text-poodle-400 hover:bg-poodle-50 hover:text-poodle-900 border border-poodle-50'}">
+                            ${i + 1}
+                        </button>
+                    `;
+                }
+            }
+
+            // Next Button
+            html += `
+                <button onclick="fetchComments(${currentPage + 1})" ${currentPage === totalPages - 1 ? 'disabled' : ''} 
+                    class="w-10 h-10 flex items-center justify-center rounded-xl border border-poodle-100 text-poodle-400 hover:border-meatball hover:text-meatball disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`reply-form-container-${commentId}`);
+            if (form) {
+                const isHidden = form.classList.contains('hidden');
+                // Close all other reply forms first for better UX
+                document.querySelectorAll('[id^="reply-form-container-"]').forEach(f => f.classList.add('hidden'));
+                
+                if (isHidden) {
+                    form.classList.remove('hidden');
+                    const input = document.getElementById(`reply-input-${commentId}`);
+                    if (input) input.focus();
+                }
+            }
+        }
+
+        async function postComment(parentId = null) {
             const currentProjectId = projectId();
-            const content = document.getElementById('commentContent').value.trim();
+            const content = parentId 
+                ? document.getElementById(`reply-input-${parentId}`).value.trim()
+                : document.getElementById('commentContent').value.trim();
 
             if (!content) {
-                await meetballAlert('댓글 내용을 입력해주세요.'); return;
+                await meetballAlert('내용을 입력해주세요.'); return;
             }
             if (!CURRENT_USER.nickname) {
                 openLoginRequiredModal(`/projects/${currentProjectId}`);
@@ -842,15 +941,20 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: content
+                        content: content,
+                        parentId: parentId
                     })
                 });
 
                 if (res.ok) {
-                    document.getElementById('commentContent').value = '';
+                    if (parentId) {
+                        document.getElementById(`reply-input-${parentId}`).value = '';
+                    } else {
+                        document.getElementById('commentContent').value = '';
+                    }
                     fetchComments();
                 } else {
-                    await meetballAlert('댓글 등록에 실패했습니다.', { type: 'error' });
+                    await meetballAlert('등록에 실패했습니다.', { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);
@@ -879,11 +983,28 @@
         async function fetchResources() {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
-            await window.meetballLoadProjectResources(currentProjectId, {
-                variant: 'detail',
-                containerIds: ['resources-container-detail', 'resources-container-recruitment'],
-                emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 결과물이나 링크가 없습니다.</div>'
-            });
+            
+            try {
+                const resources = await window.meetballFetchProjectResources(currentProjectId);
+                
+                // 1. 모집기획 자료 렌더링 (RECRUIT)
+                window.meetballRenderProjectResources(resources, currentProjectId, {
+                    variant: 'detail',
+                    containerIds: ['resources-container-recruitment'],
+                    tabType: 'RECRUIT',
+                    emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 모집 참고 자료가 없습니다.</div>'
+                });
+
+                // 2. 최종 결과물 자료 렌더링 (RESULT)
+                window.meetballRenderProjectResources(resources, currentProjectId, {
+                    variant: 'detail',
+                    containerIds: ['resources-container-detail'],
+                    tabType: 'RESULT',
+                    emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">아직 등록된 프로젝트 최종 결과물이 없습니다.</div>'
+                });
+            } catch (err) {
+                console.error('Fetch Resources Error', err);
+            }
         }
 
         async function fetchBookmarkStatus() {

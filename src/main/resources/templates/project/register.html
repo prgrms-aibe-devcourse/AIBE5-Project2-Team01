@@ -19,7 +19,7 @@
                 <div class="flex items-center gap-3">
                     <div class="px-8 py-4 bg-white/80 backdrop-blur-md rounded-2xl border border-white text-poodle-600 font-black text-sm">
                         <i class="fa-solid fa-wand-magic-sparkles text-meatball mr-2"></i>
-                        <span th:text="${editMode} ? 'Project Update' : 'Sparking Ideas'">Sparking Ideas</span>
+                        <span th:text="${editMode} ? '프로젝트 수정' : '아이디어의 시작'">아이디어의 시작</span>
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
 
                     <div class="space-y-8">
                         <div class="space-y-3">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Project Title
+                            <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> 프로젝트 제목
                             </label>
                             <input type="text" id="title" placeholder="예: AI 기반 커뮤니티 건강관리 앱 프로젝트"
                                    class="w-full bg-poodle-50 border border-poodle-50 rounded-2xl p-6 font-bold text-lg focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 outline-none transition-all placeholder:text-poodle-200">
@@ -46,8 +46,8 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-3">
-                                <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> Purpose
+                                <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> 프로젝트 목적
                                 </label>
                                 <div class="relative group">
                                     <input type="hidden" id="projectPurpose" value="">
@@ -69,8 +69,8 @@
                                 </div>
                             </div>
                             <div class="space-y-3">
-                                <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> Meeting Mode
+                                <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-meatball rounded-full"></span> 진행 방식
                                 </label>
                                 <div class="relative group">
                                     <input type="hidden" id="workMethod" value="">
@@ -94,8 +94,8 @@
                         </div>
 
                         <div class="space-y-4 pt-4">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Thumbnail Image
+                            <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> 대표 이미지
                             </label>
                             <div class="flex flex-col items-center justify-center border-3 border-dashed border-poodle-50 rounded-4xl p-8 bg-poodle-50/20 group hover:border-meatball transition-all">
                                 <div id="thumbPreviewWrap" class="w-full max-w-md aspect-video rounded-3xl overflow-hidden bg-white shadow-lg mb-6 border border-poodle-100 flex items-center justify-center relative">
@@ -108,6 +108,8 @@
                                 <div class="w-full max-w-xl flex flex-col sm:flex-row gap-3">
                                     <input type="url" id="thumbnailUrl" placeholder="대표 이미지 URL을 입력해주세요"
                                            oninput="previewThumbnailUrl(this.value)"
+                                           onchange="previewThumbnailUrl(this.value)"
+                                           onpaste="setTimeout(() => previewThumbnailUrl(this.value), 0)"
                                            class="flex-1 bg-white border border-poodle-100 rounded-2xl px-5 py-4 font-black text-sm text-poodle-700 outline-none focus:border-meatball focus:ring-4 focus:ring-meatball/5 placeholder:text-poodle-200">
                                     <button type="button" onclick="resetThumbnailPreview()"
                                             class="px-6 py-4 bg-white border border-poodle-100 text-poodle-900 rounded-2xl text-sm font-black hover:bg-meatball hover:text-white transition-all shadow-sm">기본 로고</button>
@@ -116,8 +118,8 @@
                         </div>
 
                         <div class="space-y-3">
-                            <label class="text-[11px] font-black text-poodle-300 uppercase tracking-widest italic ml-1 flex items-center gap-2">
-                                <span class="w-1 h-1 bg-meatball rounded-full"></span> Description
+                            <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> 프로젝트 상세 설명
                             </label>
                             <textarea id="description"
                                       class="w-full h-80 bg-poodle-50 border border-poodle-50 rounded-4xl p-8 font-bold resize-none outline-none focus:bg-white focus:border-meatball focus:ring-8 focus:ring-meatball/5 transition-all placeholder:text-poodle-200 leading-relaxed">[필수 요건]
@@ -136,13 +138,12 @@
                             </div>
                             <div>
                                 <h2 class="text-xl font-black text-poodle-900 tracking-tight">팀원 모집 기간</h2>
-                                <p class="text-[10px] font-bold text-meatball/60 uppercase tracking-tighter">Recruitment Window</p>
                             </div>
                         </div>
                         <div class="flex flex-col gap-6">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between px-1">
-                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Start Date</span>
+                                    <span class="text-[10px] font-black text-poodle-500 uppercase tracking-widest">시작일</span>
                                     <button type="button" onclick="quickDate('recruitmentStartAt', 0)"
                                             class="text-[9px] font-black text-meatball bg-white border border-meatball/20 px-3 py-1 rounded-full hover:bg-meatball hover:text-white transition-all shadow-sm">TODAY</button>
                                 </div>
@@ -151,7 +152,7 @@
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between px-1">
-                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">End Date</span>
+                                    <span class="text-[10px] font-black text-poodle-500 uppercase tracking-widest">종료일</span>
                                     <div class="flex gap-2">
                                         <button type="button" onclick="quickDate('recruitmentEndAt', 7)"
                                                 class="text-[9px] font-black text-meatball bg-white border border-meatball/20 px-3 py-1 rounded-full hover:bg-meatball hover:text-white transition-all shadow-sm">+1W</button>
@@ -171,14 +172,13 @@
                                 <i class="fa-solid fa-hourglass-half text-xl"></i>
                             </div>
                             <div>
-                                <h2 class="text-xl font-black text-poodle-900 tracking-tight">프로젝트 기간</h2>
-                                <p class="text-[10px] font-bold text-poodle-400 uppercase tracking-tighter">Project Timeline</p>
+                                <h2 class="text-xl font-black text-poodle-900 tracking-tight">프로젝트 진행 기간</h2>
                             </div>
                         </div>
                         <div class="flex flex-col gap-6">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between px-1">
-                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Launch Date</span>
+                                    <span class="text-[10px] font-black text-poodle-500 uppercase tracking-widest">시작일</span>
                                     <button type="button" onclick="quickDate('projectStartAt', 1)"
                                             class="text-[9px] font-black text-poodle-500 bg-white border border-poodle-200 px-3 py-1 rounded-full hover:bg-poodle-600 hover:text-white transition-all shadow-sm">NEXT DAY</button>
                                 </div>
@@ -187,7 +187,7 @@
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between px-1">
-                                    <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic">Wrap-up</span>
+                                    <span class="text-[10px] font-black text-poodle-500 uppercase tracking-widest">종료일</span>
                                     <div class="flex gap-2">
                                         <button type="button" onclick="quickDate('projectEndAt', 30)"
                                                 class="text-[9px] font-black text-poodle-500 bg-white border border-poodle-200 px-3 py-1 rounded-full hover:bg-poodle-600 hover:text-white transition-all shadow-sm">+1M</button>
@@ -212,7 +212,7 @@
                         </div>
                         <button type="button" id="addPositionRowBtn" onclick="addPositionRow()"
                                 class="px-8 py-4 bg-poodle-600 text-white rounded-2xl font-black hover:bg-meatball hover:text-white transition-all uppercase tracking-widest text-xs shadow-lg shadow-poodle-600/10 active:scale-95">
-                            ADD
+                            추가하기
                         </button>
                     </div>
 
@@ -252,53 +252,53 @@
                         <h2 class="text-3xl font-black text-poodle-900 tracking-tight">첨부 및 링크</h2>
                     </div>
 
-                    <div class="space-y-12">
+                    <div class="space-y-10 pt-4">
+                        <!-- 첨부 파일 섹션 -->
                         <div class="space-y-4">
-                            <label class="text-sm font-black text-poodle-900 ml-1">첨부 파일 업로드</label>
+                            <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> 첨부 파일 업로드 <span class="text-[10px] text-poodle-300 font-bold ml-1">(최대 1개)</span>
+                            </label>
                             <div id="fileUploadContainer"
-                                 class="border-3 border-dashed border-poodle-50 rounded-4xl p-10 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-poodle-50/20"
+                                 class="border-2 border-dashed border-poodle-100 rounded-3xl p-5 text-center group hover:border-meatball hover:bg-poodle-50 transition-all cursor-pointer bg-white relative"
                                  onclick="document.getElementById('planningFile').click()">
                                 <input type="file" id="planningFile" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx" onchange="updatePlanningFileLabel()">
-
-                                <div id="fileDefaultState">
-                                    <div class="w-14 h-14 bg-white rounded-2xl shadow-lg border border-poodle-50 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-cloud-upload text-2xl text-meatball"></i>
+                                
+                                <div id="fileDefaultState" class="flex items-center justify-center gap-4">
+                                    <div class="w-11 h-11 bg-poodle-50 rounded-xl flex items-center justify-center text-meatball group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-cloud-upload text-lg"></i>
                                     </div>
-                                    <h3 class="text-md font-black text-poodle-900 mb-1">기획서 또는 관련 자료 선택</h3>
-                                    <p class="text-[10px] font-bold text-poodle-300">PDF, JPG, PNG, DOC (최대 50MB)</p>
+                                    <div class="text-left">
+                                        <p class="text-sm font-black text-poodle-900 leading-tight">기획서 또는 관련 자료 선택</p>
+                                        <p class="text-[10px] font-bold text-poodle-300">PDF, JPG, PNG, DOC, PPT (최대 50MB)</p>
+                                    </div>
                                 </div>
 
                                 <div id="fileSelectedState" class="hidden animate-scale-in">
-                                    <div class="flex flex-col gap-4">
-                                        <div class="flex items-center justify-between px-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="w-2 h-2 bg-meatball rounded-full"></span>
-                                                <span class="text-xs font-black text-poodle-900">선택된 파일</span>
-                                            </div>
-                                            <button type="button" onclick="clearPlanningFile(event)"
-                                                    class="text-[10px] font-black text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest">Remove</button>
-                                        </div>
-                                        <div id="fileListContainer" class="flex flex-wrap justify-center gap-3"></div>
-                                    </div>
+                                    <div id="fileListContainer" class="flex justify-center"></div>
+                                    <button type="button" onclick="clearPlanningFile(event)"
+                                            class="absolute top-1/2 -translate-y-1/2 right-6 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                        <i class="fa-solid fa-times text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-black text-poodle-900 ml-1">관련 링크 등록</label>
-                                <button type="button" onclick="addLinkChip()"
-                                        class="text-[10px] font-black text-meatball bg-meatball/10 px-4 py-2 rounded-xl hover:bg-meatball hover:text-white transition-all uppercase tracking-widest italic">Add Link</button>
+                        <!-- 관련 링크 섹션 -->
+                        <div class="space-y-4">
+                            <label class="text-[11px] font-black text-poodle-600 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-meatball rounded-full"></span> 관련 링크 등록 <span class="text-[10px] text-poodle-300 font-bold ml-1">(최대 1개)</span>
+                            </label>
+                            <div class="bg-poodle-50/50 border border-poodle-100 rounded-3xl p-5 space-y-4 shadow-inner">
+                                <div class="flex items-center gap-3">
+                                    <input type="text" id="linkTitle" placeholder="링크 이름"
+                                           class="w-48 bg-white border border-poodle-100 rounded-xl p-3.5 font-bold text-xs focus:border-meatball outline-none transition-all placeholder:text-poodle-200 shrink-0">
+                                    <input type="url" id="linkUrl" placeholder="https://..."
+                                           class="flex-grow min-w-0 bg-white border border-poodle-100 rounded-xl p-3.5 font-bold text-xs focus:border-meatball outline-none transition-all placeholder:text-poodle-200">
+                                    <button type="button" onclick="addLinkChip()"
+                                            class="bg-meatball text-white rounded-xl px-7 py-3.5 text-xs font-black hover:bg-poodle-900 transition-all shadow-md active:scale-95 shrink-0">추가</button>
+                                </div>
+                                <div id="linksContainer" class="hidden animate-scale-in"></div>
                             </div>
-
-                            <div class="flex flex-col sm:flex-row gap-4 items-center">
-                                <input type="text" id="linkTitle" placeholder="링크 이름 (예: 포트폴리오)"
-                                       class="w-full sm:w-1/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white focus:border-meatball outline-none placeholder:text-poodle-200 transition-all">
-                                <input type="url" id="linkUrl" placeholder="https://..."
-                                       class="w-full sm:w-2/3 bg-poodle-50 border border-poodle-50 rounded-xl p-4 font-black text-xs focus:bg-white focus:border-meatball outline-none placeholder:text-poodle-200 transition-all">
-                            </div>
-
-                            <div id="linksContainer" class="flex flex-wrap gap-3"></div>
                         </div>
                     </div>
                 </div>
@@ -364,7 +364,7 @@
                         </button>
                         <button th:unless="${editMode}" onclick="history.back()"
                                 class="w-full py-5 text-poodle-300 rounded-2xl font-black hover:text-poodle-900 transition-all text-sm uppercase tracking-widest">
-                            Cancel & Exit
+                            취소 및 나가기
                         </button>
                     </div>
 
@@ -377,10 +377,10 @@
                             <span th:text="${editMode} ? '수정 가이드' : '밋볼 팁'">밋볼 팁</span>
                         </h4>
                         <ul class="space-y-4 relative z-10">
-                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 구체적인 기획안이 있을수록 인기가 많아요.</li>
-                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 팀 활동의 분위기를 잘 어필해보세요.</li>
-                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 상태 변경은 프로젝트 관리 페이지에서만 진행해주세요.</li>
-                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed">• 포지션별 잠금 조건을 확인하고 수정하면 저장 실패를 줄일 수 있어요.</li>
+                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed break-keep">• 구체적인 기획안이 있을수록 인기가 많아요.</li>
+                            <li th:if="${!editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed break-keep">• 팀 활동의 분위기를 잘 어필해보세요.</li>
+                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed break-keep">• 상태 변경은 프로젝트 관리 페이지에서만 진행해주세요.</li>
+                            <li th:if="${editMode}" class="text-[11px] font-bold text-poodle-400 leading-relaxed break-keep">• 포지션별 잠금 조건을 확인하고 수정하면 저장 실패를 줄일 수 있어요.</li>
                         </ul>
                     </div>
                 </div>
@@ -459,22 +459,47 @@
             updateChecklist();
         }
 
+        let isSubmitting = false;
+
+        const DEFAULT_THUMBNAIL = '/img/logo.png';
+
         function previewThumbnailUrl(value) {
             const preview = document.getElementById('thumbPreview');
             const placeholder = document.getElementById('thumbPlaceholder');
             if (!preview || !placeholder) return;
 
-            const safePreviewUrl = window.meetballSafeUrl(value, '');
-            if (!safePreviewUrl) {
-                preview.classList.add('hidden');
-                preview.src = '';
-                placeholder.classList.remove('hidden');
-                return;
+            let rawUrl = String(value ?? '').trim();
+            let targetUrl = DEFAULT_THUMBNAIL;
+
+            if (rawUrl) {
+                let safePreviewUrl = window.meetballSafeUrl(rawUrl, '');
+                // 프로토콜 자동 보정
+                if (!safePreviewUrl && rawUrl.length > 3 && !rawUrl.startsWith('http') && !rawUrl.startsWith('/')) {
+                    safePreviewUrl = window.meetballSafeUrl('https://' + rawUrl, '');
+                }
+                if (safePreviewUrl) {
+                    targetUrl = safePreviewUrl;
+                }
             }
 
-            preview.src = safePreviewUrl;
-            preview.classList.remove('hidden');
-            placeholder.classList.add('hidden');
+            // 이벤트 핸들러를 src 설정 전에 미리 정의
+            preview.onload = () => {
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            };
+
+            preview.onerror = () => {
+                // 입력한 URL이 로드 실패하면 기본 로고로 재시도
+                if (preview.src !== window.location.origin + DEFAULT_THUMBNAIL && preview.src !== DEFAULT_THUMBNAIL) {
+                    preview.src = DEFAULT_THUMBNAIL;
+                } else {
+                    // 기본 로고조차 실패하면 플레이스홀더 표시
+                    preview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+            };
+
+            preview.src = targetUrl;
         }
 
         function resetThumbnailPreview() {
@@ -516,20 +541,24 @@
             if (!container) return;
             if (!registeredLink) {
                 container.innerHTML = '';
+                container.classList.add('hidden');
                 return;
             }
 
+            container.classList.remove('hidden');
             container.innerHTML = `
-                <div class="animate-scale-in flex items-center gap-3 bg-white border border-meatball/20 px-5 py-3 rounded-2xl shadow-lg shadow-meatball/5">
-                    <div class="w-8 h-8 bg-meatball/10 rounded-xl flex items-center justify-center text-meatball">
-                        <i class="fa-solid fa-link text-sm"></i>
+                <div class="flex items-center justify-between bg-white border border-meatball/10 p-3 px-4 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-7 h-7 bg-meatball/5 rounded-lg flex items-center justify-center text-meatball shrink-0">
+                            <i class="fa-solid fa-link text-[10px]"></i>
+                        </div>
+                        <div class="flex flex-col overflow-hidden leading-tight">
+                            <span class="text-xs font-black text-poodle-900 truncate">${window.meetballEscapeHtml(registeredLink.title)}</span>
+                            <span class="text-[9px] font-bold text-meatball/60 truncate">${window.meetballEscapeHtml(registeredLink.url)}</span>
+                        </div>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-xs font-black text-poodle-900">${window.meetballEscapeHtml(registeredLink.title)}</span>
-                        <span class="text-[10px] font-bold text-poodle-300 truncate max-w-[180px]">${window.meetballEscapeHtml(registeredLink.url)}</span>
-                    </div>
-                    <button type="button" onclick="removeLink()" class="ml-2 text-poodle-200 hover:text-red-400 transition-colors">
-                        <i class="fa-solid fa-circle-xmark"></i>
+                    <button type="button" onclick="removeLink()" class="ml-4 p-1.5 text-poodle-200 hover:text-red-500 transition-colors">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
                 </div>
             `;
@@ -806,41 +835,41 @@
                 ` : '';
 
                 return `
-                    <div class="group/row flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-[2.5rem] border border-poodle-100 shadow-[0_10px_40px_rgba(101,55,40,0.04)] hover:shadow-xl hover:border-meatball/20 transition-all duration-500 animate-fade-in relative">
-                        <div class="flex-grow space-y-2 relative w-full">
-                            <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Position ${index + 1}</span>
+                    <div class="group/row flex flex-col md:flex-row items-center gap-6 p-4 px-7 bg-white rounded-3xl border border-poodle-100 shadow-[0_10px_40px_rgba(101,55,40,0.04)] hover:shadow-xl hover:border-meatball/20 transition-all duration-500 animate-fade-in relative">
+                        <div class="flex-grow space-y-1.5 relative w-full">
+                            <span class="text-[10px] font-black text-poodle-600 tracking-widest ml-1">포지션 ${index + 1}</span>
                             <button type="button" onclick="toggleDropdown('posDropdown-${index}', event)"
                                     ${(nameLocked || recruitLocked) ? 'disabled' : ''}
-                                    class="w-full bg-poodle-50/50 border border-poodle-100 rounded-2xl p-5 font-black text-sm text-left flex items-center justify-between outline-none hover:bg-white hover:border-meatball transition-all group/btn disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-poodle-50/50 disabled:hover:border-poodle-100">
+                                    class="w-full bg-poodle-50/50 border border-poodle-100 rounded-xl p-3.5 px-5 font-black text-sm text-left flex items-center justify-between outline-none hover:bg-white hover:border-meatball transition-all group/btn disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-poodle-50/50 disabled:hover:border-poodle-100">
                                 <span class="${position.name ? 'text-poodle-900' : 'text-poodle-300 font-bold'}">${window.meetballEscapeHtml(position.name || '어떤 포지션을 찾으시나요?')}</span>
                                 <i class="fa-solid fa-chevron-down text-poodle-200 text-xs transition-transform group-hover/btn:text-meatball"></i>
                             </button>
-                            <div id="posDropdown-${index}" class="hidden absolute top-full left-0 right-0 mt-2 z-50 bg-white border border-poodle-50 rounded-[2rem] shadow-2xl p-3 animate-modal-up max-h-[16rem] overflow-y-auto no-scrollbar">
+                            <div id="posDropdown-${index}" class="hidden absolute top-full left-0 right-0 mt-2 z-50 bg-white border border-poodle-50 rounded-2xl shadow-2xl p-3 animate-modal-up max-h-[16rem] overflow-y-auto no-scrollbar">
                                 <div class="grid grid-cols-1 gap-1">${options}</div>
                             </div>
                             ${helperBadges}
                         </div>
 
-                        <div class="shrink-0 space-y-2 w-full md:w-auto">
-                            <span class="text-[10px] font-black text-poodle-300 uppercase tracking-widest italic ml-1">Headcount</span>
-                            <div class="flex items-center bg-poodle-50 border border-poodle-100 rounded-2xl p-1 w-full md:w-36 justify-between">
+                        <div class="shrink-0 space-y-1.5 w-full md:w-auto">
+                            <span class="text-[10px] font-black text-poodle-600 tracking-widest ml-1">모집 인원</span>
+                            <div class="flex items-center bg-poodle-50 border border-poodle-100 rounded-xl p-1 w-full md:w-32 justify-between">
                                 <button type="button" onclick="updatePositionRow(${index}, 'count', -1)"
                                         ${(recruitLocked || capacityLocked || Number(position.count) <= minimumCount) ? 'disabled' : ''}
-                                        class="w-10 h-10 rounded-xl bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-poodle-300 disabled:hover:border-poodle-100">
-                                    <i class="fa-solid fa-minus text-[10px]"></i>
+                                        class="w-9 h-9 rounded-lg bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
+                                    <i class="fa-solid fa-minus text-[9px]"></i>
                                 </button>
-                                <span id="pos-count-${index}" class="font-black text-poodle-900 text-lg">${position.count}</span>
+                                <span id="pos-count-${index}" class="font-black text-poodle-900 text-md px-2">${position.count}</span>
                                 <button type="button" onclick="updatePositionRow(${index}, 'count', 1)"
                                         ${(recruitLocked || capacityLocked) ? 'disabled' : ''}
-                                        class="w-10 h-10 rounded-xl bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-poodle-300 disabled:hover:border-poodle-100">
-                                    <i class="fa-solid fa-plus text-[10px]"></i>
+                                        class="w-9 h-9 rounded-lg bg-white border border-poodle-100 flex items-center justify-center text-poodle-300 hover:text-meatball hover:border-meatball transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
+                                    <i class="fa-solid fa-plus text-[9px]"></i>
                                 </button>
                             </div>
                         </div>
 
                         <button type="button" onclick="removePositionRow(${index})" ${removable ? '' : 'disabled'}
-                                class="w-full md:w-16 h-16 bg-poodle-50 text-poodle-200 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition-all active:scale-90 group-hover/row:text-poodle-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-poodle-50 disabled:hover:text-poodle-200">
-                            <i class="fa-solid fa-trash-can text-lg"></i>
+                                class="w-full md:w-14 h-14 bg-poodle-50 text-poodle-200 rounded-xl flex items-center justify-center hover:bg-red-50 hover:text-red-400 transition-all active:scale-90 group-hover/row:text-poodle-300 disabled:opacity-40">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
                     </div>
                 `;
@@ -1001,7 +1030,7 @@
             if (file) {
                 const formData = new FormData();
                 formData.append('file', file);
-                const fileResponse = await meetballFetch(`/api/projects/${projectId}/resources`, {
+                const fileResponse = await meetballFetch(`/api/projects/${projectId}/resources?tabType=RECRUIT`, {
                     method: 'POST',
                     body: formData
                 });
@@ -1009,7 +1038,7 @@
             }
 
             if (registeredLink?.url) {
-                const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
+                const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RECRUIT`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1050,6 +1079,16 @@
                 await meetballAlert('기본 정보를 모두 입력해주세요!');
                 return;
             }
+
+            if (!payload.recruitmentStartAt || !payload.recruitmentEndAt) {
+                await meetballAlert('팀원 모집 기간을 모두 설정해주세요!');
+                return;
+            }
+
+            if (!payload.projectStartAt || !payload.projectEndAt) {
+                await meetballAlert('프로젝트 진행 기간을 모두 설정해주세요!');
+                return;
+            }
             if (!payload.workMethod || !payload.position || !payload.recruitmentCount || payload.recruitmentCount < 2 || payload.techStacks.length === 0) {
                 if (!payload.position) {
                     await meetballAlert('포지션을 선택해주세요!');
@@ -1069,8 +1108,17 @@
                 await meetballAlert('팀장의 포지션은 모집 포지션에 반드시 포함되어야 합니다.');
                 return;
             }
+            if (isSubmitting) return;
 
+            const submitBtn = document.querySelector('button[onclick="submitProject()"]');
+            const originalContent = submitBtn ? submitBtn.innerHTML : '';
+            
             try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 처리 중...';
+                }
+                isSubmitting = true;
                 const endpoint = editMode ? `/api/projects/${projectFormConfig.projectId}` : '/api/projects';
                 const response = await meetballFetch(endpoint, {
                     method: editMode ? 'PUT' : 'POST',
@@ -1085,6 +1133,7 @@
                     }
                     await meetballAlert(editMode ? '프로젝트가 수정되었습니다!' : '성공적으로 프로젝트가 생성되었습니다!');
                     window.location.href = editMode ? `/projects/${data.id}/manage` : `/projects/${data.id}`;
+                    return; // 성공 시 리다이렉트되므로 finally로 가지 않음 (또는 가더라도 리다이렉트가 우선)
                 } else {
                     let message = editMode ? `프로젝트 수정에 실패했습니다. (${response.status})` : `프로젝트 등록에 실패했습니다. (${response.status})`;
                     try {
@@ -1109,6 +1158,12 @@
             } catch (error) {
                 console.error(error);
                 await meetballAlert('요청 중 오류가 발생했습니다.', { type: 'error' });
+            } finally {
+                isSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                }
             }
         }
 

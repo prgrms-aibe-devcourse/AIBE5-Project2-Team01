@@ -13,7 +13,14 @@
             setTimeout(() => loader.classList.remove('show'), 350);
         });
 
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('beforeunload', (event) => {
+            // 파일 다운로드(`/download`) 링크를 클릭한 경우에는 로딩바를 띄우지 않음
+            if (document.activeElement && 
+                document.activeElement.tagName === 'A' && 
+                (document.activeElement.getAttribute('href')?.includes('/download') || 
+                 document.activeElement.hasAttribute('download'))) {
+                return;
+            }
             const loader = document.getElementById('global-loader');
             if (loader) loader.classList.add('show');
         });
@@ -22,12 +29,17 @@
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
         <div class="mx-auto max-w-7xl px-4 h-24 md:h-28 flex items-center justify-between">
             <!-- Logo area -->
-            <div class="flex items-center">
+            <div class="flex items-center gap-4">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
                     <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
                          class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                     <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
+                <!-- Page Title Divider -->
+                <div th:if="${headerTitle != null and !headerTitle.isEmpty()}" class="flex items-center gap-4">
+                    <span class="w-px h-6 bg-poodle-200 rounded-full"></span>
+                    <span th:text="${headerTitle}" class="text-sm font-black text-poodle-400 tracking-tight"></span>
+                </div>
             </div>
 
             <!-- Right Actions -->
@@ -312,11 +324,11 @@
     </script>
 
     <!-- 🐾 Welcome & Profile Setup Modal (First Login Only) -->
-    <div id="welcomeProfileModal" th:if="${isLoggedIn && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
-        <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md animate-fade-in"></div>
+    <div id="welcomeProfileModal" th:if="${isLoggedIn && currentProfile != null && session.needsProfile == true}" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
+        <div class="absolute inset-0 bg-poodle-900/60 backdrop-blur-md animate-fade-in" onclick="closeWelcomeProfileModal()"></div>
 
-        <div class="relative flex max-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2.5rem] border border-white bg-white shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] animate-modal-up md:max-h-[calc(100vh-3rem)]">
-            <div id="welcomeProfileContent" class="flex-1 overflow-y-auto overscroll-contain p-8 transition-all duration-200 md:p-10 lg:p-12">
+        <div class="relative flex max-h-[calc(100vh-2rem)] w-full max-w-[72rem] flex-col overflow-visible rounded-[2.5rem] border border-white bg-white shadow-[0_50px_100px_-20px_rgba(62,39,35,0.25)] animate-modal-up md:max-h-[calc(100vh-3rem)]">
+            <div id="welcomeProfileContent" class="flex-1 overflow-y-auto overscroll-contain p-8 transition-all duration-200 md:p-10 lg:px-14 lg:pt-12 lg:pb-16">
                 <div id="welcomeStepIndicators" class="mx-auto mb-8 flex max-w-[360px] items-center justify-center">
                     <div data-step-indicator="1" class="flex h-12 w-12 items-center justify-center rounded-full bg-poodle-800 text-xl font-black text-white shadow-sm">1</div>
                     <div data-step-line="1" class="mx-3 h-1 flex-1 rounded-full bg-poodle-100"></div>
@@ -434,7 +446,6 @@
                                    th:value="${currentProfile.organization}"
                                    class="w-full rounded-[1.4rem] border border-poodle-100 bg-white px-5 py-5 text-base font-black text-poodle-900 outline-none transition-all placeholder:text-poodle-200 focus:border-poodle-800 focus:ring-4 focus:ring-poodle-800/15"
                                    placeholder="소속 학교 또는 직장 이름을 입력해주세요">
-                            </div>
                         </div>
                     </section>
 
@@ -448,12 +459,12 @@
                         </div>
                     </section>
 
-                    <div class="flex flex-col gap-3 pt-2 md:flex-row md:items-center md:justify-between">
+                    <div class="mt-8 flex flex-col gap-3 border-t border-poodle-100 px-3 pt-7 pb-3 md:mt-10 md:flex-row md:items-center md:justify-between md:gap-6 md:px-5 md:pt-9 md:pb-5">
                         <button type="button" id="welcomePrevButton"
-                                class="hidden w-full md:w-auto md:min-w-[160px] rounded-[1.5rem] border border-poodle-100 bg-white px-6 py-4 text-base font-black text-poodle-400 transition-all hover:border-poodle-200 hover:text-poodle-700">
+                                class="hidden w-full md:mr-auto md:w-auto md:min-w-[180px] rounded-[1.5rem] border border-poodle-100 bg-white px-6 py-4 text-base font-black text-poodle-400 transition-all hover:border-poodle-200 hover:text-poodle-700">
                             이전
                         </button>
-                        <div class="w-full md:w-auto md:min-w-[260px] md:ml-auto">
+                        <div class="w-full md:ml-auto md:w-auto md:min-w-[300px]">
                             <button type="button" id="welcomeNextButton"
                                     class="w-full rounded-[1.8rem] bg-poodle-800 px-8 py-5 text-xl font-black text-white transition-all hover:bg-meatball">
                                 다음
@@ -470,7 +481,7 @@
         </div>
     </div>
 
-	    <script th:if="${session.needsProfile == true}" th:inline="javascript">
+	    <script th:if="${isLoggedIn && currentProfile != null && session.needsProfile == true}" th:inline="javascript">
             const welcomeGenderOptions = ['남자', '여자'];
             const welcomeExperienceOptions = [
                 { value: '0', label: '0년' },
@@ -611,6 +622,23 @@
                 html.style.overflow = html.dataset.welcomePrevOverflow ?? '';
                 delete body.dataset.welcomePrevOverflow;
                 delete html.dataset.welcomePrevOverflow;
+            }
+
+            async function closeWelcomeProfileModal() {
+                closeWelcomePositionDropdown();
+                closeWelcomeExperienceDropdown();
+                try {
+                    await meetballFetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    });
+                } catch (error) {
+                    console.error('Failed to cancel onboarding session:', error);
+                } finally {
+                    unlockWelcomeModalScroll();
+                    document.getElementById('welcomeProfileModal')?.style.setProperty('display', 'none');
+                    window.location.replace('/');
+                }
             }
 
             function syncWelcomeFields() {
@@ -776,30 +804,45 @@
                 });
             }
 
+            function updateWelcomeTechStackButton(button, tech) {
+                if (!button) return;
+                const selected = welcomeState.techStacks.includes(tech);
+                button.innerHTML = window.meetballTechStackChipHtml(tech, {
+                    selected,
+                    className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
+                });
+                button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+            }
+
             function renderWelcomeTechStackOptions() {
                 const container = document.getElementById('welcomeTechStackOptions');
                 if (!container) return;
-                container.innerHTML = window.meetballTechStackOptions.map(tech => {
-                    const selected = welcomeState.techStacks.includes(tech);
-                    return `<button type="button" data-tech="${window.meetballEscapeHtml(tech)}">${window.meetballTechStackChipHtml(tech, {
-                        selected,
-                        className: 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black'
-                    })}</button>`;
-                }).join('');
+                const existingButtons = container.querySelectorAll('[data-tech]');
+
+                if (existingButtons.length !== window.meetballTechStackOptions.length) {
+                    container.innerHTML = window.meetballTechStackOptions.map(tech =>
+                        `<button type="button" data-tech="${window.meetballEscapeHtml(tech)}"></button>`
+                    ).join('');
+                    container.querySelectorAll('[data-tech]').forEach(button => {
+                        button.addEventListener('click', () => toggleWelcomeTechStack(button.dataset.tech, button));
+                    });
+                }
+
                 container.querySelectorAll('[data-tech]').forEach(button => {
-                    button.addEventListener('click', () => toggleWelcomeTechStack(button.dataset.tech));
+                    updateWelcomeTechStackButton(button, button.dataset.tech);
                 });
                 syncWelcomeFields();
             }
 
-            function toggleWelcomeTechStack(tech) {
+            function toggleWelcomeTechStack(tech, button) {
                 const index = welcomeState.techStacks.indexOf(tech);
                 if (index >= 0) {
                     welcomeState.techStacks.splice(index, 1);
                 } else {
                     welcomeState.techStacks.push(tech);
                 }
-                renderWelcomeTechStackOptions();
+                updateWelcomeTechStackButton(button, tech);
+                syncWelcomeFields();
             }
 
             function updateWelcomeStepUi() {

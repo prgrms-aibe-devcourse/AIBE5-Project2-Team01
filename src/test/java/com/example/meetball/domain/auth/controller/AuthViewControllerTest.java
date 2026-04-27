@@ -84,10 +84,24 @@ class AuthViewControllerTest {
                 .andExpect(content().string(containsString("id=\"welcomeOrganization\"")))
                 .andExpect(content().string(containsString("id=\"welcomeOrgVisibleOptions\"")))
                 .andExpect(content().string(containsString("meetballPositionOptions")))
+                .andExpect(content().string(containsString("orgVisible: true")))
                 .andExpect(content().string(containsString("/api/mypage/onboarding")))
                 .andExpect(content().string(containsString("포지션을 선택해주세요.")))
                 .andExpect(content().string(containsString("name=\"nickname\"")))
                 .andExpect(content().string(not(containsString("Current Role / Job"))));
+    }
+
+    @Test
+    @DisplayName("잘못된 profileId와 needsProfile 세션이 남아 있어도 홈 템플릿은 깨지지 않는다")
+    void homeDoesNotBreakWhenNeedsProfileExistsWithoutCurrentProfile() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("profileId", 999999L);
+        session.setAttribute("needsProfile", true);
+
+        mockMvc.perform(get("/").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("id=\"welcomeProfileModal\""))))
+                .andExpect(content().string(containsString("로그인")));
     }
 
     @Test

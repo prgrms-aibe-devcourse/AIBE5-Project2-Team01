@@ -73,6 +73,7 @@ public class ProjectController {
                 model.addAttribute("role", role.name()); // GUEST, REGULAR_USER, MEMBER, LEADER
             }
             
+            model.addAttribute("headerTitle", projectService.getProjectDetail(id).title());
             return "project/detail";
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found", exception);
@@ -86,6 +87,7 @@ public class ProjectController {
             return "redirect:/?login=1&redirect=/register";
         }
         model.addAttribute("pageTitle", "프로젝트 등록");
+        model.addAttribute("headerTitle", "프로젝트 등록");
         model.addAttribute("editMode", false);
         model.addAttribute("projectId", null);
         model.addAttribute("editProject", null);
@@ -111,6 +113,7 @@ public class ProjectController {
         }
 
         model.addAttribute("pageTitle", "프로젝트 수정");
+        model.addAttribute("headerTitle", "프로젝트 수정");
         model.addAttribute("editMode", true);
         model.addAttribute("projectId", id);
         model.addAttribute("editProject", projectService.getProjectById(id));
@@ -137,6 +140,7 @@ public class ProjectController {
 
         model.addAttribute("projectId", id);
         model.addAttribute("project", projectService.getProjectById(id));
+        model.addAttribute("headerTitle", project.getTitle() + " 관리");
         return "project/manage";
     }
 
@@ -151,10 +155,11 @@ public class ProjectController {
             @RequestParam(name = "position", required = false) String position,
             @RequestParam(name = "techStack", required = false) String techStack,
             @RequestParam(name = "bookmarkedOnly", defaultValue = "false") boolean bookmarkedOnly,
+            @RequestParam(name = "openOnly", defaultValue = "false") boolean openOnly,
             @SessionAttribute(name = "profileId", required = false) Long profileId
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectPurpose, position, techStack, bookmarkedOnly, pageable, profileId);
+        Page<ProjectListResponseDto> projects = projectService.getProjects(keyword, projectPurpose, position, techStack, bookmarkedOnly, openOnly, pageable, profileId);
         return ProjectPageResponseDto.from(projects);
     }
 

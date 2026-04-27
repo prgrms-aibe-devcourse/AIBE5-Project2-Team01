@@ -4,6 +4,7 @@ public record ProjectParticipantProfile(
         Long profileId,
         String nickname,
         String participantRole,
-        String position
+        String position,
+        String avatarUrl
 ) {
 }

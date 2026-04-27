@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead('프로젝트 관리')}"></head>
+<head th:replace="~{fragments/head :: commonHead(${project.title} + ' 관리')}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
@@ -563,7 +563,7 @@
         formData.append('file', file);
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=RESULT`, {
                 method: 'POST',
                 body: formData
             });
@@ -597,7 +597,7 @@
         const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RESULT`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, url })
@@ -631,7 +631,7 @@
 
             if (response.ok) {
                 await meetballAlert('프로젝트가 성공적으로 삭제되었습니다.');
-                window.location.href = '/mypage';
+                window.location.href = '/mypage?tab=participating';
             } else {
                 await meetballAlert('프로젝트 삭제에 실패했습니다.', { type: 'error' });
             }

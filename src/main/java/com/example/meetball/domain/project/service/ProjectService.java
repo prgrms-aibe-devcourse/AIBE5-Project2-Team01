@@ -199,8 +199,8 @@ public class ProjectService {
 
     public Page<ProjectListResponseDto> getProjects(String keyword, String projectPurpose,
                                                     String position, String techStack,
-                                                    boolean bookmarkedOnly, Pageable pageable,
-                                                    Long viewerId) {
+                                                    boolean bookmarkedOnly, boolean showOpenOnly,
+                                                    Pageable pageable, Long viewerId) {
         Profile viewer = viewerId != null ? profileService.getProfileById(viewerId) : null;
         String normalizedPosition = normalizePositionFilter(position);
         List<String> normalizedTechStacks = normalizeTechStackFilterList(techStack);
@@ -211,6 +211,7 @@ public class ProjectService {
                         normalizedPosition,
                         normalizedTechStacks,
                         bookmarkedOnly,
+                        showOpenOnly,
                         viewer
                 ),
                 pageable
@@ -231,8 +232,9 @@ public class ProjectService {
                 formatRecruitmentDeadline(project, project.getRecruitmentDeadline() != null ? project.getRecruitmentDeadline() : project.getRecruitmentEndAt()),
                 project.getRecruitStatus(),
                 project.getProgressStatus(),
-                bookmarkedProjectRepository.countByProject(project),
+                (int) bookmarkedProjectRepository.countByProject(project),
                 project.getViewCount(),
+                (int) commentRepository.countByProjectId(project.getId()),
                 viewer != null && bookmarkedProjectRepository.findByProjectAndProfile(project, viewer).isPresent(),
                 project.getCreatedAt()
         ));
@@ -240,7 +242,8 @@ public class ProjectService {
 
     private Specification<Project> buildProjectFilterSpec(String keyword, String projectPurpose,
                                                           String position, List<String> techStacks,
-                                                          boolean bookmarkedOnly, Profile viewer) {
+                                                          boolean bookmarkedOnly, boolean showOpenOnly,
+                                                          Profile viewer) {
         return (root, query, cb) -> {
             if (query != null) {
                 query.distinct(true);
@@ -288,6 +291,10 @@ public class ProjectService {
                     subquery.where(cb.equal(bookmarkedRoot.get("profile").get("id"), viewer.getId()));
                     predicates.add(root.get("id").in(subquery));
                 }
+            }
+
+            if (showOpenOnly) {
+                predicates.add(cb.equal(root.get("recruitStatus"), "OPEN"));
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));
@@ -338,6 +345,7 @@ public class ProjectService {
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
         validateMinimumRecruitment(totalRecruitment);
         validateLeaderPositionIncluded(ownerProfile, normalizedPositions);
+        validateDates(request.getRecruitmentStartAt(), request.getRecruitmentEndAt(), request.getProjectStartAt(), request.getProjectEndAt());
         LocalDateTime now = LocalDateTime.now();
         Project project = new Project(
                 request.getTitle(),
@@ -390,6 +398,8 @@ public class ProjectService {
         String normalizedPositions = normalizePositionText(request.getPosition());
         List<String> normalizedTechStacks = normalizeTechStacks(request.getTechStacks());
         int totalRecruitment = ProjectSelectionCatalog.totalCapacity(normalizedPositions);
+        validateMinimumRecruitment(totalRecruitment);
+        validateDates(request.getRecruitmentStartAt(), request.getRecruitmentEndAt(), request.getProjectStartAt(), request.getProjectEndAt());
         String currentPositionText = formatPositionText(project);
         boolean positionsChanged = !Objects.equals(currentPositionText, normalizedPositions);
         boolean requestWantsCompleted = Project.PROGRESS_STATUS_COMPLETED.equalsIgnoreCase(request.getProgressStatus());
@@ -759,17 +769,18 @@ public class ProjectService {
         return projectParticipantRepository.findByProfile(profile).stream()
                 .map(participant -> {
                     Project project = participant.getProject();
+                    boolean isLeader = "LEADER".equals(participant.getRole());
                     boolean canProjectReview = project.isCompleted()
-                            && "MEMBER".equals(participant.getRole())
                             && !projectReviewRepository.existsByProjectAndReviewer(project, profile);
+                    
+                    long teammateCount = projectParticipantRepository.findByProject(project).stream()
+                            .filter(p -> p.getProfile() != null && !p.getProfile().getId().equals(profile.getId()))
+                            .count();
+                    long reviewCount = peerReviewRepository.countByProjectAndReviewer(project, profile);
+                    
                     boolean canPeerReview = project.isCompleted()
-                            && "MEMBER".equals(participant.getRole())
-                            && projectParticipantRepository.findByProject(project).stream()
-                            .map(ProjectParticipant::getProfile)
-                            .filter(Objects::nonNull)
-                            .filter(memberProfile -> !Objects.equals(memberProfile.getId(), profile.getId()))
-                            .count() > 0
-                            && peerReviewRepository.countByProjectAndReviewer(project, profile) == 0;
+                            && teammateCount > reviewCount;
+
                     Long dDay = project.getRecruitmentDeadline() != null
                             ? ChronoUnit.DAYS.between(LocalDate.now(), project.getRecruitmentDeadline())
                             : null;
@@ -886,7 +897,8 @@ public class ProjectService {
                         participant.getProfile().getId(),
                         participant.getProfile().getNickname(),
                         participant.getRole(),
-                        fallbackPosition(participantPositionName(participant), participant.getProfile().getPosition())
+                        fallbackPosition(participantPositionName(participant), participant.getProfile().getPosition()),
+                        participant.getProfile().getProfileImage()
                 ))
                 .toList();
         if (!members.isEmpty()) {
@@ -899,7 +911,8 @@ public class ProjectService {
                 project.getOwnerProfile().getId(),
                 project.getOwnerProfile().getNickname(),
                 "LEADER",
-                normalizeProjectPosition(project.getOwnerProfile().getPosition())
+                normalizeProjectPosition(project.getOwnerProfile().getPosition()),
+                project.getOwnerProfile().getProfileImage()
         ));
     }
 
@@ -984,5 +997,20 @@ public class ProjectService {
 
     private String displayWorkMethod(String value) {
         return ProjectOptionCatalog.displayWorkMethod(value);
+    }
+
+    private void validateDates(LocalDate recruitStart, LocalDate recruitEnd, LocalDate projectStart, LocalDate projectEnd) {
+        if (recruitStart == null || recruitEnd == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "모집 기간을 모두 입력해주세요.");
+        }
+        if (projectStart == null || projectEnd == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로젝트 기간을 모두 입력해주세요.");
+        }
+        if (recruitEnd.isBefore(recruitStart)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "모집 종료일은 시작일보다 빠를 수 없습니다.");
+        }
+        if (projectEnd.isBefore(projectStart)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로젝트 종료일은 시작일보다 빠를 수 없습니다.");
+        }
     }
 }

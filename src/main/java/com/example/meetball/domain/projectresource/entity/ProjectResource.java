@@ -53,14 +53,14 @@ public class ProjectResource {
     private LocalDateTime updatedAt;
 
     @Builder
-    public ProjectResource(Long projectId, String originalFileName, String storedFilePath, String linkUrl, String type, Long fileSize) {
+    public ProjectResource(Long projectId, String originalFileName, String storedFilePath, String linkUrl, String type, Long fileSize, String tabType) {
         this.projectId = projectId;
         this.originalFileName = originalFileName;
         this.storedFilePath = storedFilePath != null ? storedFilePath : originalFileName;
         this.linkUrl = linkUrl != null ? linkUrl : storedFilePath;
         this.type = type;
         this.fileSize = fileSize;
-        this.tabType = "RECRUIT";
+        this.tabType = tabType != null ? tabType : "RECRUIT";
         this.displayOrder = 0;
     }
 }
