@@ -93,26 +93,6 @@
 	                                          class="px-5 py-2.5 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">ReactNative</span>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-10 border-t border-poodle-50">
-                                <div class="space-y-4">
-                                    <p class="text-sm font-black text-poodle-900 flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 bg-meatball rounded-full"></span> 필수 요건
-                                    </p>
-                                    <ul class="space-y-3 text-sm text-poodle-400 font-bold list-none pl-3">
-                                        <li>열정적이고 책임감 있는 분</li>
-                                        <li>프로젝트 완성까지 함께할 수 있는 분</li>
-                                    </ul>
-                                </div>
-                                <div class="space-y-4">
-                                    <p class="text-sm font-black text-poodle-900 flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 bg-poodle-300 rounded-full"></span> 우대 사항
-                                    </p>
-                                    <ul class="space-y-3 text-sm text-poodle-400 font-bold list-none pl-3">
-                                        <li>모바일 앱 개발 경험</li>
-                                        <li>AI/ML 관련 프로젝트 경험</li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
@@ -351,7 +331,7 @@
                             <h4 class="text-lg font-black text-poodle-900 tracking-tight">팀 멤버 소개</h4>
                             <span class="px-3 py-1 bg-meatball/5 text-meatball rounded-full text-[9px] font-black uppercase tracking-widest">Team Members</span>
                         </div>
-                        <div class="space-y-4">
+                        <div class="space-y-4 max-h-[440px] overflow-y-auto pr-2 custom-slim-scrollbar">
                             <a th:if="${project.leaderProfileId != null}"
                                th:href="@{/people/{profileId}(profileId=${project.leaderProfileId})}"
                                th:attr="data-profile-id=${project.leaderProfileId}"
@@ -563,6 +543,20 @@
             background-color: #FFF3EA !important;
             color: #DF6B24 !important;
             box-shadow: 0 12px 24px -8px rgba(240, 127, 55, 0.32);
+        }
+ 
+        .custom-slim-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-thumb {
+            background: theme('colors.poodle.100');
+            border-radius: 10px;
+        }
+        .custom-slim-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.meatball.200');
         }
 
     </style>

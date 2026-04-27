@@ -13,248 +13,310 @@
 <input type="hidden" id="projectId" th:value="${projectId}">
 
 <main class="w-full mx-auto max-w-7xl px-4 py-12 md:py-16">
-    <section class="rounded-[2.5rem] border border-poodle-100 bg-white shadow-sm overflow-hidden">
-        <div class="px-6 py-8 md:px-10 md:py-10 bg-poodle-100/60 border-b border-poodle-100">
+    <section class="rounded-[3rem] border border-poodle-100 bg-white shadow-xl shadow-poodle-900/5 overflow-hidden transition-all duration-500">
+        <div class="px-6 py-10 md:px-12 md:py-14 bg-gradient-to-br from-poodle-50 to-white border-b border-poodle-100/50">
             <div class="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
                 <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
                     <img th:src="${#strings.isEmpty(project.thumbnailUrl) ? '/img/logo.png' : project.thumbnailUrl}"
                          src="/img/logo.png"
                          alt="프로젝트 썸네일"
-                         class="w-24 h-24 md:w-28 md:h-28 rounded-[2rem] object-cover border border-white shadow-sm">
-                    <div class="space-y-4">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="inline-flex items-center rounded-full bg-poodle-900 px-4 py-2 text-sm font-black text-white"
+                         class="w-28 h-28 md:w-36 md:h-36 rounded-[2.5rem] object-cover ring-8 ring-white shadow-2xl flex-shrink-0 transition-transform hover:scale-105 duration-300">
+                    <div class="space-y-6">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span class="inline-flex items-center rounded-xl bg-poodle-900 px-4 py-2 text-xs font-black text-white shadow-lg shadow-poodle-900/20"
                                   th:attr="data-manage-recruit-status=${project.recruitStatus}"
                                   th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감' : '모집 중'}">모집 중</span>
-                            <span class="inline-flex items-center rounded-full border border-meatball/20 bg-white px-4 py-2 text-sm font-black text-meatball"
+                            <span class="inline-flex items-center rounded-xl border-2 border-meatball/20 bg-white/80 backdrop-blur-sm px-4 py-1.5 text-xs font-black text-meatball"
                                   th:text="${project.progressStatus == 'COMPLETED' ? '프로젝트 완료' : (project.progressStatus == 'IN_PROGRESS' ? '진행 중' : '준비 중')}">준비 중</span>
-                            <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-600"
+                            <span class="inline-flex items-center rounded-xl border border-poodle-100 bg-white px-4 py-1.5 text-xs font-bold text-poodle-400"
                                   th:text="${project.deadlineLabel}">D-3</span>
                         </div>
-                        <div class="space-y-3">
-                            <h1 class="text-[32px] leading-tight font-black tracking-tight text-poodle-900"
+                        <div class="space-y-4">
+                            <h1 class="text-[36px] md:text-[44px] leading-tight font-black tracking-tight text-poodle-900 drop-shadow-sm"
                                 th:text="${project.title}">프로젝트 관리</h1>
-                            <p class="max-w-3xl text-[15px] leading-7 text-poodle-600 font-medium"
-                               th:text="${#strings.isEmpty(project.summary) ? '밋볼에서 프로젝트 진행과 지원자, 자료를 한 화면에서 관리해보세요.' : project.summary}">
-                                밋볼에서 프로젝트 진행과 지원자, 자료를 한 화면에서 관리해보세요.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
-                                  th:text="${project.projectPurpose != null ? project.projectPurpose : '프로젝트'}">프로젝트</span>
-                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
-                                  th:text="${project.workMethod != null ? project.workMethod : '진행 방식 미정'}">온라인</span>
-                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
-                                  th:text="${project.createdDateLabel != null ? '등록일 ' + project.createdDateLabel : '등록일 -'}">등록일 2026.04.25</span>
-                            <span class="inline-flex items-center rounded-2xl border border-poodle-200 bg-white px-4 py-2 text-sm font-bold text-poodle-700"
-                                  th:text="${project.leaderName != null ? '리더 ' + project.leaderName : '리더 확인 필요'}">리더 Meetball</span>
+                            <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+                                <span class="flex items-center gap-2 text-sm font-bold text-poodle-500">
+                                    <i class="fa-solid fa-map-pin text-meatball/60"></i>
+                                    <span th:text="${project.workMethod != null ? project.workMethod : '진행 방식 미정'}">온라인</span>
+                                </span>
+                                <span class="flex items-center gap-2 text-sm font-bold text-poodle-500">
+                                    <i class="fa-solid fa-folder-tree text-meatball/60"></i>
+                                    <span th:text="${project.projectPurpose != null ? project.projectPurpose : '프로젝트'}">프로젝트</span>
+                                </span>
+                                <span class="flex items-center gap-2 text-sm font-bold text-poodle-500">
+                                    <i class="fa-solid fa-calendar-check text-meatball/60"></i>
+                                    <span th:text="${project.createdDateLabel != null ? '등록일 ' + project.createdDateLabel : '등록일 -'}">등록일 2026.04.25</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 md:grid-cols-4 xl:w-[420px]">
-                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
-                        <p class="text-sm font-black text-poodle-400">모집 현황</p>
-                        <p class="mt-2 text-[22px] font-black text-poodle-900">
-                            <span th:text="${project.currentRecruitment != null ? project.currentRecruitment : 0}">0</span>
-                            <span class="text-poodle-300">/</span>
+                <div class="grid grid-cols-2 gap-4 md:grid-cols-4 xl:w-auto xl:min-w-[500px]">
+                    <div class="group/box rounded-[2.5rem] border border-poodle-100 bg-white p-6 shadow-sm hover:border-meatball/30 hover:shadow-xl hover:shadow-meatball/5 transition-all duration-300">
+                        <div class="w-10 h-10 rounded-2xl bg-poodle-50 flex items-center justify-center text-meatball mb-4 group-hover/box:bg-meatball group-hover/box:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-user-plus text-sm"></i>
+                        </div>
+                        <p class="text-[13px] font-black text-poodle-300 uppercase tracking-widest">모집 현황</p>
+                        <p class="mt-3 text-[24px] font-black text-poodle-900">
+                            <span class="text-meatball" th:text="${project.currentRecruitment != null ? project.currentRecruitment : 0}">0</span>
+                            <span class="text-poodle-100 font-medium">/</span>
                             <span th:text="${project.totalRecruitment != null ? project.totalRecruitment : (project.recruitmentCount != null ? project.recruitmentCount : 0)}">0</span>
                         </p>
                     </div>
-                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
-                        <p class="text-sm font-black text-poodle-400">조회수</p>
-                        <p class="mt-2 text-[22px] font-black text-poodle-900" th:text="${project.readCount}">0</p>
+                    <div class="group/box rounded-[2.5rem] border border-poodle-100 bg-white p-6 shadow-sm hover:border-meatball/30 hover:shadow-xl hover:shadow-meatball/5 transition-all duration-300">
+                        <div class="w-10 h-10 rounded-2xl bg-poodle-50 flex items-center justify-center text-poodle-400 mb-4 group-hover/box:bg-poodle-900 group-hover/box:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </div>
+                        <p class="text-[13px] font-black text-poodle-300 uppercase tracking-widest">조회수</p>
+                        <p class="mt-3 text-[24px] font-black text-poodle-900" th:text="${project.readCount}">0</p>
                     </div>
-                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
-                        <p class="text-sm font-black text-poodle-400">모집 종료</p>
-                        <p class="mt-2 text-[18px] font-black text-poodle-900"
-                           th:text="${project.recruitmentEndAt != null ? project.recruitmentEndAt : '-'}">2026-05-01</p>
+                    <div class="group/box rounded-[2.5rem] border border-poodle-100 bg-white p-6 shadow-sm hover:border-meatball/30 hover:shadow-xl hover:shadow-meatball/5 transition-all duration-300">
+                        <div class="w-10 h-10 rounded-2xl bg-poodle-50 flex items-center justify-center text-poodle-400 mb-4 group-hover/box:bg-poodle-900 group-hover/box:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-heart text-sm"></i>
+                        </div>
+                        <p class="text-[13px] font-black text-poodle-300 uppercase tracking-widest">찜</p>
+                        <p class="mt-3 text-[24px] font-black text-poodle-900" th:text="${project.bookmarkCount}">0</p>
                     </div>
-                    <div class="rounded-[2rem] border border-poodle-100 bg-white px-4 py-5">
-                        <p class="text-sm font-black text-poodle-400">진행 기간</p>
-                        <p class="mt-2 text-[18px] font-black text-poodle-900"
-                           th:text="${project.projectEndAt != null ? project.projectEndAt : '-'}">2026-06-01</p>
+                    <div class="group/box rounded-[2.5rem] border border-poodle-100 bg-white p-6 shadow-sm hover:border-meatball/30 hover:shadow-xl hover:shadow-meatball/5 transition-all duration-300">
+                        <div class="w-10 h-10 rounded-2xl bg-poodle-50 flex items-center justify-center text-poodle-400 mb-4 group-hover/box:bg-poodle-900 group-hover/box:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-comments text-sm"></i>
+                        </div>
+                        <p class="text-[13px] font-black text-poodle-300 uppercase tracking-widest">댓글</p>
+                        <p class="mt-3 text-[24px] font-black text-poodle-900" th:text="${project.commentCount}">0</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid gap-6 px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[1.4fr_0.9fr]">
-            <section class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-6 md:p-8">
-                <div class="flex items-center gap-3 mb-5">
-                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-meatball shadow-sm">
-                        <i class="fa-solid fa-layer-group text-2xl"></i>
+        <div class="grid gap-8 px-6 py-10 md:px-12 md:py-14 lg:grid-cols-[1.5fr_0.8fr]">
+            <section class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-[1.25rem] bg-meatball text-white shadow-lg shadow-meatball/20">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
                     </span>
                     <div>
-                        <h2 class="text-[22px] font-black text-poodle-900">프로젝트 개요</h2>
-                        <p class="text-sm font-bold text-poodle-500">현재 상태와 모집 정보를 한 번에 확인하세요.</p>
+                        <h2 class="text-[24px] font-black text-poodle-900 tracking-tight">프로젝트 개요</h2>
+                        <p class="text-sm font-bold text-poodle-400">등록된 상세 일정과 정보를 관리합니다.</p>
                     </div>
                 </div>
-
-                <div class="grid gap-4 md:grid-cols-2">
-                    <div class="rounded-[1.75rem] border border-white bg-white p-5">
-                        <p class="text-sm font-black text-poodle-400">모집 기간</p>
-                        <p class="mt-2 text-[18px] font-black text-poodle-900">
+ 
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="rounded-[2.5rem] border border-poodle-50 bg-poodle-50/30 p-8 hover:bg-white hover:border-meatball/20 transition-all duration-300">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-clock-rotate-left text-poodle-200 text-xs"></i>
+                            <p class="text-[11px] font-black text-poodle-300 uppercase tracking-widest">모집 기간</p>
+                        </div>
+                        <p class="text-[20px] font-black text-poodle-800 tracking-tight">
                             <span th:text="${project.recruitmentStartAt != null ? project.recruitmentStartAt : '-'}">2026-04-25</span>
-                            <span class="text-poodle-300">~</span>
+                            <span class="text-poodle-200 mx-1">~</span>
                             <span th:text="${project.recruitmentEndAt != null ? project.recruitmentEndAt : '-'}">2026-05-05</span>
                         </p>
                     </div>
-                    <div class="rounded-[1.75rem] border border-white bg-white p-5">
-                        <p class="text-sm font-black text-poodle-400">프로젝트 기간</p>
-                        <p class="mt-2 text-[18px] font-black text-poodle-900">
+                    <div class="rounded-[2.5rem] border border-poodle-50 bg-poodle-50/30 p-8 hover:bg-white hover:border-meatball/20 transition-all duration-300">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-person-running text-poodle-200 text-xs"></i>
+                            <p class="text-[11px] font-black text-poodle-300 uppercase tracking-widest">프로젝트 기간</p>
+                        </div>
+                        <p class="text-[20px] font-black text-poodle-800 tracking-tight">
                             <span th:text="${project.projectStartAt != null ? project.projectStartAt : '-'}">2026-05-10</span>
-                            <span class="text-poodle-300">~</span>
+                            <span class="text-poodle-200 mx-1">~</span>
                             <span th:text="${project.projectEndAt != null ? project.projectEndAt : '-'}">2026-07-10</span>
                         </p>
                     </div>
                 </div>
-
-                <div class="mt-5 rounded-[1.75rem] border border-white bg-white p-5">
-                    <div class="flex items-center justify-between gap-4">
-                        <p class="text-sm font-black text-poodle-400">기술스택</p>
-                        <span class="text-sm font-black text-poodle-300"
-                              th:text="${project.techStacks != null ? project.techStacks.size() + '개' : '0개'}">0개</span>
+ 
+                <div class="rounded-[2.5rem] border border-poodle-50 bg-white p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-tags text-meatball/60"></i>
+                            <p class="text-sm font-black text-poodle-800">요구 기술 스택</p>
+                        </div>
+                        <span class="px-3 py-1 bg-poodle-50 text-poodle-400 rounded-lg text-[11px] font-black"
+                              th:text="${project.techStacks != null ? project.techStacks.size() + ' STACKS' : '0 STACKS'}">0개</span>
                     </div>
-                    <div class="mt-4 flex flex-wrap gap-2" th:if="${project.techStacks != null and !#lists.isEmpty(project.techStacks)}">
+                    <div class="flex flex-wrap gap-2.5" th:if="${project.techStacks != null and !#lists.isEmpty(project.techStacks)}">
                         <span th:each="tech : ${project.techStacks}"
-                              class="inline-flex items-center rounded-full border border-poodle-200 bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700"
-                              th:text="${tech}">Java</span>
+                              th:text="${tech}"
+                              class="inline-flex items-center rounded-xl bg-poodle-50 px-5 py-2.5 text-xs font-black text-poodle-700 hover:bg-meatball hover:text-white transition-all cursor-default">Java</span>
                     </div>
-                    <p class="mt-4 text-sm font-bold text-poodle-400" th:if="${project.techStacks == null or #lists.isEmpty(project.techStacks)}">
+                    <p class="py-4 text-center text-sm font-bold text-poodle-300 italic" th:if="${project.techStacks == null or #lists.isEmpty(project.techStacks)}">
                         등록된 기술스택이 없습니다.
                     </p>
                 </div>
             </section>
-
-            <section class="rounded-[2rem] border border-poodle-100 bg-white p-6 md:p-8">
-                <div class="flex items-center gap-3 mb-5">
-                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
-                        <i class="fa-solid fa-bolt text-2xl"></i>
+ 
+            <section class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-[1.25rem] bg-poodle-900 text-white shadow-lg shadow-poodle-900/20">
+                        <i class="fa-solid fa-bolt-lightning text-xl"></i>
                     </span>
                     <div>
-                        <h2 class="text-[22px] font-black text-poodle-900">빠른 작업</h2>
-                        <p class="text-sm font-bold text-poodle-500">모집과 진행 상태를 여기서 바로 관리하세요.</p>
+                        <h2 class="text-[24px] font-black text-poodle-900 tracking-tight">빠른 작업</h2>
+                        <p class="text-sm font-bold text-poodle-400">상태 변경 및 수정을 한 곳에서.</p>
                     </div>
                 </div>
-
-                <div class="space-y-3">
+ 
+                <div class="grid grid-cols-1 gap-3">
                     <a th:href="@{/projects/{id}/edit(id=${projectId})}"
-                       class="flex w-full items-center justify-center rounded-[1.5rem] border border-poodle-200 bg-white px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
-                        프로젝트 수정
+                       class="group flex w-full items-center justify-between rounded-[1.75rem] bg-white border-2 border-poodle-50 px-8 py-5 text-sm font-black text-poodle-800 transition-all hover:border-meatball hover:text-meatball hover:shadow-lg hover:shadow-meatball/5 active:scale-95">
+                        <span>프로젝트 정보 수정</span>
+                        <i class="fa-solid fa-pen-to-square opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </a>
                     <button th:if="${project.progressStatus != 'COMPLETED'}"
                             th:onclick="${project.recruitStatus == 'CLOSED'} ? 'reopenProjectRecruitment()' : 'closeProject()'"
-                            class="w-full rounded-[1.5rem] bg-[#4E342E] px-5 py-4 text-sm font-black text-white transition hover:bg-[#FF6B35]">
-                        <span th:text="${project.recruitStatus == 'CLOSED' ? '모집 마감 철회' : '모집 마감'}">모집 마감</span>
+                            class="group flex w-full items-center justify-between rounded-[1.75rem] bg-poodle-900 px-8 py-5 text-sm font-black text-white transition-all hover:bg-meatball hover:shadow-lg hover:shadow-meatball/20 active:scale-95">
+                        <span th:text="${project.recruitStatus == 'CLOSED' ? '모집 다시 시작하기' : '모집 마감하기'}">모집 마감</span>
+                        <i class="fa-solid fa-lock-open opacity-30 group-hover:opacity-100 transition-opacity" th:if="${project.recruitStatus == 'CLOSED'}"></i>
+                        <i class="fa-solid fa-lock opacity-30 group-hover:opacity-100 transition-opacity" th:if="${project.recruitStatus != 'CLOSED'}"></i>
                     </button>
                     <button th:if="${project.progressStatus != 'COMPLETED'}"
                             onclick="completeProject()"
-                            class="w-full rounded-[1.5rem] bg-white border border-poodle-200 px-5 py-4 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
-                        프로젝트 완료
+                            class="group flex w-full items-center justify-between rounded-[1.75rem] bg-white border-2 border-poodle-50 px-8 py-5 text-sm font-black text-poodle-800 transition-all hover:border-emerald-500 hover:text-emerald-500 hover:shadow-lg hover:shadow-emerald-500/5 active:scale-95">
+                        <span>프로젝트 최종 완료</span>
+                        <i class="fa-solid fa-circle-check opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </button>
                     <button onclick="deleteProject()"
-                            class="w-full rounded-[1.5rem] bg-red-50 border border-red-100 px-5 py-4 text-sm font-black text-red-500 transition hover:bg-red-100">
-                        프로젝트 삭제
+                            class="group flex w-full items-center justify-between rounded-[1.75rem] bg-red-50 border-2 border-transparent px-8 py-5 text-sm font-black text-red-500 transition-all hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-500/20 active:scale-95">
+                        <span>프로젝트 영구 삭제</span>
+                        <i class="fa-solid fa-trash-can opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </button>
                 </div>
-
-                <div class="mt-6 rounded-[1.75rem] bg-poodle-50/70 p-5">
-                    <p class="text-sm font-black text-poodle-400">관리 포인트</p>
-                    <ul class="mt-3 space-y-2 text-sm font-bold text-poodle-600">
-                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>지원자는 상세 프로필에서 승인, 거절, 삭제할 수 있습니다.</span></li>
-                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>자료실에서는 파일과 링크를 함께 관리할 수 있습니다.</span></li>
-                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-meatball mt-1"></i><span>모집 마감 후에만 프로젝트 완료가 가능하며, 완료 이후에는 철회할 수 없습니다.</span></li>
+ 
+                <div class="rounded-[2.5rem] bg-poodle-900 p-8 text-white shadow-2xl shadow-poodle-900/10 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12">
+                        <i class="fa-solid fa-lightbulb text-[100px]"></i>
+                    </div>
+                    <p class="text-[11px] font-black text-poodle-500 uppercase tracking-widest mb-4">관리 가이드</p>
+                    <ul class="space-y-4 text-[13px] font-bold text-poodle-100 relative z-10">
+                        <li class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-full bg-meatball flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">1</span>
+                            <span>지원자는 상세 프로필에서 승인 또는 거절할 수 있습니다.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-full bg-meatball flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">2</span>
+                            <span>자료실에 팀원들과 공유할 파일과 링크를 업로드하세요.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-full bg-meatball flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">3</span>
+                            <span>모집 마감 후 모든 프로젝트 일정이 끝나면 '최종 완료' 버튼을 눌러주세요.</span>
+                        </li>
                     </ul>
                 </div>
             </section>
         </div>
     </section>
 
-    <div class="mt-8 grid gap-8 xl:grid-cols-[1.25fr_0.95fr]">
-        <section class="rounded-[2.5rem] border border-poodle-100 bg-white p-6 md:p-8 shadow-sm">
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-                <div class="flex items-center gap-3">
-                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
+    <div class="mt-12 grid gap-8 xl:grid-cols-[1.3fr_0.9fr]">
+        <section class="rounded-[3.5rem] border border-poodle-100 bg-white p-8 md:p-12 shadow-xl shadow-poodle-900/5">
+            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-10">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-poodle-50 text-meatball shadow-inner">
                         <i class="fa-solid fa-users text-2xl"></i>
                     </span>
                     <div>
-                        <h2 class="text-[24px] font-black text-poodle-900">지원자 현황</h2>
-                        <p class="text-sm font-bold text-poodle-500">현재 프로젝트에 지원한 멤버를 검토해보세요.</p>
+                        <h2 class="text-[28px] font-black text-poodle-900 tracking-tight">지원자 현황</h2>
+                        <p class="text-sm font-bold text-poodle-400">함께할 팀원을 신중하게 검토하세요.</p>
                     </div>
                 </div>
-                <span id="applicant-count"
-                      class="inline-flex items-center rounded-full bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700">0명</span>
+                <div id="applicant-count-wrapper" class="px-5 py-2.5 bg-poodle-900 rounded-2xl shadow-lg shadow-poodle-900/20">
+                    <span id="applicant-count" class="text-sm font-black text-white">0명</span>
+                </div>
             </div>
-
-            <div id="applications-grid" class="grid grid-cols-1 gap-5 md:grid-cols-2">
+ 
+            <div id="applications-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- JS Rendered -->
             </div>
         </section>
-
-        <section class="rounded-[2.5rem] border border-poodle-100 bg-white p-6 md:p-8 shadow-sm">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
-                    <i class="fa-solid fa-paperclip text-2xl"></i>
-                </span>
-                <div>
-                    <h2 class="text-[24px] font-black text-poodle-900">자료 관리</h2>
-                    <p class="text-sm font-bold text-poodle-500">파일과 링크를 등록해서 팀과 공유하세요.</p>
-                </div>
-            </div>
-
-            <div class="grid gap-4">
-                <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-5">
-                    <p class="text-sm font-black text-poodle-400 mb-3">파일 업로드</p>
-                    <form id="projectResourceForm" class="space-y-4">
-                        <input type="file" id="fileInput" name="file" class="hidden" onchange="uploadResource()">
-                        <div class="rounded-[1.5rem] border-2 border-dashed border-poodle-200 bg-white px-5 py-6 text-center">
-                            <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-poodle-50 text-meatball">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
-                            </div>
-                            <p class="text-sm font-black text-poodle-900">포트폴리오, 기획서, 참고 자료 업로드</p>
-                            <p id="fileSelectedLabel" class="mt-2 text-sm font-bold text-poodle-400">선택된 파일이 없습니다.</p>
-                            <button type="button"
-                                    onclick="document.getElementById('fileInput').click()"
-                                    class="mt-4 rounded-[1.25rem] border border-poodle-200 bg-white px-5 py-3 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
-                                파일 선택
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="rounded-[2rem] border border-poodle-100 bg-poodle-50/50 p-5">
-                    <p class="text-sm font-black text-poodle-400 mb-3">링크 추가</p>
-                    <div class="space-y-3">
-                        <input id="resourceLinkTitle"
-                               type="text"
-                               maxlength="120"
-                               class="w-full rounded-[1.25rem] border border-poodle-200 bg-white px-4 py-3 text-sm font-bold text-poodle-900 outline-none transition focus:border-[#FF6B35]"
-                               placeholder="링크 제목">
-                        <input id="resourceLinkUrl"
-                               type="url"
-                               class="w-full rounded-[1.25rem] border border-poodle-200 bg-white px-4 py-3 text-sm font-bold text-poodle-900 outline-none transition focus:border-[#FF6B35]"
-                               placeholder="https://example.com">
-                        <button type="button"
-                                onclick="uploadResourceLink()"
-                                class="w-full rounded-[1.25rem] bg-[#4E342E] px-5 py-3 text-sm font-black text-white transition hover:bg-[#FF6B35]">
-                            링크 등록
-                        </button>
+ 
+        <section class="rounded-[3.5rem] border border-poodle-100 bg-white p-8 md:p-12 shadow-xl shadow-poodle-900/5 transition-all duration-300">
+            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-10">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-poodle-50 text-meatball shadow-inner">
+                        <i class="fa-solid fa-paperclip text-2xl"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-[28px] font-black text-poodle-900 tracking-tight">자료 관리</h2>
+                        <p class="text-sm font-bold text-poodle-400">파일과 링크를 등록해서 팀과 공유하세요.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-6">
-                <div class="flex items-center justify-between gap-3 mb-4">
-                    <h3 class="text-[18px] font-black text-poodle-900">등록된 자료</h3>
-                    <span id="resource-count"
-                          class="inline-flex items-center rounded-full bg-poodle-50 px-4 py-2 text-sm font-black text-poodle-700">0개</span>
+            <div class="flex p-1.5 bg-poodle-50 rounded-[1.75rem] mb-10 border border-poodle-100 shadow-inner">
+                <button type="button" onclick="switchResourceCategory('RECRUIT')" id="tab-RECRUIT"
+                        class="flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 bg-white text-poodle-900 shadow-md">
+                    <i class="fa-solid fa-bullhorn text-xs opacity-50"></i>
+                    모집 공고 자료
+                </button>
+                <button type="button" onclick="switchResourceCategory('RESULT')" id="tab-RESULT"
+                        class="flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 text-poodle-400 hover:text-poodle-600">
+                    <i class="fa-solid fa-trophy text-xs opacity-50"></i>
+                    최종 결과물
+                </button>
+            </div>
+ 
+            <div class="space-y-6">
+                <!-- Resource List (Moved Up) -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between mb-8 px-2">
+                        <h3 class="text-[20px] font-black text-poodle-900 tracking-tight" id="resourceListTitle">등록된 자료 목록</h3>
+                        <div class="flex items-center gap-2 px-3 py-1 bg-poodle-50 rounded-lg">
+                            <span id="resource-count" class="text-xs font-black text-meatball">0</span>
+                            <span class="text-[10px] font-bold text-poodle-300 uppercase">items</span>
+                        </div>
+                    </div>
+                    <div id="projectResourceList" class="space-y-4">
+                        <!-- JS Rendered -->
+                    </div>
                 </div>
-                <div id="projectResourceList" class="space-y-3">
-                    <!-- JS Rendered -->
+
+                <div class="pt-10 border-t border-poodle-100/60">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-plus text-meatball shadow-sm p-1 rounded bg-meatball/10 text-[10px]"></i>
+                        <p class="text-[13px] font-black text-poodle-500 uppercase tracking-widest">새 자료 추가</p>
+                    </div>
+
+                    <!-- Upload Area -->
+                    <div class="group/upload relative rounded-[2.5rem] border-2 border-dashed border-poodle-100 bg-poodle-50/30 p-1 transition-all hover:border-meatball/40 hover:bg-white shadow-[0_10px_30px_rgba(101,55,40,0.02)] mb-6">
+                        <form id="projectResourceForm">
+                            <input type="file" id="fileInput" name="file" class="hidden" onchange="uploadResource()">
+                            <button type="button" 
+                                    onclick="document.getElementById('fileInput').click()"
+                                    class="w-full px-8 py-10 flex flex-col items-center justify-center gap-4">
+                                <div class="w-16 h-16 rounded-[1.8rem] bg-white shadow-xl flex items-center justify-center text-meatball group-hover/upload:scale-110 transition-transform duration-500 animate-pulse-subtle">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[16px] font-black text-poodle-800" id="uploadTitle">선택한 탭에 파일 업로드</p>
+                                    <p id="fileSelectedLabel" class="mt-1 text-xs font-bold text-poodle-300 italic">여기를 클릭하여 파일을 선택하세요</p>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+    
+                    <!-- Link Area -->
+                    <div class="rounded-[2.5rem] bg-poodle-50/50 p-8 space-y-4 border border-poodle-100/50">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-link-slash text-poodle-300 text-xs translate-y-[1px]"></i>
+                            <p class="text-[11px] font-black text-poodle-400 uppercase tracking-widest" id="linkTitleLabel">외부 링크 추가</p>
+                        </div>
+                        <div class="space-y-3">
+                            <input id="resourceLinkTitle" type="text" maxlength="120"
+                                   class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
+                                   placeholder="링크 제목 입력">
+                            <input id="resourceLinkUrl" type="url"
+                                   class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
+                                   placeholder="https://">
+                            <button type="button" onclick="uploadResourceLink()"
+                                    class="w-full bg-poodle-900 py-4 rounded-2xl text-sm font-black text-white hover:bg-meatball transition-all shadow-lg active:scale-95">
+                                링크 등록하기
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+
     </div>
 </main>
 
@@ -328,6 +390,32 @@
     const APPLICATIONS_EDITABLE = PROJECT_PROGRESS_STATUS !== 'COMPLETED';
     window.applicationDetails = {};
     const resolveProjectId = () => window.meetballResolveProjectId({ elementId: 'projectId', queryParam: 'projectId', pathIndex: 2 });
+    let currentResourceCategory = 'RECRUIT';
+
+    function switchResourceCategory(category) {
+        currentResourceCategory = category;
+        const tabs = ['RECRUIT', 'RESULT'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            if (t === category) {
+                btn.className = "flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 bg-white text-poodle-900 shadow-md";
+            } else {
+                btn.className = "flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 text-poodle-400 hover:text-poodle-600";
+            }
+        });
+
+        const uploadTitle = document.getElementById('uploadTitle');
+        const listTitle = document.getElementById('resourceListTitle');
+        if (category === 'RECRUIT') {
+            uploadTitle.innerText = "모집 공고 자료 업로드";
+            listTitle.innerText = "모집 공고 자료 목록";
+        } else {
+            uploadTitle.innerText = "프로젝트 최종 결과물 업로드";
+            listTitle.innerText = "최종 결과물 목록";
+        }
+
+        fetchResources();
+    }
 
     function getApplicationStatusMeta(status) {
         switch (status) {
@@ -491,38 +579,44 @@
                 window.applicationDetails[id] = { ...app, avatarUrl };
 
                 return `
-                    <article class="rounded-[2rem] border border-poodle-100 bg-poodle-50/40 p-5 transition hover:border-[#FF6B35]/30 hover:bg-white">
-                        <div class="flex items-start justify-between gap-3">
+                    <article class="group/app rounded-[2.5rem] border border-poodle-50 bg-poodle-50/30 p-6 transition-all hover:bg-white hover:border-meatball/20 hover:shadow-xl hover:shadow-meatball/5">
+                        <div class="flex items-start justify-between gap-4">
                             <div class="flex items-center gap-4 min-w-0">
-                                <img src="${avatarUrl}" alt="${escapeHtml(displayName)}"
-                                     class="h-14 w-14 rounded-2xl border border-white bg-white object-cover shadow-sm">
+                                <div class="relative">
+                                    <img src="${avatarUrl}" alt="${escapeHtml(displayName)}"
+                                         class="h-16 w-16 rounded-[1.5rem] border-2 border-white bg-white object-cover shadow-lg">
+                                    <div class="absolute -right-1 -bottom-1 w-6 h-6 rounded-lg bg-white shadow-sm flex items-center justify-center border border-poodle-50">
+                                        <i class="fa-solid fa-user text-[10px] text-poodle-300"></i>
+                                    </div>
+                                </div>
                                 <div class="min-w-0">
-                                    <p class="truncate text-[18px] font-black text-poodle-900">${escapeHtml(displayName)}</p>
-                                    <p class="truncate text-sm font-bold text-poodle-500">${profileNickname ? `닉네임 ${escapeHtml(profileNickname)}` : ''}</p>
+                                    <p class="truncate text-[20px] font-black text-poodle-900 tracking-tight">${escapeHtml(displayName)}</p>
+                                    <p class="truncate text-[12px] font-black text-meatball uppercase tracking-widest opacity-60">${escapeHtml(position)}</p>
                                 </div>
                             </div>
-                            <span class="inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-sm font-black ${statusMeta.className}">
+                            <div class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${statusMeta.className}">
                                 ${statusMeta.label}
-                            </span>
+                            </div>
                         </div>
-
-                        <div class="mt-5 flex flex-wrap gap-2">
-                            <span class="inline-flex items-center rounded-full border border-meatball/15 bg-meatball/10 px-3 py-1.5 text-sm font-black text-meatball">
-                                ${escapeHtml(position)}
-                            </span>
-                            <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1.5 text-sm font-black text-poodle-600">
-                                지원일 ${escapeHtml(createdAt)}
-                            </span>
+ 
+                        <div class="mt-6 space-y-4">
+                            <div class="relative rounded-[1.75rem] bg-white p-5 border border-poodle-50 group-hover/app:border-meatball/10 transition-colors">
+                                <i class="fa-solid fa-quote-left absolute top-3 left-4 text-poodle-100 text-xs"></i>
+                                <p class="text-[14px] leading-relaxed font-bold text-poodle-700 line-clamp-3">
+                                    ${escapeHtml(message)}
+                                </p>
+                            </div>
+ 
+                            <div class="flex items-center justify-between gap-3 pt-2">
+                                <span class="text-[11px] font-black text-poodle-300">
+                                    <i class="fa-regular fa-clock mr-1"></i> ${escapeHtml(createdAt)}
+                                </span>
+                                <button onclick="openApplicantModalById(${id})"
+                                        class="px-5 py-2.5 rounded-xl bg-poodle-900 text-white text-[12px] font-black hover:bg-meatball transition-all shadow-md active:scale-95">
+                                    지원서 상세 보기
+                                </button>
+                            </div>
                         </div>
-
-                        <p class="mt-5 min-h-[84px] rounded-[1.5rem] border border-white bg-white px-4 py-4 text-sm leading-7 font-medium text-poodle-700">
-                            ${escapeHtml(message)}
-                        </p>
-
-                        <button onclick="openApplicantModalById(${id})"
-                                class="mt-5 w-full rounded-[1.25rem] bg-[#4E342E] px-5 py-3 text-sm font-black text-white transition hover:bg-[#FF6B35]">
-                            상세 보기
-                        </button>
                     </article>
                 `;
             }).join('');
@@ -536,19 +630,64 @@
         if (!projectId) return;
         await window.meetballLoadProjectResources(projectId, {
             variant: 'manage',
+            tabType: currentResourceCategory,
             containerIds: ['projectResourceList'],
             countChipId: 'resource-count',
             emptyHtml: `
                 <div class="rounded-[1.75rem] border border-dashed border-poodle-200 bg-poodle-50/50 px-6 py-10 text-center">
-                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-300 shadow-sm">
+                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-200 shadow-sm">
                         <i class="fa-solid fa-folder-open text-2xl"></i>
                     </div>
-                    <p class="text-sm font-black text-poodle-700">등록된 자료가 없습니다.</p>
-                    <p class="mt-2 text-sm font-bold text-poodle-400">파일이나 링크를 등록하면 팀원들이 여기서 확인할 수 있어요.</p>
+                <p class="text-sm font-black text-poodle-300 uppercase tracking-widest">NO DATA</p>
+                <p class="mt-2 text-sm font-bold text-poodle-400">등록된 ${currentResourceCategory === 'RECRUIT' ? '공고 자료' : '결과물'}가 아직 없네요.</p>
                 </div>
             `
         });
     }
+
+    window.deleteProjectResource = async function (resourceId) {
+        if (!await meetballConfirm('정말 이 자료를 삭제하시겠습니까?', { confirmText: '삭제', cancelText: '취소' })) return;
+        const projectId = resolveProjectId();
+        try {
+            const res = await meetballFetch(`/api/projects/${projectId}/resources/${resourceId}`, { method: 'DELETE' });
+            if (res.ok) {
+                await meetballAlert('삭제되었습니다.');
+                fetchResources();
+            } else {
+                await meetballAlert('삭제 실패', { type: 'error' });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    window.editProjectResource = async function (resourceId, currentTitle, currentUrl, type) {
+        const newTitle = await meetballPrompt('수정할 제목을 입력해주세요.', currentTitle, { title: '자료 제목 수정' });
+        if (newTitle === null) return;
+
+        let newUrl = currentUrl;
+        if (type === 'LINK') {
+            newUrl = await meetballPrompt('수정할 URL을 입력해주세요.', currentUrl, { title: '링크 주소 수정' });
+            if (newUrl === null) return;
+        }
+
+        const projectId = resolveProjectId();
+        try {
+            const res = await meetballFetch(`/api/projects/${projectId}/resources/${resourceId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle, url: newUrl })
+            });
+            if (res.ok) {
+                await meetballAlert('수정되었습니다.');
+                fetchResources();
+            } else {
+                await meetballAlert('수정 실패', { type: 'error' });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     function updateFileSelectedLabel() {
         const fileInput = document.getElementById('fileInput');
@@ -568,7 +707,7 @@
         formData.append('file', file);
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=RESULT`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=${currentResourceCategory}`, {
                 method: 'POST',
                 body: formData
             });
@@ -602,7 +741,7 @@
         const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RESULT`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=${currentResourceCategory}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, url })

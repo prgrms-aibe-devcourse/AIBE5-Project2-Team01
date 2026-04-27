@@ -294,7 +294,13 @@ public class ProjectService {
             }
 
             if (showOpenOnly) {
-                predicates.add(cb.equal(root.get("recruitStatus"), "OPEN"));
+                LocalDate today = LocalDate.now();
+                predicates.add(cb.and(
+                        cb.equal(root.get("recruitStatus"), "OPEN"),
+                        cb.notEqual(root.get("progressStatus"), "COMPLETED"),
+                        cb.lessThanOrEqualTo(root.get("recruitStartDate"), today),
+                        cb.greaterThanOrEqualTo(root.get("recruitEndDate"), today)
+                ));
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));
@@ -851,7 +857,9 @@ public class ProjectService {
                 project.getUpdatedAt(),
                 techStacks,
                 buildPositionStatuses(project, participants),
-                project.getViewCount()
+                project.getViewCount(),
+                project.getBookmarkCount(),
+                (int) commentRepository.countByProjectId(project.getId())
         );
     }
 

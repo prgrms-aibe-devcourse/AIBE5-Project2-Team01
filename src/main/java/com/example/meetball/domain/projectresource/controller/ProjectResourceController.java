@@ -95,15 +95,60 @@ public class ProjectResourceController {
                 .body(resource);
     }
 
+    @PatchMapping("/{resourceId}")
+    public ResponseEntity<ProjectResourceResponseDto> updateResource(
+            @PathVariable Long projectId,
+            @PathVariable Long resourceId,
+            @RequestBody LinkRequest request,
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        requireProjectLeader(projectId, profileId, "Only the project leader can update resources.");
+
+        ProjectResourceResponseDto responseDto = projectResourceService.updateResource(projectId, resourceId, request.title(), request.url());
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{resourceId}")
+    public ResponseEntity<Void> deleteResource(
+            @PathVariable Long projectId,
+            @PathVariable Long resourceId,
+            @SessionAttribute(name = "profileId", required = false) Long profileId) {
+        if (profileId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
+        }
+
+        requireProjectLeader(projectId, profileId, "Only the project leader can delete resources.");
+
+        projectResourceService.deleteResource(projectId, resourceId);
+        return ResponseEntity.noContent().build();
+    }
+
     private void requireProjectParticipant(Long projectId, Long profileId, String forbiddenMessage) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
+        Project project = findProject(projectId);
         Profile profile = profileService.getProfileById(profileId);
         ProjectDetailRole role = authorizationService.getProjectDetailRole(profile, project);
 
         if (role != ProjectDetailRole.LEADER && role != ProjectDetailRole.MEMBER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, forbiddenMessage);
         }
+    }
+
+    private void requireProjectLeader(Long projectId, Long profileId, String forbiddenMessage) {
+        Project project = findProject(projectId);
+        Profile profile = profileService.getProfileById(profileId);
+        ProjectDetailRole role = authorizationService.getProjectDetailRole(profile, project);
+
+        if (role != ProjectDetailRole.LEADER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, forbiddenMessage);
+        }
+    }
+
+    private Project findProject(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId));
     }
 
     public record LinkRequest(String title, String url) {

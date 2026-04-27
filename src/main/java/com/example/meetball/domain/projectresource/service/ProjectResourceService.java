@@ -134,15 +134,50 @@ public class ProjectResourceService {
     public void deleteProjectResources(Long projectId) {
         List<ProjectResource> resources = projectResourceRepository.findByProjectId(projectId);
         for (ProjectResource projectResource : resources) {
-            if ("FILE".equals(projectResource.getType()) && StringUtils.hasText(projectResource.getStoredFilePath())) {
-                try {
-                    Files.deleteIfExists(resolveStoredFilePath(projectResource.getStoredFilePath()));
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not delete projectResource file: " + projectResource.getOriginalFileName(), e);
-                }
-            }
+            deletePhysicalFile(projectResource);
         }
         projectResourceRepository.deleteAll(resources);
+    }
+
+    @Transactional
+    public void deleteResource(Long projectId, Long resourceId) {
+        ProjectResource projectResource = findProjectResourceInProject(projectId, resourceId);
+        deletePhysicalFile(projectResource);
+        projectResourceRepository.delete(projectResource);
+    }
+
+    private void deletePhysicalFile(ProjectResource projectResource) {
+        if ("FILE".equals(projectResource.getType()) && StringUtils.hasText(projectResource.getStoredFilePath())) {
+            try {
+                Files.deleteIfExists(resolveStoredFilePath(projectResource.getStoredFilePath()));
+            } catch (IOException e) {
+                throw new RuntimeException("Could not delete projectResource file: " + projectResource.getOriginalFileName(), e);
+            }
+        }
+    }
+
+    @Transactional
+    public ProjectResourceResponseDto updateResource(Long projectId, Long resourceId, String title, String url) {
+        ProjectResource projectResource = findProjectResourceInProject(projectId, resourceId);
+        
+        if (StringUtils.hasText(title)) {
+            String newTitle = title.trim();
+            if ("FILE".equals(projectResource.getType())) {
+                // 파일의 경우 기존 확장자 보존 처리 (옵션)
+                String oldName = projectResource.getOriginalFileName();
+                int dotIndex = oldName.lastIndexOf(".");
+                if (dotIndex > 0 && !newTitle.contains(".")) {
+                    newTitle += oldName.substring(dotIndex);
+                }
+            }
+            projectResource.updateOriginalFileName(newTitle);
+        }
+
+        if ("LINK".equals(projectResource.getType()) && StringUtils.hasText(url)) {
+            projectResource.updateLinkUrl(validateHttpUrl(url));
+        }
+
+        return new ProjectResourceResponseDto(projectResourceRepository.save(projectResource));
     }
 
     private String validateHttpUrl(String url) {
