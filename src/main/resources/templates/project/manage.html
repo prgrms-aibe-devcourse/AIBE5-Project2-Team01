@@ -631,7 +631,7 @@
 
             if (response.ok) {
                 await meetballAlert('프로젝트가 성공적으로 삭제되었습니다.');
-                window.location.href = '/mypage';
+                window.location.href = '/mypage?tab=participating';
             } else {
                 await meetballAlert('프로젝트 삭제에 실패했습니다.', { type: 'error' });
             }
