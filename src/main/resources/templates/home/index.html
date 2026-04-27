@@ -1318,13 +1318,14 @@
 
                 if (filterState.viewMode === 'list') {
                     return `
-            <article class="project-card bg-white rounded-[2rem] border border-poodle-50 overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+            <article onclick="window.location.href='/projects/${projectId}'" 
+                     class="project-card cursor-pointer bg-white rounded-[2rem] border border-poodle-50 overflow-hidden group hover:border-meatball/20 transition-all shadow-sm hover:shadow-2xl hover:-translate-y-1">
                 <div class="grid grid-cols-1 md:grid-cols-[15rem_1fr_auto] gap-0 md:gap-6 items-stretch">
-                    <a href="/projects/${projectId}" class="relative h-48 md:h-full min-h-[12rem] overflow-hidden bg-poodle-50">
+                    <div class="relative h-48 md:h-full min-h-[12rem] overflow-hidden bg-poodle-50">
                         <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <span class="absolute top-4 left-4 text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
-                    </a>
+                        <span class="absolute top-4 left-4 text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg pointer-events-none">${deadlineLabel}</span>
+                    </div>
                     <div class="p-6 md:p-7 flex flex-col justify-between gap-5">
                         <div>
                             <div class="flex flex-wrap gap-2 mb-3">
@@ -1352,7 +1353,7 @@
                         <div class="shrink-0 flex items-center gap-2">
                             ${bookmarkButton}
                             <a href="/projects/${projectId}" class="inline-flex justify-center py-3.5 px-5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95">
-                                보기 <i class="fa-solid fa-chevron-right ml-1.5"></i>
+                                보기
                             </a>
                         </div>
                     </div>
@@ -1361,13 +1362,14 @@
                 }
 
                 return `
-            <article class="project-card bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/10 transition-all shadow-sm hover:shadow-xl">
+            <article onclick="window.location.href='/projects/${projectId}'"
+                     class="project-card cursor-pointer bg-white rounded-[2.5rem] border border-poodle-50 flex flex-col h-full overflow-hidden group hover:border-meatball/20 transition-all shadow-sm hover:shadow-2xl hover:-translate-y-2">
                 <!-- Image Section -->
                 <div class="relative h-44 overflow-hidden">
                     <img src="${escapeHtml(thumbnailUrl)}" alt="${title}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute top-4 left-4">
-                        <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg">${deadlineLabel}</span>
+                        <span class="text-[9px] font-black text-poodle-900 bg-meatball px-3 py-1 rounded-full shadow-lg pointer-events-none">${deadlineLabel}</span>
                     </div>
                     <div class="absolute top-4 right-4">
                         ${bookmarkButton}
@@ -1401,7 +1403,7 @@
                             <div class="h-full bg-meatball rounded-full" style="width: ${percentage}%"></div>
                         </div>
                         <a href="/projects/${projectId}" class="w-full inline-flex justify-center py-3.5 bg-poodle-600 text-white rounded-xl text-xs font-black hover:bg-meatball hover:text-poodle-900 transition-all shadow-lg active:scale-95 group/btn">
-                            프로젝트 보기 <i class="fa-solid fa-chevron-right ml-1.5 group-hover:translate-x-1 transition-transform"></i>
+                            프로젝트 보기
                         </a>
                     </div>
                 </div>
