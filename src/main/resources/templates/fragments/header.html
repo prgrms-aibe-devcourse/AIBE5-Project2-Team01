@@ -13,7 +13,14 @@
             setTimeout(() => loader.classList.remove('show'), 350);
         });
 
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('beforeunload', (event) => {
+            // 파일 다운로드(`/download`) 링크를 클릭한 경우에는 로딩바를 띄우지 않음
+            if (document.activeElement && 
+                document.activeElement.tagName === 'A' && 
+                (document.activeElement.getAttribute('href')?.includes('/download') || 
+                 document.activeElement.hasAttribute('download'))) {
+                return;
+            }
             const loader = document.getElementById('global-loader');
             if (loader) loader.classList.add('show');
         });

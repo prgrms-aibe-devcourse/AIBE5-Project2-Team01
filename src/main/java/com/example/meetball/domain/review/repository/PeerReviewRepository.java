@@ -13,7 +13,7 @@ public interface PeerReviewRepository extends JpaRepository<PeerReview, Long> {
 
     // 중복 리뷰 방지용: 특정 프로젝트에서 작성자가 특정 대상(또는 프로젝트 전체)에게 남긴 리뷰가 있는지 확인
     boolean existsByProjectAndReviewerAndReviewee(Project project, Profile reviewer, Profile reviewee);
-
+    List<PeerReview> findByProjectAndReviewer(Project project, Profile reviewer);
     long countByProjectAndReviewer(Project project, Profile reviewer);
 
     void deleteByProject(Project project);

@@ -43,6 +43,7 @@ public class ProjectResourceController {
     public ResponseEntity<ProjectResourceResponseDto> uploadResource(
             @PathVariable Long projectId,
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "tabType", defaultValue = "RECRUIT") String tabType,
             @SessionAttribute(name = "profileId", required = false) Long profileId) {
         if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
@@ -50,7 +51,7 @@ public class ProjectResourceController {
 
         requireProjectParticipant(projectId, profileId, "Only project members can upload resources.");
 
-        ProjectResourceResponseDto responseDto = projectResourceService.uploadFile(projectId, file);
+        ProjectResourceResponseDto responseDto = projectResourceService.uploadFile(projectId, file, tabType);
         return ResponseEntity.status(201).body(responseDto);
     }
 
@@ -58,6 +59,7 @@ public class ProjectResourceController {
     public ResponseEntity<ProjectResourceResponseDto> uploadLink(
             @PathVariable Long projectId,
             @RequestBody LinkRequest request,
+            @RequestParam(value = "tabType", defaultValue = "RECRUIT") String tabType,
             @SessionAttribute(name = "profileId", required = false) Long profileId) {
         if (profileId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required.");
@@ -65,7 +67,7 @@ public class ProjectResourceController {
 
         requireProjectParticipant(projectId, profileId, "Only project members can add links.");
 
-        ProjectResourceResponseDto responseDto = projectResourceService.uploadLink(projectId, request.title(), request.url());
+        ProjectResourceResponseDto responseDto = projectResourceService.uploadLink(projectId, request.title(), request.url(), tabType);
         return ResponseEntity.status(201).body(responseDto);
     }
 

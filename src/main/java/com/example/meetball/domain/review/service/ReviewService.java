@@ -133,9 +133,14 @@ public class ReviewService {
             throw new IllegalArgumentException("이 프로젝트의 참여 멤버만 팀원 목록을 조회할 수 있습니다.");
         }
 
+        List<Profile> alreadyReviewed = peerReviewRepository.findByProjectAndReviewer(project, currentProfile).stream()
+                .map(PeerReview::getReviewee)
+                .toList();
+
         return projectParticipantRepository.findByProject(project).stream()
                 .map(pm -> pm.getProfile())
-                .filter(memberProfile -> !memberProfile.getId().equals(currentProfile.getId()))
+                .filter(memberProfile -> memberProfile != null && !memberProfile.getId().equals(currentProfile.getId()))
+                .filter(memberProfile -> !alreadyReviewed.contains(memberProfile))
                 .map(memberProfile -> ReviewTargetResponse.builder()
                         .profileId(memberProfile.getId())
                         .nickname(memberProfile.getNickname())

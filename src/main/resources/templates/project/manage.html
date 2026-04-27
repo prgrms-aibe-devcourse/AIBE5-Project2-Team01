@@ -563,7 +563,7 @@
         formData.append('file', file);
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=RESULT`, {
                 method: 'POST',
                 body: formData
             });
@@ -597,7 +597,7 @@
         const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources/links`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RESULT`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, url })

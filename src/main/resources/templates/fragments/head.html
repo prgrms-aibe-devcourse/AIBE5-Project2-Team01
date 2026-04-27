@@ -439,7 +439,7 @@
                 actionHref: isLink
                     ? window.meetballSafeUrl(resource?.linkUrl || '#')
                     : window.meetballSafeUrl(`/api/projects/${safeProjectId}/resources/${resourceId}/download`),
-                targetAttr: isLink ? ' target="_blank" rel="noopener noreferrer"' : ''
+                targetAttr: ' target="_blank" rel="noopener noreferrer"'
             };
         };
 
@@ -450,13 +450,13 @@
             if (variant === 'detail') {
                 return `
                     <a href="${window.meetballEscapeHtml(vm.actionHref)}"${vm.targetAttr}
-                        class="group p-8 bg-poodle-50/30 border-2 border-poodle-100 rounded-3xl flex items-center gap-5 hover:bg-white hover:border-meatball/30 hover:shadow-xl transition-all">
-                        <div class="w-14 h-14 bg-white border border-poodle-50 rounded-2xl flex items-center justify-center text-meatball group-hover:scale-110 transition-transform shadow-sm flex-shrink-0">
-                            <i class="fa-solid ${vm.isLink ? 'fa-link' : 'fa-download'} text-xl"></i>
+                        class="group p-4 px-6 bg-poodle-50/30 border border-poodle-100 rounded-2xl flex items-center gap-4 hover:bg-white hover:border-meatball/30 hover:shadow-lg transition-all">
+                        <div class="w-10 h-10 bg-white border border-poodle-50 rounded-xl flex items-center justify-center text-meatball group-hover:scale-110 transition-transform shadow-sm flex-shrink-0">
+                            <i class="fa-solid ${vm.isLink ? 'fa-link' : 'fa-download'} text-lg"></i>
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-sm font-black text-poodle-900 truncate">${vm.title}</p>
-                            <p class="text-[10px] text-poodle-400 font-bold uppercase tracking-wider">${window.meetballEscapeHtml(vm.isLink ? 'External Link' : vm.metaLabel)}</p>
+                            <p class="text-[10px] text-poodle-400 font-bold uppercase tracking-wider">${window.meetballEscapeHtml(vm.isLink ? '링크' : vm.metaLabel)}</p>
                         </div>
                     </a>
                 `;
@@ -508,7 +508,19 @@
                 return;
             }
 
-            const cardsHtml = resources
+            let filteredResources = resources;
+            if (options.tabType) {
+                filteredResources = resources.filter(r => r.tabType === options.tabType);
+            }
+
+            if (filteredResources.length === 0) {
+                containers.forEach(container => {
+                    container.innerHTML = emptyHtml;
+                });
+                return;
+            }
+
+            const cardsHtml = filteredResources
                 .map(resource => window.meetballProjectResourceCardHtml(resource, projectId, { variant }))
                 .join('');
 

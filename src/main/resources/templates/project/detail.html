@@ -983,11 +983,28 @@
         async function fetchResources() {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
-            await window.meetballLoadProjectResources(currentProjectId, {
-                variant: 'detail',
-                containerIds: ['resources-container-detail', 'resources-container-recruitment'],
-                emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 결과물이나 링크가 없습니다.</div>'
-            });
+            
+            try {
+                const resources = await window.meetballFetchProjectResources(currentProjectId);
+                
+                // 1. 모집기획 자료 렌더링 (RECRUIT)
+                window.meetballRenderProjectResources(resources, currentProjectId, {
+                    variant: 'detail',
+                    containerIds: ['resources-container-recruitment'],
+                    tabType: 'RECRUIT',
+                    emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">등록된 모집 참고 자료가 없습니다.</div>'
+                });
+
+                // 2. 최종 결과물 자료 렌더링 (RESULT)
+                window.meetballRenderProjectResources(resources, currentProjectId, {
+                    variant: 'detail',
+                    containerIds: ['resources-container-detail'],
+                    tabType: 'RESULT',
+                    emptyHtml: '<div class="p-8 text-center text-sm font-bold text-poodle-300 col-span-full">아직 등록된 프로젝트 최종 결과물이 없습니다.</div>'
+                });
+            } catch (err) {
+                console.error('Fetch Resources Error', err);
+            }
         }
 
         async function fetchBookmarkStatus() {
