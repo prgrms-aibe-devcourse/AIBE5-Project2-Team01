@@ -50,6 +50,7 @@ public class PeopleController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
+        model.addAttribute("headerTitle", peopleService.getProfile(profileId, sessionProfileId).getNickname() + " 프로필");
         return "people/detail";
     }
 }

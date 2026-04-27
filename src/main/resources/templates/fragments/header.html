@@ -22,12 +22,17 @@
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-poodle-100/80 transition-all shadow-sm">
         <div class="mx-auto max-w-7xl px-4 h-24 md:h-28 flex items-center justify-between">
             <!-- Logo area -->
-            <div class="flex items-center">
+            <div class="flex items-center gap-4">
                 <a th:href="@{/}" class="flex items-center gap-3 cursor-pointer select-none group">
                     <img th:src="@{/img/logo.png}" src="/img/logo.png" alt="Meetball"
                          class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                     <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
+                <!-- Page Title Divider -->
+                <div th:if="${headerTitle != null and !headerTitle.isEmpty()}" class="flex items-center gap-4">
+                    <span class="w-px h-6 bg-poodle-200 rounded-full"></span>
+                    <span th:text="${headerTitle}" class="text-sm font-black text-poodle-400 tracking-tight"></span>
+                </div>
             </div>
 
             <!-- Right Actions -->

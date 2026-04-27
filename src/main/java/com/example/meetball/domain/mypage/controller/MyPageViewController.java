@@ -40,6 +40,7 @@ public class MyPageViewController {
             return "redirect:/?login=1&redirect=/mypage";
         }
 
+        model.addAttribute("headerTitle", "마이 페이지");
         return "mypage/mypage";
     }
 }

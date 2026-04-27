@@ -353,9 +353,9 @@
                                onclick="handleMemberCardClick(event)"
                                class="flex items-center gap-4 rounded-2xl border border-poodle-100 bg-poodle-50 p-4 shadow-sm transition-all duration-200 group/leader hover:-translate-y-1 hover:border-meatball/30 hover:bg-white hover:shadow-[0_18px_36px_rgba(62,39,35,0.10)]">
                                 <div class="relative">
-                                    <img th:src="${project.leaderAvatarUrl}"
+                                    <img th:src="${!#strings.isEmpty(project.leaderAvatarUrl) ? project.leaderAvatarUrl : '/img/logo.png'}"
                                         src="/img/logo.png"
-                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm object-cover border border-poodle-50">
                                     <div
                                         class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
                                         <i class="fa-solid fa-crown"></i>
@@ -369,9 +369,9 @@
                             </a>
                             <div th:unless="${project.leaderProfileId != null}" class="flex items-center gap-4 p-4 bg-poodle-50 border border-poodle-100 rounded-2xl">
                                 <div class="relative">
-                                    <img th:src="${project.leaderAvatarUrl}"
+                                    <img th:src="${!#strings.isEmpty(project.leaderAvatarUrl) ? project.leaderAvatarUrl : '/img/logo.png'}"
                                         src="/img/logo.png"
-                                        class="w-12 h-12 bg-white rounded-xl shadow-sm">
+                                        class="w-12 h-12 bg-white rounded-xl shadow-sm object-cover border border-poodle-50">
                                     <div
                                         class="absolute -top-2 -left-2 w-6 h-6 bg-meatball text-white rounded-lg flex items-center justify-center text-[10px] rotate-[-12deg]">
                                         <i class="fa-solid fa-crown"></i>
@@ -393,9 +393,6 @@
                                     <img th:src="${!#strings.isEmpty(member.avatarUrl) ? member.avatarUrl : '/img/logo.png'}" 
                                          src="/img/logo.png"
                                          class="w-12 h-12 bg-white rounded-xl shadow-sm border border-poodle-50 object-cover">
-                                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-poodle-300 text-white rounded-md flex items-center justify-center text-[8px]">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
                                 </div>
                                 <div class="min-w-0">
                                     <p th:text="${member.nickname()}" class="text-sm font-black text-poodle-900 transition-colors group-hover/member:text-meatball truncate">팀원</p>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead('프로젝트 관리')}"></head>
+<head th:replace="~{fragments/head :: commonHead(${project.title} + ' 관리')}"></head>
 
 <body class="text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>

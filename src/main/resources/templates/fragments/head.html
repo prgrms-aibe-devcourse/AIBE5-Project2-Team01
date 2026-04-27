@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.token : ''}">
     <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.headerName : ''}">
-    <title th:text="${title} + ' - Meetball'">Meetball</title>
+    <title th:text="'MeetBall | ' + ${title}">MeetBall</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
