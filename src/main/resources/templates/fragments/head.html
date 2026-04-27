@@ -483,24 +483,38 @@
                 `;
             }
 
+            const resourceId = resource?.id || '';
+            const linkUrl = resource?.linkUrl || '';
+            const type = resource?.type || '';
+
             return `
-                <div class="flex flex-col gap-4 rounded-[1.75rem] border border-poodle-100 bg-poodle-50/30 p-4 md:flex-row md:items-center md:justify-between">
+                <div class="flex flex-col gap-4 rounded-[1.75rem] border border-poodle-100 bg-poodle-50/30 p-5 md:flex-row md:items-center md:justify-between hover:bg-white hover:shadow-xl hover:shadow-poodle-900/5 transition-all group/item">
                     <div class="flex min-w-0 items-center gap-4">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-meatball shadow-sm">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-meatball shadow-sm group-hover/item:bg-meatball group-hover/item:text-white transition-colors">
                             <i class="fa-solid ${vm.iconClass} text-2xl"></i>
                         </div>
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-poodle-900">${vm.title}</p>
+                            <p class="truncate text-[16px] font-black text-poodle-900 tracking-tight">${vm.title}</p>
                             <div class="mt-1 flex flex-wrap gap-2">
-                                <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1 text-sm font-black text-poodle-600">${window.meetballEscapeHtml(vm.metaLabel)}</span>
-                                <span class="inline-flex items-center rounded-full border border-poodle-200 bg-white px-3 py-1 text-sm font-black text-poodle-600">${window.meetballEscapeHtml(vm.createdAt)}</span>
+                                <span class="inline-flex items-center rounded-lg border border-poodle-100 bg-white px-2.5 py-1 text-[11px] font-black text-poodle-300 uppercase tracking-widest">${window.meetballEscapeHtml(vm.metaLabel)}</span>
+                                <span class="inline-flex items-center rounded-lg border border-poodle-100 bg-white px-2.5 py-1 text-[11px] font-black text-poodle-300 uppercase tracking-widest">${window.meetballEscapeHtml(vm.createdAt)}</span>
                             </div>
                         </div>
                     </div>
-                    <a href="${window.meetballEscapeHtml(vm.actionHref)}"${vm.targetAttr}
-                       class="inline-flex items-center justify-center rounded-[1.2rem] bg-white border border-poodle-200 px-4 py-3 text-sm font-black text-poodle-700 transition hover:border-[#FF6B35] hover:text-[#FF6B35]">
-                        ${vm.actionLabel}
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="window.editProjectResource('${resourceId}', '${vm.title}', '${window.meetballEscapeHtml(linkUrl)}', '${type}')"
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-white border border-poodle-100 text-poodle-300 hover:text-meatball hover:border-meatball/30 hover:shadow-md transition-all">
+                            <i class="fa-solid fa-pen-to-square text-sm"></i>
+                        </button>
+                        <button type="button" onclick="window.deleteProjectResource('${resourceId}')"
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-white border border-poodle-100 text-poodle-300 hover:text-red-500 hover:border-red-200 hover:shadow-md transition-all">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                        <a href="${window.meetballEscapeHtml(vm.actionHref)}"${vm.targetAttr}
+                           class="inline-flex h-11 items-center justify-center rounded-xl bg-poodle-900 px-5 text-sm font-black text-white transition hover:bg-meatball shadow-lg shadow-poodle-900/10">
+                            ${vm.actionLabel}
+                        </a>
+                    </div>
                 </div>
             `;
         };

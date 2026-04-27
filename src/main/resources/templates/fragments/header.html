@@ -35,11 +35,6 @@
                          class="w-11 h-11 rounded-2xl object-cover shadow-poodle-100 shadow-xl group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-500">
                     <span class="text-2xl font-black tracking-tighter text-poodle-900 group-hover:text-meatball transition-colors">Meetball</span>
                 </a>
-                <!-- Page Title Divider -->
-                <div th:if="${headerTitle != null and !headerTitle.isEmpty()}" class="flex items-center gap-4">
-                    <span class="w-px h-6 bg-poodle-200 rounded-full"></span>
-                    <span th:text="${headerTitle}" class="text-sm font-black text-poodle-400 tracking-tight"></span>
-                </div>
             </div>
 
             <!-- Right Actions -->
@@ -209,6 +204,20 @@
             margin: 0 auto !important;
         }
 
+        /* Premium Scrollbar for Dropdowns */
+        .welcome-dropdown-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+        .welcome-dropdown-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .welcome-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #EFEBE9;
+            border-radius: 10px;
+        }
+        .welcome-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: #D7CCC8;
+        }
     </style>
 
     <script th:if="${!isLoggedIn}" src="https://accounts.google.com/gsi/client" async defer></script>
@@ -411,8 +420,8 @@
                                         <i id="welcomePositionDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-300 transition-all duration-300"></i>
                                     </button>
                                     <div id="welcomePositionDropdownMenu"
-                                         class="hidden absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
-                                        <div id="welcomePositionOptions" class="grid grid-cols-1 gap-3"></div>
+                                         class="hidden welcome-dropdown-menu absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
+                                        <div id="welcomePositionOptions" class="grid grid-cols-2 gap-2"></div>
                                     </div>
                                 </div>
                             </div>
@@ -428,8 +437,8 @@
                                         <i id="welcomeExperienceDropdownIcon" class="fa-solid fa-chevron-down text-sm text-poodle-300 transition-all duration-300"></i>
                                     </button>
                                     <div id="welcomeExperienceDropdownMenu"
-                                         class="hidden absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
-                                        <div id="welcomeExperienceOptions" class="grid grid-cols-1 gap-3"></div>
+                                         class="hidden welcome-dropdown-menu absolute left-0 right-0 top-full z-20 mt-3 max-h-72 overflow-y-auto overscroll-contain rounded-[1.6rem] border border-poodle-100 bg-white p-4 shadow-[0_25px_60px_rgba(62,39,35,0.12)]">
+                                        <div id="welcomeExperienceOptions" class="grid grid-cols-3 gap-2"></div>
                                     </div>
                                 </div>
                             </div>
@@ -459,19 +468,22 @@
                         </div>
                     </section>
 
-                    <div class="mt-8 flex flex-col gap-3 border-t border-poodle-100 px-3 pt-7 pb-3 md:mt-10 md:flex-row md:items-center md:justify-between md:gap-6 md:px-5 md:pt-9 md:pb-5">
+                    <div class="mt-8 flex items-center justify-between border-t border-poodle-100 pt-8 pb-2 md:mt-10 md:pt-10">
                         <button type="button" id="welcomePrevButton"
-                                class="hidden w-full md:mr-auto md:w-auto md:min-w-[180px] rounded-[1.5rem] border border-poodle-100 bg-white px-6 py-4 text-base font-black text-poodle-400 transition-all hover:border-poodle-200 hover:text-poodle-700">
+                                class="hidden h-14 items-center gap-2 rounded-2xl border border-poodle-100 bg-white px-7 text-sm font-black text-poodle-400 transition-all hover:bg-poodle-50 hover:text-poodle-700">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
                             이전
                         </button>
-                        <div class="w-full md:ml-auto md:w-auto md:min-w-[300px]">
+                        <div class="ml-auto">
                             <button type="button" id="welcomeNextButton"
-                                    class="w-full rounded-[1.8rem] bg-poodle-800 px-8 py-5 text-xl font-black text-white transition-all hover:bg-meatball">
+                                    class="flex h-14 items-center gap-3 rounded-2xl bg-poodle-800 px-10 text-sm font-black text-white shadow-[0_15px_30px_-5px_rgba(78,52,46,0.25)] transition-all hover:bg-meatball active:scale-95">
                                 다음
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
                             </button>
                             <button type="submit" id="welcomeSubmitButton"
-                                    class="hidden w-full rounded-[1.8rem] bg-poodle-800 px-8 py-5 text-xl font-black text-white transition-all hover:bg-meatball">
+                                    class="hidden h-14 items-center gap-3 rounded-2xl bg-poodle-800 px-10 text-sm font-black text-white shadow-[0_15px_30px_-5px_rgba(78,52,46,0.25)] transition-all hover:bg-meatball active:scale-95">
                                 시작하기
+                                <i class="fa-solid fa-paw text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -747,7 +759,7 @@
                     const selectedClass = selected
                         ? 'border-poodle-800 bg-poodle-800 text-white shadow-sm'
                         : 'border-poodle-100 bg-poodle-50 text-poodle-600 hover:border-poodle-800 hover:text-poodle-900';
-                    return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-[1.2rem] border px-3 py-3 text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
+                    return `<button type="button" data-position="${window.meetballEscapeHtml(position)}" class="rounded-[1rem] border px-2 py-2.5 text-[13px] font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(position)}</button>`;
                 }).join('');
                 container.querySelectorAll('[data-position]').forEach(button => {
                     button.addEventListener('click', () => {
@@ -791,7 +803,7 @@
                     const selectedClass = selected
                         ? 'border-poodle-800 bg-poodle-800 text-white shadow-sm'
                         : 'border-poodle-100 bg-poodle-50 text-poodle-600 hover:border-poodle-800 hover:text-poodle-900';
-                    return `<button type="button" data-experience="${window.meetballEscapeHtml(option.value)}" class="rounded-[1.2rem] border px-4 py-4 text-left text-sm font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option.label)}</button>`;
+                    return `<button type="button" data-experience="${window.meetballEscapeHtml(option.value)}" class="rounded-[1rem] border px-2 py-2.5 text-center text-[13px] font-black transition-all ${selectedClass}">${window.meetballEscapeHtml(option.label)}</button>`;
                 }).join('');
                 container.querySelectorAll('[data-experience]').forEach(button => {
                     button.addEventListener('click', () => {

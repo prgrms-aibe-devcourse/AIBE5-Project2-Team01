@@ -63,4 +63,12 @@ public class ProjectResource {
         this.tabType = tabType != null ? tabType : "RECRUIT";
         this.displayOrder = 0;
     }
+
+    public void updateOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    public void updateLinkUrl(String linkUrl) {
+        this.linkUrl = linkUrl;
+    }
 }
