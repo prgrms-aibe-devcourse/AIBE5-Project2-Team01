@@ -1309,12 +1309,21 @@
                         <i id="homeBookmarkIcon-${domProjectId}" class="fa-heart ${bookmarkIconClass}"></i>
                     </button>`;
 
-                // 기술 스택 (Array 처리)
-	                const techBadges = (p.techStacks || []).map(tech =>
-	                    window.meetballTechStackChipHtml(tech, {
-	                        className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
-	                    })
-	                ).join('');
+                // 기술 스택 (최대 6개로 제한하여 카드 높이 일정 유지)
+                const techList = p.techStacks || [];
+                const maxVisible = 6;
+                const visibleTechs = techList.slice(0, maxVisible);
+                const remaining = techList.length - maxVisible;
+
+                let techBadges = visibleTechs.map(tech =>
+                    window.meetballTechStackChipHtml(tech, {
+                        className: 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[10px] font-black'
+                    })
+                ).join('');
+
+                if (remaining > 0) {
+                    techBadges += `<span class="inline-flex items-center px-2.5 py-1.5 rounded-full border border-poodle-50 bg-poodle-50 text-poodle-300 text-[10px] font-black">+${remaining}</span>`;
+                }
 
                 if (filterState.viewMode === 'list') {
                     return `
