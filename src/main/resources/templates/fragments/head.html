@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:fragment="commonHead(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.token : ''}">
     <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf != null ? _csrf.headerName : ''}">
     <title th:text="'MeetBall | ' + ${title}">MeetBall</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@100..900&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script th:inline="javascript">
@@ -90,14 +92,23 @@
             }
         }
     </script>
-    
+
     <style>
         /* Global CSS Reset & Premium Scrollbar */
-        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         :root {
             --meetball-page-bg: #FDFBFA;
             --meetball-button-bg: #4E342E;
@@ -204,16 +215,16 @@
             background-color: var(--meetball-button-hover) !important;
             color: var(--meetball-button-text) !important;
         }
-        
+
         .progress-bar-shine {
             background-size: 200% 100%;
             animation: shine 2s linear infinite;
-            background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
         }
     </style>
 
     <script>
-        window.meetballEscapeHtml = function(value) {
+        window.meetballEscapeHtml = function (value) {
             return String(value ?? '')
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -222,7 +233,7 @@
                 .replace(/'/g, '&#39;');
         };
 
-        window.meetballSafeUrl = function(value, fallback = '#') {
+        window.meetballSafeUrl = function (value, fallback = '#') {
             const raw = String(value ?? '').trim();
             if (!raw) return fallback;
             if (/[<>"'\u0000-\u001F\u007F]/.test(raw)) return fallback;
@@ -235,13 +246,13 @@
             }
         };
 
-        window.meetballPositionOptions = /*[[${meetballPositionOptions}]]*/ [
+        window.meetballPositionOptions = /*[[${meetballPositionOptions}]]*/[
             '프론트엔드', '백엔드', '풀스택', '디자이너', 'IOS', '안드로이드', '임베디드SW',
             '게임', '서버', '데브옵스', '매니저(PM)', '기획자', '마케터', '사업',
             '데이터/AI', '보안', 'DBA', 'QA', '기타'
         ];
 
-        window.meetballProjectPurposeOptions = /*[[${meetballProjectPurposeOptions}]]*/ [
+        window.meetballProjectPurposeOptions = /*[[${meetballProjectPurposeOptions}]]*/[
             { code: 'PROJECT', label: '프로젝트' },
             { code: 'STUDY', label: '스터디' },
             { code: 'HACKATHON', label: '해커톤' },
@@ -251,7 +262,7 @@
             { code: 'GOVERNMENT_LINK', label: '정부연계' }
         ];
 
-        window.meetballTechStackOptions = /*[[${meetballTechStackOptions}]]*/ [
+        window.meetballTechStackOptions = /*[[${meetballTechStackOptions}]]*/[
             'JavaScript', 'TypeScript', 'React', 'Vue', 'Nodejs', 'Spring', 'Java', 'Nextjs',
             'Nestjs', 'Express', 'Go', 'C', 'Python', 'Django', 'Swift', 'Kotlin',
             'MySQL', 'MongoDB', 'php', 'GraphQL', 'Firebase', 'ReactNative', 'Unity',
@@ -305,7 +316,7 @@
             Svelte: { label: 'S', icon: '/img/tech-stack/svelte.svg', accent: '#FF3E00', text: '#FF3E00', bg: '#FFF7ED' }
         };
 
-        window.meetballTechStackLogoHtml = function(tech, selected = false) {
+        window.meetballTechStackLogoHtml = function (tech, selected = false) {
             const safeTech = window.meetballEscapeHtml(tech);
             const meta = window.meetballTechStackMeta[tech] || {
                 label: safeTech.slice(0, 2).toUpperCase(),
@@ -328,7 +339,7 @@
             `;
         };
 
-        window.meetballTechStackChipHtml = function(tech, options = {}) {
+        window.meetballTechStackChipHtml = function (tech, options = {}) {
             const selected = Boolean(options.selected);
             const safeTech = window.meetballEscapeHtml(tech);
             const baseClass = options.className || 'inline-flex items-center gap-2 px-3 py-2 rounded-full border text-xs font-black transition-all';
@@ -338,7 +349,7 @@
             return `<span class="${baseClass}${stateClass}" data-tech-chip="${safeTech}">${window.meetballTechStackLogoHtml(tech, selected)}<span>${safeTech}</span></span>`;
         };
 
-        window.meetballEnhanceStaticTechChips = function(root = document) {
+        window.meetballEnhanceStaticTechChips = function (root = document) {
             root.querySelectorAll('[data-tech-chip]').forEach(node => {
                 if (node.dataset.enhanced === 'true') return;
                 const tech = node.getAttribute('data-tech-chip') || node.textContent.trim();
@@ -350,7 +361,7 @@
 
         document.addEventListener('DOMContentLoaded', () => window.meetballEnhanceStaticTechChips());
 
-        window.meetballFetch = function(input, init = {}) {
+        window.meetballFetch = function (input, init = {}) {
             const method = (init.method || 'GET').toUpperCase();
             const safeMethod = ['GET', 'HEAD', 'OPTIONS', 'TRACE'].includes(method);
             const headers = new Headers(init.headers || {});
@@ -366,7 +377,7 @@
             return fetch(input, { ...init, headers });
         };
 
-        window.meetballFetchProjectResources = async function(projectId) {
+        window.meetballFetchProjectResources = async function (projectId) {
             const safeProjectId = encodeURIComponent(String(projectId ?? ''));
             const response = await fetch(`/api/projects/${safeProjectId}/resources`);
             if (!response.ok) {
@@ -375,7 +386,7 @@
             return response.json();
         };
 
-        window.meetballResolveProjectId = function(options = {}) {
+        window.meetballResolveProjectId = function (options = {}) {
             const elementId = options.elementId || 'projectId';
             const queryParam = options.queryParam || 'projectId';
             const pathIndex = Number.isInteger(options.pathIndex) ? options.pathIndex : 2;
@@ -391,7 +402,7 @@
             return fromPath || '';
         };
 
-        window.meetballFormatDateLabel = function(value) {
+        window.meetballFormatDateLabel = function (value) {
             if (!value) return '-';
             const date = new Date(value);
             if (Number.isNaN(date.getTime())) return value;
@@ -402,7 +413,7 @@
             }).replace(/\. /g, '.').replace(/\.$/, '');
         };
 
-        window.meetballFormatBytes = function(size) {
+        window.meetballFormatBytes = function (size) {
             if (!size || size <= 0) return '-';
             const units = ['B', 'KB', 'MB', 'GB'];
             let value = size;
@@ -414,7 +425,7 @@
             return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
         };
 
-        window.meetballProjectResourceViewModel = function(resource, projectId) {
+        window.meetballProjectResourceViewModel = function (resource, projectId) {
             const isLink = resource?.type === 'LINK';
             const safeProjectId = encodeURIComponent(String(projectId ?? ''));
             const resourceId = encodeURIComponent(String(resource?.id ?? ''));
@@ -432,7 +443,7 @@
             };
         };
 
-        window.meetballProjectResourceCardHtml = function(resource, projectId, options = {}) {
+        window.meetballProjectResourceCardHtml = function (resource, projectId, options = {}) {
             const variant = options.variant || 'manage';
             const vm = window.meetballProjectResourceViewModel(resource, projectId);
 
@@ -473,7 +484,7 @@
             `;
         };
 
-        window.meetballRenderProjectResources = function(resources, projectId, options = {}) {
+        window.meetballRenderProjectResources = function (resources, projectId, options = {}) {
             const containerIds = Array.isArray(options.containerIds) ? options.containerIds : [];
             const containers = containerIds
                 .map(id => document.getElementById(id))
@@ -506,7 +517,7 @@
             });
         };
 
-        window.meetballLoadProjectResources = async function(projectId, options = {}) {
+        window.meetballLoadProjectResources = async function (projectId, options = {}) {
             const safeProjectId = String(projectId ?? '').trim();
             if (!safeProjectId) {
                 window.meetballRenderProjectResources([], safeProjectId, options);
@@ -524,7 +535,7 @@
             }
         };
 
-        window.meetballDialog = function(options = {}) {
+        window.meetballDialog = function (options = {}) {
             return new Promise(resolve => {
                 document.getElementById('meetballGlobalDialog')?.remove();
 
@@ -620,7 +631,7 @@
             });
         };
 
-        window.meetballAlert = function(message, options = {}) {
+        window.meetballAlert = function (message, options = {}) {
             return window.meetballDialog({
                 title: options.title || '알림',
                 message,
@@ -629,7 +640,7 @@
             });
         };
 
-        window.meetballConfirm = function(message, options = {}) {
+        window.meetballConfirm = function (message, options = {}) {
             return window.meetballDialog({
                 title: options.title || '확인',
                 message,
@@ -639,7 +650,7 @@
             }).then(Boolean);
         };
 
-        window.meetballPrompt = function(message, defaultValue = '', options = {}) {
+        window.meetballPrompt = function (message, defaultValue = '', options = {}) {
             return window.meetballDialog({
                 title: options.title || '입력',
                 message,
@@ -653,4 +664,5 @@
         };
     </script>
 </head>
+
 </html>
