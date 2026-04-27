@@ -562,7 +562,8 @@
     <script th:inline="javascript">
         const CURRENT_USER = {
             nickname: /*[[${currentProfile != null ? currentProfile.nickname : null}]]*/ null,
-            profileId: /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null
+            profileId: /*[[${currentProfile != null ? currentProfile.id : null}]]*/ null,
+            role: /*[[${role}]]*/ 'GUEST'
         };
         const escapeHtml = window.meetballEscapeHtml;
         const PROJECT_DEADLINE_LABEL = /*[[${project.deadlineLabel}]]*/ '';
@@ -775,6 +776,58 @@
         // ===================================
         // Comments Script
         // ===================================
+        function renderCommentItem(c, isReply = false) {
+            const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const author = escapeHtml(c.authorNickname);
+            const authorProfileId = Number(c.authorProfileId);
+            const authorLink = Number.isFinite(authorProfileId)
+                ? `<a href="/people/${authorProfileId}" class="hover:text-meatball transition-colors">${author}</a>`
+                : `<span>${author}</span>`;
+            const content = escapeHtml(c.content);
+            const commentId = Number(c.id);
+            const isAuthor = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname;
+            
+            const deleteButton = isAuthor && Number.isFinite(commentId)
+                ? `<button onclick="deleteComment(${commentId})" class="text-poodle-300 hover:text-red-400 text-[10px] font-black transition-all">삭제</button>`
+                : '';
+                
+            const replyButton = !isReply && CURRENT_USER.role === 'LEADER'
+                ? `<button onclick="toggleReplyForm(${commentId})" class="text-meatball hover:underline text-[10px] font-black transition-all">답글 달기</button>`
+                : '';
+
+            let html = `
+            <div class="${isReply ? 'ml-14 mt-4' : 'mb-6'} flex gap-4 animate-fade-in-up">
+                <img src="/img/logo.png" class="${isReply ? 'w-10 h-10' : 'w-12 h-12'} bg-poodle-50 rounded-xl shadow-sm border border-white flex-shrink-0">
+                <div class="${isReply ? 'bg-poodle-100/30' : 'bg-poodle-50/30'} p-5 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-black text-poodle-900 text-sm">${authorLink} <span class="text-[9px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
+                        <div class="flex items-center gap-3">
+                            ${replyButton}
+                            ${deleteButton}
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
+                    
+                    <!-- Reply Form Placeholder -->
+                    <div id="reply-form-container-${commentId}" class="hidden mt-4 pt-4 border-t border-poodle-100 animate-fade-in">
+                        <div class="flex gap-3">
+                            <textarea id="reply-input-${commentId}" placeholder="답글을 남겨보세요..." 
+                                class="w-full p-4 bg-white border border-poodle-100 rounded-2xl outline-none text-sm font-bold text-poodle-800 focus:border-meatball/30 resize-none h-20"></textarea>
+                            <button onclick="postComment(${commentId})" 
+                                class="px-6 bg-poodle-600 text-white rounded-2xl font-black text-xs hover:bg-meatball transition-all whitespace-nowrap">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            if (c.children && c.children.length > 0) {
+                html += c.children.map(child => renderCommentItem(child, true)).join('');
+            }
+
+            return html;
+        }
+
         async function fetchComments() {
             const currentProjectId = projectId();
             if(!currentProjectId) return;
@@ -783,7 +836,6 @@
                 const res = await fetch(`/api/projects/${currentProjectId}/comments`);
                 if(!res.ok) throw new Error('댓글 불러오기 실패');
                 
-                // Pagination Response { content: [], ... }
                 const data = await res.json();
                 const comments = data.content || [];
                 const container = document.getElementById('comments-container');
@@ -797,40 +849,35 @@
                     return;
                 }
 
-                container.innerHTML = comments.map(c => {
-                    const dateStr = new Date(c.createdAt).toLocaleDateString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-                    const author = escapeHtml(c.authorNickname);
-                    const authorProfileId = Number(c.authorProfileId);
-                    const authorLink = Number.isFinite(authorProfileId)
-                        ? `<a href="/people/${authorProfileId}" class="hover:text-meatball transition-colors">${author}</a>`
-                        : `<span>${author}</span>`;
-                    const content = escapeHtml(c.content);
-                    const commentId = Number(c.id);
-                    const deleteButton = CURRENT_USER.nickname && c.authorNickname === CURRENT_USER.nickname && Number.isFinite(commentId)
-                        ? `<button onclick="deleteComment(${commentId})" class="absolute top-4 right-4 text-poodle-300 hover:text-red-400 text-xs font-black transition-all">삭제</button>`
-                        : '';
-                    return `
-                    <div class="flex gap-4">
-                        <img src="/img/logo.png" class="w-12 h-12 bg-poodle-50 rounded-xl shadow-sm border border-white">
-                        <div class="bg-poodle-50/30 p-6 object-cover border border-poodle-50 rounded-3xl rounded-tl-none w-full relative">
-                            <h4 class="font-black text-poodle-900 text-sm mb-1">${authorLink} <span class="text-[10px] text-poodle-300 ml-1 font-bold">${escapeHtml(dateStr)}</span></h4>
-                            <p class="text-sm font-bold text-poodle-700 leading-relaxed">${content}</p>
-                            ${deleteButton}
-                        </div>
-                    </div>
-                    `;
-                }).join('');
+                container.innerHTML = comments.map(c => renderCommentItem(c)).join('');
             } catch (err) {
                 console.error(err);
             }
         }
 
-        async function postComment() {
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`reply-form-container-${commentId}`);
+            if (form) {
+                const isHidden = form.classList.contains('hidden');
+                // Close all other reply forms first for better UX
+                document.querySelectorAll('[id^="reply-form-container-"]').forEach(f => f.classList.add('hidden'));
+                
+                if (isHidden) {
+                    form.classList.remove('hidden');
+                    const input = document.getElementById(`reply-input-${commentId}`);
+                    if (input) input.focus();
+                }
+            }
+        }
+
+        async function postComment(parentId = null) {
             const currentProjectId = projectId();
-            const content = document.getElementById('commentContent').value.trim();
+            const content = parentId 
+                ? document.getElementById(`reply-input-${parentId}`).value.trim()
+                : document.getElementById('commentContent').value.trim();
 
             if (!content) {
-                await meetballAlert('댓글 내용을 입력해주세요.'); return;
+                await meetballAlert('내용을 입력해주세요.'); return;
             }
             if (!CURRENT_USER.nickname) {
                 openLoginRequiredModal(`/projects/${currentProjectId}`);
@@ -842,15 +889,20 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: content
+                        content: content,
+                        parentId: parentId
                     })
                 });
 
                 if (res.ok) {
-                    document.getElementById('commentContent').value = '';
+                    if (parentId) {
+                        document.getElementById(`reply-input-${parentId}`).value = '';
+                    } else {
+                        document.getElementById('commentContent').value = '';
+                    }
                     fetchComments();
                 } else {
-                    await meetballAlert('댓글 등록에 실패했습니다.', { type: 'error' });
+                    await meetballAlert('등록에 실패했습니다.', { type: 'error' });
                 }
             } catch (err) {
                 console.error(err);

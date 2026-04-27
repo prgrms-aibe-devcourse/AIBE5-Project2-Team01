@@ -53,6 +53,11 @@ public class CommentController {
         Profile profile = profileService.getProfileById(profileId);
         ProjectDetailRole role = authorizationService.getProjectDetailRole(profile, project);
 
+        // 답글(대댓글)은 팀장만 작성 가능하도록 검증
+        if (requestDto.getParentId() != null && role != ProjectDetailRole.LEADER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the project leader can write replies.");
+        }
+
         CommentRequestDto commentData = new CommentRequestDto(
                 projectId, 
                 role.name(),
