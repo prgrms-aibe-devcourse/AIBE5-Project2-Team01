@@ -13,6 +13,7 @@ public class PeopleProfileResponse {
     private String nickname;
     private String position;
     private String techStack;
+    private String avatarUrl;
     private boolean isPublic;
     private double meetBallIndex;
 
@@ -22,6 +23,7 @@ public class PeopleProfileResponse {
                 .nickname(profile.getNickname())
                 .position(profile.getPosition())
                 .techStack(formatTechStacks(profile))
+                .avatarUrl(profile.getProfileImage())
                 .isPublic(profile.isPublic())
                 .meetBallIndex(meetBallIndex)
                 .build();

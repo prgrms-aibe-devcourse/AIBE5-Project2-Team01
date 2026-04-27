@@ -326,7 +326,8 @@
                             <h4 class="text-lg font-black text-poodle-900 tracking-tight">팀 멤버 소개</h4>
                             <span class="px-3 py-1 bg-meatball/5 text-meatball rounded-full text-[9px] font-black uppercase tracking-widest">Team Members</span>
                         </div>
-                        <div class="space-y-4 max-h-[440px] overflow-y-auto pr-2 custom-slim-scrollbar">
+                        <div class="relative group/scroll-container">
+                            <div id="memberListContainer" class="space-y-4 max-h-[440px] overflow-y-auto pr-2 custom-slim-scrollbar">
                             <a th:if="${project.leaderProfileId != null}"
                                th:href="@{/people/{profileId}(profileId=${project.leaderProfileId})}"
                                th:attr="data-profile-id=${project.leaderProfileId}"
@@ -379,10 +380,20 @@
                                     <p th:text="${#strings.isEmpty(member.position()) ? '포지션 미정' : member.position()}" class="text-[9px] text-poodle-300 font-black uppercase truncate">포지션</p>
                                 </div>
                             </a>
-                            <div th:if="${#lists.size(project.teamMembers) <= 1}" class="p-4 bg-white border border-poodle-50 rounded-2xl">
-                                <p class="text-[11px] text-poodle-300 font-bold leading-relaxed">
-                                    승인된 팀원이 생기면 이곳에서 프로필로 이동할 수 있습니다.
-                                </p>
+                                <div th:if="${#lists.size(project.teamMembers) <= 1}" class="p-4 bg-white border border-poodle-50 rounded-2xl">
+                                    <p class="text-[11px] text-poodle-300 font-bold leading-relaxed">
+                                        승인된 팀원이 생기면 이곳에서 프로필로 이동할 수 있습니다.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- 🐾 Scroll Indicator Overlay -->
+                            <div id="memberScrollIndicator" 
+                                 class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/70 to-transparent pointer-events-none transition-all duration-500 flex flex-col items-center justify-end pb-4 opacity-0">
+                                <div class="flex flex-col items-center gap-1 translate-y-2 group-hover/scroll-container:translate-y-0 transition-transform">
+                                    <span class="text-[8px] font-black text-meatball uppercase tracking-[0.2em] animate-pulse">More Members</span>
+                                    <i class="fa-solid fa-chevron-down text-meatball text-[10px] animate-bounce"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1189,6 +1200,24 @@
             return html;
         }
 
+        // 🐾 Scroll Indicator Logic for Team Members
+        function updateMemberScrollIndicator() {
+            const container = document.getElementById('memberListContainer');
+            const indicator = document.getElementById('memberScrollIndicator');
+            if (!container || !indicator) return;
+
+            const isOverflowing = container.scrollHeight > container.clientHeight;
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 20;
+
+            if (isOverflowing && !isAtBottom) {
+                indicator.classList.remove('opacity-0');
+                indicator.classList.remove('pointer-events-none');
+            } else {
+                indicator.classList.add('opacity-0');
+                indicator.classList.add('pointer-events-none');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             await syncExistingApplicationState();
             recordRead();
@@ -1197,6 +1226,14 @@
             loadProjectReviewList();
             fetchComments();
             fetchResources();
+
+            // Init Team Member Scroll Indicator
+            const memberListContainer = document.getElementById('memberListContainer');
+            if (memberListContainer) {
+                memberListContainer.addEventListener('scroll', updateMemberScrollIndicator);
+                // Initial check after a short delay for smooth UI
+                setTimeout(updateMemberScrollIndicator, 600);
+            }
         });
     </script>
 

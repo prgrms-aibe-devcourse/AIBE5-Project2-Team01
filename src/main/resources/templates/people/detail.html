@@ -14,9 +14,9 @@
         <div class="flex flex-col md:flex-row items-center justify-between gap-10">
             <div class="flex flex-col md:flex-row items-center gap-10 text-center md:text-left">
                 <div class="relative">
-                    <img th:src="@{/img/logo.png}"
+                    <img th:src="${!#strings.isEmpty(profile.avatarUrl) ? profile.avatarUrl : '/img/logo.png'}"
                          src="/img/logo.png"
-                         class="w-32 h-32 rounded-3xl border-4 border-white shadow-2xl bg-white shadow-poodle-600/15" alt="profile">
+                         class="w-32 h-32 rounded-3xl border-4 border-white shadow-2xl bg-white shadow-poodle-600/15 object-cover" alt="profile">
                 </div>
                 <div>
                     <div class="flex items-center gap-4 justify-center md:justify-start mb-3">
@@ -27,14 +27,6 @@
                         <span class="font-black text-xl text-poodle-600" th:text="${profile.meetBallIndex}">36.5</span>
                         <span class="text-xs font-bold opacity-60">MeetBall Index</span>
                     </div>
-	                    <div class="flex flex-wrap gap-2.5 max-w-md mx-auto md:mx-0" th:with="stacks=${profile.techStack != null ? #strings.arraySplit(profile.techStack, ',') : new String[]{}}">
-	                        <span th:each="stack : ${stacks}"
-	                              th:if="${!#strings.isEmpty(#strings.trim(stack))}"
-	                              th:attr="data-tech-chip=${#strings.trim(stack)}"
-	                              th:text="${#strings.trim(stack)}"
-	                              class="px-4 py-2 bg-white text-poodle-700 rounded-full text-xs font-black border border-poodle-100 shadow-sm">Java</span>
-	                        <span th:if="${profile.techStack == null or profile.techStack == ''}" class="text-poodle-300 italic text-sm font-bold">등록된 기술 스택이 없습니다.</span>
-	                    </div>
                 </div>
             </div>
             <a th:href="@{/#projects}"
