@@ -1269,9 +1269,15 @@
                         </p>
                     </div>
                     <div class="mt-8">
-                        <a href="/register" class="inline-flex items-center gap-2 px-6 py-3 bg-poodle-900 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all active:scale-95">
+                        <button onclick="(() => {
+                            if (!HOME_LOGGED_IN) {
+                                openLoginRequiredModal('/register');
+                            } else {
+                                window.location.href = '/register';
+                            }
+                        })()" class="inline-flex items-center gap-2 px-6 py-3 bg-poodle-900 text-white rounded-xl font-black text-xs hover:bg-meatball transition-all active:scale-95">
                             <i class="fa-solid fa-plus"></i> 프로젝트 생성하기
-                        </a>
+                        </button>
                     </div>
                 </div>`;
                 return;
