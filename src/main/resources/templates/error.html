@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: commonHead('error')}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    '오류',
+    '요청 처리 중 문제가 발생했습니다.',
+    'MeetBall, 오류 페이지',
+    'noindex, nofollow'
+)}"></head>
 <body class="bg-poodle-50 text-poodle-900 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-2xl w-full text-center space-y-10 animate-fade-in-up flex flex-col items-center">
         <div class="relative w-full h-64 flex items-center justify-center overflow-hidden">

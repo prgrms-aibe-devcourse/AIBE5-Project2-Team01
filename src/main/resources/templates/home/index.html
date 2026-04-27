@@ -2,7 +2,12 @@
 <!-- AI Recommendation Feature Updated: 2026-04-27 -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head :: commonHead('사이드 프로젝트 팀 빌딩 플랫폼')}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    '프로젝트 팀원 모집·매칭',
+    'MeetBall에서 프로젝트, 스터디, 공모전, 해커톤, 창업, 포트폴리오 팀원을 모집하고 매칭하세요. 팀원을 찾는 사람과 팀에 합류하고 싶은 사람을 AI 추천과 지원자 관리 흐름으로 연결합니다.',
+    '',
+    'index, follow'
+)}"></head>
 
 <body class="text-poodle-900 flex flex-col min-h-screen">
     <header th:replace="~{fragments/header :: mainHeader}"></header>

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: commonHead('마이 페이지')}"></head>
+<head th:replace="~{fragments/head :: commonHead(
+    '마이 페이지',
+    'MeetBall 마이페이지에서 내 프로필과 등록한 프로젝트, 지원 프로젝트, 관심 프로젝트, 읽은 프로젝트, 받은 리뷰를 관리하세요.',
+    'MeetBall 마이페이지, 내 프로젝트 관리, 프로필 관리, 지원 프로젝트, 관심 프로젝트, 읽은 프로젝트, 받은 리뷰, 프로젝트 팀원 모집 관리',
+    'noindex, nofollow'
+)}"></head>
 
 <body class="min-h-screen text-poodle-900 bg-poodle-50">
 <header th:replace="~{fragments/header :: mainHeader}"></header>
