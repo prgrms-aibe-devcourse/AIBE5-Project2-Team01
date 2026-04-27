@@ -251,55 +251,63 @@
             </div>
  
             <div class="space-y-6">
-                <!-- Upload Area -->
-                <div class="group/upload relative rounded-[2.5rem] border-2 border-dashed border-poodle-100 bg-poodle-50/30 p-1 transition-all hover:border-meatball/40 hover:bg-white shadow-[0_10px_30px_rgba(101,55,40,0.02)]">
-                    <form id="projectResourceForm">
-                        <input type="file" id="fileInput" name="file" class="hidden" onchange="uploadResource()">
-                        <button type="button" 
-                                onclick="document.getElementById('fileInput').click()"
-                                class="w-full px-8 py-10 flex flex-col items-center justify-center gap-4">
-                            <div class="w-16 h-16 rounded-[1.8rem] bg-white shadow-xl flex items-center justify-center text-meatball group-hover/upload:scale-110 transition-transform duration-500 animate-pulse-subtle">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-[16px] font-black text-poodle-800" id="uploadTitle">선택한 탭에 파일 업로드</p>
-                                <p id="fileSelectedLabel" class="mt-1 text-xs font-bold text-poodle-300 italic">여기를 클릭하여 파일을 선택하세요</p>
-                            </div>
-                        </button>
-                    </form>
-                </div>
- 
-                <!-- Link Area -->
-                <div class="rounded-[2.5rem] bg-poodle-50/50 p-8 space-y-4 border border-poodle-100/50">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-link-slash text-poodle-300 text-xs translate-y-[1px]"></i>
-                        <p class="text-[11px] font-black text-poodle-400 uppercase tracking-widest" id="linkTitleLabel">외부 링크 추가</p>
+                <!-- Resource List (Moved Up) -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between mb-8 px-2">
+                        <h3 class="text-[20px] font-black text-poodle-900 tracking-tight" id="resourceListTitle">등록된 자료 목록</h3>
+                        <div class="flex items-center gap-2 px-3 py-1 bg-poodle-50 rounded-lg">
+                            <span id="resource-count" class="text-xs font-black text-meatball">0</span>
+                            <span class="text-[10px] font-bold text-poodle-300 uppercase">items</span>
+                        </div>
                     </div>
-                    <div class="space-y-3">
-                        <input id="resourceLinkTitle" type="text" maxlength="120"
-                               class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
-                               placeholder="링크 제목 입력">
-                        <input id="resourceLinkUrl" type="url"
-                               class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
-                               placeholder="https://">
-                        <button type="button" onclick="uploadResourceLink()"
-                                class="w-full bg-poodle-900 py-4 rounded-2xl text-sm font-black text-white hover:bg-meatball transition-all shadow-lg active:scale-95">
-                            링크 등록하기
-                        </button>
+                    <div id="projectResourceList" class="space-y-4">
+                        <!-- JS Rendered -->
                     </div>
                 </div>
-            </div>
- 
-            <div class="mt-10 pt-10 border-t border-poodle-100/60">
-                <div class="flex items-center justify-between mb-8 px-2">
-                    <h3 class="text-[20px] font-black text-poodle-900 tracking-tight" id="resourceListTitle">등록된 자료 목록</h3>
-                    <div class="flex items-center gap-2 px-3 py-1 bg-poodle-50 rounded-lg">
-                        <span id="resource-count" class="text-xs font-black text-meatball">0</span>
-                        <span class="text-[10px] font-bold text-poodle-300">FILES</span>
+
+                <div class="pt-10 border-t border-poodle-100/60">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-plus text-meatball shadow-sm p-1 rounded bg-meatball/10 text-[10px]"></i>
+                        <p class="text-[13px] font-black text-poodle-500 uppercase tracking-widest">새 자료 추가</p>
                     </div>
-                </div>
-                <div id="projectResourceList" class="space-y-4">
-                    <!-- JS Rendered -->
+
+                    <!-- Upload Area -->
+                    <div class="group/upload relative rounded-[2.5rem] border-2 border-dashed border-poodle-100 bg-poodle-50/30 p-1 transition-all hover:border-meatball/40 hover:bg-white shadow-[0_10px_30px_rgba(101,55,40,0.02)] mb-6">
+                        <form id="projectResourceForm">
+                            <input type="file" id="fileInput" name="file" class="hidden" onchange="uploadResource()">
+                            <button type="button" 
+                                    onclick="document.getElementById('fileInput').click()"
+                                    class="w-full px-8 py-10 flex flex-col items-center justify-center gap-4">
+                                <div class="w-16 h-16 rounded-[1.8rem] bg-white shadow-xl flex items-center justify-center text-meatball group-hover/upload:scale-110 transition-transform duration-500 animate-pulse-subtle">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[16px] font-black text-poodle-800" id="uploadTitle">선택한 탭에 파일 업로드</p>
+                                    <p id="fileSelectedLabel" class="mt-1 text-xs font-bold text-poodle-300 italic">여기를 클릭하여 파일을 선택하세요</p>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+    
+                    <!-- Link Area -->
+                    <div class="rounded-[2.5rem] bg-poodle-50/50 p-8 space-y-4 border border-poodle-100/50">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-link-slash text-poodle-300 text-xs translate-y-[1px]"></i>
+                            <p class="text-[11px] font-black text-poodle-400 uppercase tracking-widest" id="linkTitleLabel">외부 링크 추가</p>
+                        </div>
+                        <div class="space-y-3">
+                            <input id="resourceLinkTitle" type="text" maxlength="120"
+                                   class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
+                                   placeholder="링크 제목 입력">
+                            <input id="resourceLinkUrl" type="url"
+                                   class="w-full bg-white px-6 py-4 rounded-2xl border-2 border-transparent outline-none font-black text-poodle-800 focus:border-meatball/30 shadow-sm transition-all"
+                                   placeholder="https://">
+                            <button type="button" onclick="uploadResourceLink()"
+                                    class="w-full bg-poodle-900 py-4 rounded-2xl text-sm font-black text-white hover:bg-meatball transition-all shadow-lg active:scale-95">
+                                링크 등록하기
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -377,6 +385,32 @@
     const APPLICATIONS_EDITABLE = PROJECT_PROGRESS_STATUS !== 'COMPLETED';
     window.applicationDetails = {};
     const resolveProjectId = () => window.meetballResolveProjectId({ elementId: 'projectId', queryParam: 'projectId', pathIndex: 2 });
+    let currentResourceCategory = 'RECRUIT';
+
+    function switchResourceCategory(category) {
+        currentResourceCategory = category;
+        const tabs = ['RECRUIT', 'RESULT'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            if (t === category) {
+                btn.className = "flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 bg-white text-poodle-900 shadow-md";
+            } else {
+                btn.className = "flex-1 py-4 px-6 rounded-[1.4rem] text-sm font-black transition-all duration-300 flex items-center justify-center gap-3 text-poodle-400 hover:text-poodle-600";
+            }
+        });
+
+        const uploadTitle = document.getElementById('uploadTitle');
+        const listTitle = document.getElementById('resourceListTitle');
+        if (category === 'RECRUIT') {
+            uploadTitle.innerText = "모집 공고 자료 업로드";
+            listTitle.innerText = "모집 공고 자료 목록";
+        } else {
+            uploadTitle.innerText = "프로젝트 최종 결과물 업로드";
+            listTitle.innerText = "최종 결과물 목록";
+        }
+
+        fetchResources();
+    }
 
     function getApplicationStatusMeta(status) {
         switch (status) {
@@ -591,19 +625,64 @@
         if (!projectId) return;
         await window.meetballLoadProjectResources(projectId, {
             variant: 'manage',
+            tabType: currentResourceCategory,
             containerIds: ['projectResourceList'],
             countChipId: 'resource-count',
             emptyHtml: `
                 <div class="rounded-[1.75rem] border border-dashed border-poodle-200 bg-poodle-50/50 px-6 py-10 text-center">
-                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-300 shadow-sm">
+                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-poodle-200 shadow-sm">
                         <i class="fa-solid fa-folder-open text-2xl"></i>
                     </div>
-                    <p class="text-sm font-black text-poodle-700">등록된 자료가 없습니다.</p>
-                    <p class="mt-2 text-sm font-bold text-poodle-400">파일이나 링크를 등록하면 팀원들이 여기서 확인할 수 있어요.</p>
+                <p class="text-sm font-black text-poodle-300 uppercase tracking-widest">NO DATA</p>
+                <p class="mt-2 text-sm font-bold text-poodle-400">등록된 ${currentResourceCategory === 'RECRUIT' ? '공고 자료' : '결과물'}가 아직 없네요.</p>
                 </div>
             `
         });
     }
+
+    window.deleteProjectResource = async function (resourceId) {
+        if (!await meetballConfirm('정말 이 자료를 삭제하시겠습니까?', { confirmText: '삭제', cancelText: '취소' })) return;
+        const projectId = resolveProjectId();
+        try {
+            const res = await meetballFetch(`/api/projects/${projectId}/resources/${resourceId}`, { method: 'DELETE' });
+            if (res.ok) {
+                await meetballAlert('삭제되었습니다.');
+                fetchResources();
+            } else {
+                await meetballAlert('삭제 실패', { type: 'error' });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    window.editProjectResource = async function (resourceId, currentTitle, currentUrl, type) {
+        const newTitle = await meetballPrompt('수정할 제목을 입력해주세요.', currentTitle, { title: '자료 제목 수정' });
+        if (newTitle === null) return;
+
+        let newUrl = currentUrl;
+        if (type === 'LINK') {
+            newUrl = await meetballPrompt('수정할 URL을 입력해주세요.', currentUrl, { title: '링크 주소 수정' });
+            if (newUrl === null) return;
+        }
+
+        const projectId = resolveProjectId();
+        try {
+            const res = await meetballFetch(`/api/projects/${projectId}/resources/${resourceId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle, url: newUrl })
+            });
+            if (res.ok) {
+                await meetballAlert('수정되었습니다.');
+                fetchResources();
+            } else {
+                await meetballAlert('수정 실패', { type: 'error' });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     function updateFileSelectedLabel() {
         const fileInput = document.getElementById('fileInput');
@@ -623,7 +702,7 @@
         formData.append('file', file);
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=RESULT`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources?tabType=${currentResourceCategory}`, {
                 method: 'POST',
                 body: formData
             });
@@ -657,7 +736,7 @@
         const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 
         try {
-            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RESULT`, {
+            const response = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=${currentResourceCategory}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, url })
