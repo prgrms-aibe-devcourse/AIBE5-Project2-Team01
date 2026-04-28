@@ -3,11 +3,9 @@ package com.example.meetball.domain.projectresource.service;
 import com.example.meetball.domain.projectresource.dto.ProjectResourceResponseDto;
 import com.example.meetball.domain.projectresource.entity.ProjectResource;
 import com.example.meetball.domain.projectresource.repository.ProjectResourceRepository;
-import jakarta.annotation.PostConstruct;
+import com.example.meetball.global.storage.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,18 +25,7 @@ import java.util.stream.Collectors;
 public class ProjectResourceService {
 
     private final ProjectResourceRepository projectResourceRepository;
-
-    @Value("${app.upload-dir:uploads/}")
-    private String uploadDir;
-
-    @PostConstruct
-    public void init() {
-        try {
-            Files.createDirectories(Paths.get(uploadDir));
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create upload folder!");
-        }
-    }
+    private final StorageService storageService;
 
     @Transactional
     public ProjectResourceResponseDto uploadFile(Long projectId, MultipartFile file, String tabType) {
@@ -55,15 +38,8 @@ public class ProjectResourceService {
             if (safeOriginalFilename.contains("..")) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file name.");
             }
-            String storedFileName = UUID.randomUUID() + "_" + safeOriginalFilename;
-            Path uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Path filePath = uploadRoot.resolve(storedFileName).normalize();
-            if (!filePath.startsWith(uploadRoot)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file path.");
-            }
-            
-            // 물리적 파일 저장
-            Files.copy(file.getInputStream(), filePath);
+            // 물리적 파일 저장 (StorageService 이용)
+            String storedFileName = storageService.store(file);
 
             // 메타데이터 DB 저장
             ProjectResource projectResource = ProjectResource.builder()
@@ -93,20 +69,8 @@ public class ProjectResourceService {
 
     @Transactional(readOnly = true)
     public Resource loadFileAsResource(Long projectId, Long resourceId) {
-        try {
-            ProjectResource projectResource = findProjectResourceInProject(projectId, resourceId);
-
-            Path filePath = resolveStoredFilePath(projectResource.getStoredFilePath());
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다: " + projectResource.getOriginalFileName());
-            }
-        } catch (MalformedURLException ex) {
-            throw new RuntimeException("File not found", ex);
-        }
+        ProjectResource projectResource = findProjectResourceInProject(projectId, resourceId);
+        return storageService.load(projectResource.getStoredFilePath());
     }
 
     @Transactional(readOnly = true)
@@ -149,7 +113,7 @@ public class ProjectResourceService {
     private void deletePhysicalFile(ProjectResource projectResource) {
         if ("FILE".equals(projectResource.getType()) && StringUtils.hasText(projectResource.getStoredFilePath())) {
             try {
-                Files.deleteIfExists(resolveStoredFilePath(projectResource.getStoredFilePath()));
+                storageService.delete(projectResource.getStoredFilePath());
             } catch (IOException e) {
                 throw new RuntimeException("Could not delete projectResource file: " + projectResource.getOriginalFileName(), e);
             }
@@ -205,12 +169,4 @@ public class ProjectResourceService {
         return projectResource;
     }
 
-    private Path resolveStoredFilePath(String storedFilePath) {
-        Path uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Path filePath = uploadRoot.resolve(storedFilePath).normalize();
-        if (!filePath.startsWith(uploadRoot)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file path.");
-        }
-        return filePath;
-    }
 }
