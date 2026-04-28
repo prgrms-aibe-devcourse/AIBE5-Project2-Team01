@@ -1045,13 +1045,31 @@
                 if (!fileResponse.ok) throw new Error('file-upload-failed');
             }
 
-            if (registeredLink?.url) {
+            // [개선] registeredLink가 없더라도 입력 필드에 URL이 있다면 자동으로 추가 시도
+            let linkToUpload = registeredLink;
+            if (!linkToUpload) {
+                const urlInput = document.getElementById('linkUrl');
+                const titleInput = document.getElementById('linkTitle');
+                const rawUrl = urlInput?.value.trim();
+                if (rawUrl) {
+                    let normalizedUrl = rawUrl;
+                    if (!/^https?:\/\//i.test(normalizedUrl)) {
+                        normalizedUrl = 'https://' + normalizedUrl;
+                    }
+                    linkToUpload = {
+                        title: titleInput?.value.trim() || '관련 링크',
+                        url: normalizedUrl
+                    };
+                }
+            }
+
+            if (linkToUpload?.url) {
                 const linkResponse = await meetballFetch(`/api/projects/${projectId}/resources/links?tabType=RECRUIT`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        title: registeredLink.title || '관련 링크',
-                        url: registeredLink.url
+                        title: linkToUpload.title || '관련 링크',
+                        url: linkToUpload.url
                     })
                 });
                 if (!linkResponse.ok) throw new Error('link-upload-failed');

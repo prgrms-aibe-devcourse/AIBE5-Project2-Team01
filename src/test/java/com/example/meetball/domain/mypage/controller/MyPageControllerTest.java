@@ -237,7 +237,8 @@ class MyPageControllerTest {
                         .session(session(profileId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].title").value("여행 일정 공유 플랫폼 [TripMate]"))
+                .andExpect(jsonPath("$[0].title").value("AI 기반 헬스케어 모바일 앱 개발"))
+                .andExpect(jsonPath("$[1].title").value("여행 일정 공유 플랫폼 [TripMate]"))
                 .andDo(print());
     }
 
